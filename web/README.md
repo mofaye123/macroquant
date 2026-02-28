@@ -60,8 +60,16 @@ npm run dev
 默认会优先请求：
 - `/data/macro-data.json`（静态快照）
 
-如果静态文件不存在，前端会回退到：
+如果静态文件不存在或当前静态快照完全降级（`0/7`），前端会回退到：
 - `http://127.0.0.1:8000/api/v1/macro-data`
+
+如果你想覆盖默认行为，可使用：
+
+```bash
+NEXT_PUBLIC_MACRO_SOURCE_MODE=static-first npm run dev
+NEXT_PUBLIC_MACRO_SOURCE_MODE=api-first npm run dev
+NEXT_PUBLIC_MACRO_SOURCE_MODE=api-only npm run dev
+```
 
 如果你需要改静态 JSON 路径：
 
@@ -176,8 +184,8 @@ chmod +x scripts/generate_and_deploy_pages.sh
 
 ## 7. 说明
 
-- Dashboard 与 A~G 模块页默认读取静态 JSON（仍复用 Python 现有 `_calculate_score_internal` 逻辑生成）。
-- 静态文件不存在时，前端会尝试回退到 Python API；API 也不可用时，最后回退到 `lib/mock-data.ts`，避免白屏。
+- Dashboard 与 A~G 模块页默认读取静态 JSON（由 GitHub Actions 每小时抓取真实 FRED / Yahoo 数据后生成）。
+- 静态文件不存在或静态快照完全降级时，前端会回退到 Python API；API 也不可用时，最后回退到 `lib/mock-data.ts`，避免白屏。
 - 回测页当前仍是前端 mock 交互版（下一步可继续接 Python 回测引擎）。
 
 ## 8. 定时生成（美股开盘）

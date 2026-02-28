@@ -8,6 +8,7 @@ import { MacroApiPayload } from "@/lib/types";
 const STATIC_URL = process.env.NEXT_PUBLIC_MACRO_DATA_URL ?? "/data/macro-data.json";
 const API_BASE = process.env.NEXT_PUBLIC_MACRO_API_BASE ?? "http://127.0.0.1:8000";
 const API_URL = `${API_BASE.replace(/\/$/, "")}/api/v1/macro-data`;
+const SOURCE_MODE = (process.env.NEXT_PUBLIC_MACRO_SOURCE_MODE ?? "static-first").trim().toLowerCase();
 const CLIENT_CACHE_TTL_MS = 30_000;
 
 export type MacroDataState = {
@@ -88,18 +89,39 @@ export const useMacroData = (opts?: { disabled?: boolean }): MacroDataState => {
     const run = async () => {
       try {
         let data: MacroApiPayload;
-        let resolvedSourceType: "static" | "api" = "static";
-        let resolvedSourceUrl = STATIC_URL;
+        let resolvedSourceType: "static" | "api" = "api";
+        let resolvedSourceUrl = API_URL;
 
-        try {
-          data = await fetchPayload(STATIC_URL);
-          if (shouldRejectStaticPayload(data)) {
-            throw new Error("Static payload is fully degraded");
-          }
-        } catch {
+        if (SOURCE_MODE === "api-only") {
           data = await fetchPayload(API_URL);
           resolvedSourceType = "api";
           resolvedSourceUrl = API_URL;
+        } else if (SOURCE_MODE === "static-first") {
+          try {
+            data = await fetchPayload(STATIC_URL);
+            if (shouldRejectStaticPayload(data)) {
+              throw new Error("Static payload is fully degraded");
+            }
+            resolvedSourceType = "static";
+            resolvedSourceUrl = STATIC_URL;
+          } catch {
+            data = await fetchPayload(API_URL);
+            resolvedSourceType = "api";
+            resolvedSourceUrl = API_URL;
+          }
+        } else {
+          try {
+            data = await fetchPayload(API_URL);
+            resolvedSourceType = "api";
+            resolvedSourceUrl = API_URL;
+          } catch {
+            data = await fetchPayload(STATIC_URL);
+            if (shouldRejectStaticPayload(data)) {
+              throw new Error("Static payload is fully degraded");
+            }
+            resolvedSourceType = "static";
+            resolvedSourceUrl = STATIC_URL;
+          }
         }
         if (!active) {
           return;
