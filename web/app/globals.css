@@ -41,3 +41,46 @@ textarea {
 button {
   @apply transition-opacity;
 }
+
+.legacy-glossary .glossary-box {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  background: #ffffff;
+  padding: 14px;
+  margin-bottom: 12px;
+}
+
+.legacy-glossary .glossary-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: #0f172a;
+  margin-bottom: 8px;
+}
+
+.legacy-glossary .glossary-content {
+  font-size: 12px;
+  line-height: 1.7;
+  color: #475569;
+}
+
+.legacy-glossary .glossary-label {
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.legacy-glossary .logic-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 16px;
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.legacy-glossary .bullish {
+  color: #059669;
+}
+
+.legacy-glossary .bearish {
+  color: #dc2626;
+}

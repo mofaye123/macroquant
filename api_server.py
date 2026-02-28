@@ -1,6 +1,8 @@
 import copy
 import json
 import os
+import re
+import textwrap
 import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional
@@ -82,6 +84,41 @@ MODULE_REQUIRED_COLUMNS: Dict[str, List[str]] = {
     "f": ["BAMLH0A0HYM2", "BAA10Y"],
 }
 
+_MODULE_SOURCE_CACHE: Dict[str, str] = {}
+
+
+def _module_source_text(slug: str) -> str:
+    cached = _MODULE_SOURCE_CACHE.get(slug)
+    if cached is not None:
+        return cached
+    path = Path(__file__).resolve().parent / "modules" / f"module_{slug}.py"
+    try:
+        text = path.read_text(encoding="utf-8")
+    except Exception:
+        text = ""
+    _MODULE_SOURCE_CACHE[slug] = text
+    return text
+
+
+def _extract_glossary_html(slug: str) -> str:
+    source = _module_source_text(slug)
+    if not source:
+        return ""
+    start = source.find('with st.expander("📚')
+    if start < 0:
+        return ""
+    end = source.find('with st.expander("📄', start)
+    section = source[start:end] if end > start else source[start:]
+    blocks = re.findall(
+        r"st\.markdown\(\s*(?:f)?(?P<quote>\"\"\"|''')(?P<html>.*?)(?P=quote)\s*,\s*unsafe_allow_html=True\s*\)",
+        section,
+        flags=re.S,
+    )
+    if not blocks:
+        return ""
+    html_parts = [textwrap.dedent(match[1]).strip() for match in blocks if match[1].strip()]
+    return "\n".join(html_parts)
+
 
 def _series_points(series: pd.Series, limit: int = 260) -> List[Dict[str, Any]]:
     s = series.dropna().tail(limit)
@@ -158,6 +195,394 @@ def _format_signed(value: float, digits: int = 1, suffix: str = "") -> str:
         return "-"
     sign = "+" if value >= 0 else ""
     return f"{sign}{value:.{digits}f}{suffix}"
+
+
+def _score_bucket(score: float) -> str:
+    if score < 33:
+        return "critical"
+    if score < 55:
+        return "warning"
+    if score < 66:
+        return "stable"
+    return "strong"
+
+
+def _build_raw_table(frame: pd.DataFrame, fallback_points: List[Dict[str, Any]]) -> Dict[str, Any]:
+    if frame is None or frame.empty:
+        return {
+            "columns": ["Date", "Total_Score"],
+            "rows": [[point["date"], round(float(point["value"]), 2)] for point in reversed(fallback_points[-12:])],
+        }
+
+    raw = frame.tail(12).copy()
+    columns = ["Date"] + [str(col) for col in raw.columns]
+    rows: List[List[Any]] = []
+    for idx, row in raw.sort_index(ascending=False).iterrows():
+        values: List[Any] = [idx.strftime("%Y-%m-%d")]
+        for value in row.tolist():
+            if pd.isna(value):
+                values.append(None)
+            elif isinstance(value, (int, np.integer)):
+                values.append(int(value))
+            else:
+                values.append(round(float(value), 4))
+        rows.append(values)
+    return {"columns": columns, "rows": rows}
+
+
+def _collect_contributor_delta(
+    items: List[Dict[str, Any]],
+    frame: pd.DataFrame,
+    col: str,
+    name: str,
+    module_weight: float,
+    factor_weight: float,
+    bucket: str,
+) -> None:
+    if frame is None or frame.empty or col not in frame.columns:
+        return
+    series = frame[col].dropna()
+    if series.empty:
+        return
+    latest = float(series.iloc[-1])
+    prev = _prev_value(series, days=7)
+    delta = (latest - prev) * module_weight * factor_weight
+    if abs(delta) < 0.01:
+        return
+    items.append({"name": name, "delta": round(delta, 2), "bucket": bucket})
+
+
+def _build_lift_drag(module_frames: Dict[str, pd.DataFrame]) -> Dict[str, Any]:
+    factor_deltas: List[Dict[str, Any]] = []
+    frame_map = {slug: module_frames.get(slug, pd.DataFrame()) for slug in ("a", "b", "c", "d", "e", "f", "g")}
+
+    _collect_contributor_delta(factor_deltas, frame_map["a"], "Score_NetLiq_Adj", "Net Liquidity", 0.20, 0.45, "Flow")
+    _collect_contributor_delta(factor_deltas, frame_map["a"], "Score_TGA", "TGA", 0.20, 0.20, "Penalty")
+    _collect_contributor_delta(factor_deltas, frame_map["a"], "Score_RRP", "ON RRP", 0.20, 0.25, "Flow")
+    _collect_contributor_delta(factor_deltas, frame_map["a"], "Score_Reserves", "Bank Reserves", 0.20, 0.10, "Level")
+
+    _collect_contributor_delta(factor_deltas, frame_map["b"], "Score_Policy", "SOFR Policy", 0.20, 0.40, "Level")
+    _collect_contributor_delta(factor_deltas, frame_map["b"], "Score_Friction", "Funding Friction", 0.20, 0.60, "Flow")
+
+    _collect_contributor_delta(factor_deltas, frame_map["c"], "Score_Curve_2s10s", "2s10s Curve", 0.15, 0.30, "Flow")
+    _collect_contributor_delta(factor_deltas, frame_map["c"], "Score_Curve_3m10s", "3m10s Curve", 0.15, 0.30, "Flow")
+    _collect_contributor_delta(factor_deltas, frame_map["c"], "Penalty_Factor", "Curve Penalty", 0.15, 0.30, "Penalty")
+
+    _collect_contributor_delta(factor_deltas, frame_map["d"], "Score_Real_10Y", "10Y Real Rate", 0.15, 0.40, "Level")
+    _collect_contributor_delta(factor_deltas, frame_map["d"], "Score_Breakeven", "10Y Breakeven", 0.15, 0.30, "Flow")
+
+    _collect_contributor_delta(factor_deltas, frame_map["e"], "Score_DXY", "DXY", 0.15, 0.20, "Flow")
+    _collect_contributor_delta(factor_deltas, frame_map["e"], "Score_Yen_Total", "Yen / Carry", 0.15, 0.30, "Flow")
+    _collect_contributor_delta(factor_deltas, frame_map["e"], "Score_Energy", "Energy", 0.15, 0.30, "Flow")
+
+    _collect_contributor_delta(factor_deltas, frame_map["f"], "Score_HY_Level", "HY Credit", 0.075, 0.50, "Level")
+    _collect_contributor_delta(factor_deltas, frame_map["f"], "Score_HY_Trend", "HY Trend", 0.075, 0.30, "Flow")
+
+    _collect_contributor_delta(factor_deltas, frame_map["g"], "Score_Term", "VIX/VXV", 0.075, 0.40, "Level")
+    _collect_contributor_delta(factor_deltas, frame_map["g"], "Score_Mom", "Risk vs Safe", 0.075, 0.30, "Flow")
+
+    lifts = sorted((item for item in factor_deltas if item["delta"] > 0), key=lambda item: item["delta"], reverse=True)[:3]
+    drags = sorted((item for item in factor_deltas if item["delta"] < 0), key=lambda item: item["delta"])[:3]
+    bucket_totals = {"Level": 0.0, "Flow": 0.0, "Penalty": 0.0}
+    for item in factor_deltas:
+        bucket_totals[item["bucket"]] = bucket_totals.get(item["bucket"], 0.0) + float(item["delta"])
+    structural_delta = bucket_totals["Level"] + bucket_totals["Penalty"]
+    flow_delta = bucket_totals["Flow"]
+    return {
+        "lifts": lifts,
+        "drags": drags,
+        "summary": {
+            "level": round(bucket_totals["Level"], 2),
+            "flow": round(flow_delta, 2),
+            "penalty": round(bucket_totals["Penalty"], 2),
+            "structural": round(structural_delta, 2),
+            "driver": "结构性变化主导" if abs(structural_delta) >= abs(flow_delta) else "短期波动主导",
+        },
+    }
+
+
+def _build_dashboard_heatmap(module_frames: Dict[str, pd.DataFrame], df_all: pd.DataFrame) -> Dict[str, Any]:
+    if df_all.empty:
+        return {"weeks": [], "rows": []}
+    base_idx = df_all.index
+    labels = {
+        "a": "系统流动性",
+        "b": "资金价格与摩擦",
+        "c": "国债期限结构",
+        "d": "实际利率与通胀",
+        "e": "外部冲击与汇率",
+        "f": "信用压力",
+        "g": "风险偏好",
+    }
+    module_hist = pd.DataFrame(index=base_idx)
+    for slug, label in labels.items():
+        frame = module_frames.get(slug, pd.DataFrame())
+        if not frame.empty and "Total_Score" in frame.columns:
+            module_hist[label] = frame["Total_Score"].reindex(base_idx, method="ffill")
+        else:
+            module_hist[label] = pd.Series(50.0, index=base_idx)
+    weekly = module_hist.resample("W-FRI").last().dropna(how="all").tail(26)
+    if weekly.empty:
+        return {"weeks": [], "rows": []}
+    weeks = [f"W{int(ts.isocalendar().week):02d}" for ts in weekly.index]
+    rows = []
+    for label in weekly.columns:
+        cells = []
+        for idx, value in enumerate(weekly[label].tolist()):
+            score = float(value)
+            cells.append({"week": weeks[idx], "score": round(score, 1), "bucket": _score_bucket(score)})
+        rows.append({"label": label, "cells": cells})
+    return {"weeks": weeks, "rows": rows}
+
+
+def _build_regime_view(df_all: pd.DataFrame) -> Dict[str, Any]:
+    reg = _ensure_df(df_all, ["INDPRO", "PCEPILFE"]).copy()
+    if reg.empty:
+        return {"current": None, "growthZ": None, "inflationZ": None, "lastSwitch": None, "timeline": []}
+
+    reg_m = reg.resample("M").last()
+    reg_m["Growth_YoY"] = reg_m["INDPRO"].pct_change(12) * 100
+    reg_m["CorePCE_YoY"] = reg_m["PCEPILFE"].pct_change(12) * 100
+    g_mean = reg_m["Growth_YoY"].rolling(60, min_periods=12).mean()
+    g_std = reg_m["Growth_YoY"].rolling(60, min_periods=12).std().replace(0, np.nan)
+    i_mean = reg_m["CorePCE_YoY"].rolling(60, min_periods=12).mean()
+    i_std = reg_m["CorePCE_YoY"].rolling(60, min_periods=12).std().replace(0, np.nan)
+    reg_m["Growth_Z"] = (reg_m["Growth_YoY"] - g_mean) / g_std
+    reg_m["Infl_Z"] = (reg_m["CorePCE_YoY"] - i_mean) / i_std
+    reg_m = reg_m.dropna(subset=["Growth_Z", "Infl_Z"])
+    if reg_m.empty:
+        return {"current": None, "growthZ": None, "inflationZ": None, "lastSwitch": None, "timeline": []}
+
+    reg_m["Regime"] = np.select(
+        [
+            (reg_m["Growth_Z"] >= 0) & (reg_m["Infl_Z"] < 0),
+            (reg_m["Growth_Z"] >= 0) & (reg_m["Infl_Z"] >= 0),
+            (reg_m["Growth_Z"] < 0) & (reg_m["Infl_Z"] >= 0),
+            (reg_m["Growth_Z"] < 0) & (reg_m["Infl_Z"] < 0),
+        ],
+        ["复苏", "过热", "滞胀", "放缓"],
+        default="放缓",
+    )
+    view = reg_m.tail(30).copy()
+    switches = view[view["Regime"] != view["Regime"].shift(1)]
+    switch_text = "最近区间未发生象限切换。"
+    if switches.shape[0] > 1:
+        sw = switches.iloc[-1]
+        switch_text = f"最近切换: {switches.index[-1].strftime('%Y-%m')} → {sw['Regime']}"
+
+    current = view.iloc[-1]
+    return {
+        "current": str(current["Regime"]),
+        "growthZ": round(float(current["Growth_Z"]), 2),
+        "inflationZ": round(float(current["Infl_Z"]), 2),
+        "lastSwitch": switch_text,
+        "timeline": [
+            {"date": idx.strftime("%y-%m"), "regime": str(row["Regime"])}
+            for idx, row in view.iterrows()
+        ],
+    }
+
+
+def _market_stat(series: Optional[pd.Series]) -> Dict[str, float]:
+    if series is None:
+        return {"last": np.nan, "diff": np.nan, "pct": np.nan}
+    return _latest_and_diff(series)
+
+
+def _build_market_board(df_all: pd.DataFrame) -> Dict[str, Any]:
+    dgs2 = _market_stat(df_all.get("DGS2"))
+    dgs10 = _market_stat(df_all.get("DGS10"))
+    dgs30 = _market_stat(df_all.get("DGS30"))
+    curve_2s10s = _market_stat(df_all.get("T10Y2Y"))
+    curve_3m10s = _market_stat(df_all.get("T10Y3M"))
+    dxy = _market_stat(df_all.get("DXY"))
+    spx = _market_stat(df_all.get("SP500"))
+    hy = _market_stat(df_all.get("BAMLH0A0HYM2"))
+    wti = _market_stat(df_all.get("DCOILWTICO"))
+
+    vix_series = None
+    if "VIX_YH" in df_all.columns or "VIXCLS" in df_all.columns:
+        vix_series = df_all.get("VIX_YH", pd.Series(index=df_all.index, dtype=float)).combine_first(
+            df_all.get("VIXCLS", pd.Series(index=df_all.index, dtype=float))
+        )
+    vix = _market_stat(vix_series)
+    dgs10_value = "-" if pd.isna(dgs10["last"]) else f"{dgs10['last']:.2f}%"
+    dgs30_value = "-" if pd.isna(dgs30["last"]) else f"{dgs30['last']:.2f}%"
+
+    cards = [
+        {
+            "title": "债市先行动量",
+            "headline": f"10Y {_format_signed(dgs10['diff'] * 100.0, 1, 'bp')} · 30Y {_format_signed(dgs30['diff'] * 100.0, 1, 'bp')}",
+            "detail": f"10Y {dgs10_value} / 30Y {dgs30_value}",
+        },
+        {
+            "title": "收益率结构",
+            "headline": f"2s10s {_format_signed(curve_2s10s['last'], 2)} · 3m10s {_format_signed(curve_3m10s['last'], 2)}",
+            "detail": "Bull Flattener" if (not pd.isna(curve_2s10s["diff"]) and curve_2s10s["diff"] > 0) else "曲线仍处重定价阶段",
+        },
+        {
+            "title": "权益表现",
+            "headline": f"SPX {_format_signed(spx['pct'], 2, '%')} · VIX {_format_signed(vix['diff'], 2)}",
+            "detail": "风格切换/补跌监测",
+        },
+        {
+            "title": "信用与美元",
+            "headline": f"DXY {_format_signed(dxy['pct'], 2, '%')} · HY {_format_signed(hy['diff'], 2)}",
+            "detail": f"WTI {_format_signed(wti['pct'], 2, '%')}",
+        },
+    ]
+
+    verdicts: List[str] = []
+    if not pd.isna(dgs10["diff"]) and not pd.isna(spx["pct"]) and dgs10["diff"] < 0 and spx["pct"] < 0:
+        verdicts.append("债券先行+权益回落：更像增长预期下修触发的估值重估。")
+    if pd.isna(hy["last"]) or hy["last"] < 6.0:
+        verdicts.append("信用维持稳定：暂不支持系统性信用冲击。")
+    if not pd.isna(dxy["pct"]) and abs(dxy["pct"]) < 0.5:
+        verdicts.append("美元端平稳：暂不支持美元荒/全球挤兑交易。")
+    if not verdicts:
+        verdicts.append("当前是混合盘面，尚未形成单一高置信主线，建议等待下一交易日确认。")
+
+    raw_rows = [
+        {"asset": "2Y收益率", "value": None if pd.isna(dgs2["last"]) else round(float(dgs2["last"]), 2), "delta": _format_signed(dgs2["diff"] * 100.0, 1, "bp")},
+        {"asset": "10Y收益率", "value": None if pd.isna(dgs10["last"]) else round(float(dgs10["last"]), 2), "delta": _format_signed(dgs10["diff"] * 100.0, 1, "bp")},
+        {"asset": "30Y收益率", "value": None if pd.isna(dgs30["last"]) else round(float(dgs30["last"]), 2), "delta": _format_signed(dgs30["diff"] * 100.0, 1, "bp")},
+        {"asset": "2s10s", "value": None if pd.isna(curve_2s10s["last"]) else round(float(curve_2s10s["last"]), 2), "delta": _format_signed(curve_2s10s["diff"], 2)},
+        {"asset": "3m10s", "value": None if pd.isna(curve_3m10s["last"]) else round(float(curve_3m10s["last"]), 2), "delta": _format_signed(curve_3m10s["diff"], 2)},
+        {"asset": "DXY", "value": None if pd.isna(dxy["last"]) else round(float(dxy["last"]), 2), "delta": _format_signed(dxy["pct"], 2, "%")},
+        {"asset": "SP500", "value": None if pd.isna(spx["last"]) else round(float(spx["last"]), 2), "delta": _format_signed(spx["pct"], 2, "%")},
+        {"asset": "HY利差", "value": None if pd.isna(hy["last"]) else round(float(hy["last"]), 2), "delta": _format_signed(hy["diff"], 2)},
+        {"asset": "VIX", "value": None if pd.isna(vix["last"]) else round(float(vix["last"]), 2), "delta": _format_signed(vix["diff"], 2)},
+        {"asset": "WTI", "value": None if pd.isna(wti["last"]) else round(float(wti["last"]), 2), "delta": _format_signed(wti["pct"], 2, "%")},
+    ]
+    return {"cards": cards, "verdicts": verdicts, "rawRows": raw_rows}
+
+
+def _build_reference_panels(df_all: pd.DataFrame, total_series: pd.Series) -> Dict[str, Any]:
+    left_status = {"label": "⚪ NEUTRAL", "tone": "neutral", "score": 0}
+    if all(col in df_all.columns for col in ["WTREGEN", "SOFR", "RPONTSYD"]):
+        tga = df_all["WTREGEN"].dropna()
+        sofr = df_all["SOFR"].dropna()
+        srf = df_all["RPONTSYD"].dropna()
+        if (not tga.empty) and (not sofr.empty) and (not srf.empty):
+            latest_tga = float(tga.iloc[-1])
+            prev_tga = float(tga.iloc[-8]) if len(tga) > 8 else float(tga.iloc[0])
+            latest_srf = float(srf.iloc[-1])
+            latest_sofr = float(sofr.iloc[-1])
+            prev_sofr = float(sofr.iloc[-30]) if len(sofr) > 30 else float(sofr.iloc[0])
+            score = 0
+            tga_diff = (latest_tga - prev_tga) / 1000.0
+            if tga_diff < -10:
+                score += 1
+            elif tga_diff > 10:
+                score -= 1
+            if latest_tga >= 900:
+                score -= 3
+            elif latest_tga >= 850:
+                score -= 2
+            elif latest_tga >= 800:
+                score -= 1
+            if latest_srf < 5:
+                score += 1
+            elif latest_srf > 50:
+                score -= 2
+            sofr_diff = latest_sofr - prev_sofr
+            if sofr_diff < -0.05:
+                score += 1
+            elif sofr_diff > 0.10:
+                score -= 1
+            if score >= 1:
+                left_status = {"label": f"🟢 NET INFLOW [积分:{score}]", "tone": "positive", "score": score}
+            elif score <= -1:
+                left_status = {"label": f"🔴 NET OUTFLOW [积分:{score}]", "tone": "negative", "score": score}
+            else:
+                left_status = {"label": "⚪ NEUTRAL", "tone": "neutral", "score": score}
+
+    reference_window = df_all[df_all.index >= "2023-01-01"].copy()
+    valid_window = df_all[df_all.index >= (df_all.index.max() - pd.Timedelta(days=1080))].copy() if not df_all.empty else pd.DataFrame()
+    score_window = total_series[total_series.index >= (total_series.index.max() - pd.Timedelta(days=1080))] if not total_series.empty else pd.Series(dtype=float)
+
+    return {
+        "liquidityMonitor": {
+            "status": left_status,
+            "series": {
+                "tga": _series_points(reference_window["WTREGEN"] / 1000.0, limit=800) if "WTREGEN" in reference_window.columns else [],
+                "sofr": _series_points(reference_window["SOFR"], limit=800) if "SOFR" in reference_window.columns else [],
+                "srf": _series_points(reference_window["RPONTSYD"], limit=800) if "RPONTSYD" in reference_window.columns else [],
+            },
+        },
+        "truthTest": {
+            "series": {
+                "score": _series_points(score_window, limit=800),
+                "spx": _series_points(valid_window["SP500"], limit=800) if "SP500" in valid_window.columns else [],
+                "btc": _series_points(valid_window["CBBTCUSD"], limit=800) if "CBBTCUSD" in valid_window.columns else [],
+            },
+        },
+    }
+
+
+def _build_risk_radar(
+    df_all: pd.DataFrame,
+    module_frames: Dict[str, pd.DataFrame],
+    module_scores: Dict[str, float],
+) -> Dict[str, Any]:
+    items: List[Dict[str, str]] = []
+
+    def add_risk(level: str, title: str, trigger: str, off: str) -> None:
+        items.append({"level": level, "title": title, "trigger": trigger, "off": off})
+
+    tga = _safe_float(df_all.get("WTREGEN", pd.Series(dtype=float)).dropna().iloc[-1] if "WTREGEN" in df_all.columns and not df_all["WTREGEN"].dropna().empty else np.nan)
+    tga_b = tga / 1000.0 if tga > 10000 else tga
+    if not pd.isna(tga_b) and tga_b >= 800:
+        penalty = "0.5x" if tga_b >= 900 else ("0.6x" if tga_b >= 850 else "0.8x")
+        add_risk("red" if tga_b >= 900 else "orange", f"A模块 (TGA惩罚): 流动性抽水加剧，惩罚系数 {penalty}", f"TGA 水位 {tga_b:.0f}B >= 800B。", "TGA 重新回落至 <800B 且 4周变化转负。")
+    if module_scores.get("A", 50.0) < 40:
+        add_risk("red", f"A模块 (流动性): 整体流动性偏紧，得分 {module_scores['A']:.1f}", "A模块得分跌破 40。", "A模块得分连续两周回到 >=45。")
+
+    if "SOFR" in df_all.columns and "IORB" in df_all.columns and not df_all["SOFR"].dropna().empty and not df_all["IORB"].dropna().empty:
+        sofr = float(df_all["SOFR"].dropna().iloc[-1])
+        iorb = float(df_all["IORB"].dropna().iloc[-1])
+        if "RPONTSYD" in df_all.columns and not df_all["RPONTSYD"].dropna().empty and float(df_all["RPONTSYD"].dropna().iloc[-1]) > 10:
+            add_risk("red", "B模块 (资金面): 应急融资启动", f"SRF 使用量 {float(df_all['RPONTSYD'].dropna().iloc[-1]):.1f}B > 10B。", "SRF 回落到 5B 以下并维持 3 个交易日。")
+        elif sofr > iorb:
+            add_risk("orange", "B模块 (资金面): 资金价格偏贵", f"SOFR {sofr:.2f}% 高于 IORB {iorb:.2f}%。", "SOFR 回落至 IORB 下方并持续 2-3 天。")
+
+    frame_c = module_frames.get("c", pd.DataFrame())
+    if not frame_c.empty and "Penalty_Factor" in frame_c.columns and float(frame_c["Penalty_Factor"].dropna().iloc[-1]) < 1.0:
+        add_risk("red", "C模块 (国债): 长端利率急涨，估值压力增加", f"长端斜率惩罚触发，Penalty={float(frame_c['Penalty_Factor'].dropna().iloc[-1]):.1f}x。", "Penalty 恢复到 1.0x 且 10Y 60日斜率回到温和区间。")
+    elif "T10Y2Y" in df_all.columns and not df_all["T10Y2Y"].dropna().empty and float(df_all["T10Y2Y"].dropna().iloc[-1]) < -0.5:
+        add_risk("orange", "C模块 (国债): 曲线深度倒挂", f"2s10s={float(df_all['T10Y2Y'].dropna().iloc[-1]):.2f} (< -0.50)。", "2s10s 回升至 > -0.20 且保持。")
+
+    if "DFII10" in df_all.columns and not df_all["DFII10"].dropna().empty and float(df_all["DFII10"].dropna().iloc[-1]) > 2.0:
+        add_risk("orange", "D模块 (实利): 实际利率偏高", f"10Y 实际利率 {float(df_all['DFII10'].dropna().iloc[-1]):.2f}% > 2.0%。", "10Y 实际利率回落至 <1.8%。")
+
+    if "DEXJPUS" in df_all.columns and df_all["DEXJPUS"].dropna().shape[0] > 5:
+        usd_jpy_move = float(df_all["DEXJPUS"].pct_change(5).dropna().iloc[-1])
+        if usd_jpy_move < -0.03:
+            add_risk("red", "E模块 (汇率): 套息退潮风险", f"USDJPY 5日变动 {usd_jpy_move * 100:.1f}% < -3%。", "USDJPY 波动收敛且回到 -1%~+1% 区间。")
+
+    if "DCOILWTICO" in df_all.columns and df_all["DCOILWTICO"].dropna().shape[0] > 20:
+        oil_move = float(df_all["DCOILWTICO"].pct_change(20).dropna().iloc[-1])
+        if oil_move > 0.15:
+            add_risk("orange", "E模块 (能源): 通胀再抬头风险", f"WTI 20日涨幅 {oil_move * 100:.1f}% > 15%。", "WTI 20日涨幅回落至 <8%。")
+
+    frame_f = module_frames.get("f", pd.DataFrame())
+    if not frame_f.empty and module_scores.get("F", 50.0) < 40:
+        hy_val = float(frame_f["HY_Spread"].dropna().iloc[-1]) if "HY_Spread" in frame_f.columns and not frame_f["HY_Spread"].dropna().empty else np.nan
+        baa_val = float(frame_f["BAA10Y"].dropna().iloc[-1]) if "BAA10Y" in frame_f.columns and not frame_f["BAA10Y"].dropna().empty else np.nan
+        add_risk("red", "F模块 (信用): 信用压力升温", f"HY={hy_val:.2f}% / BAA10Y={baa_val:.2f}%。", "HY 低于 5% 且 BAA10Y 低于 2.5%。")
+
+    frame_g = module_frames.get("g", pd.DataFrame())
+    if not frame_g.empty and (
+        module_scores.get("G", 50.0) < 40
+        or ("VIX" in frame_g.columns and not frame_g["VIX"].dropna().empty and float(frame_g["VIX"].dropna().iloc[-1]) > 25)
+        or ("VIX_VXV" in frame_g.columns and not frame_g["VIX_VXV"].dropna().empty and float(frame_g["VIX_VXV"].dropna().iloc[-1]) > 1.0)
+    ):
+        vix_val = float(frame_g["VIX"].dropna().iloc[-1]) if "VIX" in frame_g.columns and not frame_g["VIX"].dropna().empty else np.nan
+        term_val = float(frame_g["VIX_VXV"].dropna().iloc[-1]) if "VIX_VXV" in frame_g.columns and not frame_g["VIX_VXV"].dropna().empty else np.nan
+        add_risk("red", "G模块 (风险偏好): 风险厌恶升温", f"VIX={vix_val:.1f} / VIX/VXV={term_val:.2f}。", "VIX 回落至 20 以下且 VIX/VXV 低于 0.95。")
+
+    critical = len([item for item in items if item["level"] == "red"])
+    return {"items": items, "criticalCount": critical, "totalCount": len(items)}
 
 
 def _module_description(module_id: str, latest_raw: pd.Series, score: float) -> str:
@@ -740,6 +1165,7 @@ def build_macro_payload() -> Dict[str, Any]:
     module_cards: List[Dict[str, Any]] = []
     module_details: Dict[str, Any] = {}
     contributors: List[Dict[str, Any]] = []
+    module_scores: Dict[str, float] = {}
 
     for item in MODULE_META:
         module_id = item["id"]
@@ -758,6 +1184,7 @@ def build_macro_payload() -> Dict[str, Any]:
         wow_change = latest_score - _prev_value(series, days=7)
 
         description = _module_description(module_id, latest_raw, latest_score)
+        module_scores[module_id] = latest_score
 
         module_cards.append(
             {
@@ -798,9 +1225,17 @@ def build_macro_payload() -> Dict[str, Any]:
             "scoreSeries": score_points,
             "auxiliarySeries": _build_module_auxiliary(module_id, module_frame, score_points),
             "glossary": MODULE_GLOSSARY.get(slug, []),
+            "glossaryHtml": _extract_glossary_html(slug),
+            "rawTable": _build_raw_table(module_frame, score_points),
         }
 
     contributors = sorted(contributors, key=lambda x: abs(x["delta"]), reverse=True)[:6]
+    lift_drag = _build_lift_drag(module_frames)
+    heatmap = _build_dashboard_heatmap(module_frames, df_all)
+    regime = _build_regime_view(df_all)
+    market_board = _build_market_board(df_all)
+    reference_panels = _build_reference_panels(df_all, total_series)
+    risk_radar = _build_risk_radar(df_all, module_frames, module_scores)
 
     # status tags
     tga = _safe_float(latest_raw.get("WTREGEN", np.nan))
@@ -883,6 +1318,12 @@ def build_macro_payload() -> Dict[str, Any]:
             "scoreSeries": _series_points(total_series, limit=260),
             "contributors": contributors,
             "realtimeSnapshots": realtime_snapshots,
+            "liftDrag": lift_drag,
+            "heatmap": heatmap,
+            "regime": regime,
+            "marketBoard": market_board,
+            "referencePanels": reference_panels,
+            "riskRadar": risk_radar,
         },
         "modules": module_details,
     }

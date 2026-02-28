@@ -18,13 +18,15 @@ type LineScoreChartProps = {
   color?: string;
   yDomain?: [number, number] | ["dataMin", "dataMax"];
   valueFormatter?: (value: number) => string;
+  height?: number;
 };
 
 export const LineScoreChart = ({
   data,
   color = "#2563eb",
   yDomain = [0, 100],
-  valueFormatter
+  valueFormatter,
+  height = 300,
 }: LineScoreChartProps) => {
   const [mounted, setMounted] = useState(false);
 
@@ -33,11 +35,11 @@ export const LineScoreChart = ({
   }, []);
 
   if (!mounted) {
-    return <div className="h-[300px] w-full" />;
+    return <div className="w-full" style={{ height }} />;
   }
 
   return (
-    <div className="h-[300px] w-full">
+    <div className="w-full" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={data} margin={{ top: 10, right: 8, left: -20, bottom: 6 }}>
           <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />

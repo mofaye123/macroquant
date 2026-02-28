@@ -1,12 +1,14 @@
 "use client";
 
-import { ChevronRight, Database, FileText } from "lucide-react";
+import { Database, FileText } from "lucide-react";
 
+import { LineScoreChart } from "@/components/charts/line-score-chart";
 import { MultiLineChart } from "@/components/charts/multi-line-chart";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionTitle } from "@/components/ui/section-title";
 import { SnapshotTile } from "@/components/ui/snapshot-tile";
 import { SurfaceCard } from "@/components/ui/surface-card";
+import { legacyGlossaryHtmlByModule } from "@/lib/legacy-glossary-html";
 import { ModulePageData } from "@/lib/types";
 import { MacroDataState } from "@/lib/use-macro-data";
 import { formatSigned, scoreTone } from "@/lib/utils";
@@ -20,6 +22,15 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
   const latest = data.scoreSeries[data.scoreSeries.length - 1]?.value ?? 50;
   const previous = data.scoreSeries[data.scoreSeries.length - 2]?.value ?? latest;
   const change = latest - previous;
+  const overlays = data.auxiliarySeries.filter((series) => series.name !== "Baseline");
+  const glossaryHtml = data.glossaryHtml || legacyGlossaryHtmlByModule[data.moduleId.toLowerCase()] || "";
+  const rawTable = data.rawTable ?? {
+    columns: ["Date", "Total_Score"],
+    rows: data.scoreSeries
+      .slice(-12)
+      .reverse()
+      .map((point) => [point.date, Number(point.value.toFixed(2))]),
+  };
 
   return (
     <AppShell dataState={dataState}>
@@ -59,6 +70,20 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
           </SurfaceCard>
         </div>
 
+        {overlays.length > 0 && (
+          <SurfaceCard>
+            <SectionTitle title="因子趋势图" />
+            <div className="mt-[12px] grid gap-[12px] xl:grid-cols-2">
+              {overlays.map((series) => (
+                <div key={series.name} className="rounded-[14px] border border-app-border bg-white p-[12px]">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-app-muted">{series.name}</p>
+                  <LineScoreChart data={series.points} color={series.color} yDomain={["dataMin", "dataMax"]} height={180} />
+                </div>
+              ))}
+            </div>
+          </SurfaceCard>
+        )}
+
         <SurfaceCard>
           <SectionTitle title="因子细分得分" />
           <div className="mt-[10px] overflow-x-auto">
@@ -83,7 +108,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                           <span className="h-[6px] w-[80px] rounded-full bg-white">
                             <span
                               className={`block h-full rounded-full ${rowTone.bar}`}
-                              style={{ width: `${factor.score}%` }}
+                              style={{ width: `${Math.max(0, Math.min(100, factor.score))}%` }}
                             />
                           </span>
                         </div>
@@ -104,58 +129,67 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
           </div>
         </SurfaceCard>
 
-        <div className="grid gap-[14px] lg:grid-cols-2">
+        <div className="grid gap-[14px] xl:grid-cols-[1.15fr_0.85fr]">
           <SurfaceCard>
-            <SectionTitle title="模块因子定义" />
-            <div className="mt-[10px] space-y-[9px]">
-              {data.glossary.map((item) => (
-                <div key={item.term} className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
-                  <p className="text-[13px] font-bold text-app-text">{item.term}</p>
-                  <p className="mt-[4px] text-[12px] leading-relaxed text-app-muted">{item.definition}</p>
-                  <p className="mt-[4px] inline-flex items-center gap-[5px] text-[11px] font-semibold text-blue-700">
-                    <ChevronRight className="h-[12px] w-[12px]" />
-                    {item.signal}
-                  </p>
-                </div>
-              ))}
-            </div>
-          </SurfaceCard>
-
-          <SurfaceCard className="space-y-[10px]">
-            <SectionTitle title="扩展面板" />
-            <details className="rounded-[12px] border border-slate-200 bg-white p-[10px]">
+            <SectionTitle title="因子专业定义与量化逻辑" />
+            <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]" open>
               <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
                 <FileText className="h-[14px] w-[14px]" />
-                点击查看专业逻辑说明
+                展开查看完整百科内容
               </summary>
-              <p className="mt-[8px] text-[12px] leading-relaxed text-app-muted">
-                本页使用 Next.js 前端渲染，模块得分、因子、快照由 Python API 输出并实时更新。
-              </p>
+              {glossaryHtml ? (
+                <div
+                  className="legacy-glossary mt-[10px]"
+                  dangerouslySetInnerHTML={{ __html: glossaryHtml }}
+                />
+              ) : (
+                <div className="mt-[10px] space-y-[9px]">
+                  {data.glossary.map((item) => (
+                    <div key={item.term} className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
+                      <p className="text-[13px] font-bold text-app-text">{item.term}</p>
+                      <p className="mt-[4px] text-[12px] leading-relaxed text-app-muted">{item.definition}</p>
+                      <p className="mt-[4px] text-[11px] font-semibold text-blue-700">{item.signal}</p>
+                    </div>
+                  ))}
+                </div>
+              )}
             </details>
+          </SurfaceCard>
 
-            <details className="rounded-[12px] border border-slate-200 bg-white p-[10px]">
+          <SurfaceCard>
+            <SectionTitle title="原始数据明细" />
+            <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]" open>
               <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
                 <Database className="h-[14px] w-[14px]" />
-                查看原始数据样例
+                查看完整原始数据表（最近 12 期）
               </summary>
-              <div className="mt-[8px] overflow-auto rounded-[10px] border border-slate-100">
-                <table className="w-full text-[11px]">
+              {!data.rawTable && (
+                <div className="mt-[10px] rounded-[10px] border border-amber-200 bg-amber-50 p-[10px] text-[12px] leading-relaxed text-amber-900">
+                  当前静态快照还是旧版结构，只保留了模块得分时间序列，没有把各模块的完整原始列序列写进 JSON。
+                  所以这里暂时只能展示分数序列样例。要看到你截图那种完整原始数据明细，需要重新生成一次新的静态快照。
+                </div>
+              )}
+              <div className="mt-[10px] overflow-auto rounded-[10px] border border-slate-100">
+                <table className="w-full min-w-[720px] text-[11px]">
                   <thead className="bg-slate-50 text-app-muted">
                     <tr>
-                      <th className="px-[8px] py-[6px] text-left">Date</th>
-                      <th className="px-[8px] py-[6px] text-left">Total Score</th>
+                      {rawTable.columns.map((column) => (
+                        <th key={column} className="px-[8px] py-[6px] text-left font-semibold">
+                          {column}
+                        </th>
+                      ))}
                     </tr>
                   </thead>
                   <tbody>
-                    {data.scoreSeries
-                      .slice(-8)
-                      .reverse()
-                      .map((point) => (
-                        <tr key={point.date} className="border-t border-slate-100">
-                          <td className="px-[8px] py-[6px]">{point.date}</td>
-                          <td className="px-[8px] py-[6px]">{point.value.toFixed(2)}</td>
-                        </tr>
-                      ))}
+                    {rawTable.rows.map((row, rowIndex) => (
+                      <tr key={`row-${rowIndex}`} className="border-t border-slate-100">
+                        {row.map((cell, cellIndex) => (
+                          <td key={`cell-${rowIndex}-${cellIndex}`} className="px-[8px] py-[6px] whitespace-nowrap">
+                            {cell === null ? "-" : cell}
+                          </td>
+                        ))}
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>

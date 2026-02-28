@@ -33,6 +33,11 @@ export type SnapshotItem = {
   state: "positive" | "negative" | "neutral";
 };
 
+export type RawTable = {
+  columns: string[];
+  rows: (string | number | null)[][];
+};
+
 export type ModulePageData = {
   moduleId: ModuleMeta["id"];
   title: string;
@@ -43,6 +48,8 @@ export type ModulePageData = {
   scoreSeries: TrendPoint[];
   auxiliarySeries: { name: string; points: TrendPoint[]; color: string }[];
   glossary: { term: string; definition: string; signal: string }[];
+  glossaryHtml?: string;
+  rawTable?: RawTable;
 };
 
 export type BacktestAsset = {
@@ -66,6 +73,55 @@ export type DashboardPayload = {
   scoreSeries: TrendPoint[];
   contributors: { name: string; delta: number; bucket: string }[];
   realtimeSnapshots: SnapshotItem[];
+  liftDrag?: {
+    lifts: { name: string; delta: number; bucket: string }[];
+    drags: { name: string; delta: number; bucket: string }[];
+    summary: {
+      level: number;
+      flow: number;
+      penalty: number;
+      structural: number;
+      driver: string;
+    };
+  };
+  heatmap?: {
+    weeks: string[];
+    rows: { label: string; cells: { week: string; score: number; bucket: "critical" | "warning" | "stable" | "strong" }[] }[];
+  };
+  regime?: {
+    current: string | null;
+    growthZ: number | null;
+    inflationZ: number | null;
+    lastSwitch: string | null;
+    timeline: { date: string; regime: string }[];
+  };
+  marketBoard?: {
+    cards: { title: string; headline: string; detail: string }[];
+    verdicts: string[];
+    rawRows: { asset: string; value: number | null; delta: string }[];
+  };
+  referencePanels?: {
+    liquidityMonitor: {
+      status: { label: string; tone: "positive" | "negative" | "neutral"; score: number };
+      series: {
+        tga: TrendPoint[];
+        sofr: TrendPoint[];
+        srf: TrendPoint[];
+      };
+    };
+    truthTest: {
+      series: {
+        score: TrendPoint[];
+        spx: TrendPoint[];
+        btc: TrendPoint[];
+      };
+    };
+  };
+  riskRadar?: {
+    items: { level: string; title: string; trigger: string; off: string }[];
+    criticalCount: number;
+    totalCount: number;
+  };
 };
 
 export type MacroApiPayload = {
