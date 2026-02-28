@@ -51,10 +51,12 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
           </div>
         </header>
 
-        <div className="grid gap-[14px] xl:grid-cols-[1.25fr_1fr]">
+        <div className="grid gap-[14px] xl:grid-cols-[minmax(0,1fr)_340px]">
           <SurfaceCard>
             <SectionTitle title="模块得分趋势" />
-            <MultiLineChart main={data.scoreSeries} overlays={data.auxiliarySeries} />
+            <div className="mt-[12px] mx-auto w-full max-w-[860px]">
+              <MultiLineChart main={data.scoreSeries} overlays={data.auxiliarySeries} />
+            </div>
           </SurfaceCard>
 
           <SurfaceCard>
@@ -76,11 +78,11 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
         {overlays.length > 0 && (
           <SurfaceCard>
             <SectionTitle title="因子趋势图" />
-            <div className="mt-[12px] grid gap-[12px] xl:grid-cols-2">
+            <div className="mt-[12px] grid gap-[12px] lg:grid-cols-2 2xl:grid-cols-3">
               {overlays.map((series) => (
                 <div key={series.name} className="rounded-[14px] border border-app-border bg-white p-[12px]">
                   <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-app-muted">{series.name}</p>
-                  <LineScoreChart data={series.points} color={series.color} yDomain={["dataMin", "dataMax"]} height={180} />
+                  <LineScoreChart data={series.points} color={series.color} yDomain={["dataMin", "dataMax"]} height={150} />
                 </div>
               ))}
             </div>
@@ -134,7 +136,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
 
         <SurfaceCard>
           <SectionTitle title="因子专业定义与量化逻辑" />
-          <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]" open>
+          <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]">
             <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
               <FileText className="h-[14px] w-[14px]" />
               {`📚 ${data.moduleId.toUpperCase()}模块：因子专业定义与市场逻辑（点击展开）`}
@@ -160,7 +162,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
 
         <SurfaceCard>
           <SectionTitle title="原始数据明细" />
-          <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]" open>
+          <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]">
             <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
               <Database className="h-[14px] w-[14px]" />
               查看完整原始数据表（最近 12 期）
@@ -171,7 +173,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                 所以这里暂时只能展示分数序列样例。要看到你截图那种完整原始数据明细，需要重新生成一次新的静态快照。
               </div>
             )}
-            <div className="mt-[10px] overflow-auto rounded-[10px] border border-slate-100">
+            <div className="mt-[10px] max-h-[460px] overflow-auto rounded-[10px] border border-slate-100">
               <table className="w-full min-w-[720px] text-[11px]">
                 <thead className="bg-slate-50 text-app-muted">
                   <tr>

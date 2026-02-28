@@ -227,6 +227,41 @@ export default function HomePage() {
                   );
                 })}
               </div>
+              <div className="mt-[16px] grid gap-[12px] lg:grid-cols-2">
+                <div className="rounded-[14px] border border-app-border bg-slate-50 p-[14px]">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-app-muted">Score Lift</p>
+                  <p className="mt-[4px] text-[13px] text-app-muted">改善总分</p>
+                  <div className="mt-[12px] divide-y divide-dashed divide-slate-200">
+                    {liftDrag.lifts.length > 0 ? (
+                      liftDrag.lifts.map((item) => (
+                        <div key={`lift-${item.name}`} className="flex items-center justify-between py-[10px] text-[13px]">
+                          <span className="font-medium text-app-text">{item.name}</span>
+                          <span className="font-bold text-app-success">▲ {Math.abs(item.delta).toFixed(1)} pts</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="py-[10px] text-[12px] text-app-muted">本周暂无明显正向抬升。</div>
+                    )}
+                  </div>
+                </div>
+
+                <div className="rounded-[14px] border border-app-border bg-slate-50 p-[14px]">
+                  <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-app-muted">Score Drag</p>
+                  <p className="mt-[4px] text-[13px] text-app-muted">拖累总分</p>
+                  <div className="mt-[12px] divide-y divide-dashed divide-slate-200">
+                    {liftDrag.drags.length > 0 ? (
+                      liftDrag.drags.map((item) => (
+                        <div key={`drag-${item.name}`} className="flex items-center justify-between py-[10px] text-[13px]">
+                          <span className="font-medium text-app-text">{item.name}</span>
+                          <span className="font-bold text-app-danger">▼ {Math.abs(item.delta).toFixed(1)} pts</span>
+                        </div>
+                      ))
+                    ) : (
+                      <div className="py-[10px] text-[12px] text-app-muted">本周暂无明显负向拖累。</div>
+                    )}
+                  </div>
+                </div>
+              </div>
             </div>
           </SurfaceCard>
 
