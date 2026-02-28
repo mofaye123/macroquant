@@ -118,7 +118,7 @@ npx wrangler login
 npm run cf:deploy
 ```
 
-> 首次使用 `cf:deploy` 前，请把 `package.json` 里的 `--project-name macroquant-ui` 改成你自己的 Pages 项目名。
+> 默认 Pages 项目名现在是 `macroquant`。如果你使用的是别的项目名，请改成你自己的 Pages 项目名。
 
 如果你希望“先现场生成最新快照，再立刻部署”：
 

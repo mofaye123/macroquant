@@ -10,7 +10,7 @@
     "build:static": "npm run data:generate && npm run build:cf",
     "start": "next start",
     "lint": "next lint",
-    "cf:deploy": "npm run build:cf && wrangler pages deploy out --project-name ${CF_PAGES_PROJECT_NAME:-macroquant-ui} --commit-dirty=true",
+    "cf:deploy": "npm run build:cf && wrangler pages deploy out --project-name ${CF_PAGES_PROJECT_NAME:-macroquant} --commit-dirty=true",
     "cf:deploy:fresh": "npm run data:generate && npm run cf:deploy"
   },
   "dependencies": {
