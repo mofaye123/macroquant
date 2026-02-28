@@ -1,7 +1,5 @@
 "use client";
 
-import { useState } from "react";
-
 import { AlertTriangle, ArrowUpRight, Sparkles } from "lucide-react";
 
 import { LiquidityReferenceChart, TruthReferenceChart } from "@/components/charts/reference-panels";
@@ -107,9 +105,6 @@ export default function HomePage() {
   const riskRadar = dashboard.riskRadar;
   const topMoverRows = deriveTopMoverRows(dashboard);
   const realtimeTiles = (dashboard.realtimeSnapshots ?? []).slice(0, 4);
-  const [hoveredHeatmap, setHoveredHeatmap] = useState<{ label: string; week: string; score: number } | null>(null);
-  const [hoveredRegime, setHoveredRegime] = useState<{ date: string; regime: string } | null>(null);
-
   const scoreRingStyle = {
     background: `conic-gradient(#2563eb ${(overallScore.value / 100) * 360}deg, #e2e8f0 0deg)`,
   };
@@ -189,18 +184,21 @@ export default function HomePage() {
                       style={{ gridTemplateColumns: "180px 1fr" }}
                     >
                       <p className="truncate text-[14px] font-medium text-app-muted">{row.label}</p>
-                      <div className="relative h-[56px] rounded-[12px] border border-slate-100 bg-slate-50/80">
+                      <div className="group relative h-[56px] rounded-[12px] border border-slate-100 bg-slate-50/80">
                         <div className="absolute left-1/2 top-[8px] bottom-[8px] w-px bg-slate-300" />
+                        <div className="pointer-events-none absolute left-1/2 top-[-34px] z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-[10px] border border-slate-200 bg-white px-[8px] py-[4px] text-[11px] font-semibold text-app-text shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] group-hover:block">
+                          {`${row.label} · ${formatSigned(row.change)}`}
+                        </div>
                         <div
                           className={cn(
-                            "absolute top-[8px] bottom-[8px] rounded-[10px]",
+                            "absolute top-[8px] bottom-[8px] rounded-[10px] transition-transform duration-150 ease-out group-hover:scale-y-110",
                             positive ? "left-1/2 bg-[#5fb886]" : "right-1/2 bg-[#db574a]"
                           )}
                           style={{ width: `calc(${(row.widthPct / 2).toFixed(2)}% - 4px)` }}
                         />
                         <span
                           className={cn(
-                            "absolute top-1/2 -translate-y-1/2 text-[12px] font-bold",
+                            "absolute top-1/2 -translate-y-1/2 text-[12px] font-bold transition-transform duration-150 ease-out group-hover:scale-110",
                             positive ? "left-[calc(50%+10px)] text-app-success" : "right-[calc(50%+10px)] text-app-danger"
                           )}
                         >
@@ -358,11 +356,6 @@ export default function HomePage() {
         {heatmap && heatmap.rows.length > 0 && (
           <SurfaceCard>
             <SectionTitle title="模块状态热力图（周频）" />
-            <div className="mt-[12px] rounded-[12px] border border-app-border bg-slate-50 px-[12px] py-[10px] text-[12px] text-app-muted">
-              {hoveredHeatmap
-                ? `${hoveredHeatmap.label} · ${hoveredHeatmap.week} · ${hoveredHeatmap.score.toFixed(1)}`
-                : "鼠标悬停在色块上查看对应周度分数"}
-            </div>
             <div className="mt-[16px] space-y-[10px] overflow-x-auto">
               {heatmap.rows.map((row) => (
                 <div key={row.label} className="grid min-w-[840px] grid-cols-[160px_1fr] items-center gap-[12px]">
@@ -371,15 +364,19 @@ export default function HomePage() {
                     {row.cells.map((cell) => (
                       <div
                         key={`${row.label}-${cell.week}`}
-                        className={cn(
-                          "h-[28px] rounded-[6px] transition-transform duration-150 ease-out",
-                          HEATMAP_COLORS[cell.bucket],
-                          hoveredHeatmap?.label === row.label && hoveredHeatmap?.week === cell.week && "scale-110 ring-2 ring-slate-300"
-                        )}
-                        title={`${cell.week} · ${cell.score}`}
-                        onMouseEnter={() => setHoveredHeatmap({ label: row.label, week: cell.week, score: cell.score })}
-                        onMouseLeave={() => setHoveredHeatmap(null)}
-                      />
+                        className="group relative"
+                      >
+                        <div
+                          className={cn(
+                            "h-[28px] rounded-[6px] transition-transform duration-150 ease-out group-hover:scale-110 group-hover:ring-2 group-hover:ring-slate-300",
+                            HEATMAP_COLORS[cell.bucket]
+                          )}
+                          title={`${cell.week} · ${cell.score}`}
+                        />
+                        <div className="pointer-events-none absolute left-1/2 top-[-34px] z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-[10px] border border-slate-200 bg-white px-[8px] py-[4px] text-[11px] font-semibold text-app-text shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] group-hover:block">
+                          {`${row.label} · ${cell.week} · ${cell.score.toFixed(1)}`}
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>
@@ -404,24 +401,23 @@ export default function HomePage() {
                 <p className="mt-[10px] text-[14px] text-app-text">增长动能 Z: <span className="font-bold">{regime.growthZ?.toFixed(2)}</span></p>
                 <p className="mt-[8px] text-[14px] text-app-text">通胀压力 Z: <span className="font-bold">{regime.inflationZ?.toFixed(2)}</span></p>
                 <p className="mt-[14px] text-[13px] text-app-muted">{regime.lastSwitch}</p>
-                <div className="mt-[14px] rounded-[12px] border border-app-border bg-slate-50 px-[12px] py-[10px] text-[12px] text-app-muted">
-                  {hoveredRegime ? `悬停查看: ${hoveredRegime.date} · ${hoveredRegime.regime}` : "鼠标悬停在色块上查看对应月份状态"}
-                </div>
               </div>
               <div>
                 <div className="grid gap-[5px]" style={{ gridTemplateColumns: `repeat(${regime.timeline.length}, minmax(0, 1fr))` }}>
                   {regime.timeline.map((item) => (
                     <div key={item.date} className="space-y-[4px]">
-                      <div
-                        className={cn(
-                          "h-[68px] rounded-[6px] transition-transform duration-150 ease-out",
-                          REGIME_COLORS[item.regime] ?? "bg-slate-200",
-                          hoveredRegime?.date === item.date && "scale-110 ring-2 ring-slate-300"
-                        )}
-                        title={`${item.date} · ${item.regime}`}
-                        onMouseEnter={() => setHoveredRegime({ date: item.date, regime: item.regime })}
-                        onMouseLeave={() => setHoveredRegime(null)}
-                      />
+                      <div className="group relative">
+                        <div
+                          className={cn(
+                            "h-[68px] rounded-[6px] transition-transform duration-150 ease-out group-hover:scale-110 group-hover:ring-2 group-hover:ring-slate-300",
+                            REGIME_COLORS[item.regime] ?? "bg-slate-200"
+                          )}
+                          title={`${item.date} · ${item.regime}`}
+                        />
+                        <div className="pointer-events-none absolute left-1/2 top-[-34px] z-10 hidden -translate-x-1/2 whitespace-nowrap rounded-[10px] border border-slate-200 bg-white px-[8px] py-[4px] text-[11px] font-semibold text-app-text shadow-[0_10px_24px_-16px_rgba(15,23,42,0.45)] group-hover:block">
+                          {`${item.date} · ${item.regime}`}
+                        </div>
+                      </div>
                     </div>
                   ))}
                 </div>
