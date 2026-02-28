@@ -4,7 +4,7 @@ import { ReactNode } from "react";
 import "@/app/globals.css";
 
 export const metadata: Metadata = {
-  title: "MacroQuant UI",
+  title: "MacroQuant",
   description: "MacroQuant dashboard rebuilt with Next.js + Tailwind for Cloudflare"
 };
 
