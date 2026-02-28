@@ -1,5 +1,7 @@
 "use client";
 
+import { useMemo } from "react";
+
 import { Database, FileText } from "lucide-react";
 
 import { LineScoreChart } from "@/components/charts/line-score-chart";
@@ -24,6 +26,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
   const change = latest - previous;
   const overlays = data.auxiliarySeries.filter((series) => series.name !== "Baseline");
   const glossaryHtml = data.glossaryHtml || legacyGlossaryHtmlByModule[data.moduleId.toLowerCase()] || "";
+  const normalizedGlossaryHtml = useMemo(() => stripLegacyGlossaryInlineStyles(glossaryHtml), [glossaryHtml]);
   const rawTable = data.rawTable ?? {
     columns: ["Date", "Total_Score"],
     rows: data.scoreSeries
@@ -129,74 +132,77 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
           </div>
         </SurfaceCard>
 
-        <div className="grid gap-[14px] xl:grid-cols-[1.15fr_0.85fr]">
-          <SurfaceCard>
-            <SectionTitle title="因子专业定义与量化逻辑" />
-            <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]" open>
-              <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
-                <FileText className="h-[14px] w-[14px]" />
-                展开查看完整百科内容
-              </summary>
-              {glossaryHtml ? (
-                <div
-                  className="legacy-glossary mt-[10px]"
-                  dangerouslySetInnerHTML={{ __html: glossaryHtml }}
-                />
-              ) : (
-                <div className="mt-[10px] space-y-[9px]">
-                  {data.glossary.map((item) => (
-                    <div key={item.term} className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
-                      <p className="text-[13px] font-bold text-app-text">{item.term}</p>
-                      <p className="mt-[4px] text-[12px] leading-relaxed text-app-muted">{item.definition}</p>
-                      <p className="mt-[4px] text-[11px] font-semibold text-blue-700">{item.signal}</p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </details>
-          </SurfaceCard>
+        <SurfaceCard>
+          <SectionTitle title="因子专业定义与量化逻辑" />
+          <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]" open>
+            <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
+              <FileText className="h-[14px] w-[14px]" />
+              {`📚 ${data.moduleId.toUpperCase()}模块：因子专业定义与市场逻辑（点击展开）`}
+            </summary>
+            {normalizedGlossaryHtml ? (
+              <div
+                className="legacy-glossary mt-[12px]"
+                dangerouslySetInnerHTML={{ __html: normalizedGlossaryHtml }}
+              />
+            ) : (
+              <div className="mt-[10px] space-y-[9px]">
+                {data.glossary.map((item) => (
+                  <div key={item.term} className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
+                    <p className="text-[13px] font-bold text-app-text">{item.term}</p>
+                    <p className="mt-[4px] text-[12px] leading-relaxed text-app-muted">{item.definition}</p>
+                    <p className="mt-[4px] text-[11px] font-semibold text-blue-700">{item.signal}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </details>
+        </SurfaceCard>
 
-          <SurfaceCard>
-            <SectionTitle title="原始数据明细" />
-            <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]" open>
-              <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
-                <Database className="h-[14px] w-[14px]" />
-                查看完整原始数据表（最近 12 期）
-              </summary>
-              {!data.rawTable && (
-                <div className="mt-[10px] rounded-[10px] border border-amber-200 bg-amber-50 p-[10px] text-[12px] leading-relaxed text-amber-900">
-                  当前静态快照还是旧版结构，只保留了模块得分时间序列，没有把各模块的完整原始列序列写进 JSON。
-                  所以这里暂时只能展示分数序列样例。要看到你截图那种完整原始数据明细，需要重新生成一次新的静态快照。
-                </div>
-              )}
-              <div className="mt-[10px] overflow-auto rounded-[10px] border border-slate-100">
-                <table className="w-full min-w-[720px] text-[11px]">
-                  <thead className="bg-slate-50 text-app-muted">
-                    <tr>
-                      {rawTable.columns.map((column) => (
-                        <th key={column} className="px-[8px] py-[6px] text-left font-semibold">
-                          {column}
-                        </th>
+        <SurfaceCard>
+          <SectionTitle title="原始数据明细" />
+          <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]" open>
+            <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
+              <Database className="h-[14px] w-[14px]" />
+              查看完整原始数据表（最近 12 期）
+            </summary>
+            {!data.rawTable && (
+              <div className="mt-[10px] rounded-[10px] border border-amber-200 bg-amber-50 p-[10px] text-[12px] leading-relaxed text-amber-900">
+                当前静态快照还是旧版结构，只保留了模块得分时间序列，没有把各模块的完整原始列序列写进 JSON。
+                所以这里暂时只能展示分数序列样例。要看到你截图那种完整原始数据明细，需要重新生成一次新的静态快照。
+              </div>
+            )}
+            <div className="mt-[10px] overflow-auto rounded-[10px] border border-slate-100">
+              <table className="w-full min-w-[720px] text-[11px]">
+                <thead className="bg-slate-50 text-app-muted">
+                  <tr>
+                    {rawTable.columns.map((column) => (
+                      <th key={column} className="px-[8px] py-[6px] text-left font-semibold">
+                        {column}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {rawTable.rows.map((row, rowIndex) => (
+                    <tr key={`row-${rowIndex}`} className="border-t border-slate-100">
+                      {row.map((cell, cellIndex) => (
+                        <td key={`cell-${rowIndex}-${cellIndex}`} className="px-[8px] py-[6px] whitespace-nowrap">
+                          {cell === null ? "-" : cell}
+                        </td>
                       ))}
                     </tr>
-                  </thead>
-                  <tbody>
-                    {rawTable.rows.map((row, rowIndex) => (
-                      <tr key={`row-${rowIndex}`} className="border-t border-slate-100">
-                        {row.map((cell, cellIndex) => (
-                          <td key={`cell-${rowIndex}-${cellIndex}`} className="px-[8px] py-[6px] whitespace-nowrap">
-                            {cell === null ? "-" : cell}
-                          </td>
-                        ))}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </details>
-          </SurfaceCard>
-        </div>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </details>
+        </SurfaceCard>
       </div>
     </AppShell>
   );
 };
+
+const stripLegacyGlossaryInlineStyles = (html: string): string =>
+  html
+    .replace(/\sstyle="[^"]*"/g, "")
+    .replace(/<br\s*\/?>\s*<br\s*\/?>/gi, "<br>");
