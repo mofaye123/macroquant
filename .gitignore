@@ -1,0 +1,29 @@
+.DS_Store
+
+# Python bytecode and caches
+__pycache__/
+*.py[cod]
+*$py.class
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Python virtual environments
+.venv/
+venv/
+env/
+ENV/
+
+# Local environment files
+.env
+.env.local
+.env.*.local
+
+# Next.js / Node
+web/node_modules/
+web/.next/
+web/out/
+
+# Tooling
+.wrangler/
+
