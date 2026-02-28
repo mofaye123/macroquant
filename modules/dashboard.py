@@ -15,6 +15,8 @@ from google import genai
 
 # --- [核心功能]：AI 调用函数 (使用 google-genai SDK) ---
 def call_gemini_new_sdk(prompt, api_key):
+        if not api_key:
+            raise ValueError("GEMINI_API_KEY is not configured.")
         client = genai.Client(api_key=api_key, http_options={'api_version': 'v1alpha'})
  
         response = client.models.generate_content(
@@ -1692,8 +1694,11 @@ def render_dashboard_standalone(df_all):
             6. 风格：专业、犀利、数据驱动
             """
 
-            raw_ai_report = call_gemini_new_sdk(prompt, GEMINI_API_KEY)
-            st.session_state.ai_report = normalize_report_date(raw_ai_report, report_cutoff_date)
+            try:
+                raw_ai_report = call_gemini_new_sdk(prompt, GEMINI_API_KEY)
+                st.session_state.ai_report = normalize_report_date(raw_ai_report, report_cutoff_date)
+            except ValueError as exc:
+                st.error(str(exc))
         st.session_state.ai_request = False
 
     if st.session_state.ai_report:

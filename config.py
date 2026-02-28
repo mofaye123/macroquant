@@ -1,12 +1,14 @@
 # config.py
+import os
+
 import streamlit as st
 
 # ==========================================
 # 0. 核心配置API
 # ==========================================
-API_KEY = '7b5f4a9521fb6f976fa127a07393e8d4'
+API_KEY = os.getenv("FRED_API_KEY", "")
 
-GEMINI_API_KEY = 'AIzaSyCEWwTbbgzqZlVNhRdQsI5vFS9PBxm0nTU'
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "")
 
 
 # FRED Series IDs
