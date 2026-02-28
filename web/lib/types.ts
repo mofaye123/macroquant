@@ -49,6 +49,7 @@ export type ModulePageData = {
   auxiliarySeries: { name: string; points: TrendPoint[]; color: string }[];
   glossary: { term: string; definition: string; signal: string }[];
   glossaryHtml?: string;
+  specialSeries?: Record<string, TrendPoint[]>;
   rawTable?: RawTable;
 };
 

@@ -4,6 +4,7 @@ import { useMemo } from "react";
 
 import { Database, FileText } from "lucide-react";
 
+import { ModuleADetailPanels, ModuleBDetailPanels } from "@/components/charts/module-detail-panels";
 import { LineScoreChart } from "@/components/charts/line-score-chart";
 import { MultiLineChart } from "@/components/charts/multi-line-chart";
 import { AppShell } from "@/components/layout/app-shell";
@@ -32,6 +33,8 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
   );
   const glossaryHtml = data.glossaryHtml || legacyGlossaryHtmlByModule[data.moduleId.toLowerCase()] || "";
   const normalizedGlossaryHtml = useMemo(() => stripLegacyGlossaryInlineStyles(glossaryHtml), [glossaryHtml]);
+  const showSpecialAPanels = data.moduleId === "A" && Boolean(data.specialSeries?.score?.length);
+  const showSpecialBPanels = data.moduleId === "B" && Boolean(data.specialSeries?.score?.length);
   const snapshots = useMemo(() => {
     const sanitized = data.snapshots.filter((item) => !/最新更新时间|generatedat|snapshotat|分数状态/i.test(item.label));
     return [
@@ -105,7 +108,17 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
           </SurfaceCard>
         </div>
 
-        {overlays.length > 0 && (
+        {(showSpecialAPanels || showSpecialBPanels) && (
+          <SurfaceCard>
+            <SectionTitle title={showSpecialAPanels ? "A模块关键图表" : "B模块关键图表"} />
+            <div className="mt-[12px]">
+              {showSpecialAPanels ? <ModuleADetailPanels series={data.specialSeries!} /> : null}
+              {showSpecialBPanels ? <ModuleBDetailPanels series={data.specialSeries!} /> : null}
+            </div>
+          </SurfaceCard>
+        )}
+
+        {overlays.length > 0 && !showSpecialAPanels && !showSpecialBPanels && (
           <SurfaceCard>
             <SectionTitle title="因子趋势图" rightSlot={<span className="text-[11px] text-app-muted">统一评分轴: 0 - 100</span>} />
             <p className="mt-[8px] text-[12px] text-app-muted">同样使用 33 / 50 / 66 三条参考线。这样能直接看出因子是偏紧、均衡还是偏松，而不是只看绝对数值。</p>

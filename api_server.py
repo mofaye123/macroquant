@@ -242,6 +242,48 @@ def _build_raw_table(frame: pd.DataFrame, fallback_points: List[Dict[str, Any]])
     return {"columns": columns, "rows": rows}
 
 
+def _build_module_special_series(module_id: str, frame: pd.DataFrame) -> Optional[Dict[str, List[Dict[str, Any]]]]:
+    if frame is None or frame.empty or "Total_Score" not in frame.columns:
+        return None
+
+    if module_id == "A":
+        payload: Dict[str, List[Dict[str, Any]]] = {
+            "score": _series_points(frame["Total_Score"], limit=320),
+        }
+        if "Liquidity_Sink" in frame.columns:
+            payload["sink"] = _series_points(frame["Liquidity_Sink"] / 1000.0, limit=320)
+        if "WTREGEN" in frame.columns:
+            tga_series = frame["WTREGEN"].where(frame["WTREGEN"] <= 10000, frame["WTREGEN"] / 1000.0)
+            payload["tga"] = _series_points(tga_series, limit=320)
+        if "RRP_Clean" in frame.columns:
+            payload["rrp"] = _series_points(frame["RRP_Clean"] / 1000.0, limit=320)
+        return payload
+
+    if module_id == "B":
+        payload = {
+            "score": _series_points(frame["Total_Score"], limit=320),
+        }
+        if "Corridor_Width" in frame.columns:
+            payload["corridor"] = _series_points(frame["Corridor_Width"] * 100.0, limit=320)
+        if "SRF_Weight" in frame.columns:
+            payload["srfWeight"] = _series_points(frame["SRF_Weight"] * 100.0, limit=320)
+        if "SOFR" in frame.columns:
+            payload["sofr"] = _series_points(frame["SOFR"], limit=320)
+        if "IORB" in frame.columns:
+            payload["iorb"] = _series_points(frame["IORB"], limit=320)
+        if "RRPONTSYAWARD" in frame.columns:
+            payload["floor"] = _series_points(frame["RRPONTSYAWARD"], limit=320)
+        if "SOFR_MA13" in frame.columns:
+            payload["sofrMa13"] = _series_points(frame["SOFR_MA13"], limit=320)
+        if "SOFR" in frame.columns and "IORB" in frame.columns:
+            payload["spread"] = _series_points((frame["SOFR"] - frame["IORB"]) * 100.0, limit=320)
+        if "RPONTSYD" in frame.columns:
+            payload["srf"] = _series_points(frame["RPONTSYD"], limit=320)
+        return payload
+
+    return None
+
+
 def _collect_contributor_delta(
     items: List[Dict[str, Any]],
     frame: pd.DataFrame,
@@ -1242,6 +1284,7 @@ def build_macro_payload() -> Dict[str, Any]:
             "auxiliarySeries": _build_module_auxiliary(module_id, module_frame, score_points),
             "glossary": MODULE_GLOSSARY.get(slug, []),
             "glossaryHtml": _extract_glossary_html(slug),
+            "specialSeries": _build_module_special_series(module_id, module_frame),
             "rawTable": _build_raw_table(module_frame, score_points),
         }
 
