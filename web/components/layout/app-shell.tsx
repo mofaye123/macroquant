@@ -41,10 +41,28 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
   const pathname = usePathname();
   const fallbackState = useMacroData({ disabled: Boolean(dataState) });
   const { isLive, isDegraded, payload, error, sourceType } = dataState ?? fallbackState;
+  const formatTimestamp = (iso: string, offsetHours = 0) => {
+    const sourceDate = new Date(iso);
+    if (Number.isNaN(sourceDate.getTime())) {
+      return "N/A";
+    }
+
+    const shiftedDate = new Date(sourceDate.getTime() + offsetHours * 60 * 60 * 1000);
+    const pad = (value: number) => value.toString().padStart(2, "0");
+
+    return [
+      shiftedDate.getUTCFullYear(),
+      pad(shiftedDate.getUTCMonth() + 1),
+      pad(shiftedDate.getUTCDate())
+    ].join("-") + ` ${pad(shiftedDate.getUTCHours())}:${pad(shiftedDate.getUTCMinutes())}:${pad(shiftedDate.getUTCSeconds())}`;
+  };
   const scoreState = describeScoreState(payload.dashboard.overallScore.value);
   const readyModules = payload.dataQuality?.readyModules?.length ?? 0;
   const missingModules = payload.dataQuality?.missingModules?.length ?? 0;
   const servedFromSnapshot = payload.dataQuality?.servedFromSnapshot === true;
+  const latestUpdatedIso = payload.dataQuality?.snapshotGeneratedAt ?? payload.generatedAt;
+  const latestUpdatedUtc = formatTimestamp(latestUpdatedIso, 0);
+  const latestUpdatedUtc8 = formatTimestamp(latestUpdatedIso, 8);
   const sourceLabel = !isLive || sourceType === "mock"
     ? "FALLBACK (Mock)"
     : sourceType === "static"
@@ -78,6 +96,8 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
             )}
           >
             <p className="font-semibold">Data Source: {sourceLabel}</p>
+            <p className="mt-[2px] opacity-90">最新更新时间 (UTC): {latestUpdatedUtc}</p>
+            <p className="mt-[2px] opacity-90">最新更新时间 (UTC+8): {latestUpdatedUtc8}</p>
             <p className="mt-[2px] opacity-90">当前环境: {scoreState.label}</p>
             <p className="mt-[2px] opacity-90">总分状态: {payload.dashboard.overallScore.value.toFixed(1)} / 100 · {scoreState.hint}</p>
             {servedFromSnapshot ? <p className="mt-[2px] opacity-90">交付模式: 静态快照发布</p> : null}
