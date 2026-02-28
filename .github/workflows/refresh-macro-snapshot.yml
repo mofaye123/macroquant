@@ -64,8 +64,7 @@ jobs:
       - name: Parse snapshot status
         id: status
         run: |
-          rm -f _gha_outputs.txt
-          python -c 'import json, sys; from pathlib import Path; status = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8")); Path("_gha_outputs.txt").write_text("".join([f"result={status.get(\"result\", \"error\")}\n", f"message={json.dumps(status.get(\"message\", \"\"), ensure_ascii=False)}\n", f"mode={status.get(\"mode\", \"\")}\n", f"ready_modules={status.get(\"readyModules\", 0)}\n", f"reason={json.dumps(status.get(\"reason\") or \"\", ensure_ascii=False)}\n"]), encoding="utf-8")' "$STATUS_FILE"
+          python scripts/export_snapshot_status_outputs.py "$STATUS_FILE" _gha_outputs.txt
           cat _gha_outputs.txt >> "$GITHUB_OUTPUT"
         env:
           STATUS_FILE: ${{ steps.generate.outputs.status_file }}
@@ -85,8 +84,8 @@ jobs:
         env:
           STATUS_RESULT: ${{ steps.status.outputs.result }}
           STATUS_MODE: ${{ steps.status.outputs.mode }}
-          STATUS_MESSAGE: ${{ fromJson(steps.status.outputs.message) }}
-          STATUS_REASON: ${{ fromJson(steps.status.outputs.reason) }}
+          STATUS_MESSAGE: ${{ steps.status.outputs.message }}
+          STATUS_REASON: ${{ steps.status.outputs.reason }}
           STATUS_READY_MODULES: ${{ steps.status.outputs.ready_modules }}
           GENERATE_EXIT_CODE: ${{ steps.generate.outputs.exit_code }}
         with:
