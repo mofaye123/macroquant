@@ -1078,7 +1078,7 @@ def _build_module_snapshots(
     frame: pd.DataFrame,
     latest_score: float,
     wow_change: float,
-    _updated_date: str,
+    updated_date: str,
 ) -> List[Dict[str, Any]]:
     snapshots: List[Dict[str, Any]] = [
         {

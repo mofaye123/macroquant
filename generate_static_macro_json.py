@@ -59,7 +59,20 @@ def main():
     status_path = Path(args.status_file).expanduser().resolve() if args.status_file else None
     existing_payload = load_existing_payload(output_path)
 
-    payload = build_macro_payload()
+    try:
+        payload = build_macro_payload()
+    except Exception as exc:
+        status = {
+            "result": "error",
+            "outputPath": str(output_path),
+            "mode": None,
+            "readyModules": 0,
+            "reason": None,
+            "message": f"Snapshot generation failed: {exc}",
+        }
+        write_status(status_path, status)
+        print(status["message"], file=sys.stderr)
+        return 1
     payload.setdefault("dataQuality", {})
     payload["dataQuality"]["deliveryMode"] = "static-json"
 
