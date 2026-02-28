@@ -50,16 +50,14 @@ jobs:
           set -e
           echo "exit_code=$exit_code" >> "$GITHUB_OUTPUT"
           if [ ! -f "$STATUS_FILE" ]; then
-            python - <<'PY' > "$STATUS_FILE"
-import json
-print(json.dumps({
-    "result": "error",
-    "message": "Snapshot generator did not produce a status file.",
-    "mode": None,
-    "readyModules": 0,
-    "reason": None,
-}))
-PY
+            printf '%s\n' \
+              '{' \
+              '  "result": "error",' \
+              '  "message": "Snapshot generator did not produce a status file.",' \
+              '  "mode": null,' \
+              '  "readyModules": 0,' \
+              '  "reason": null' \
+              '}' > "$STATUS_FILE"
           fi
           cat "$STATUS_FILE"
 
@@ -67,24 +65,7 @@ PY
         id: status
         run: |
           rm -f _gha_outputs.txt
-          python - "$STATUS_FILE" <<'PY'
-import json
-import sys
-from pathlib import Path
-
-status_path = Path(sys.argv[1])
-status = json.loads(status_path.read_text(encoding="utf-8"))
-
-def emit(name, value):
-    with open(Path.cwd() / "_gha_outputs.txt", "a", encoding="utf-8") as fh:
-        fh.write(f"{name}={value}\n")
-
-emit("result", status.get("result", "error"))
-emit("message", json.dumps(status.get("message", ""), ensure_ascii=False))
-emit("mode", status.get("mode", ""))
-emit("ready_modules", str(status.get("readyModules", 0)))
-emit("reason", json.dumps(status.get("reason") or "", ensure_ascii=False))
-PY
+          python -c 'import json, sys; from pathlib import Path; status = json.loads(Path(sys.argv[1]).read_text(encoding="utf-8")); Path("_gha_outputs.txt").write_text("".join([f"result={status.get(\"result\", \"error\")}\n", f"message={json.dumps(status.get(\"message\", \"\"), ensure_ascii=False)}\n", f"mode={status.get(\"mode\", \"\")}\n", f"ready_modules={status.get(\"readyModules\", 0)}\n", f"reason={json.dumps(status.get(\"reason\") or \"\", ensure_ascii=False)}\n"]), encoding="utf-8")' "$STATUS_FILE"
           cat _gha_outputs.txt >> "$GITHUB_OUTPUT"
         env:
           STATUS_FILE: ${{ steps.generate.outputs.status_file }}
