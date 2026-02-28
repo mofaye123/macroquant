@@ -5,6 +5,7 @@ import {
   CartesianGrid,
   Line,
   LineChart,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -19,6 +20,7 @@ type LineScoreChartProps = {
   yDomain?: [number, number] | ["dataMin", "dataMax"];
   valueFormatter?: (value: number) => string;
   height?: number;
+  showScoreBands?: boolean;
 };
 
 export const LineScoreChart = ({
@@ -27,6 +29,7 @@ export const LineScoreChart = ({
   yDomain = [0, 100],
   valueFormatter,
   height = 300,
+  showScoreBands,
 }: LineScoreChartProps) => {
   const [mounted, setMounted] = useState(false);
 
@@ -37,6 +40,14 @@ export const LineScoreChart = ({
   if (!mounted) {
     return <div className="w-full" style={{ height }} />;
   }
+
+  const shouldShowScoreBands =
+    typeof showScoreBands === "boolean"
+      ? showScoreBands
+      : Array.isArray(yDomain) &&
+        yDomain.length === 2 &&
+        yDomain[0] === 0 &&
+        yDomain[1] === 100;
 
   return (
     <div className="w-full" style={{ height }}>
@@ -68,6 +79,13 @@ export const LineScoreChart = ({
               fontSize: 11
             }}
           />
+          {shouldShowScoreBands && (
+            <>
+              <ReferenceLine y={66} stroke="#16a34a" strokeDasharray="4 4" ifOverflow="extendDomain" />
+              <ReferenceLine y={50} stroke="#94a3b8" strokeDasharray="4 4" ifOverflow="extendDomain" />
+              <ReferenceLine y={33} stroke="#f59e0b" strokeDasharray="4 4" ifOverflow="extendDomain" />
+            </>
+          )}
           <Line
             type="monotone"
             dataKey="value"

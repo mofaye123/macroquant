@@ -146,6 +146,18 @@ def _state_from_delta(delta: float) -> str:
     return "neutral"
 
 
+def _score_state(score: float) -> Dict[str, str]:
+    if score >= 75:
+        return {"label": "极松", "hint": "风险偏好明显回暖", "state": "positive"}
+    if score >= 60:
+        return {"label": "偏松", "hint": "金融条件偏宽松", "state": "positive"}
+    if score >= 45:
+        return {"label": "中性", "hint": "处于均衡区间", "state": "neutral"}
+    if score >= 30:
+        return {"label": "偏紧", "hint": "流动性边际偏紧", "state": "negative"}
+    return {"label": "极紧", "hint": "风险约束显著抬升", "state": "negative"}
+
+
 def _safe_float(value: Any, fallback: float = np.nan) -> float:
     try:
         if pd.isna(value):
@@ -930,7 +942,6 @@ def _build_module_factors(module_id: str, frame: pd.DataFrame, weight_text: str)
             _factor_from_col(frame, "Score_Real_10Y", "10Y Real Rate", "40%"),
             _factor_from_col(frame, "Score_Real_5Y", "5Y Real Rate", "30%"),
             _factor_from_col(frame, "Score_Breakeven", "10Y Breakeven", "30%"),
-            _factor_from_col(frame, "Total_Score", "D Module Total", weight_text),
         ]
     if module_id == "E":
         return [
@@ -938,23 +949,20 @@ def _build_module_factors(module_id: str, frame: pd.DataFrame, weight_text: str)
             _factor_from_col(frame, "Score_DXY", "DXY", "20%"),
             _factor_from_col(frame, "Score_Yen_Total", "Yen / Carry", "30%"),
             _factor_from_col(frame, "Score_Energy", "Energy", "30%"),
-            _factor_from_col(frame, "Total_Score", "E Module Total", weight_text),
         ]
     if module_id == "F":
         return [
             _factor_from_col(frame, "Score_HY_Level", "HY Spread Level", "50%"),
             _factor_from_col(frame, "Score_HY_Trend", "HY Trend", "30%"),
             _factor_from_col(frame, "Score_BAA_Level", "BAA10Y", "20%"),
-            _factor_from_col(frame, "Total_Score", "F Module Total", weight_text),
         ]
     if module_id == "G":
         return [
             _factor_from_col(frame, "Score_Term", "VIX/VXV Term", "40%"),
             _factor_from_col(frame, "Score_VIX", "VIX Level", "30%"),
             _factor_from_col(frame, "Score_Mom", "Risk Momentum", "30%"),
-            _factor_from_col(frame, "Total_Score", "G Module Total", weight_text),
         ]
-    return [_factor_from_col(frame, "Total_Score", "Module Total", weight_text)]
+    return []
 
 
 def _aligned_points(series: pd.Series, base_points: List[Dict[str, Any]], fallback: float = 50.0) -> List[Dict[str, Any]]:
@@ -1028,7 +1036,7 @@ def _build_module_snapshots(
     frame: pd.DataFrame,
     latest_score: float,
     wow_change: float,
-    updated_date: str,
+    _updated_date: str,
 ) -> List[Dict[str, Any]]:
     snapshots: List[Dict[str, Any]] = [
         {
@@ -1077,7 +1085,15 @@ def _build_module_snapshots(
             }
         )
 
-    snapshots.append({"label": "最新更新时间", "value": updated_date, "delta": "UTC", "state": "neutral"})
+    score_state = _score_state(latest_score)
+    snapshots.append(
+        {
+            "label": "分数状态",
+            "value": score_state["label"],
+            "delta": f"{latest_score:.1f} / 100",
+            "state": score_state["state"],
+        }
+    )
     return snapshots
 
 

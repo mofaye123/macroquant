@@ -8,6 +8,7 @@ import {
   ComposedChart,
   Legend,
   Line,
+  ReferenceLine,
   ResponsiveContainer,
   Tooltip,
   XAxis,
@@ -65,8 +66,8 @@ export const LiquidityReferenceChart = ({ tga, sofr, srf }: LiquidityReferenceCh
         <ComposedChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 6 }}>
           <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
           <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-          <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#64748b" }} width={40} />
-          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={40} />
+          <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#64748b" }} width={44} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={44} label={{ value: "Rate", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
           <Tooltip
             labelStyle={{ fontSize: 11, color: "#0f172a" }}
             contentStyle={{
@@ -75,6 +76,20 @@ export const LiquidityReferenceChart = ({ tga, sofr, srf }: LiquidityReferenceCh
               boxShadow: "0 12px 30px -16px rgba(15, 23, 42, 0.25)",
               fontSize: 11,
             }}
+          />
+          <ReferenceLine
+            yAxisId="left"
+            y={400}
+            stroke="#16a34a"
+            strokeDasharray="4 4"
+            label={{ value: "TGA 利好 <400B", position: "insideBottomRight", fill: "#15803d", fontSize: 10 }}
+          />
+          <ReferenceLine
+            yAxisId="left"
+            y={800}
+            stroke="#f97316"
+            strokeDasharray="4 4"
+            label={{ value: "TGA 警戒 >800B", position: "insideTopRight", fill: "#c2410c", fontSize: 10 }}
           />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Area
@@ -133,6 +148,13 @@ export const TruthReferenceChart = ({ score, spx, btc }: TruthReferenceChartProp
               boxShadow: "0 12px 30px -16px rgba(15, 23, 42, 0.25)",
               fontSize: 11,
             }}
+          />
+          <ReferenceLine
+            yAxisId="left"
+            y={50}
+            stroke="#94a3b8"
+            strokeDasharray="4 4"
+            label={{ value: "中轴 50", position: "insideTopRight", fill: "#64748b", fontSize: 10 }}
           />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Area

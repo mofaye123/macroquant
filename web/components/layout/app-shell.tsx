@@ -18,7 +18,7 @@ import {
 
 import { navItems } from "@/lib/mock-data";
 import { MacroDataState, useMacroData } from "@/lib/use-macro-data";
-import { cn } from "@/lib/utils";
+import { cn, describeScoreState } from "@/lib/utils";
 
 type AppShellProps = {
   children: ReactNode;
@@ -41,8 +41,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
   const pathname = usePathname();
   const fallbackState = useMacroData({ disabled: Boolean(dataState) });
   const { isLive, isDegraded, payload, error, sourceType } = dataState ?? fallbackState;
-  const generatedAt = payload.generatedAt?.replace("T", " ").replace("Z", " UTC") ?? "-";
-  const snapshotGeneratedAt = payload.dataQuality?.snapshotGeneratedAt?.replace("T", " ").replace("Z", " UTC") ?? null;
+  const scoreState = describeScoreState(payload.dashboard.overallScore.value);
   const readyModules = payload.dataQuality?.readyModules?.length ?? 0;
   const missingModules = payload.dataQuality?.missingModules?.length ?? 0;
   const servedFromSnapshot = payload.dataQuality?.servedFromSnapshot === true;
@@ -79,13 +78,14 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
             )}
           >
             <p className="font-semibold">Data Source: {sourceLabel}</p>
-            <p className="mt-[2px] opacity-90">GeneratedAt: {generatedAt}</p>
-            {servedFromSnapshot && snapshotGeneratedAt ? (
-              <p className="mt-[2px] opacity-90">SnapshotAt: {snapshotGeneratedAt}</p>
-            ) : null}
+            <p className="mt-[2px] opacity-90">当前环境: {scoreState.label}</p>
+            <p className="mt-[2px] opacity-90">总分状态: {payload.dashboard.overallScore.value.toFixed(1)} / 100 · {scoreState.hint}</p>
+            {servedFromSnapshot ? <p className="mt-[2px] opacity-90">交付模式: 静态快照发布</p> : null}
             {isLive && isDegraded ? (
               <p className="mt-[2px] opacity-90">Missing modules: {missingModules} / 7</p>
-            ) : null}
+            ) : (
+              <p className="mt-[2px] opacity-90">模块覆盖: {readyModules} / 7</p>
+            )}
             {error ? <p className="mt-[2px] opacity-90">Reason: {error}</p> : null}
           </div>
 
