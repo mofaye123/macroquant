@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+  <dict>
+    <key>Label</key>
+    <string>com.macroquant.generate-static-json</string>
+
+    <key>ProgramArguments</key>
+    <array>
+      <string>__SAFE_RUNNER__</string>
+    </array>
+
+    <key>WorkingDirectory</key>
+    <string>__SAFE_ROOT__</string>
+
+    <key>StartInterval</key>
+    <integer>60</integer>
+
+    <key>RunAtLoad</key>
+    <true/>
+
+    <key>StandardOutPath</key>
+    <string>__SAFE_LOG_DIR__/launchd-static-generate.out.log</string>
+
+    <key>StandardErrorPath</key>
+    <string>__SAFE_LOG_DIR__/launchd-static-generate.err.log</string>
+  </dict>
+</plist>

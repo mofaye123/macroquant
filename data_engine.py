@@ -1,0 +1,275 @@
+import concurrent.futures
+import io
+import os
+import ssl
+import urllib.request
+
+import pandas as pd
+import streamlit as st
+from fredapi import Fred
+import yfinance as yf
+
+# 强制忽略 SSL 证书验证
+ssl._create_default_https_context = ssl._create_unverified_context
+
+_LAST_FETCH_META = {
+    "fred_success_count": 0,
+    "fred_csv_fallback_hits": 0,
+    "fred_fetch_mode": "api-first",
+    "fredapi_success_count": 0,
+    "fredapi_failure_count": 0,
+    "fred_csv_blocked": False,
+    "fred_csv_skip_reason": None,
+    "fred_failed_series": [],
+    "fred_failure_details": [],
+    "yahoo_columns": [],
+}
+
+
+def _streamlit_warning(message):
+    try:
+        from streamlit.runtime.scriptrunner import get_script_run_ctx
+
+        if get_script_run_ctx() is None:
+            return
+    except Exception:
+        return
+    st.warning(message)
+
+
+def _fetch_fred_series_via_csv(series_id, start_date):
+    """
+    FRED graph CSV endpoint does not require an API key and is a useful fallback
+    when fredapi fails or the local API key is invalid.
+    """
+    url = f"https://fred.stlouisfed.org/graph/fredgraph.csv?id={series_id}&cosd={start_date}"
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X) MacroQuant/1.0",
+            "Accept": "text/csv,text/plain;q=0.9,*/*;q=0.8",
+            "Referer": "https://fred.stlouisfed.org/",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=20, context=ssl._create_unverified_context()) as response:
+        body = response.read().decode("utf-8", errors="replace")
+
+    raw = pd.read_csv(io.StringIO(body))
+    if raw is None or raw.empty or "DATE" not in raw.columns:
+        return None
+
+    value_col = series_id if series_id in raw.columns else next((col for col in raw.columns if col != "DATE"), None)
+    if value_col is None:
+        return None
+
+    values = pd.to_numeric(raw[value_col].replace(".", pd.NA), errors="coerce")
+    index = pd.to_datetime(raw["DATE"], errors="coerce")
+    series = pd.Series(values.to_numpy(), index=index).dropna()
+    if series.empty:
+        return None
+    series.index.name = None
+    return series
+
+
+def _fetch_fred_series_via_fredapi(name, series_id, start_date, fred_client):
+    if fred_client is None:
+        return None, [f"{name}({series_id}) fredapi unavailable"]
+
+    try:
+        series = fred_client.get_series(series_id, observation_start=start_date)
+        if series is not None and len(series) > 0:
+            return series, []
+        return None, [f"{name}({series_id}) fredapi empty"]
+    except Exception as exc:
+        return None, [f"{name}({series_id}) fredapi error: {exc}"]
+
+
+def _fetch_fred_series_csv_wrapped(name, series_id, start_date):
+    try:
+        series = _fetch_fred_series_via_csv(series_id, start_date)
+        if series is not None and len(series) > 0:
+            return series, []
+        return None, [f"{name}({series_id}) csv empty"]
+    except Exception as exc:
+        return None, [f"{name}({series_id}) csv error: {exc}"]
+
+
+def _parallel_csv_fetch(series_items, start_date, max_workers):
+    results = {}
+    if not series_items:
+        return results
+
+    worker_count = max(1, min(int(max_workers), len(series_items)))
+    with concurrent.futures.ThreadPoolExecutor(max_workers=worker_count) as pool:
+        future_map = {
+            pool.submit(_fetch_fred_series_csv_wrapped, name, series_id, start_date): (name, series_id)
+            for name, series_id in series_items
+        }
+        for future in concurrent.futures.as_completed(future_map):
+            name, series_id = future_map[future]
+            try:
+                series, errors = future.result()
+            except Exception as exc:
+                series, errors = None, [f"{name}({series_id}) csv worker error: {exc}"]
+            results[name] = {"series_id": series_id, "series": series, "errors": errors}
+    return results
+
+
+def _probe_fred_csv_access(start_date):
+    probe_name = "WALCL"
+    probe_id = "WALCL"
+    try:
+        series = _fetch_fred_series_via_csv(probe_id, start_date)
+        if series is not None and len(series) > 0:
+            return True, None
+        return False, f"{probe_name}({probe_id}) csv probe empty"
+    except Exception as exc:
+        return False, f"{probe_name}({probe_id}) csv probe error: {exc}"
+
+
+def get_last_fetch_meta():
+    return dict(_LAST_FETCH_META)
+
+@st.cache_data(ttl=3600)
+def get_mixed_data(api_key, series_ids, start_date='2010-01-01'): 
+    """
+    同时从 FRED 和 Yahoo Finance 获取数据并合并
+    """
+    # 1. 获取 FRED 数据
+    df_fred = pd.DataFrame()
+    fetch_mode = os.getenv("FRED_FETCH_MODE", "api-first").strip().lower()
+    max_workers = int(os.getenv("FRED_MAX_WORKERS", "8"))
+    fred = None
+    if api_key:
+        try:
+            fred = Fred(api_key=api_key)
+        except Exception:
+            fred = None
+
+    data = {}
+    failed_series = []
+    failure_details = []
+    csv_fallback_hits = 0
+    fredapi_success_count = 0
+    fredapi_failure_count = 0
+    fred_csv_blocked = False
+    fred_csv_skip_reason = None
+    pending = list(series_ids.items())
+
+    if fetch_mode in {"csv-only", "csv-first"}:
+        csv_allowed, csv_probe_error = _probe_fred_csv_access(start_date)
+        if not csv_allowed:
+            fred_csv_blocked = True
+            fred_csv_skip_reason = csv_probe_error
+            failure_details.append(csv_probe_error)
+        else:
+            csv_results = _parallel_csv_fetch(pending, start_date, max_workers=max_workers)
+            next_pending = []
+            for name, series_id in pending:
+                result = csv_results.get(name, {"series": None, "errors": [f"{name}({series_id}) csv missing result"]})
+                series = result["series"]
+                if series is not None and len(series) > 0:
+                    data[name] = series
+                    csv_fallback_hits += 1
+                else:
+                    next_pending.append((name, series_id))
+                    failure_details.extend(result["errors"][:2])
+            pending = next_pending
+
+    if fetch_mode in {"api-first", "csv-first"} and pending:
+        next_pending = []
+        for name, series_id in pending:
+            series, errors = _fetch_fred_series_via_fredapi(name, series_id, start_date, fred_client=fred)
+            if series is not None and len(series) > 0:
+                data[name] = series
+                fredapi_success_count += 1
+            else:
+                next_pending.append((name, series_id))
+                fredapi_failure_count += 1
+                failure_details.extend(errors[:2])
+        pending = next_pending
+
+    if fetch_mode == "api-first" and pending:
+        csv_allowed, csv_probe_error = _probe_fred_csv_access(start_date)
+        if not csv_allowed:
+            fred_csv_blocked = True
+            fred_csv_skip_reason = csv_probe_error
+            failure_details.append(csv_probe_error)
+        else:
+            csv_results = _parallel_csv_fetch(pending, start_date, max_workers=max_workers)
+            next_pending = []
+            for name, series_id in pending:
+                result = csv_results.get(name, {"series": None, "errors": [f"{name}({series_id}) csv missing result"]})
+                series = result["series"]
+                if series is not None and len(series) > 0:
+                    data[name] = series
+                    csv_fallback_hits += 1
+                else:
+                    next_pending.append((name, series_id))
+                    failure_details.extend(result["errors"][:2])
+            pending = next_pending
+
+    for name, series_id in pending:
+        failed_series.append(f"{name}({series_id})")
+
+    if failed_series:
+        sample = "、".join(failed_series[:8])
+        more = f" 等{len(failed_series)}个" if len(failed_series) > 8 else ""
+        _streamlit_warning(f"FRED 部分序列拉取失败：{sample}{more}")
+    if csv_fallback_hits:
+        _streamlit_warning(f"FRED 已使用 CSV 兜底拉取 {csv_fallback_hits} 条序列")
+
+    df_fred = pd.DataFrame(data) if data else pd.DataFrame()
+
+    # 2. 获取 Yahoo 数据 (DXY / VIX / VXV)
+    # DX-Y.NYB 是美元指数在 Yahoo 的代码
+    df_yahoo = pd.DataFrame()
+    try:
+        # progress=False 隐藏下载进度条
+        tickers = ["DX-Y.NYB", "^VIX", "^VXV"]
+        yahoo_data = yf.download(tickers, start=start_date, progress=False)
+
+        # 只取 Close
+        if not yahoo_data.empty:
+            if isinstance(yahoo_data.columns, pd.MultiIndex) and "Close" in yahoo_data.columns.levels[0]:
+                close_df = yahoo_data["Close"].copy()
+            elif "Close" in yahoo_data.columns:
+                close_df = yahoo_data[["Close"]].copy()
+            else:
+                close_df = pd.DataFrame()
+
+            if not close_df.empty:
+                if close_df.index.tz is not None:
+                    close_df.index = close_df.index.tz_localize(None)
+                col_map = {"DX-Y.NYB": "DXY", "^VIX": "VIX_YH", "^VXV": "VXV_YH"}
+                close_df = close_df.rename(columns=col_map)
+                df_yahoo = close_df
+            else:
+                _streamlit_warning("Yahoo API 返回数据但不包含 Close 列")
+    except Exception as e:
+        _streamlit_warning(f"Yahoo Finance API (DXY) Error: {e}")
+
+    _LAST_FETCH_META["fred_success_count"] = len(data)
+    _LAST_FETCH_META["fred_csv_fallback_hits"] = csv_fallback_hits
+    _LAST_FETCH_META["fred_fetch_mode"] = fetch_mode
+    _LAST_FETCH_META["fredapi_success_count"] = fredapi_success_count
+    _LAST_FETCH_META["fredapi_failure_count"] = fredapi_failure_count
+    _LAST_FETCH_META["fred_csv_blocked"] = fred_csv_blocked
+    _LAST_FETCH_META["fred_csv_skip_reason"] = fred_csv_skip_reason
+    _LAST_FETCH_META["fred_failed_series"] = failed_series[:20]
+    _LAST_FETCH_META["fred_failure_details"] = failure_details[:40]
+    _LAST_FETCH_META["yahoo_columns"] = [str(col) for col in df_yahoo.columns]
+
+    # 3. 合并数据
+    # 使用 outer join 确保即使某一侧数据缺失，另一侧也能保留
+    if not df_fred.empty and not df_yahoo.empty:
+        df_all = df_fred.join(df_yahoo, how='outer')
+    elif not df_fred.empty:
+        df_all = df_fred
+    elif not df_yahoo.empty:
+        df_all = df_yahoo
+    else:
+        return pd.DataFrame()
+
+    # 4. 填充缺失值 (ffill)
+    return df_all.ffill().sort_index()
