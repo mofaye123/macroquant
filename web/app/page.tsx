@@ -1,14 +1,17 @@
 "use client";
 
+import { useState } from "react";
+
 import { AlertTriangle, ArrowUpRight, Sparkles } from "lucide-react";
 
+import { LiquidityReferenceChart, TruthReferenceChart } from "@/components/charts/reference-panels";
 import { LineScoreChart } from "@/components/charts/line-score-chart";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionTitle } from "@/components/ui/section-title";
 import { ModuleCard } from "@/components/ui/module-card";
 import { StatusPill } from "@/components/ui/status-pill";
 import { SurfaceCard } from "@/components/ui/surface-card";
-import { DashboardPayload, TrendPoint } from "@/lib/types";
+import { DashboardPayload } from "@/lib/types";
 import { useMacroData } from "@/lib/use-macro-data";
 import { cn, formatSigned } from "@/lib/utils";
 
@@ -69,27 +72,6 @@ const deriveTopMoverRows = (dashboard: DashboardPayload) => {
   }));
 };
 
-const SmallChartCard = ({
-  title,
-  data,
-  color = "#2563eb",
-  formatter,
-}: {
-  title: string;
-  data: TrendPoint[];
-  color?: string;
-  formatter?: (value: number) => string;
-}) => (
-  <div className="rounded-[14px] border border-app-border bg-white p-[12px]">
-    <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-app-muted">{title}</p>
-    {data.length > 1 ? (
-      <LineScoreChart data={data} color={color} yDomain={["dataMin", "dataMax"]} valueFormatter={formatter} height={150} />
-    ) : (
-      <div className="flex h-[150px] items-center justify-center text-[12px] text-app-muted">数据不足</div>
-    )}
-  </div>
-);
-
 const RiskItem = ({
   level,
   title,
@@ -125,6 +107,8 @@ export default function HomePage() {
   const riskRadar = dashboard.riskRadar;
   const topMoverRows = deriveTopMoverRows(dashboard);
   const realtimeTiles = (dashboard.realtimeSnapshots ?? []).slice(0, 4);
+  const [hoveredHeatmap, setHoveredHeatmap] = useState<{ label: string; week: string; score: number } | null>(null);
+  const [hoveredRegime, setHoveredRegime] = useState<{ date: string; regime: string } | null>(null);
 
   const scoreRingStyle = {
     background: `conic-gradient(#2563eb ${(overallScore.value / 100) * 360}deg, #e2e8f0 0deg)`,
@@ -267,6 +251,9 @@ export default function HomePage() {
 
           <SurfaceCard>
             <SectionTitle title="实时跨资产快照" />
+            <p className="mt-[12px] text-[13px] text-app-muted">
+              实时数据源: Yahoo Finance（存在延迟）。用于跟踪跨资产盘面结构，不直接覆盖模块打分。
+            </p>
             <div className="mt-[16px] grid gap-[12px] sm:grid-cols-2">
               {realtimeTiles.map((item) => (
                 <div key={item.label} className="rounded-[16px] border border-app-border bg-white p-[18px]">
@@ -292,6 +279,52 @@ export default function HomePage() {
                 </div>
               )}
             </div>
+            {(marketBoard?.cards?.length ?? 0) > 0 && (
+              <div className="mt-[14px] grid gap-[10px] sm:grid-cols-2">
+                {marketBoard?.cards.map((card) => (
+                  <div key={card.title} className="rounded-[14px] border border-app-border bg-slate-50 p-[14px]">
+                    <p className="text-[12px] font-semibold text-app-muted">{card.title}</p>
+                    <p className="mt-[8px] text-[15px] font-extrabold text-app-text">{card.headline}</p>
+                    <p className="mt-[8px] text-[12px] text-app-muted">{card.detail}</p>
+                  </div>
+                ))}
+              </div>
+            )}
+            {(marketBoard?.verdicts?.length ?? 0) > 0 && (
+              <div className="mt-[14px] rounded-[14px] border border-app-border bg-slate-50 p-[14px]">
+                <p className="text-[13px] font-semibold text-app-text">实时结构结论</p>
+                <ul className="mt-[8px] space-y-[6px] pl-[18px] text-[13px] text-app-text">
+                  {marketBoard?.verdicts.map((item) => (
+                    <li key={item}>{item}</li>
+                  ))}
+                </ul>
+              </div>
+            )}
+            {(marketBoard?.rawRows?.length ?? 0) > 0 && (
+              <details className="mt-[14px] rounded-[14px] border border-app-border bg-white p-[14px]">
+                <summary className="cursor-pointer text-[13px] font-semibold text-app-text">查看实时原始快照</summary>
+                <div className="mt-[10px] max-h-[240px] overflow-auto">
+                  <table className="w-full min-w-[420px] text-[12px]">
+                    <thead className="bg-slate-50 text-app-muted">
+                      <tr>
+                        <th className="px-[10px] py-[8px] text-left">资产</th>
+                        <th className="px-[10px] py-[8px] text-left">最新</th>
+                        <th className="px-[10px] py-[8px] text-left">日变动</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {marketBoard?.rawRows.map((row) => (
+                        <tr key={row.asset} className="border-t border-slate-100">
+                          <td className="px-[10px] py-[8px]">{row.asset}</td>
+                          <td className="px-[10px] py-[8px]">{row.value ?? "-"}</td>
+                          <td className="px-[10px] py-[8px]">{row.delta}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </details>
+            )}
           </SurfaceCard>
         </div>
 
@@ -325,6 +358,11 @@ export default function HomePage() {
         {heatmap && heatmap.rows.length > 0 && (
           <SurfaceCard>
             <SectionTitle title="模块状态热力图（周频）" />
+            <div className="mt-[12px] rounded-[12px] border border-app-border bg-slate-50 px-[12px] py-[10px] text-[12px] text-app-muted">
+              {hoveredHeatmap
+                ? `${hoveredHeatmap.label} · ${hoveredHeatmap.week} · ${hoveredHeatmap.score.toFixed(1)}`
+                : "鼠标悬停在色块上查看对应周度分数"}
+            </div>
             <div className="mt-[16px] space-y-[10px] overflow-x-auto">
               {heatmap.rows.map((row) => (
                 <div key={row.label} className="grid min-w-[840px] grid-cols-[160px_1fr] items-center gap-[12px]">
@@ -333,8 +371,14 @@ export default function HomePage() {
                     {row.cells.map((cell) => (
                       <div
                         key={`${row.label}-${cell.week}`}
-                        className={cn("h-[28px] rounded-[6px]", HEATMAP_COLORS[cell.bucket])}
+                        className={cn(
+                          "h-[28px] rounded-[6px] transition-transform duration-150 ease-out",
+                          HEATMAP_COLORS[cell.bucket],
+                          hoveredHeatmap?.label === row.label && hoveredHeatmap?.week === cell.week && "scale-110 ring-2 ring-slate-300"
+                        )}
                         title={`${cell.week} · ${cell.score}`}
+                        onMouseEnter={() => setHoveredHeatmap({ label: row.label, week: cell.week, score: cell.score })}
+                        onMouseLeave={() => setHoveredHeatmap(null)}
                       />
                     ))}
                   </div>
@@ -360,12 +404,24 @@ export default function HomePage() {
                 <p className="mt-[10px] text-[14px] text-app-text">增长动能 Z: <span className="font-bold">{regime.growthZ?.toFixed(2)}</span></p>
                 <p className="mt-[8px] text-[14px] text-app-text">通胀压力 Z: <span className="font-bold">{regime.inflationZ?.toFixed(2)}</span></p>
                 <p className="mt-[14px] text-[13px] text-app-muted">{regime.lastSwitch}</p>
+                <div className="mt-[14px] rounded-[12px] border border-app-border bg-slate-50 px-[12px] py-[10px] text-[12px] text-app-muted">
+                  {hoveredRegime ? `悬停查看: ${hoveredRegime.date} · ${hoveredRegime.regime}` : "鼠标悬停在色块上查看对应月份状态"}
+                </div>
               </div>
               <div>
                 <div className="grid gap-[5px]" style={{ gridTemplateColumns: `repeat(${regime.timeline.length}, minmax(0, 1fr))` }}>
                   {regime.timeline.map((item) => (
                     <div key={item.date} className="space-y-[4px]">
-                      <div className={cn("h-[68px] rounded-[6px]", REGIME_COLORS[item.regime] ?? "bg-slate-200")} title={`${item.date} · ${item.regime}`} />
+                      <div
+                        className={cn(
+                          "h-[68px] rounded-[6px] transition-transform duration-150 ease-out",
+                          REGIME_COLORS[item.regime] ?? "bg-slate-200",
+                          hoveredRegime?.date === item.date && "scale-110 ring-2 ring-slate-300"
+                        )}
+                        title={`${item.date} · ${item.regime}`}
+                        onMouseEnter={() => setHoveredRegime({ date: item.date, regime: item.regime })}
+                        onMouseLeave={() => setHoveredRegime(null)}
+                      />
                     </div>
                   ))}
                 </div>
@@ -381,57 +437,6 @@ export default function HomePage() {
             </div>
           </SurfaceCard>
         )}
-
-        <SurfaceCard>
-          <SectionTitle title="实时市场看板" />
-          <p className="mt-[12px] text-[13px] text-app-muted">
-            实时数据源: Yahoo Finance（存在延迟）。用于跟踪跨资产盘面结构，不直接覆盖模块打分。
-          </p>
-          <div className="mt-[14px] grid gap-[10px] md:grid-cols-2 xl:grid-cols-4">
-            {(marketBoard?.cards ?? []).map((card) => (
-              <div key={card.title} className="rounded-[14px] border border-app-border bg-white p-[16px]">
-                <p className="text-[14px] font-semibold text-app-muted">{card.title}</p>
-                <p className="mt-[10px] text-[17px] font-extrabold text-app-text">{card.headline}</p>
-                <p className="mt-[10px] text-[13px] text-app-muted">{card.detail}</p>
-              </div>
-            ))}
-          </div>
-          {(marketBoard?.verdicts?.length ?? 0) > 0 && (
-            <>
-              <p className="mt-[20px] text-[16px] font-extrabold text-app-text">实时结构结论</p>
-              <ul className="mt-[10px] space-y-[8px] pl-[18px] text-[14px] text-app-text">
-                {marketBoard?.verdicts.map((item) => (
-                  <li key={item}>{item}</li>
-                ))}
-              </ul>
-            </>
-          )}
-          {(marketBoard?.rawRows?.length ?? 0) > 0 && (
-            <details className="mt-[16px] rounded-[14px] border border-app-border bg-white p-[14px]">
-              <summary className="cursor-pointer text-[13px] font-semibold text-app-text">查看实时原始快照</summary>
-              <div className="mt-[10px] overflow-x-auto">
-                <table className="w-full min-w-[560px] text-[12px]">
-                  <thead className="bg-slate-50 text-app-muted">
-                    <tr>
-                      <th className="px-[10px] py-[8px] text-left">资产</th>
-                      <th className="px-[10px] py-[8px] text-left">最新</th>
-                      <th className="px-[10px] py-[8px] text-left">日变动</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {marketBoard?.rawRows.map((row) => (
-                      <tr key={row.asset} className="border-t border-slate-100">
-                        <td className="px-[10px] py-[8px]">{row.asset}</td>
-                        <td className="px-[10px] py-[8px]">{row.value ?? "-"}</td>
-                        <td className="px-[10px] py-[8px]">{row.delta}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </details>
-          )}
-        </SurfaceCard>
 
         {referencePanels && (
           <SurfaceCard>
@@ -449,20 +454,20 @@ export default function HomePage() {
                     {referencePanels.liquidityMonitor.status.label}
                   </span>
                 </div>
-                <div className="grid gap-[10px] md:grid-cols-3">
-                  <SmallChartCard title="TGA ($B)" data={referencePanels.liquidityMonitor.series.tga} color="#94a3b8" />
-                  <SmallChartCard title="SOFR (%)" data={referencePanels.liquidityMonitor.series.sofr} color="#2563eb" />
-                  <SmallChartCard title="SRF ($B)" data={referencePanels.liquidityMonitor.series.srf} color="#ef4444" />
-                </div>
+                <LiquidityReferenceChart
+                  tga={referencePanels.liquidityMonitor.series.tga}
+                  sofr={referencePanels.liquidityMonitor.series.sofr}
+                  srf={referencePanels.liquidityMonitor.series.srf}
+                />
               </div>
 
               <div className="space-y-[12px] rounded-[16px] border border-app-border bg-white p-[16px]">
                 <p className="text-[18px] font-extrabold text-app-text">真理检验: 宏观分 vs SPX/BTC</p>
-                <div className="grid gap-[10px] md:grid-cols-3">
-                  <SmallChartCard title="宏观得分" data={referencePanels.truthTest.series.score} color="#16a34a" />
-                  <SmallChartCard title="S&P 500" data={referencePanels.truthTest.series.spx} color="#ca8a04" />
-                  <SmallChartCard title="Bitcoin" data={referencePanels.truthTest.series.btc} color="#f97316" />
-                </div>
+                <TruthReferenceChart
+                  score={referencePanels.truthTest.series.score}
+                  spx={referencePanels.truthTest.series.spx}
+                  btc={referencePanels.truthTest.series.btc}
+                />
               </div>
             </div>
           </SurfaceCard>

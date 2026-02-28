@@ -78,11 +78,11 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
         {overlays.length > 0 && (
           <SurfaceCard>
             <SectionTitle title="因子趋势图" />
-            <div className="mt-[12px] grid gap-[12px] lg:grid-cols-2 2xl:grid-cols-3">
+            <div className="mx-auto mt-[12px] w-full max-w-[980px] space-y-[12px]">
               {overlays.map((series) => (
                 <div key={series.name} className="rounded-[14px] border border-app-border bg-white p-[12px]">
                   <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-app-muted">{series.name}</p>
-                  <LineScoreChart data={series.points} color={series.color} yDomain={["dataMin", "dataMax"]} height={150} />
+                  <LineScoreChart data={series.points} color={series.color} yDomain={["dataMin", "dataMax"]} height={220} />
                 </div>
               ))}
             </div>
