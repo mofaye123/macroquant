@@ -1,6 +1,6 @@
 "use client";
 
-import { AlertTriangle, ArrowDownRight, ArrowUpRight, Sparkles } from "lucide-react";
+import { AlertTriangle, ArrowUpRight, Sparkles } from "lucide-react";
 
 import { LineScoreChart } from "@/components/charts/line-score-chart";
 import { AppShell } from "@/components/layout/app-shell";
@@ -57,6 +57,18 @@ const deriveLiftDrag = (dashboard: DashboardPayload) => {
   };
 };
 
+const deriveTopMoverRows = (dashboard: DashboardPayload) => {
+  const rows = [...dashboard.modules]
+    .sort((a, b) => Math.abs(b.change) - Math.abs(a.change))
+    .slice(0, 6);
+  const maxAbs = Math.max(...rows.map((item) => Math.abs(item.change)), 0.1);
+  return rows.map((item) => ({
+    label: item.title,
+    change: item.change,
+    widthPct: Math.max(6, (Math.abs(item.change) / maxAbs) * 100),
+  }));
+};
+
 const SmallChartCard = ({
   title,
   data,
@@ -111,6 +123,8 @@ export default function HomePage() {
   const marketBoard = dashboard.marketBoard;
   const referencePanels = dashboard.referencePanels;
   const riskRadar = dashboard.riskRadar;
+  const topMoverRows = deriveTopMoverRows(dashboard);
+  const realtimeTiles = (dashboard.realtimeSnapshots ?? []).slice(0, 4);
 
   const scoreRingStyle = {
     background: `conic-gradient(#2563eb ${(overallScore.value / 100) * 360}deg, #e2e8f0 0deg)`,
@@ -177,53 +191,77 @@ export default function HomePage() {
           </div>
         </SurfaceCard>
 
-        <SurfaceCard>
-          <SectionTitle title="Top Score Lift / Drag" />
-          <div className="mt-[14px] grid gap-[14px] xl:grid-cols-2">
-            <div className="rounded-[18px] border border-app-border bg-white p-[18px]">
-              <div className="flex items-center gap-[10px]">
-                <ArrowUpRight className="h-[20px] w-[20px] text-app-success" />
-                <div>
-                  <p className="text-[32px] font-extrabold tracking-[-0.03em] text-app-text">Score Lift</p>
-                  <p className="text-[13px] text-app-muted">改善总分</p>
-                </div>
-              </div>
-              <div className="mt-[18px] divide-y divide-dashed divide-slate-200">
-                {liftDrag.lifts.length > 0 ? (
-                  liftDrag.lifts.map((item) => (
-                    <div key={item.name} className="flex items-center justify-between py-[14px] text-[14px]">
-                      <span className="font-medium text-app-text">{item.name}</span>
-                      <span className="font-bold text-app-success">▲ {Math.abs(item.delta).toFixed(1)} pts</span>
+        <div className="grid gap-[14px] xl:grid-cols-[1.1fr_0.9fr]">
+          <SurfaceCard>
+            <SectionTitle title="Top Lift / Drag" />
+            <div className="mt-[16px] rounded-[16px] border border-app-border bg-white p-[16px]">
+              <div className="grid gap-[14px]">
+                {topMoverRows.map((row) => {
+                  const positive = row.change >= 0;
+                  return (
+                    <div
+                      key={row.label}
+                      className="grid items-center gap-[12px]"
+                      style={{ gridTemplateColumns: "180px 1fr" }}
+                    >
+                      <p className="truncate text-[14px] font-medium text-app-muted">{row.label}</p>
+                      <div className="relative h-[56px] rounded-[12px] border border-slate-100 bg-slate-50/80">
+                        <div className="absolute left-1/2 top-[8px] bottom-[8px] w-px bg-slate-300" />
+                        <div
+                          className={cn(
+                            "absolute top-[8px] bottom-[8px] rounded-[10px]",
+                            positive ? "left-1/2 bg-[#5fb886]" : "right-1/2 bg-[#db574a]"
+                          )}
+                          style={{ width: `calc(${(row.widthPct / 2).toFixed(2)}% - 4px)` }}
+                        />
+                        <span
+                          className={cn(
+                            "absolute top-1/2 -translate-y-1/2 text-[12px] font-bold",
+                            positive ? "left-[calc(50%+10px)] text-app-success" : "right-[calc(50%+10px)] text-app-danger"
+                          )}
+                        >
+                          {formatSigned(row.change)}
+                        </span>
+                      </div>
                     </div>
-                  ))
-                ) : (
-                  <div className="py-[14px] text-[13px] text-app-muted">本周暂无明显正向抬升。</div>
-                )}
+                  );
+                })}
               </div>
             </div>
+          </SurfaceCard>
 
-            <div className="rounded-[18px] border border-app-border bg-white p-[18px]">
-              <div className="flex items-center gap-[10px]">
-                <ArrowDownRight className="h-[20px] w-[20px] text-app-danger" />
-                <div>
-                  <p className="text-[32px] font-extrabold tracking-[-0.03em] text-app-text">Score Drag</p>
-                  <p className="text-[13px] text-app-muted">拖累总分</p>
+          <SurfaceCard>
+            <SectionTitle title="实时跨资产快照" />
+            <div className="mt-[16px] grid gap-[12px] sm:grid-cols-2">
+              {realtimeTiles.map((item) => (
+                <div key={item.label} className="rounded-[16px] border border-app-border bg-white p-[18px]">
+                  <p className="text-[11px] font-semibold uppercase tracking-[0.16em] text-app-muted">{item.label}</p>
+                  <p className="mt-[14px] text-[26px] font-extrabold tracking-[-0.02em] text-app-text">{item.value}</p>
+                  <p
+                    className={cn(
+                      "mt-[8px] text-[13px] font-semibold",
+                      item.state === "positive"
+                        ? "text-app-success"
+                        : item.state === "negative"
+                          ? "text-app-danger"
+                          : "text-app-muted"
+                    )}
+                  >
+                    {item.delta}
+                  </p>
                 </div>
-              </div>
-              <div className="mt-[18px] divide-y divide-dashed divide-slate-200">
-                {liftDrag.drags.length > 0 ? (
-                  liftDrag.drags.map((item) => (
-                    <div key={item.name} className="flex items-center justify-between py-[14px] text-[14px]">
-                      <span className="font-medium text-app-text">{item.name}</span>
-                      <span className="font-bold text-app-danger">▼ {Math.abs(item.delta).toFixed(1)} pts</span>
-                    </div>
-                  ))
-                ) : (
-                  <div className="py-[14px] text-[13px] text-app-muted">本周暂无明显负向拖累。</div>
-                )}
-              </div>
+              ))}
+              {realtimeTiles.length === 0 && (
+                <div className="sm:col-span-2 rounded-[16px] border border-app-border bg-white p-[18px] text-[13px] text-app-muted">
+                  当前快照数据不足。
+                </div>
+              )}
             </div>
-          </div>
+          </SurfaceCard>
+        </div>
+
+        <SurfaceCard>
+          <SectionTitle title="Top Score Lift / Drag 归因" />
           <div className="mt-[14px] grid gap-[10px] md:grid-cols-3">
             {[
               ["Level 贡献（结构）", liftDrag.summary.level],
