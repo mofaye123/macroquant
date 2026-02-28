@@ -168,6 +168,9 @@ chmod +x scripts/generate_and_deploy_pages.sh
 4. 如果要让 GitHub Actions 直接发版到 Cloudflare，在仓库 Secrets 里添加：
    - `CLOUDFLARE_API_TOKEN`
    - `CLOUDFLARE_ACCOUNT_ID`
+5. 在仓库 `Settings -> Secrets and variables -> Actions -> Variables` 里添加：
+   - `CLOUDFLARE_PAGES_PROJECT_NAME`
+   - 值填你 Cloudflare Pages 里的实际项目名（必须和 Dashboard 完全一致）
 
 你也可以在 GitHub Actions 页面手动点 `workflow_dispatch` 立即跑一次。
 
