@@ -15,6 +15,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { ChartRangeKey, ChartRangePicker, filterTrendPointsByRange } from "@/components/charts/chart-range-control";
 import { TrendPoint } from "@/lib/types";
 
 const tooltipStyle = {
@@ -24,7 +25,9 @@ const tooltipStyle = {
   fontSize: 11,
 };
 
-const mergeSeriesByDate = (seriesMap: Record<string, TrendPoint[] | undefined>) => {
+type MergedSeriesRow = { date: string } & Record<string, string | number | null>;
+
+const mergeSeriesByDate = (seriesMap: Record<string, TrendPoint[] | undefined>): MergedSeriesRow[] => {
   const dates = Array.from(
     new Set(
       Object.values(seriesMap)
@@ -34,7 +37,7 @@ const mergeSeriesByDate = (seriesMap: Record<string, TrendPoint[] | undefined>) 
   ).sort();
 
   return dates.map((date) => {
-    const row: Record<string, number | string | null> = { date };
+    const row: MergedSeriesRow = { date };
     Object.entries(seriesMap).forEach(([key, series]) => {
       row[key] = series?.find((point) => point.date === date)?.value ?? null;
     });
@@ -60,13 +63,36 @@ const MiniTitle = ({ children }: { children: ReactNode }) => (
   <p className="mb-[8px] text-[12px] font-semibold uppercase tracking-[0.12em] text-app-muted">{children}</p>
 );
 
-export const ModuleADetailPanels = ({ series }: { series: Record<string, TrendPoint[]> }) => {
-  const scoreVsSink = useMemo(
-    () => mergeSeriesByDate({ score: series.score, sink: series.sink }),
-    [series.score, series.sink]
+const useRangeMergedSeries = (
+  seriesMap: Record<string, TrendPoint[] | undefined>,
+  defaultRange: ChartRangeKey = "1Y"
+) => {
+  const [range, setRange] = useState<ChartRangeKey>(defaultRange);
+  const data = useMemo(
+    () =>
+      mergeSeriesByDate(
+        Object.fromEntries(
+          Object.entries(seriesMap).map(([key, series]) => [key, series ? filterTrendPointsByRange(series, range) : undefined])
+        )
+      ),
+    [seriesMap, range]
   );
-  const tgaData = useMemo(() => mergeSeriesByDate({ tga: series.tga }), [series.tga]);
-  const rrpData = useMemo(() => mergeSeriesByDate({ rrp: series.rrp }), [series.rrp]);
+
+  return { data, range, setRange };
+};
+
+const RangePickerInline = ({
+  range,
+  setRange,
+}: {
+  range: ChartRangeKey;
+  setRange: (value: ChartRangeKey) => void;
+}) => <ChartRangePicker value={range} onChange={setRange} className="shrink-0" />;
+
+export const ModuleADetailPanels = ({ series }: { series: Record<string, TrendPoint[]> }) => {
+  const scoreVsSinkState = useRangeMergedSeries({ score: series.score, sink: series.sink }, "2Y");
+  const tgaState = useRangeMergedSeries({ tga: series.tga }, "2Y");
+  const rrpState = useRangeMergedSeries({ rrp: series.rrp }, "2Y");
 
   if (!series.score?.length) {
     return null;
@@ -93,14 +119,17 @@ export const ModuleADetailPanels = ({ series }: { series: Record<string, TrendPo
           <span className="rounded-full bg-slate-50 px-[8px] py-[3px] text-[11px] font-semibold text-app-muted">
             吸收越高 = 实际可用流动性越少
           </span>
+          <div className="ml-auto">
+            <RangePickerInline range={scoreVsSinkState.range} setRange={scoreVsSinkState.setRange} />
+          </div>
         </div>
         <ChartFrame height={340}>
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={scoreVsSink} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+            <ComposedChart data={scoreVsSinkState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
               <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-              <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#64748b" }} width={46} label={{ value: "Amount ($B)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
-              <YAxis yAxisId="right" orientation="right" domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={46} label={{ value: "Score", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
+              <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "Amount ($B)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+              <YAxis yAxisId="right" orientation="right" domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "Score", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
               <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <ReferenceLine yAxisId="right" y={50} stroke="#94a3b8" strokeDasharray="4 4" />
@@ -113,15 +142,20 @@ export const ModuleADetailPanels = ({ series }: { series: Record<string, TrendPo
 
       <div className="grid gap-[14px] xl:grid-cols-2">
         <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-          <h3 className="text-[16px] font-bold text-app-text">
-            TGA 余额趋势: 当前 {latestTga === null ? "-" : `${latestTga.toFixed(1)}B`} | {penaltyText}
-          </h3>
+          <div className="flex flex-wrap items-center gap-[10px]">
+            <h3 className="text-[16px] font-bold text-app-text">
+              TGA 余额趋势: 当前 {latestTga === null ? "-" : `${latestTga.toFixed(1)}B`} | {penaltyText}
+            </h3>
+            <div className="ml-auto">
+              <RangePickerInline range={tgaState.range} setRange={tgaState.setRange} />
+            </div>
+          </div>
           <ChartFrame height={280}>
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={tgaData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+              <ComposedChart data={tgaState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
                 <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
                 <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={46} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
                 <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
                 <ReferenceLine y={400} stroke="#16a34a" strokeDasharray="4 4" label={{ value: "利好区 <400B", position: "insideBottomRight", fill: "#15803d", fontSize: 10 }} />
                 <ReferenceLine y={800} stroke="#f59e0b" strokeDasharray="4 4" label={{ value: "警戒区 >800B", position: "insideTopRight", fill: "#b45309", fontSize: 10 }} />
@@ -134,15 +168,20 @@ export const ModuleADetailPanels = ({ series }: { series: Record<string, TrendPo
         </div>
 
         <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-          <h3 className="text-[16px] font-bold text-app-text">
-            RRP 用量趋势: 当前 {latestRrp === null ? "-" : `${latestRrp.toFixed(0)}B`}
-          </h3>
+          <div className="flex flex-wrap items-center gap-[10px]">
+            <h3 className="text-[16px] font-bold text-app-text">
+              RRP 用量趋势: 当前 {latestRrp === null ? "-" : `${latestRrp.toFixed(0)}B`}
+            </h3>
+            <div className="ml-auto">
+              <RangePickerInline range={rrpState.range} setRange={rrpState.setRange} />
+            </div>
+          </div>
           <ChartFrame height={280}>
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={rrpData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+              <ComposedChart data={rrpState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
                 <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
                 <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={46} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
                 <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
                 <ReferenceLine y={300} stroke="#16a34a" strokeDasharray="4 4" label={{ value: "低位 <300B", position: "insideBottomRight", fill: "#15803d", fontSize: 10 }} />
                 <ReferenceLine y={1000} stroke="#f59e0b" strokeDasharray="4 4" label={{ value: "中位 <1000B", position: "insideRight", fill: "#b45309", fontSize: 10 }} />
@@ -158,15 +197,15 @@ export const ModuleADetailPanels = ({ series }: { series: Record<string, TrendPo
 };
 
 export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPoint[]> }) => {
-  const scoreData = useMemo(() => mergeSeriesByDate({ score: series.score }), [series.score]);
-  const corridorData = useMemo(() => mergeSeriesByDate({ corridor: series.corridor }), [series.corridor]);
-  const weightData = useMemo(() => mergeSeriesByDate({ srfWeight: series.srfWeight }), [series.srfWeight]);
-  const corridorMonitor = useMemo(
-    () => mergeSeriesByDate({ sofr: series.sofr, iorb: series.iorb, floor: series.floor, sofrMa13: series.sofrMa13 }),
-    [series.sofr, series.iorb, series.floor, series.sofrMa13]
+  const scoreState = useRangeMergedSeries({ score: series.score }, "2Y");
+  const corridorState = useRangeMergedSeries({ corridor: series.corridor }, "2Y");
+  const weightState = useRangeMergedSeries({ srfWeight: series.srfWeight }, "2Y");
+  const monitorState = useRangeMergedSeries(
+    { sofr: series.sofr, iorb: series.iorb, floor: series.floor, sofrMa13: series.sofrMa13 },
+    "2Y"
   );
-  const spreadData = useMemo(() => mergeSeriesByDate({ spread: series.spread }), [series.spread]);
-  const srfData = useMemo(() => mergeSeriesByDate({ srf: series.srf }), [series.srf]);
+  const spreadState = useRangeMergedSeries({ spread: series.spread }, "2Y");
+  const srfState = useRangeMergedSeries({ srf: series.srf }, "2Y");
 
   if (!series.score?.length) {
     return null;
@@ -175,13 +214,18 @@ export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPo
   return (
     <div className="space-y-[14px]">
       <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-        <h3 className="text-[16px] font-bold text-app-text">B模块综合得分: 得分越高 = 环境越宽松 | 得分越低 = 环境越紧缩</h3>
+        <div className="flex flex-wrap items-center gap-[10px]">
+          <h3 className="text-[16px] font-bold text-app-text">B模块综合得分: 得分越高 = 环境越宽松 | 得分越低 = 环境越紧缩</h3>
+          <div className="ml-auto">
+            <RangePickerInline range={scoreState.range} setRange={scoreState.setRange} />
+          </div>
+        </div>
         <ChartFrame height={280}>
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={scoreData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+            <ComposedChart data={scoreState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
               <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={40} label={{ value: "Score", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={56} label={{ value: "Score", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
               <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
               <ReferenceLine y={50} stroke="#6b7280" strokeDasharray="4 4" />
               <Area type="monotone" dataKey="score" name="B模块综合得分" stroke="#16a34a" fill="#dcfce7" fillOpacity={0.35} strokeWidth={2.2} dot={false} />
@@ -192,13 +236,16 @@ export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPo
 
       <div className="grid gap-[14px] xl:grid-cols-2">
         <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-          <MiniTitle>走廊宽度 (IORB - RRP)</MiniTitle>
+          <div className="mb-[8px] flex items-center justify-between gap-[10px]">
+            <MiniTitle>走廊宽度 (IORB - RRP)</MiniTitle>
+            <RangePickerInline range={corridorState.range} setRange={corridorState.setRange} />
+          </div>
           <ChartFrame height={220}>
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={corridorData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+              <ComposedChart data={corridorState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
                 <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
                 <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={40} label={{ value: "bp", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={54} label={{ value: "bp", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
                 <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
                 <Line type="monotone" dataKey="corridor" name="走廊宽度" stroke="#64748b" strokeWidth={2.2} dot={false} />
               </ComposedChart>
@@ -207,13 +254,16 @@ export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPo
         </div>
 
         <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-          <MiniTitle>SRF 权重 (10% - 25%)</MiniTitle>
+          <div className="mb-[8px] flex items-center justify-between gap-[10px]">
+            <MiniTitle>SRF 权重 (10% - 25%)</MiniTitle>
+            <RangePickerInline range={weightState.range} setRange={weightState.setRange} />
+          </div>
           <ChartFrame height={220}>
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={weightData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+              <ComposedChart data={weightState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
                 <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
                 <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={42} tickFormatter={(value) => `${value}%`} />
+                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={54} tickFormatter={(value) => `${value}%`} />
                 <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
                 <ReferenceLine y={10} stroke="#ef4444" strokeDasharray="4 4" />
                 <ReferenceLine y={20} stroke="#dc2626" strokeDasharray="4 4" />
@@ -225,13 +275,18 @@ export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPo
       </div>
 
       <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-        <h3 className="text-[16px] font-bold text-app-text">利率走廊监控: 观察 SOFR 是否突破天花板或远离地板</h3>
+        <div className="flex flex-wrap items-center gap-[10px]">
+          <h3 className="text-[16px] font-bold text-app-text">利率走廊监控: 观察 SOFR 是否突破天花板或远离地板</h3>
+          <div className="ml-auto">
+            <RangePickerInline range={monitorState.range} setRange={monitorState.setRange} />
+          </div>
+        </div>
         <ChartFrame height={280}>
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={corridorMonitor} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+            <ComposedChart data={monitorState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
               <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-              <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={42} label={{ value: "Rate (%)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+              <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={56} label={{ value: "Rate (%)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
               <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <Line type="monotone" dataKey="iorb" name="天花板 (IORB)" stroke="#ef4444" strokeWidth={2} dot={false} strokeDasharray="5 4" />
@@ -245,13 +300,18 @@ export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPo
 
       <div className="grid gap-[14px] xl:grid-cols-2">
         <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-          <h3 className="text-[16px] font-bold text-app-text">走廊摩擦 (SOFR - IORB): 红灯 = 缺钱 | 绿灯 = 正常</h3>
+          <div className="mb-[8px] flex flex-wrap items-center gap-[10px]">
+            <h3 className="text-[16px] font-bold text-app-text">走廊摩擦 (SOFR - IORB): 红灯 = 缺钱 | 绿灯 = 正常</h3>
+            <div className="ml-auto">
+              <RangePickerInline range={spreadState.range} setRange={spreadState.setRange} />
+            </div>
+          </div>
           <ChartFrame height={240}>
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={spreadData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+              <ComposedChart data={spreadState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
                 <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
                 <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={42} label={{ value: "Spread (bp)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={56} label={{ value: "Spread (bp)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
                 <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
                 <ReferenceLine y={0} stroke="#64748b" strokeDasharray="4 4" />
                 <Line type="monotone" dataKey="spread" name="SOFR - IORB" stroke="#ef4444" strokeWidth={2.2} dot={false} />
@@ -261,13 +321,18 @@ export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPo
         </div>
 
         <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-          <h3 className="text-[16px] font-bold text-app-text">SRF 急救室用量: 用量越高 = 压力越大</h3>
+          <div className="mb-[8px] flex flex-wrap items-center gap-[10px]">
+            <h3 className="text-[16px] font-bold text-app-text">SRF 急救室用量: 用量越高 = 压力越大</h3>
+            <div className="ml-auto">
+              <RangePickerInline range={srfState.range} setRange={srfState.setRange} />
+            </div>
+          </div>
           <ChartFrame height={240}>
             <ResponsiveContainer width="100%" height="100%">
-              <ComposedChart data={srfData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+              <ComposedChart data={srfState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
                 <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
                 <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={42} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+                <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={56} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
                 <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
                 <ReferenceLine y={10} stroke="#f59e0b" strokeDasharray="4 4" />
                 <ReferenceLine y={50} stroke="#ef4444" strokeDasharray="4 4" />
@@ -282,14 +347,8 @@ export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPo
 };
 
 export const ModuleEDetailPanels = ({ series }: { series: Record<string, TrendPoint[]> }) => {
-  const energyData = useMemo(
-    () => mergeSeriesByDate({ energyBase: series.energyBase, energyFinal: series.energyFinal }),
-    [series.energyBase, series.energyFinal]
-  );
-  const shockData = useMemo(
-    () => mergeSeriesByDate({ oilShock: series.oilShock, wti: series.wti }),
-    [series.oilShock, series.wti]
-  );
+  const energyState = useRangeMergedSeries({ energyBase: series.energyBase, energyFinal: series.energyFinal }, "2Y");
+  const shockState = useRangeMergedSeries({ oilShock: series.oilShock, wti: series.wti }, "2Y");
 
   if (!series.energyFinal?.length) {
     return null;
@@ -306,6 +365,9 @@ export const ModuleEDetailPanels = ({ series }: { series: Record<string, TrendPo
           <span className="rounded-full bg-slate-50 px-[8px] py-[3px] text-[11px] font-semibold text-app-muted">
             当前修正: {currentShockText}
           </span>
+          <div className="ml-auto">
+            <RangePickerInline range={energyState.range} setRange={energyState.setRange} />
+          </div>
         </div>
         <p className="mt-[6px] text-[12px] leading-relaxed text-app-muted">
           触发逻辑：WTI 单日涨幅达到 3% / 5% / 8% 时，分别即时减 5 / 10 / 18 分；单日跌幅达到 4% 时，
@@ -313,10 +375,10 @@ export const ModuleEDetailPanels = ({ series }: { series: Record<string, TrendPo
         </p>
         <ChartFrame height={300}>
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={energyData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+            <ComposedChart data={energyState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
               <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-              <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={42} label={{ value: "Score", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={56} label={{ value: "Score", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
               <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <ReferenceLine y={33} stroke="#fca5a5" strokeDasharray="4 4" />
@@ -330,14 +392,19 @@ export const ModuleEDetailPanels = ({ series }: { series: Record<string, TrendPo
       </div>
 
       <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-        <h3 className="text-[16px] font-bold text-app-text">Oil Shock 事件轨迹</h3>
+        <div className="mb-[8px] flex flex-wrap items-center gap-[10px]">
+          <h3 className="text-[16px] font-bold text-app-text">Oil Shock 事件轨迹</h3>
+          <div className="ml-auto">
+            <RangePickerInline range={shockState.range} setRange={shockState.setRange} />
+          </div>
+        </div>
         <ChartFrame height={300}>
           <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={shockData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+            <ComposedChart data={shockState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
               <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
               <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-              <YAxis yAxisId="left" domain={[-20, 6]} tick={{ fontSize: 10, fill: "#64748b" }} width={46} label={{ value: "Shock (pts)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={46} label={{ value: "WTI", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
+              <YAxis yAxisId="left" domain={[-20, 6]} tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "Shock (pts)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "WTI", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
               <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
               <Legend wrapperStyle={{ fontSize: 11 }} />
               <ReferenceLine yAxisId="left" y={4} stroke="#16a34a" strokeDasharray="4 4" label={{ value: "缓和 +4", position: "insideTopLeft", fill: "#15803d", fontSize: 10 }} />

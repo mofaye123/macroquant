@@ -1,7 +1,10 @@
 "use client";
 
+import { useMemo, useState } from "react";
+
 import { AlertTriangle, ArrowUpRight, Sparkles } from "lucide-react";
 
+import { ChartRangeKey, ChartRangePicker, tailCountForRange } from "@/components/charts/chart-range-control";
 import { LiquidityReferenceChart, TruthReferenceChart } from "@/components/charts/reference-panels";
 import { LineScoreChart } from "@/components/charts/line-score-chart";
 import { AppShell } from "@/components/layout/app-shell";
@@ -94,6 +97,8 @@ const RiskItem = ({
 
 export default function HomePage() {
   const dataState = useMacroData();
+  const [heatmapRange, setHeatmapRange] = useState<ChartRangeKey>("1Y");
+  const [regimeRange, setRegimeRange] = useState<ChartRangeKey>("2Y");
   const { payload, isLive, isDegraded, sourceType } = dataState;
   const dashboard = payload.dashboard;
   const overallScore = dashboard.overallScore;
@@ -104,6 +109,25 @@ export default function HomePage() {
   const referencePanels = dashboard.referencePanels;
   const riskRadar = dashboard.riskRadar;
   const topMoverRows = deriveTopMoverRows(dashboard);
+  const heatmapTailCount = tailCountForRange(heatmapRange, "weekly");
+  const filteredHeatmapRows = useMemo(
+    () =>
+      heatmap
+        ? heatmap.rows.map((row) => ({
+            ...row,
+            cells: Number.isFinite(heatmapTailCount) ? row.cells.slice(-heatmapTailCount) : row.cells,
+          }))
+        : [],
+    [heatmap, heatmapTailCount]
+  );
+  const regimeTailCount = tailCountForRange(regimeRange, "monthly");
+  const filteredRegimeTimeline = useMemo(
+    () =>
+      regime
+        ? (Number.isFinite(regimeTailCount) ? regime.timeline.slice(-regimeTailCount) : regime.timeline)
+        : [],
+    [regime, regimeTailCount]
+  );
   const realtimeTiles = (dashboard.realtimeSnapshots ?? []).slice(0, 4);
   const scoreRingStyle = {
     background: `conic-gradient(#2563eb ${(overallScore.value / 100) * 360}deg, #e2e8f0 0deg)`,
@@ -156,8 +180,8 @@ export default function HomePage() {
           </SurfaceCard>
 
           <SurfaceCard>
-            <SectionTitle title="综合得分趋势" rightSlot={<span className="text-[11px] text-app-muted">观察窗口: 2Y</span>} />
-            <LineScoreChart data={dashboard.scoreSeries} />
+            <SectionTitle title="综合得分趋势" />
+            <LineScoreChart data={dashboard.scoreSeries} defaultRange="2Y" />
           </SurfaceCard>
         </div>
 
@@ -373,11 +397,14 @@ export default function HomePage() {
           </div>
         </SurfaceCard>
 
-        {heatmap && heatmap.rows.length > 0 && (
+        {heatmap && filteredHeatmapRows.length > 0 && (
           <SurfaceCard>
-            <SectionTitle title="模块状态热力图（周频）" />
+            <SectionTitle
+              title="模块状态热力图（周频）"
+              rightSlot={<ChartRangePicker value={heatmapRange} onChange={setHeatmapRange} />}
+            />
             <div className="mt-[16px] space-y-[10px] overflow-x-auto">
-              {heatmap.rows.map((row) => (
+              {filteredHeatmapRows.map((row) => (
                 <div key={row.label} className="grid min-w-[840px] grid-cols-[160px_1fr] items-center gap-[12px]">
                   <p className="text-[14px] font-semibold text-app-muted">{row.label}</p>
                   <div className="grid gap-[4px]" style={{ gridTemplateColumns: `repeat(${row.cells.length}, minmax(0, 1fr))` }}>
@@ -411,9 +438,12 @@ export default function HomePage() {
           </SurfaceCard>
         )}
 
-        {regime && regime.timeline.length > 0 && (
+        {regime && filteredRegimeTimeline.length > 0 && (
           <SurfaceCard>
-            <SectionTitle title="Regime 看板（复苏 / 过热 / 滞胀 / 放缓）" />
+            <SectionTitle
+              title="Regime 看板（复苏 / 过热 / 滞胀 / 放缓）"
+              rightSlot={<ChartRangePicker value={regimeRange} onChange={setRegimeRange} />}
+            />
             <div className="mt-[14px] grid gap-[14px] xl:grid-cols-[1.05fr_1.45fr]">
               <div className="rounded-[16px] border border-app-border bg-white p-[18px]">
                 <p className="text-[18px] font-extrabold text-app-text">当前状态: {regime.current}</p>
@@ -423,8 +453,8 @@ export default function HomePage() {
                 <p className="mt-[14px] text-[13px] text-app-muted">{regime.lastSwitch}</p>
               </div>
               <div>
-                <div className="grid gap-[5px]" style={{ gridTemplateColumns: `repeat(${regime.timeline.length}, minmax(0, 1fr))` }}>
-                  {regime.timeline.map((item) => (
+                <div className="grid gap-[5px]" style={{ gridTemplateColumns: `repeat(${filteredRegimeTimeline.length}, minmax(0, 1fr))` }}>
+                  {filteredRegimeTimeline.map((item) => (
                     <div key={item.date} className="space-y-[4px]">
                       <div className="group relative">
                         <div

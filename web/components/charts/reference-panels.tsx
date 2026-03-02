@@ -15,6 +15,7 @@ import {
   YAxis,
 } from "recharts";
 
+import { ChartRangeKey, ChartRangePicker, filterRowsByRange } from "@/components/charts/chart-range-control";
 import { TrendPoint } from "@/lib/types";
 
 type LiquidityReferenceChartProps = {
@@ -29,7 +30,9 @@ type TruthReferenceChartProps = {
   btc: TrendPoint[];
 };
 
-const mergeSeriesByDate = (seriesMap: Record<string, TrendPoint[]>) => {
+type MergedSeriesRow = { date: string } & Record<string, string | number | null>;
+
+const mergeSeriesByDate = (seriesMap: Record<string, TrendPoint[]>): MergedSeriesRow[] => {
   const dates = Array.from(
     new Set(
       Object.values(seriesMap)
@@ -39,7 +42,7 @@ const mergeSeriesByDate = (seriesMap: Record<string, TrendPoint[]>) => {
   ).sort();
 
   return dates.map((date) => {
-    const row: Record<string, number | string | null> = { date };
+    const row: MergedSeriesRow = { date };
     Object.entries(seriesMap).forEach(([key, series]) => {
       row[key] = series.find((point) => point.date === date)?.value ?? null;
     });
@@ -49,25 +52,33 @@ const mergeSeriesByDate = (seriesMap: Record<string, TrendPoint[]>) => {
 
 export const LiquidityReferenceChart = ({ tga, sofr, srf }: LiquidityReferenceChartProps) => {
   const [mounted, setMounted] = useState(false);
+  const [range, setRange] = useState<ChartRangeKey>("2Y");
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const data = useMemo(() => mergeSeriesByDate({ tga, sofr, srf }), [tga, sofr, srf]);
+  const data = useMemo(() => {
+    const merged = mergeSeriesByDate({ tga, sofr, srf });
+    return filterRowsByRange(merged, range);
+  }, [tga, sofr, srf, range]);
 
   if (!mounted) {
     return <div className="h-[320px] w-full" />;
   }
 
   return (
-    <div className="h-[320px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 6 }}>
+    <div className="w-full">
+      <div className="mb-[8px] flex justify-end">
+        <ChartRangePicker value={range} onChange={setRange} />
+      </div>
+      <div className="h-[320px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={data} margin={{ top: 8, right: 14, left: 12, bottom: 6 }}>
           <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
           <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-          <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#64748b" }} width={44} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
-          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={44} label={{ value: "Rate", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
+          <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#64748b" }} width={56} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={56} label={{ value: "Rate", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
           <Tooltip
             labelStyle={{ fontSize: 11, color: "#0f172a" }}
             contentStyle={{
@@ -113,33 +124,42 @@ export const LiquidityReferenceChart = ({ tga, sofr, srf }: LiquidityReferenceCh
             dot={false}
           />
           <Bar yAxisId="left" dataKey="srf" name="SRF ($B)" barSize={8} fill="#f87171" radius={[4, 4, 0, 0]} />
-        </ComposedChart>
-      </ResponsiveContainer>
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
 
 export const TruthReferenceChart = ({ score, spx, btc }: TruthReferenceChartProps) => {
   const [mounted, setMounted] = useState(false);
+  const [range, setRange] = useState<ChartRangeKey>("2Y");
 
   useEffect(() => {
     setMounted(true);
   }, []);
 
-  const data = useMemo(() => mergeSeriesByDate({ score, spx, btc }), [score, spx, btc]);
+  const data = useMemo(() => {
+    const merged = mergeSeriesByDate({ score, spx, btc });
+    return filterRowsByRange(merged, range);
+  }, [score, spx, btc, range]);
 
   if (!mounted) {
     return <div className="h-[320px] w-full" />;
   }
 
   return (
-    <div className="h-[320px] w-full">
-      <ResponsiveContainer width="100%" height="100%">
-        <ComposedChart data={data} margin={{ top: 8, right: 12, left: 0, bottom: 6 }}>
+    <div className="w-full">
+      <div className="mb-[8px] flex justify-end">
+        <ChartRangePicker value={range} onChange={setRange} />
+      </div>
+      <div className="h-[320px] w-full">
+        <ResponsiveContainer width="100%" height="100%">
+          <ComposedChart data={data} margin={{ top: 8, right: 14, left: 12, bottom: 6 }}>
           <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
           <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-          <YAxis yAxisId="left" domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={40} />
-          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={48} />
+          <YAxis yAxisId="left" domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={52} />
+          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={58} />
           <Tooltip
             labelStyle={{ fontSize: 11, color: "#0f172a" }}
             contentStyle={{
@@ -188,8 +208,9 @@ export const TruthReferenceChart = ({ score, spx, btc }: TruthReferenceChartProp
             strokeDasharray="5 4"
             dot={false}
           />
-        </ComposedChart>
-      </ResponsiveContainer>
+          </ComposedChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   CartesianGrid,
   Line,
@@ -12,6 +12,7 @@ import {
   YAxis
 } from "recharts";
 
+import { ChartRangeKey, ChartRangePicker, filterTrendPointsByRange } from "@/components/charts/chart-range-control";
 import { TrendPoint } from "@/lib/types";
 
 type LineScoreChartProps = {
@@ -21,6 +22,8 @@ type LineScoreChartProps = {
   valueFormatter?: (value: number) => string;
   height?: number;
   showScoreBands?: boolean;
+  defaultRange?: ChartRangeKey;
+  showRangeSelector?: boolean;
 };
 
 export const LineScoreChart = ({
@@ -30,12 +33,17 @@ export const LineScoreChart = ({
   valueFormatter,
   height = 300,
   showScoreBands,
+  defaultRange = "1Y",
+  showRangeSelector = true,
 }: LineScoreChartProps) => {
   const [mounted, setMounted] = useState(false);
+  const [range, setRange] = useState<ChartRangeKey>(defaultRange);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const filteredData = useMemo(() => filterTrendPointsByRange(data, range), [data, range]);
 
   if (!mounted) {
     return <div className="w-full" style={{ height }} />;
@@ -50,9 +58,15 @@ export const LineScoreChart = ({
         yDomain[1] === 100;
 
   return (
-    <div className="w-full" style={{ height }}>
-      <ResponsiveContainer width="100%" height="100%">
-        <LineChart data={data} margin={{ top: 10, right: 8, left: -20, bottom: 6 }}>
+    <div className="w-full">
+      {showRangeSelector && (
+        <div className="mb-[8px] flex justify-end">
+          <ChartRangePicker value={range} onChange={setRange} />
+        </div>
+      )}
+      <div className="w-full" style={{ height }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <LineChart data={filteredData} margin={{ top: 10, right: 14, left: 12, bottom: 6 }}>
           <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
           <XAxis
             dataKey="date"
@@ -64,7 +78,7 @@ export const LineScoreChart = ({
             domain={yDomain}
             tick={{ fontSize: 10, fill: "#64748b" }}
             tickMargin={8}
-            width={34}
+            width={52}
           />
           <Tooltip
             formatter={(value: number | string | undefined) => {
@@ -94,8 +108,9 @@ export const LineScoreChart = ({
             dot={false}
             activeDot={{ r: 4, strokeWidth: 0, fill: color }}
           />
-        </LineChart>
-      </ResponsiveContainer>
+          </LineChart>
+        </ResponsiveContainer>
+      </div>
     </div>
   );
 };
