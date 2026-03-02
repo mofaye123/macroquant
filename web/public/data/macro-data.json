@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-02T14:20:35Z",
+  "generatedAt": "2026-03-02T14:43:08Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -66,7 +66,7 @@
       "fred_fetch_mode": "api-first",
       "fredapi_success_count": 39,
       "fredapi_failure_count": 0,
-      "fred_csv_blocked": false,
+      "fred_csv_blocked": 0,
       "fred_csv_skip_reason": null,
       "fred_failed_series": [],
       "fred_failure_details": [],
@@ -152,7 +152,7 @@
         "weight": "15%",
         "score": 39.1,
         "change": -3.6,
-        "description": "美元指数 98.46，外部冲击处于中性偏缓状态。"
+        "description": "美元指数 98.43，外部冲击处于中性偏缓状态。"
       },
       {
         "id": "F",
@@ -170,8 +170,8 @@
         "title": "风险偏好",
         "subtitle": "Risk",
         "weight": "7.5%",
-        "score": 6.1,
-        "change": -10.8,
+        "score": 6.6,
+        "change": -10.4,
         "description": "风险偏好由波动率与动量共同驱动，需关注趋势持续性。"
       }
     ],
@@ -7362,19 +7362,19 @@
       },
       {
         "date": "2026-02-27",
-        "value": 55.07
+        "value": 55.43
       },
       {
         "date": "2026-02-28",
-        "value": 55.06
+        "value": 55.42
       },
       {
         "date": "2026-03-01",
-        "value": 55.0
+        "value": 55.36
       },
       {
         "date": "2026-03-02",
-        "value": 54.56
+        "value": 54.61
       }
     ],
     "contributors": [
@@ -7385,7 +7385,7 @@
       },
       {
         "name": "风险偏好",
-        "delta": -0.81,
+        "delta": -0.78,
         "bucket": "Flow"
       },
       {
@@ -7395,7 +7395,7 @@
       },
       {
         "name": "外部冲击与汇率",
-        "delta": -0.55,
+        "delta": -0.54,
         "bucket": "Flow"
       },
       {
@@ -7418,14 +7418,14 @@
       },
       {
         "label": "DXY",
-        "value": "98.46",
-        "delta": "+0.88%",
+        "value": "98.43",
+        "delta": "+0.83%",
         "state": "negative"
       },
       {
         "label": "VIX",
-        "value": "23.6",
-        "delta": "+3.70 · +18.63%",
+        "value": "23.4",
+        "delta": "+3.54 · +17.82%",
         "state": "negative"
       },
       {
@@ -7461,20 +7461,20 @@
         },
         {
           "name": "VIX/VXV",
-          "delta": -0.58,
+          "delta": -0.56,
           "bucket": "Level"
         },
         {
           "name": "DXY",
-          "delta": -0.46,
+          "delta": -0.45,
           "bucket": "Flow"
         }
       ],
       "summary": {
-        "level": -0.62,
-        "flow": -0.72,
+        "level": -0.6,
+        "flow": -0.71,
         "penalty": 0.33,
-        "structural": -0.29,
+        "structural": -0.27,
         "driver": "短期波动主导"
       }
     },
@@ -7807,147 +7807,147 @@
           "cells": [
             {
               "week": "W04",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W05",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W06",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W07",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W08",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W09",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W10",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W11",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W12",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W13",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W14",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W15",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W16",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W17",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W18",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W19",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W20",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W21",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W22",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W23",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W24",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W25",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W26",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W27",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W28",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W29",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W30",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W31",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W32",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
@@ -9412,412 +9412,412 @@
           "cells": [
             {
               "week": "W04",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W05",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W06",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W07",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W08",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W09",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W10",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W11",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W12",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W13",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W14",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W15",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W16",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W17",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W18",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W19",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W20",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W21",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W22",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W23",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W24",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W25",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W26",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W27",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W28",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W29",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W30",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W31",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W32",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W33",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W34",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W35",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W36",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W37",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W38",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W39",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W40",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W41",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W42",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W43",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W44",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W45",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W46",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W47",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W48",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W49",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W50",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W51",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W52",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W53",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W01",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W02",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W03",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W04",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W05",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W06",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W07",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W08",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W09",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W10",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W11",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W12",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W13",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W14",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W15",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W16",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W17",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W18",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W19",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W20",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W21",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W22",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W23",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W24",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W25",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W26",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W27",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W28",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W29",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W30",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W31",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
               "week": "W32",
-              "score": NaN,
+              "score": null,
               "bucket": "strong"
             },
             {
@@ -19027,12 +19027,12 @@
             },
             {
               "week": "W09",
-              "score": 17.0,
+              "score": 21.8,
               "bucket": "critical"
             },
             {
               "week": "W10",
-              "score": 6.1,
+              "score": 6.6,
               "bucket": "critical"
             }
           ]
@@ -19421,7 +19421,7 @@
         },
         {
           "title": "权益表现",
-          "headline": "SPX 6879 / VIX 23.6",
+          "headline": "SPX 6879 / VIX 23.4",
           "detail": "风格切换/补跌监测",
           "changes": [
             {
@@ -19431,19 +19431,19 @@
             },
             {
               "label": "VIX",
-              "value": "+3.70 · +18.63%",
+              "value": "+3.54 · +17.82%",
               "tone": "positive"
             }
           ]
         },
         {
           "title": "信用与美元",
-          "headline": "DXY 98.46 / HY 2.98",
-          "detail": "WTI 72.04",
+          "headline": "DXY 98.43 / HY 2.98",
+          "detail": "WTI 71.63",
           "changes": [
             {
               "label": "DXY",
-              "value": "+0.88%",
+              "value": "+0.83%",
               "tone": "positive"
             },
             {
@@ -19453,7 +19453,7 @@
             },
             {
               "label": "WTI",
-              "value": "+7.49%",
+              "value": "+6.88%",
               "tone": "positive"
             }
           ]
@@ -19490,8 +19490,8 @@
         },
         {
           "asset": "DXY",
-          "value": 98.46,
-          "delta": "+0.88%"
+          "value": 98.43,
+          "delta": "+0.83%"
         },
         {
           "asset": "SP500",
@@ -19505,13 +19505,13 @@
         },
         {
           "asset": "VIX",
-          "value": 23.56,
-          "delta": "+3.70 · +18.63%"
+          "value": 23.4,
+          "delta": "+3.54 · +17.82%"
         },
         {
           "asset": "WTI",
-          "value": 72.04,
-          "delta": "+7.49%"
+          "value": 71.63,
+          "delta": "+6.88%"
         }
       ]
     },
@@ -37728,19 +37728,19 @@
             },
             {
               "date": "2026-02-27",
-              "value": 55.07
+              "value": 55.43
             },
             {
               "date": "2026-02-28",
-              "value": 55.06
+              "value": 55.42
             },
             {
               "date": "2026-03-01",
-              "value": 55.0
+              "value": 55.36
             },
             {
               "date": "2026-03-02",
-              "value": 54.56
+              "value": 54.61
             }
           ],
           "spx": [
@@ -46421,7 +46421,7 @@
         {
           "level": "red",
           "title": "G模块 (风险偏好): 风险厌恶升温",
-          "trigger": "VIX=23.6 / VIX/VXV=1.13。",
+          "trigger": "VIX=23.4 / VIX/VXV=1.09。",
           "off": "VIX 回落至 20 以下且 VIX/VXV 低于 0.95。"
         }
       ],
@@ -143584,13 +143584,13 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
-            72.04,
-            98.465,
-            23.56,
+            71.63,
+            98.425,
+            23.4,
             null,
             3.6738,
             -0.0194,
@@ -143652,8 +143652,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -143720,8 +143720,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -143788,8 +143788,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -173364,13 +173364,13 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
-            72.04,
-            98.465,
-            23.56,
+            71.63,
+            98.425,
+            23.4,
             null,
             67.4603,
             99.4444,
@@ -173419,8 +173419,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -173474,8 +173474,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -173529,8 +173529,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -202977,13 +202977,13 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
-            72.04,
-            98.465,
-            23.56,
+            71.63,
+            98.425,
+            23.4,
             null,
             67.5794,
             99.4444,
@@ -203027,8 +203027,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -203077,8 +203077,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -203127,8 +203127,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -203547,7 +203547,7 @@
       "moduleId": "E",
       "title": "E 模块 · 外部冲击与汇率",
       "subtitle": "External",
-      "overview": "美元指数 98.46，外部冲击处于中性偏缓状态。",
+      "overview": "美元指数 98.43，外部冲击处于中性偏缓状态。",
       "factors": [
         {
           "name": "Broad USD",
@@ -203557,8 +203557,8 @@
         },
         {
           "name": "DXY",
-          "score": 40.6,
-          "change": -15.2,
+          "score": 41.0,
+          "change": -14.8,
           "contribution": "20%"
         },
         {
@@ -203583,8 +203583,8 @@
         },
         {
           "label": "DXY",
-          "value": "98.46",
-          "delta": "+0.88%",
+          "value": "98.43",
+          "delta": "+0.83%",
           "state": "negative"
         },
         {
@@ -203595,14 +203595,14 @@
         },
         {
           "label": "WTI",
-          "value": "72.04",
-          "delta": "+7.49%",
+          "value": "71.63",
+          "delta": "+6.88%",
           "state": "negative"
         },
         {
           "label": "Oil Shock",
           "value": "通胀冲击",
-          "delta": "-10分 · +7.49%",
+          "delta": "-10分 · +6.88%",
           "state": "negative"
         },
         {
@@ -210811,7 +210811,7 @@
         },
         {
           "date": "2026-03-02",
-          "value": 39.07
+          "value": 39.15
         }
       ],
       "auxiliarySeries": [
@@ -225222,7 +225222,7 @@
             },
             {
               "date": "2026-03-02",
-              "value": 40.56
+              "value": 40.95
             }
           ],
           "color": "#10b981"
@@ -239652,7 +239652,7 @@
           },
           {
             "date": "2026-03-02",
-            "value": 39.07
+            "value": 39.15
           }
         ],
         "energyBase": [
@@ -268460,7 +268460,7 @@
           },
           {
             "date": "2026-03-02",
-            "value": 72.04
+            "value": 71.63
           }
         ]
       },
@@ -268574,18 +268574,18 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
-            72.04,
-            98.465,
-            23.56,
+            71.63,
+            98.425,
+            23.4,
             null,
             -0.0134,
             68.8095,
-            0.0043,
-            40.5556,
+            0.0039,
+            40.9524,
             0.0071,
             30.6349,
             2.381,
@@ -268596,17 +268596,17 @@
             -0.2805,
             83.4921,
             45.1587,
-            72.04,
-            98.465,
+            71.63,
+            98.425,
             6878.88,
-            23.56,
+            23.4,
             2.98,
             -10.0,
             "通胀冲击",
             "WTI 单日暴涨 >= 5%",
-            7.4903,
+            6.8785,
             35.1587,
-            39.0683
+            39.1476
           ],
           [
             "2026-03-01",
@@ -268645,8 +268645,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -268716,8 +268716,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -268787,8 +268787,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -298380,13 +298380,13 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
-            72.04,
-            98.465,
-            23.56,
+            71.63,
+            98.425,
+            23.4,
             null,
             2.98,
             53.4392,
@@ -298431,8 +298431,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -298482,8 +298482,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -298533,8 +298533,8 @@
             3.13,
             154.99,
             0.728,
-            18.63,
-            20.81,
+            19.86,
+            21.56,
             2.98,
             1.73,
             67.02,
@@ -298966,14 +298966,14 @@
       "factors": [
         {
           "name": "VIX/VXV Term",
-          "score": 1.1,
-          "change": -19.2,
+          "score": 1.7,
+          "change": -18.5,
           "contribution": "40%"
         },
         {
           "name": "VIX Level",
-          "score": 6.1,
-          "change": -6.9,
+          "score": 6.7,
+          "change": -6.2,
           "contribution": "30%"
         },
         {
@@ -298986,20 +298986,20 @@
       "snapshots": [
         {
           "label": "G 模块当前分数",
-          "value": "6.1",
-          "delta": "-10.8",
+          "value": "6.6",
+          "delta": "-10.4",
           "state": "negative"
         },
         {
           "label": "VIX",
-          "value": "23.56",
-          "delta": "+3.70",
+          "value": "23.40",
+          "delta": "+3.54",
           "state": "negative"
         },
         {
           "label": "VIX/VXV",
-          "value": "1.13",
-          "delta": "+0.18",
+          "value": "1.09",
+          "delta": "+0.16",
           "state": "negative"
         },
         {
@@ -299011,7 +299011,7 @@
         {
           "label": "分数状态",
           "value": "极紧",
-          "delta": "6.1 / 100",
+          "delta": "6.6 / 100",
           "state": "negative"
         }
       ],
@@ -306202,19 +306202,19 @@
         },
         {
           "date": "2026-02-27",
-          "value": 16.96
+          "value": 21.77
         },
         {
           "date": "2026-02-28",
-          "value": 17.02
+          "value": 21.84
         },
         {
           "date": "2026-03-01",
-          "value": 17.25
+          "value": 22.06
         },
         {
           "date": "2026-03-02",
-          "value": 6.12
+          "value": 6.58
         }
       ],
       "auxiliarySeries": [
@@ -320613,19 +320613,19 @@
             },
             {
               "date": "2026-02-27",
-              "value": 18.39
+              "value": 30.42
             },
             {
               "date": "2026-02-28",
-              "value": 18.45
+              "value": 30.49
             },
             {
               "date": "2026-03-01",
-              "value": 18.52
+              "value": 30.56
             },
             {
               "date": "2026-03-02",
-              "value": 1.06
+              "value": 1.72
             }
           ],
           "color": "#0ea5e9"
@@ -327831,7 +327831,7 @@
             },
             {
               "date": "2026-03-02",
-              "value": 6.08
+              "value": 6.75
             }
           ],
           "color": "#38bdf8"
@@ -327872,46 +327872,46 @@
           [
             "2026-03-02",
             6878.88,
-            23.56,
-            20.81,
-            1.1321,
-            6.0847,
-            1.0582,
+            23.4,
+            21.56,
+            1.0853,
+            6.746,
+            1.7196,
             12.8968,
-            6.1177
+            6.5807
           ],
           [
             "2026-03-01",
             6878.88,
             19.86,
-            20.81,
-            0.9543,
+            21.56,
+            0.9212,
             19.9735,
-            18.5185,
+            30.5556,
             12.8307,
-            17.2487
+            22.0635
           ],
           [
             "2026-02-28",
             6878.88,
             19.86,
-            20.81,
-            0.9543,
+            21.56,
+            0.9212,
             19.9074,
-            18.4524,
+            30.4894,
             12.2354,
-            17.0238
+            21.8386
           ],
           [
             "2026-02-27",
             6878.88,
             19.86,
-            20.81,
-            0.9543,
+            21.56,
+            0.9212,
             19.8413,
-            18.3862,
+            30.4233,
             12.1693,
-            16.9577
+            21.7725
           ],
           [
             "2026-02-26",
