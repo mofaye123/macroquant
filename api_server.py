@@ -234,10 +234,19 @@ def _build_raw_table(frame: pd.DataFrame, fallback_points: List[Dict[str, Any]])
         for value in row.tolist():
             if pd.isna(value):
                 values.append(None)
+            elif isinstance(value, (str, np.str_)):
+                values.append(str(value))
+            elif isinstance(value, (bool, np.bool_)):
+                values.append(bool(value))
             elif isinstance(value, (int, np.integer)):
                 values.append(int(value))
-            else:
+            elif isinstance(value, (float, np.floating)):
                 values.append(round(float(value), 4))
+            else:
+                try:
+                    values.append(round(float(value), 4))
+                except (TypeError, ValueError):
+                    values.append(str(value))
         rows.append(values)
     return {"columns": columns, "rows": rows}
 
