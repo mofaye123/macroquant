@@ -462,6 +462,16 @@ def _format_combined_change(
     return "-"
 
 
+def _tone_from_signed_value(value: float) -> str:
+    if pd.isna(value):
+        return "neutral"
+    if value > 0:
+        return "positive"
+    if value < 0:
+        return "negative"
+    return "neutral"
+
+
 def _merged_series(df_all: pd.DataFrame, *columns: str) -> Optional[pd.Series]:
     merged: Optional[pd.Series] = None
     for column in columns:
@@ -493,27 +503,49 @@ def _build_market_board(df_all: pd.DataFrame) -> Dict[str, Any]:
     vix = _market_stat(vix_series)
     dgs10_value = "-" if pd.isna(dgs10["last"]) else f"{dgs10['last']:.2f}%"
     dgs30_value = "-" if pd.isna(dgs30["last"]) else f"{dgs30['last']:.2f}%"
+    spx_value = "-" if pd.isna(spx["last"]) else f"{spx['last']:.0f}"
+    vix_value = "-" if pd.isna(vix["last"]) else f"{vix['last']:.1f}"
+    dxy_value = "-" if pd.isna(dxy["last"]) else f"{dxy['last']:.2f}"
+    hy_value = "-" if pd.isna(hy["last"]) else f"{hy['last']:.2f}"
+    wti_value = "-" if pd.isna(wti["last"]) else f"{wti['last']:.2f}"
 
     cards = [
         {
             "title": "债市先行动量",
-            "headline": f"10Y {_format_signed(dgs10['diff'] * 100.0, 1, 'bp')} · 30Y {_format_signed(dgs30['diff'] * 100.0, 1, 'bp')}",
-            "detail": f"10Y {dgs10_value} / 30Y {dgs30_value}",
+            "headline": f"10Y {dgs10_value} / 30Y {dgs30_value}",
+            "detail": "长端利率同步变动",
+            "changes": [
+                {"label": "10Y", "value": _format_signed(dgs10["diff"] * 100.0, 1, "bp"), "tone": _tone_from_signed_value(dgs10["diff"])},
+                {"label": "30Y", "value": _format_signed(dgs30["diff"] * 100.0, 1, "bp"), "tone": _tone_from_signed_value(dgs30["diff"])},
+            ],
         },
         {
             "title": "收益率结构",
             "headline": f"2s10s {_format_signed(curve_2s10s['last'], 2)} · 3m10s {_format_signed(curve_3m10s['last'], 2)}",
             "detail": "Bull Flattener" if (not pd.isna(curve_2s10s["diff"]) and curve_2s10s["diff"] > 0) else "曲线仍处重定价阶段",
+            "changes": [
+                {"label": "2s10s Δ", "value": _format_signed(curve_2s10s["diff"], 2), "tone": _tone_from_signed_value(curve_2s10s["diff"])},
+                {"label": "3m10s Δ", "value": _format_signed(curve_3m10s["diff"], 2), "tone": _tone_from_signed_value(curve_3m10s["diff"])},
+            ],
         },
         {
             "title": "权益表现",
-            "headline": f"SPX {_format_signed(spx['pct'], 2, '%')} · VIX {_format_signed(vix['diff'], 2)}",
+            "headline": f"SPX {spx_value} / VIX {vix_value}",
             "detail": "风格切换/补跌监测",
+            "changes": [
+                {"label": "SPX", "value": _format_signed(spx["pct"], 2, "%"), "tone": _tone_from_signed_value(spx["pct"])},
+                {"label": "VIX", "value": _format_combined_change(vix["diff"], vix["pct"], diff_digits=2, pct_digits=2), "tone": _tone_from_signed_value(vix["diff"])},
+            ],
         },
         {
             "title": "信用与美元",
-            "headline": f"DXY {_format_signed(dxy['pct'], 2, '%')} · HY {_format_signed(hy['diff'], 2)}",
-            "detail": f"WTI {_format_signed(wti['pct'], 2, '%')}",
+            "headline": f"DXY {dxy_value} / HY {hy_value}",
+            "detail": f"WTI {wti_value}",
+            "changes": [
+                {"label": "DXY", "value": _format_signed(dxy["pct"], 2, "%"), "tone": _tone_from_signed_value(dxy["pct"])},
+                {"label": "HY", "value": _format_signed(hy["diff"], 2), "tone": _tone_from_signed_value(hy["diff"])},
+                {"label": "WTI", "value": _format_signed(wti["pct"], 2, "%"), "tone": _tone_from_signed_value(wti["pct"])},
+            ],
         },
     ]
 

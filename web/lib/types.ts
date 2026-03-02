@@ -97,7 +97,12 @@ export type DashboardPayload = {
     timeline: { date: string; regime: string }[];
   };
   marketBoard?: {
-    cards: { title: string; headline: string; detail: string }[];
+    cards: {
+      title: string;
+      headline: string;
+      detail: string;
+      changes?: { label: string; value: string; tone: "positive" | "negative" | "neutral" }[];
+    }[];
     verdicts: string[];
     rawRows: { asset: string; value: number | null; delta: string }[];
   };

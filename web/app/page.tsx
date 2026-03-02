@@ -283,6 +283,26 @@ export default function HomePage() {
                   <div key={card.title} className="rounded-[16px] border border-app-border bg-white p-[18px]">
                     <p className="text-[11px] font-semibold tracking-[0.12em] text-app-muted">{card.title}</p>
                     <p className="mt-[14px] text-[22px] font-extrabold leading-[1.2] tracking-[-0.02em] text-app-text">{card.headline}</p>
+                    {(card.changes?.length ?? 0) > 0 && (
+                      <div className="mt-[10px] flex flex-wrap gap-[8px]">
+                        {card.changes?.map((change) => (
+                          <span
+                            key={`${card.title}-${change.label}`}
+                            className={cn(
+                              "inline-flex items-center gap-[4px] rounded-[999px] px-[8px] py-[3px] text-[11px] font-semibold",
+                              change.tone === "positive"
+                                ? "bg-emerald-50 text-emerald-700"
+                                : change.tone === "negative"
+                                  ? "bg-red-50 text-red-700"
+                                  : "bg-slate-100 text-slate-600"
+                            )}
+                          >
+                            <span className="opacity-80">{change.label}</span>
+                            <span>{change.value}</span>
+                          </span>
+                        ))}
+                      </div>
+                    )}
                     <p className="mt-[10px] text-[13px] text-app-muted">{card.detail}</p>
                   </div>
                 ))}
