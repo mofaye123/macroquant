@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-02T07:15:15Z",
+  "generatedAt": "2026-03-02T08:55:20Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -80,8 +80,8 @@
   },
   "dashboard": {
     "overallScore": {
-      "value": 55.9,
-      "wow": 1.1,
+      "value": 55.0,
+      "wow": 0.1,
       "statusTags": [
         {
           "label": "TGA 抽水",
@@ -148,9 +148,9 @@
         "title": "外部冲击与汇率",
         "subtitle": "External",
         "weight": "15%",
-        "score": 42.5,
-        "change": -0.2,
-        "description": "美元指数 98.32，外部冲击处于中性偏缓状态。"
+        "score": 42.1,
+        "change": -0.6,
+        "description": "美元指数 98.46，外部冲击处于中性偏缓状态。"
       },
       {
         "id": "F",
@@ -168,8 +168,8 @@
         "title": "风险偏好",
         "subtitle": "Risk",
         "weight": "7.5%",
-        "score": 17.3,
-        "change": 0.4,
+        "score": 5.7,
+        "change": -11.2,
         "description": "风险偏好由波动率与动量共同驱动，需关注趋势持续性。"
       }
     ],
@@ -1212,10 +1212,15 @@
       },
       {
         "date": "2026-03-02",
-        "value": 55.94
+        "value": 55.01
       }
     ],
     "contributors": [
+      {
+        "name": "风险偏好",
+        "delta": -0.84,
+        "bucket": "Flow"
+      },
       {
         "name": "资金价格与摩擦",
         "delta": -0.73,
@@ -1232,19 +1237,14 @@
         "bucket": "Level"
       },
       {
+        "name": "外部冲击与汇率",
+        "delta": -0.09,
+        "bucket": "Flow"
+      },
+      {
         "name": "信用压力",
         "delta": 0.09,
         "bucket": "Level"
-      },
-      {
-        "name": "国债期限结构",
-        "delta": 0.04,
-        "bucket": "Flow"
-      },
-      {
-        "name": "外部冲击与汇率",
-        "delta": -0.03,
-        "bucket": "Flow"
       }
     ],
     "realtimeSnapshots": [
@@ -1256,15 +1256,15 @@
       },
       {
         "label": "DXY",
-        "value": "98.32",
-        "delta": "+0.73%",
+        "value": "98.46",
+        "delta": "+0.87%",
         "state": "negative"
       },
       {
         "label": "VIX",
-        "value": "19.9",
-        "delta": "+0.00",
-        "state": "positive"
+        "value": "24.5",
+        "delta": "+4.68",
+        "state": "negative"
       },
       {
         "label": "SP500",
@@ -1293,27 +1293,27 @@
       ],
       "drags": [
         {
+          "name": "VIX/VXV",
+          "delta": -0.59,
+          "bucket": "Level"
+        },
+        {
           "name": "DXY",
-          "delta": -0.39,
+          "delta": -0.45,
           "bucket": "Flow"
         },
         {
           "name": "Funding Friction",
           "delta": -0.38,
           "bucket": "Flow"
-        },
-        {
-          "name": "SOFR Policy",
-          "delta": -0.36,
-          "bucket": "Level"
         }
       ],
       "summary": {
-        "level": -0.08,
-        "flow": 0.26,
+        "level": -0.62,
+        "flow": 0.2,
         "penalty": 0.33,
-        "structural": 0.25,
-        "driver": "短期波动主导"
+        "structural": -0.29,
+        "driver": "结构性变化主导"
       }
     },
     "heatmap": {
@@ -2016,7 +2016,7 @@
             },
             {
               "week": "W10",
-              "score": 42.5,
+              "score": 42.1,
               "bucket": "warning"
             }
           ]
@@ -2286,7 +2286,7 @@
             },
             {
               "week": "W10",
-              "score": 17.3,
+              "score": 5.7,
               "bucket": "critical"
             }
           ]
@@ -2435,12 +2435,12 @@
         },
         {
           "title": "权益表现",
-          "headline": "SPX +0.00% · VIX +0.00",
+          "headline": "SPX +0.00% · VIX +4.68",
           "detail": "风格切换/补跌监测"
         },
         {
           "title": "信用与美元",
-          "headline": "DXY +0.73% · HY +0.00",
+          "headline": "DXY +0.87% · HY +0.00",
           "detail": "WTI +0.00%"
         }
       ],
@@ -2475,8 +2475,8 @@
         },
         {
           "asset": "DXY",
-          "value": 98.32,
-          "delta": "+0.73%"
+          "value": 98.46,
+          "delta": "+0.87%"
         },
         {
           "asset": "SP500",
@@ -2490,8 +2490,8 @@
         },
         {
           "asset": "VIX",
-          "value": 19.86,
-          "delta": "+0.00"
+          "value": 24.54,
+          "delta": "+4.68"
         },
         {
           "asset": "WTI",
@@ -15317,7 +15317,7 @@
             },
             {
               "date": "2026-03-02",
-              "value": 55.94
+              "value": 55.01
             }
           ],
           "spx": [
@@ -21750,7 +21750,7 @@
         {
           "level": "red",
           "title": "G模块 (风险偏好): 风险厌恶升温",
-          "trigger": "VIX=19.9 / VIX/VXV=0.95。",
+          "trigger": "VIX=24.5 / VIX/VXV=1.18。",
           "off": "VIX 回落至 20 以下且 VIX/VXV 低于 0.95。"
         }
       ],
@@ -47240,8 +47240,8 @@
             20.81,
             2.98,
             1.73,
-            98.322,
-            19.86,
+            98.455,
+            24.54,
             null,
             3.6732,
             -0.02,
@@ -52367,8 +52367,8 @@
             20.81,
             2.98,
             1.73,
-            98.322,
-            19.86,
+            98.455,
+            24.54,
             null,
             67.4603,
             99.4444,
@@ -57327,8 +57327,8 @@
             20.81,
             2.98,
             1.73,
-            98.322,
-            19.86,
+            98.455,
+            24.54,
             null,
             67.5794,
             99.4444,
@@ -57881,7 +57881,7 @@
       "moduleId": "E",
       "title": "E 模块 · 外部冲击与汇率",
       "subtitle": "External",
-      "overview": "美元指数 98.32，外部冲击处于中性偏缓状态。",
+      "overview": "美元指数 98.46，外部冲击处于中性偏缓状态。",
       "factors": [
         {
           "name": "Broad USD",
@@ -57891,8 +57891,8 @@
         },
         {
           "name": "DXY",
-          "score": 42.8,
-          "change": -13.0,
+          "score": 40.6,
+          "change": -15.2,
           "contribution": "20%"
         },
         {
@@ -57911,14 +57911,14 @@
       "snapshots": [
         {
           "label": "E 模块当前分数",
-          "value": "42.5",
-          "delta": "-0.2",
+          "value": "42.1",
+          "delta": "-0.6",
           "state": "negative"
         },
         {
           "label": "DXY",
-          "value": "98.32",
-          "delta": "+0.73%",
+          "value": "98.46",
+          "delta": "+0.87%",
           "state": "negative"
         },
         {
@@ -57936,7 +57936,7 @@
         {
           "label": "分数状态",
           "value": "偏紧",
-          "delta": "42.5 / 100",
+          "delta": "42.1 / 100",
           "state": "negative"
         }
       ],
@@ -58979,7 +58979,7 @@
         },
         {
           "date": "2026-03-02",
-          "value": 42.51
+          "value": 42.08
         }
       ],
       "auxiliarySeries": [
@@ -61070,7 +61070,7 @@
             },
             {
               "date": "2026-03-02",
-              "value": 42.78
+              "value": 40.63
             }
           ],
           "color": "#10b981"
@@ -62243,13 +62243,13 @@
             20.81,
             2.98,
             1.73,
-            98.322,
-            19.86,
+            98.455,
+            24.54,
             null,
             -0.0134,
             68.8095,
-            0.0029,
-            42.7778,
+            0.0042,
+            40.6349,
             0.0071,
             30.6349,
             2.381,
@@ -62259,7 +62259,7 @@
             -0.2805,
             83.4921,
             45.1587,
-            42.5127
+            42.0841
           ],
           [
             "2026-03-01",
@@ -67264,8 +67264,8 @@
             20.81,
             2.98,
             1.73,
-            98.322,
-            19.86,
+            98.455,
+            24.54,
             null,
             2.98,
             53.4392,
@@ -67834,14 +67834,14 @@
       "factors": [
         {
           "name": "VIX/VXV Term",
-          "score": 18.6,
-          "change": -1.7,
+          "score": 0.7,
+          "change": -19.6,
           "contribution": "40%"
         },
         {
           "name": "VIX Level",
-          "score": 20.0,
-          "change": 7.1,
+          "score": 5.3,
+          "change": -7.7,
           "contribution": "30%"
         },
         {
@@ -67854,21 +67854,21 @@
       "snapshots": [
         {
           "label": "G 模块当前分数",
-          "value": "17.3",
-          "delta": "+0.4",
-          "state": "positive"
+          "value": "5.7",
+          "delta": "-11.2",
+          "state": "negative"
         },
         {
           "label": "VIX",
-          "value": "19.86",
-          "delta": "+0.00",
-          "state": "neutral"
+          "value": "24.54",
+          "delta": "+4.68",
+          "state": "negative"
         },
         {
           "label": "VIX/VXV",
-          "value": "0.95",
-          "delta": "+0.00",
-          "state": "neutral"
+          "value": "1.18",
+          "delta": "+0.22",
+          "state": "negative"
         },
         {
           "label": "动量分",
@@ -67879,7 +67879,7 @@
         {
           "label": "分数状态",
           "value": "极紧",
-          "delta": "17.3 / 100",
+          "delta": "5.7 / 100",
           "state": "negative"
         }
       ],
@@ -68922,7 +68922,7 @@
         },
         {
           "date": "2026-03-02",
-          "value": 17.31
+          "value": 5.72
         }
       ],
       "auxiliarySeries": [
@@ -71013,7 +71013,7 @@
             },
             {
               "date": "2026-03-02",
-              "value": 18.58
+              "value": 0.66
             }
           ],
           "color": "#0ea5e9"
@@ -72059,7 +72059,7 @@
             },
             {
               "date": "2026-03-02",
-              "value": 20.04
+              "value": 5.29
             }
           ],
           "color": "#38bdf8"
@@ -72100,13 +72100,13 @@
           [
             "2026-03-02",
             6878.88,
-            19.86,
+            24.54,
             20.81,
-            0.9543,
-            20.0397,
-            18.5847,
+            1.1792,
+            5.291,
+            0.6614,
             12.8968,
-            17.3148
+            5.7209
           ],
           [
             "2026-03-01",
