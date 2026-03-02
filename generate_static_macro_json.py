@@ -1,13 +1,31 @@
 #!/usr/bin/env python3
 import argparse
 import json
+import math
 import sys
 from pathlib import Path
 
-from api_server import _json_safe, build_macro_payload
+import numpy as np
+
+from api_server import build_macro_payload
 
 
 DEFAULT_OUTPUT = Path(__file__).resolve().parent / "web" / "public" / "data" / "macro-data.json"
+
+
+def _json_safe(value):
+    if isinstance(value, dict):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, tuple):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, (np.floating, float)):
+        numeric = float(value)
+        return numeric if math.isfinite(numeric) else None
+    if isinstance(value, (np.integer, int)):
+        return int(value)
+    return value
 
 
 def has_ready_modules(payload):

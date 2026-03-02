@@ -1,5 +1,6 @@
 import copy
 import json
+import math
 import os
 import re
 import textwrap
@@ -1662,6 +1663,21 @@ _BOOTSTRAP_TTL = int(os.getenv("MACRO_API_BOOTSTRAP_TTL", "15"))
 _SNAPSHOT_PATH = Path(os.getenv("MACRO_API_SNAPSHOT_PATH", ".cache/macro_payload.json"))
 
 
+def _json_safe(value: Any) -> Any:
+    if isinstance(value, dict):
+        return {key: _json_safe(item) for key, item in value.items()}
+    if isinstance(value, list):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, tuple):
+        return [_json_safe(item) for item in value]
+    if isinstance(value, (np.floating, float)):
+        numeric = float(value)
+        return numeric if math.isfinite(numeric) else None
+    if isinstance(value, (np.integer, int)):
+        return int(value)
+    return value
+
+
 def _payload_has_live_modules(payload: Optional[Dict[str, Any]]) -> bool:
     if not payload:
         return False
@@ -1682,7 +1698,7 @@ def _load_snapshot_payload() -> Optional[Dict[str, Any]]:
 def _save_snapshot_payload(payload: Dict[str, Any]) -> None:
     try:
         _SNAPSHOT_PATH.parent.mkdir(parents=True, exist_ok=True)
-        _SNAPSHOT_PATH.write_text(json.dumps(payload, ensure_ascii=False), encoding="utf-8")
+        _SNAPSHOT_PATH.write_text(json.dumps(_json_safe(payload), ensure_ascii=False, allow_nan=False), encoding="utf-8")
     except Exception:
         return
 
