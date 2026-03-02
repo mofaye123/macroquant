@@ -349,6 +349,7 @@ export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPo
 export const ModuleEDetailPanels = ({ series }: { series: Record<string, TrendPoint[]> }) => {
   const energyState = useRangeMergedSeries({ energyBase: series.energyBase, energyFinal: series.energyFinal }, "2Y");
   const shockState = useRangeMergedSeries({ oilShock: series.oilShock, wti: series.wti }, "2Y");
+  const dxyState = useRangeMergedSeries({ dxy: series.dxy }, "2Y");
 
   if (!series.energyFinal?.length) {
     return null;
@@ -391,32 +392,61 @@ export const ModuleEDetailPanels = ({ series }: { series: Record<string, TrendPo
         </ChartFrame>
       </div>
 
-      <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
-        <div className="mb-[8px] flex flex-wrap items-center gap-[10px]">
-          <h3 className="text-[16px] font-bold text-app-text">Oil Shock 事件轨迹</h3>
-          <div className="ml-auto">
-            <RangePickerInline range={shockState.range} setRange={shockState.setRange} />
+      <div className="grid gap-[14px] xl:grid-cols-2">
+        <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
+          <div className="mb-[8px] flex flex-wrap items-center gap-[10px]">
+            <h3 className="text-[16px] font-bold text-app-text">Oil Shock 事件轨迹</h3>
+            <div className="ml-auto">
+              <RangePickerInline range={shockState.range} setRange={shockState.setRange} />
+            </div>
           </div>
+          <ChartFrame height={300}>
+            <ResponsiveContainer width="100%" height="100%">
+              <ComposedChart data={shockState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
+                <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
+                <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
+                <YAxis yAxisId="left" domain={[-20, 6]} tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "Shock (pts)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+                <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "WTI", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
+                <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
+                <Legend wrapperStyle={{ fontSize: 11 }} />
+                <ReferenceLine yAxisId="left" y={4} stroke="#16a34a" strokeDasharray="4 4" label={{ value: "缓和 +4", position: "insideTopLeft", fill: "#15803d", fontSize: 10 }} />
+                <ReferenceLine yAxisId="left" y={0} stroke="#94a3b8" strokeDasharray="4 4" />
+                <ReferenceLine yAxisId="left" y={-5} stroke="#f59e0b" strokeDasharray="4 4" />
+                <ReferenceLine yAxisId="left" y={-10} stroke="#f97316" strokeDasharray="4 4" />
+                <ReferenceLine yAxisId="left" y={-18} stroke="#ef4444" strokeDasharray="4 4" label={{ value: "冲击 -18", position: "insideBottomLeft", fill: "#b91c1c", fontSize: 10 }} />
+                <Bar yAxisId="left" dataKey="oilShock" name="Oil Shock 修正" fill="#fb7185" barSize={6} radius={[4, 4, 0, 0]} />
+                <Line yAxisId="right" type="monotone" dataKey="wti" name="WTI" stroke="#2563eb" strokeWidth={2.0} dot={false} />
+              </ComposedChart>
+            </ResponsiveContainer>
+          </ChartFrame>
         </div>
-        <ChartFrame height={300}>
-          <ResponsiveContainer width="100%" height="100%">
-            <ComposedChart data={shockState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
-              <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
-              <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-              <YAxis yAxisId="left" domain={[-20, 6]} tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "Shock (pts)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
-              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "WTI", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
-              <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
-              <Legend wrapperStyle={{ fontSize: 11 }} />
-              <ReferenceLine yAxisId="left" y={4} stroke="#16a34a" strokeDasharray="4 4" label={{ value: "缓和 +4", position: "insideTopLeft", fill: "#15803d", fontSize: 10 }} />
-              <ReferenceLine yAxisId="left" y={0} stroke="#94a3b8" strokeDasharray="4 4" />
-              <ReferenceLine yAxisId="left" y={-5} stroke="#f59e0b" strokeDasharray="4 4" />
-              <ReferenceLine yAxisId="left" y={-10} stroke="#f97316" strokeDasharray="4 4" />
-              <ReferenceLine yAxisId="left" y={-18} stroke="#ef4444" strokeDasharray="4 4" label={{ value: "冲击 -18", position: "insideBottomLeft", fill: "#b91c1c", fontSize: 10 }} />
-              <Bar yAxisId="left" dataKey="oilShock" name="Oil Shock 修正" fill="#fb7185" barSize={6} radius={[4, 4, 0, 0]} />
-              <Line yAxisId="right" type="monotone" dataKey="wti" name="WTI" stroke="#2563eb" strokeWidth={2.0} dot={false} />
-            </ComposedChart>
-          </ResponsiveContainer>
-        </ChartFrame>
+
+        {series.dxy?.length ? (
+          <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
+            <div className="mb-[8px] flex flex-wrap items-center gap-[10px]">
+              <h3 className="text-[16px] font-bold text-app-text">DXY 趋势</h3>
+              <span className="rounded-full bg-slate-50 px-[8px] py-[3px] text-[11px] font-semibold text-app-muted">
+                美元走强 = 外部冲击压力上升
+              </span>
+              <div className="ml-auto">
+                <RangePickerInline range={dxyState.range} setRange={dxyState.setRange} />
+              </div>
+            </div>
+            <ChartFrame height={300}>
+              <ResponsiveContainer width="100%" height="100%">
+                <ComposedChart data={dxyState.data} margin={{ top: 12, right: 18, left: 14, bottom: 6 }}>
+                  <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
+                  <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
+                  <YAxis tick={{ fontSize: 10, fill: "#64748b" }} width={58} label={{ value: "Index", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+                  <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
+                  <Legend wrapperStyle={{ fontSize: 11 }} />
+                  <ReferenceLine y={100} stroke="#94a3b8" strokeDasharray="4 4" label={{ value: "中轴 100", position: "insideTopLeft", fill: "#64748b", fontSize: 10 }} />
+                  <Area type="monotone" dataKey="dxy" name="DXY" stroke="#7c3aed" fill="#ede9fe" fillOpacity={0.28} strokeWidth={2.5} />
+                </ComposedChart>
+              </ResponsiveContainer>
+            </ChartFrame>
+          </div>
+        ) : null}
       </div>
     </div>
   );

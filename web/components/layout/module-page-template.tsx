@@ -1,10 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
 import { Database, FileText } from "lucide-react";
 
 import { ModuleADetailPanels, ModuleBDetailPanels, ModuleEDetailPanels } from "@/components/charts/module-detail-panels";
+import { ChartRangeKey, filterRowsByRange } from "@/components/charts/chart-range-control";
 import { LineScoreChart } from "@/components/charts/line-score-chart";
 import { MultiLineChart } from "@/components/charts/multi-line-chart";
 import { AppShell } from "@/components/layout/app-shell";
@@ -22,6 +23,7 @@ type ModulePageTemplateProps = {
 };
 
 export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps) => {
+  const [scoreRange, setScoreRange] = useState<ChartRangeKey>("1Y");
   const latest = data.scoreSeries[data.scoreSeries.length - 1]?.value ?? 50;
   const previous = data.scoreSeries[data.scoreSeries.length - 2]?.value ?? latest;
   const change = latest - previous;
@@ -51,10 +53,20 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
   const rawTable = data.rawTable ?? {
     columns: ["Date", "Total_Score"],
     rows: data.scoreSeries
-      .slice(-12)
       .reverse()
       .map((point) => [point.date, Number(point.value.toFixed(2))]),
   };
+  const rawRowsByRange = useMemo(() => {
+    const rowsWithDate = rawTable.rows
+      .map((row) => ({
+        date: typeof row[0] === "string" ? row[0] : "",
+        row,
+      }))
+      .filter((item) => item.date);
+    const filtered = filterRowsByRange([...rowsWithDate].reverse(), scoreRange).reverse();
+    return filtered.length > 0 ? filtered.map((item) => item.row) : rawTable.rows;
+  }, [rawTable.rows, scoreRange]);
+  const rawRangeLabel = scoreRange === "ALL" ? "全部窗口" : `当前窗口 ${scoreRange}`;
 
   return (
     <AppShell dataState={dataState}>
@@ -88,7 +100,12 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
           <SurfaceCard>
             <SectionTitle title="模块得分趋势" rightSlot={<span className="text-[11px] text-app-muted">阈值线: 33 / 50 / 66</span>} />
             <div className="mt-[12px] mx-auto w-full max-w-[860px]">
-              <MultiLineChart main={data.scoreSeries} overlays={data.auxiliarySeries} />
+              <MultiLineChart
+                main={data.scoreSeries}
+                overlays={data.auxiliarySeries}
+                range={scoreRange}
+                onRangeChange={setScoreRange}
+              />
             </div>
             <p className="mt-[10px] text-[12px] text-app-muted">低于 33 = 极紧；围绕 50 = 中性；高于 66 = 偏松。读图时先看分数位置，再看斜率方向。</p>
           </SurfaceCard>
@@ -211,7 +228,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
           <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]">
             <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
               <Database className="h-[14px] w-[14px]" />
-              查看完整原始数据表（最近 12 期）
+              {`查看完整原始数据表（${rawRangeLabel} · ${rawRowsByRange.length} 行）`}
             </summary>
             {!data.rawTable && (
               <div className="mt-[10px] rounded-[10px] border border-amber-200 bg-amber-50 p-[10px] text-[12px] leading-relaxed text-amber-900">
@@ -219,7 +236,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                 所以这里暂时只能展示分数序列样例。要看到你截图那种完整原始数据明细，需要重新生成一次新的静态快照。
               </div>
             )}
-            <div className="mt-[10px] max-h-[460px] overflow-auto rounded-[10px] border border-slate-100">
+            <div className="mt-[10px] max-h-[460px] overflow-auto overscroll-contain rounded-[10px] border border-slate-100">
               <table className="w-full min-w-[720px] text-[11px]">
                 <thead className="sticky top-0 z-20 bg-slate-50 text-app-muted">
                   <tr>
@@ -237,7 +254,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                   </tr>
                 </thead>
                 <tbody>
-                  {rawTable.rows.map((row, rowIndex) => (
+                  {rawRowsByRange.map((row, rowIndex) => (
                     <tr key={`row-${rowIndex}`} className="border-t border-slate-100">
                       {row.map((cell, cellIndex) => (
                         <td

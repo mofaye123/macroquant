@@ -232,10 +232,13 @@ def _build_raw_table(frame: pd.DataFrame, fallback_points: List[Dict[str, Any]])
     if frame is None or frame.empty:
         return {
             "columns": ["Date", "Total_Score"],
-            "rows": [[point["date"], round(float(point["value"]), 2)] for point in reversed(fallback_points[-12:])],
+            "rows": [[point["date"], round(float(point["value"]), 2)] for point in reversed(fallback_points[-DAILY_CHART_LIMIT:])],
         }
 
-    raw = frame.tail(12).copy()
+    raw = frame.copy()
+    if isinstance(raw.index, pd.DatetimeIndex):
+        raw = raw[raw.index >= CHART_HISTORY_START]
+    raw = raw.tail(DAILY_CHART_LIMIT).copy()
     columns = ["Date"] + [str(col) for col in raw.columns]
     rows: List[List[Any]] = []
     for idx, row in raw.sort_index(ascending=False).iterrows():
@@ -311,6 +314,10 @@ def _build_module_special_series(module_id: str, frame: pd.DataFrame) -> Optiona
             payload["oilShock"] = _series_points(frame["Oil_Shock_Adjustment"], limit=DAILY_CHART_LIMIT)
         if "WTI_Display" in frame.columns:
             payload["wti"] = _series_points(frame["WTI_Display"], limit=DAILY_CHART_LIMIT)
+        if "DXY_Fast" in frame.columns:
+            payload["dxy"] = _series_points(frame["DXY_Fast"], limit=DAILY_CHART_LIMIT)
+        elif "DXY" in frame.columns:
+            payload["dxy"] = _series_points(frame["DXY"], limit=DAILY_CHART_LIMIT)
         return payload
 
     return None

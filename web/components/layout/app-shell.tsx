@@ -2,10 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ReactNode } from "react";
+import { ReactNode, useMemo, useState } from "react";
 import {
   BarChart3,
-  ChartCandlestick,
+  ChevronDown,
+  ChevronRight,
   CircleDollarSign,
   Gauge,
   Globe,
@@ -16,7 +17,6 @@ import {
   Waves
 } from "lucide-react";
 
-import { navItems } from "@/lib/mock-data";
 import { MacroDataState, useMacroData } from "@/lib/use-macro-data";
 import { cn, describeScoreState } from "@/lib/utils";
 
@@ -33,12 +33,22 @@ const iconMap = {
   "/modules/d": Gauge,
   "/modules/e": Globe,
   "/modules/f": ShieldAlert,
-  "/modules/g": Orbit,
-  "/backtest": ChartCandlestick
+  "/modules/g": Orbit
 } as const;
+
+const dashboardGroupItems = [
+  { href: "/modules/a", label: "A. 系统流动性" },
+  { href: "/modules/b", label: "B. 资金价格与摩擦" },
+  { href: "/modules/c", label: "C. 国债期限结构" },
+  { href: "/modules/d", label: "D. 实际利率与通胀" },
+  { href: "/modules/e", label: "E. 外部冲击与汇率" },
+  { href: "/modules/f", label: "F. 信用压力" },
+  { href: "/modules/g", label: "G. 风险偏好" },
+] as const;
 
 export const AppShell = ({ children, dataState }: AppShellProps) => {
   const pathname = usePathname();
+  const [dashboardExpanded, setDashboardExpanded] = useState(true);
   const fallbackState = useMacroData({ disabled: Boolean(dataState) });
   const { isLive, isDegraded, payload, error, sourceType } = dataState ?? fallbackState;
   const formatTimestamp = (iso: string, offsetHours = 0) => {
@@ -74,6 +84,11 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
         : isDegraded
           ? `DEGRADED (Python API ${readyModules}/7)`
           : "LIVE (Python API)";
+  const dashboardActive = pathname === "/";
+  const childActive = useMemo(
+    () => dashboardGroupItems.some((item) => pathname.startsWith(item.href)),
+    [pathname]
+  );
 
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_0%_0%,#f8fbff_0%,#eef2f7_35%,#f8fafc_100%)] text-app-text">
@@ -110,25 +125,64 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
           </div>
 
           <nav className="space-y-[6px]">
-            {navItems.map((item) => {
-              const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
-              const active = item.href === "/" ? pathname === "/" : pathname.startsWith(item.href);
-              return (
+            <div className="space-y-[6px]">
+              <div
+                className={cn(
+                  "flex items-center gap-[8px] rounded-[12px] border px-[8px] py-[6px]",
+                  dashboardActive || childActive ? "border-blue-200 bg-blue-50" : "border-transparent"
+                )}
+              >
                 <Link
-                  key={item.href}
-                  href={item.href}
+                  href="/"
                   className={cn(
-                    "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
-                    active
-                      ? "border-blue-200 bg-blue-50 text-blue-700"
-                      : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                    "flex min-w-0 flex-1 items-center gap-[10px] rounded-[10px] px-[2px] py-[3px] text-[12px] font-medium transition-colors",
+                    dashboardActive
+                      ? "text-blue-700"
+                      : "text-app-muted hover:text-app-text"
                   )}
                 >
-                  <Icon className="h-[14px] w-[14px]" />
-                  <span>{item.label}</span>
+                  <LayoutDashboard className="h-[14px] w-[14px]" />
+                  <span>DASHBOARD</span>
                 </Link>
-              );
-            })}
+                <button
+                  type="button"
+                  onClick={() => setDashboardExpanded((value) => !value)}
+                  className={cn(
+                    "inline-flex h-[22px] w-[22px] items-center justify-center rounded-[8px] transition-colors",
+                    dashboardActive || childActive
+                      ? "text-blue-700 hover:bg-blue-100"
+                      : "text-app-muted hover:bg-slate-100 hover:text-app-text"
+                  )}
+                  aria-label={dashboardExpanded ? "收起模块导航" : "展开模块导航"}
+                >
+                  {dashboardExpanded ? <ChevronDown className="h-[14px] w-[14px]" /> : <ChevronRight className="h-[14px] w-[14px]" />}
+                </button>
+              </div>
+
+              {dashboardExpanded && (
+                <div className="space-y-[4px] pl-[18px]">
+                  {dashboardGroupItems.map((item) => {
+                    const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
+                    const active = pathname.startsWith(item.href);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
+                          active
+                            ? "border-blue-200 bg-blue-50 text-blue-700"
+                            : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                        )}
+                      >
+                        <Icon className="h-[14px] w-[14px]" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
           </nav>
 
           <div className="mt-[14px] rounded-[12px] border border-amber-100 bg-amber-50 px-[10px] py-[9px] text-[11px] text-amber-700">
