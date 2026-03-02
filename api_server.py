@@ -443,6 +443,18 @@ def _market_stat(series: Optional[pd.Series]) -> Dict[str, float]:
     return _latest_and_diff(series)
 
 
+def _merged_series(df_all: pd.DataFrame, *columns: str) -> Optional[pd.Series]:
+    merged: Optional[pd.Series] = None
+    for column in columns:
+        if column not in df_all.columns:
+            continue
+        series = df_all.get(column)
+        if series is None:
+            continue
+        merged = series if merged is None else merged.combine_first(series)
+    return merged
+
+
 def _build_market_board(df_all: pd.DataFrame) -> Dict[str, Any]:
     dgs2 = _market_stat(df_all.get("DGS2"))
     dgs10 = _market_stat(df_all.get("DGS10"))
@@ -452,7 +464,7 @@ def _build_market_board(df_all: pd.DataFrame) -> Dict[str, Any]:
     dxy = _market_stat(df_all.get("DXY"))
     spx = _market_stat(df_all.get("SP500"))
     hy = _market_stat(df_all.get("BAMLH0A0HYM2"))
-    wti = _market_stat(df_all.get("DCOILWTICO"))
+    wti = _market_stat(_merged_series(df_all, "WTI_YH", "DCOILWTICO"))
 
     vix_series = None
     if "VIX_YH" in df_all.columns or "VIXCLS" in df_all.columns:
@@ -1096,7 +1108,15 @@ def _build_module_snapshots(
     elif module_id == "E":
         snapshots.append(_snapshot_from_series("DXY", df_all.get("DXY"), delta_mode="pct", delta_suffix="%", inverse_state=True))
         snapshots.append(_snapshot_from_series("Broad USD", df_all.get("DTWEXBGS"), delta_mode="pct", delta_suffix="%", inverse_state=True))
-        snapshots.append(_snapshot_from_series("WTI", df_all.get("DCOILWTICO"), delta_mode="pct", delta_suffix="%", inverse_state=True))
+        snapshots.append(
+            _snapshot_from_series(
+                "WTI",
+                _merged_series(df_all, "WTI_YH", "DCOILWTICO"),
+                delta_mode="pct",
+                delta_suffix="%",
+                inverse_state=True,
+            )
+        )
     elif module_id == "F":
         snapshots.append(_snapshot_from_series("HY利差", df_all.get("BAMLH0A0HYM2"), value_suffix="%", inverse_state=True))
         snapshots.append(_snapshot_from_series("BAA10Y", df_all.get("BAA10Y"), value_suffix="%", inverse_state=True))

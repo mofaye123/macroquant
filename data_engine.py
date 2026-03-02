@@ -221,12 +221,12 @@ def get_mixed_data(api_key, series_ids, start_date='2010-01-01'):
 
     df_fred = pd.DataFrame(data) if data else pd.DataFrame()
 
-    # 2. 获取 Yahoo 数据 (DXY / VIX / VXV)
-    # DX-Y.NYB 是美元指数在 Yahoo 的代码
+    # 2. 获取 Yahoo 数据 (DXY / VIX / VXV / WTI)
+    # DX-Y.NYB 是美元指数在 Yahoo 的代码；CL=F 为 WTI 原油期货
     df_yahoo = pd.DataFrame()
     try:
         # progress=False 隐藏下载进度条
-        tickers = ["DX-Y.NYB", "^VIX", "^VXV"]
+        tickers = ["DX-Y.NYB", "^VIX", "^VXV", "CL=F"]
         yahoo_data = yf.download(tickers, start=start_date, progress=False)
 
         # 只取 Close
@@ -241,7 +241,7 @@ def get_mixed_data(api_key, series_ids, start_date='2010-01-01'):
             if not close_df.empty:
                 if close_df.index.tz is not None:
                     close_df.index = close_df.index.tz_localize(None)
-                col_map = {"DX-Y.NYB": "DXY", "^VIX": "VIX_YH", "^VXV": "VXV_YH"}
+                col_map = {"DX-Y.NYB": "DXY", "^VIX": "VIX_YH", "^VXV": "VXV_YH", "CL=F": "WTI_YH"}
                 close_df = close_df.rename(columns=col_map)
                 df_yahoo = close_df
             else:
