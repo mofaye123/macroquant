@@ -21,6 +21,8 @@ type MultiLineChartProps = {
   overlays: { name: string; points: TrendPoint[]; color: string }[];
   defaultRange?: ChartRangeKey;
   showRangeSelector?: boolean;
+  range?: ChartRangeKey;
+  onRangeChange?: (next: ChartRangeKey) => void;
 };
 
 export const MultiLineChart = ({
@@ -28,13 +30,18 @@ export const MultiLineChart = ({
   overlays,
   defaultRange = "1Y",
   showRangeSelector = true,
+  range: controlledRange,
+  onRangeChange,
 }: MultiLineChartProps) => {
   const [mounted, setMounted] = useState(false);
-  const [range, setRange] = useState<ChartRangeKey>(defaultRange);
+  const [internalRange, setInternalRange] = useState<ChartRangeKey>(defaultRange);
 
   useEffect(() => {
     setMounted(true);
   }, []);
+
+  const range = controlledRange ?? internalRange;
+  const setRange = onRangeChange ?? setInternalRange;
 
   const filteredMain = useMemo(() => filterTrendPointsByRange(main, range), [main, range]);
   const filteredOverlays = useMemo(
