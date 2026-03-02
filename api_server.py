@@ -484,6 +484,71 @@ def _merged_series(df_all: pd.DataFrame, *columns: str) -> Optional[pd.Series]:
     return merged
 
 
+def _compute_oil_shock_signal(df_all: pd.DataFrame) -> Dict[str, Any]:
+    wti = _merged_series(df_all, "WTI_YH", "DCOILWTICO")
+    if wti is None:
+        return {"adjustment": 0.0, "label": "未触发", "reason": "无可用油价序列", "move_pct": np.nan}
+
+    wti_valid = wti.dropna()
+    if len(wti_valid) < 2:
+        return {"adjustment": 0.0, "label": "未触发", "reason": "油价历史不足", "move_pct": np.nan}
+
+    oil_1d = _safe_float(wti_valid.pct_change().dropna().iloc[-1])
+
+    dxy_series = df_all.get("DXY", pd.Series(dtype=float)).dropna()
+    spx_series = df_all.get("SP500", pd.Series(dtype=float)).dropna()
+    vix_series = _merged_series(df_all, "VIX_YH", "VIXCLS")
+    hy_series = df_all.get("BAMLH0A0HYM2", pd.Series(dtype=float)).dropna()
+
+    dxy_1d = _safe_float(dxy_series.pct_change().dropna().iloc[-1] if len(dxy_series) >= 2 else np.nan)
+    spx_1d = _safe_float(spx_series.pct_change().dropna().iloc[-1] if len(spx_series) >= 2 else np.nan)
+    vix_valid = vix_series.dropna() if vix_series is not None else pd.Series(dtype=float)
+    vix_1d = _safe_float(vix_valid.pct_change().dropna().iloc[-1] if len(vix_valid) >= 2 else np.nan)
+    hy_1d = _safe_float(hy_series.diff().dropna().iloc[-1] if len(hy_series) >= 2 else np.nan)
+
+    risk_confirmation = any(
+        (
+            not pd.isna(dxy_1d) and dxy_1d >= 0.005,
+            not pd.isna(spx_1d) and spx_1d <= -0.01,
+            not pd.isna(vix_1d) and vix_1d >= 0.10,
+            not pd.isna(hy_1d) and hy_1d >= 0.03,
+        )
+    )
+
+    adjustment = 0.0
+    label = "未触发"
+    reason = "日度波动仍处于正常区间"
+
+    if oil_1d >= 0.08:
+        adjustment = -18.0
+        label = "通胀冲击"
+        reason = "WTI 单日暴涨 >= 8%"
+    elif oil_1d >= 0.05:
+        adjustment = -10.0
+        label = "通胀冲击"
+        reason = "WTI 单日暴涨 >= 5%"
+    elif oil_1d >= 0.03:
+        adjustment = -5.0
+        label = "短期升温"
+        reason = "WTI 单日上涨 >= 3%"
+    elif oil_1d <= -0.04:
+        if risk_confirmation:
+            adjustment = -8.0
+            label = "需求冲击"
+            reason = "WTI 暴跌且伴随风险共振"
+        else:
+            adjustment = 4.0
+            label = "通胀缓和"
+            reason = "WTI 暴跌但未见风险共振"
+
+    return {
+        "adjustment": adjustment,
+        "label": label,
+        "reason": reason,
+        "move_pct": oil_1d * 100.0 if not pd.isna(oil_1d) else np.nan,
+    }
+
+
 def _build_market_board(df_all: pd.DataFrame) -> Dict[str, Any]:
     dgs2 = _market_stat(df_all.get("DGS2"))
     dgs10 = _market_stat(df_all.get("DGS10"))
@@ -942,10 +1007,22 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         df_e["Score_BoJ_Rate"] = (1 - df_e["IRSTCI01JPM156N"].rolling(1260, min_periods=1).rank(pct=True)) * 100
         df_e["Score_Yen_Total"] = df_e["Score_Yen_FX"] * 0.7 + df_e["Score_BoJ_Rate"] * 0.3
         df_e["Chg_Oil"] = df_e["DCOILWTICO"].pct_change(63)
-        df_e["Score_Oil"] = (1 - df_e["Chg_Oil"].rolling(1260, min_periods=1).rank(pct=True)) * 100
+        df_e["Score_Oil_Long"] = (1 - df_e["Chg_Oil"].rolling(1260, min_periods=1).rank(pct=True)) * 100
+        df_e["Score_Oil"] = df_e["Score_Oil_Long"]
         df_e["Chg_Gas"] = df_e["DHHNGSP"].pct_change(63)
         df_e["Score_Gas"] = (1 - df_e["Chg_Gas"].rolling(1260, min_periods=1).rank(pct=True)) * 100
-        df_e["Score_Energy"] = df_e["Score_Oil"] * 0.5 + df_e["Score_Gas"] * 0.5
+        df_e["Score_Energy_Base"] = df_e["Score_Oil_Long"] * 0.5 + df_e["Score_Gas"] * 0.5
+        oil_shock = _compute_oil_shock_signal(df_all)
+        df_e["Oil_Shock_Adjustment"] = 0.0
+        df_e["Oil_Shock_Label"] = "未触发"
+        df_e["Oil_Shock_Reason"] = "日度波动仍处于正常区间"
+        df_e["Oil_Shock_Move_Pct"] = np.nan
+        last_idx = df_e.index[-1]
+        df_e.loc[last_idx, "Oil_Shock_Adjustment"] = oil_shock["adjustment"]
+        df_e.loc[last_idx, "Oil_Shock_Label"] = oil_shock["label"]
+        df_e.loc[last_idx, "Oil_Shock_Reason"] = oil_shock["reason"]
+        df_e.loc[last_idx, "Oil_Shock_Move_Pct"] = oil_shock["move_pct"]
+        df_e["Score_Energy"] = (df_e["Score_Energy_Base"] + df_e["Oil_Shock_Adjustment"]).clip(0, 100)
         df_e["Total_Score"] = (
             df_e["Score_USD"] * 0.20
             + df_e["Score_DXY"] * 0.20
@@ -1168,6 +1245,30 @@ def _build_module_snapshots(
                 inverse_state=True,
             )
         )
+        if not frame.empty and "Oil_Shock_Adjustment" in frame.columns:
+            shock_series = frame["Oil_Shock_Adjustment"].dropna()
+            adj = _safe_float(shock_series.iloc[-1] if not shock_series.empty else 0.0, 0.0)
+            label = (
+                str(frame["Oil_Shock_Label"].dropna().iloc[-1])
+                if "Oil_Shock_Label" in frame.columns and not frame["Oil_Shock_Label"].dropna().empty
+                else "未触发"
+            )
+            move_pct = (
+                _safe_float(frame["Oil_Shock_Move_Pct"].dropna().iloc[-1])
+                if "Oil_Shock_Move_Pct" in frame.columns and not frame["Oil_Shock_Move_Pct"].dropna().empty
+                else np.nan
+            )
+            delta_text = _format_signed(adj, 0, "分")
+            if not pd.isna(move_pct):
+                delta_text = f"{delta_text} · {_format_signed(move_pct, 2, '%')}"
+            snapshots.append(
+                {
+                    "label": "Oil Shock",
+                    "value": label,
+                    "delta": delta_text,
+                    "state": _state_from_delta(adj),
+                }
+            )
     elif module_id == "F":
         snapshots.append(_snapshot_from_series("HY利差", df_all.get("BAMLH0A0HYM2"), value_suffix="%", inverse_state=True))
         snapshots.append(_snapshot_from_series("BAA10Y", df_all.get("BAA10Y"), value_suffix="%", inverse_state=True))
