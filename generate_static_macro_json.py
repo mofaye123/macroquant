@@ -4,7 +4,7 @@ import json
 import sys
 from pathlib import Path
 
-from api_server import build_macro_payload
+from api_server import _json_safe, build_macro_payload
 
 
 DEFAULT_OUTPUT = Path(__file__).resolve().parent / "web" / "public" / "data" / "macro-data.json"
@@ -27,14 +27,14 @@ def load_existing_payload(path):
 
 def write_payload(path, payload):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(payload, ensure_ascii=False, indent=2), encoding="utf-8")
+    path.write_text(json.dumps(_json_safe(payload), ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
 
 
 def write_status(path, status):
     if path is None:
         return
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(status, ensure_ascii=False, indent=2), encoding="utf-8")
+    path.write_text(json.dumps(_json_safe(status), ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
 
 
 def main():
