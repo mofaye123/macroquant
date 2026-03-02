@@ -281,6 +281,20 @@ def _build_module_special_series(module_id: str, frame: pd.DataFrame) -> Optiona
             payload["srf"] = _series_points(frame["RPONTSYD"], limit=320)
         return payload
 
+    if module_id == "E":
+        payload = {
+            "score": _series_points(frame["Total_Score"], limit=320),
+        }
+        if "Score_Energy_Base" in frame.columns:
+            payload["energyBase"] = _series_points(frame["Score_Energy_Base"], limit=320)
+        if "Score_Energy" in frame.columns:
+            payload["energyFinal"] = _series_points(frame["Score_Energy"], limit=320)
+        if "Oil_Shock_Adjustment" in frame.columns:
+            payload["oilShock"] = _series_points(frame["Oil_Shock_Adjustment"], limit=320)
+        if "WTI_Display" in frame.columns:
+            payload["wti"] = _series_points(frame["WTI_Display"], limit=320)
+        return payload
+
     return None
 
 
@@ -1012,16 +1026,68 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         df_e["Chg_Gas"] = df_e["DHHNGSP"].pct_change(63)
         df_e["Score_Gas"] = (1 - df_e["Chg_Gas"].rolling(1260, min_periods=1).rank(pct=True)) * 100
         df_e["Score_Energy_Base"] = df_e["Score_Oil_Long"] * 0.5 + df_e["Score_Gas"] * 0.5
-        oil_shock = _compute_oil_shock_signal(df_all)
+        df_e["WTI_Display"] = df_e["DCOILWTICO"]
+        wti_display = _merged_series(df_all, "WTI_YH", "DCOILWTICO")
+        if wti_display is not None:
+            df_e["WTI_Display"] = wti_display.reindex(df_e.index, method="ffill").combine_first(df_e["WTI_Display"])
+
+        dxy_fast = df_all.get("DXY")
+        if dxy_fast is not None:
+            df_e["DXY_Fast"] = dxy_fast.reindex(df_e.index, method="ffill")
+        spx_fast = df_all.get("SP500")
+        if spx_fast is not None:
+            df_e["SP500_Fast"] = spx_fast.reindex(df_e.index, method="ffill")
+        vix_fast = _merged_series(df_all, "VIX_YH", "VIXCLS")
+        if vix_fast is not None:
+            df_e["VIX_Fast"] = vix_fast.reindex(df_e.index, method="ffill")
+        hy_fast = df_all.get("BAMLH0A0HYM2")
+        if hy_fast is not None:
+            df_e["HY_Fast"] = hy_fast.reindex(df_e.index, method="ffill")
+
+        oil_1d = df_e["WTI_Display"].pct_change()
+        dxy_1d = df_e["DXY_Fast"].pct_change() if "DXY_Fast" in df_e.columns else pd.Series(np.nan, index=df_e.index)
+        spx_1d = df_e["SP500_Fast"].pct_change() if "SP500_Fast" in df_e.columns else pd.Series(np.nan, index=df_e.index)
+        vix_1d = df_e["VIX_Fast"].pct_change() if "VIX_Fast" in df_e.columns else pd.Series(np.nan, index=df_e.index)
+        hy_1d = df_e["HY_Fast"].diff() if "HY_Fast" in df_e.columns else pd.Series(np.nan, index=df_e.index)
+        risk_confirmation = (
+            ((dxy_1d >= 0.005).fillna(False))
+            | ((spx_1d <= -0.01).fillna(False))
+            | ((vix_1d >= 0.10).fillna(False))
+            | ((hy_1d >= 0.03).fillna(False))
+        )
+
         df_e["Oil_Shock_Adjustment"] = 0.0
         df_e["Oil_Shock_Label"] = "未触发"
         df_e["Oil_Shock_Reason"] = "日度波动仍处于正常区间"
-        df_e["Oil_Shock_Move_Pct"] = np.nan
-        last_idx = df_e.index[-1]
-        df_e.loc[last_idx, "Oil_Shock_Adjustment"] = oil_shock["adjustment"]
-        df_e.loc[last_idx, "Oil_Shock_Label"] = oil_shock["label"]
-        df_e.loc[last_idx, "Oil_Shock_Reason"] = oil_shock["reason"]
-        df_e.loc[last_idx, "Oil_Shock_Move_Pct"] = oil_shock["move_pct"]
+        df_e["Oil_Shock_Move_Pct"] = oil_1d * 100.0
+
+        mask_up_8 = oil_1d >= 0.08
+        mask_up_5 = (oil_1d >= 0.05) & ~mask_up_8
+        mask_up_3 = (oil_1d >= 0.03) & ~mask_up_8 & ~mask_up_5
+        mask_down = oil_1d <= -0.04
+        mask_down_risk = mask_down & risk_confirmation
+        mask_down_relief = mask_down & ~risk_confirmation
+
+        df_e.loc[mask_up_8, "Oil_Shock_Adjustment"] = -18.0
+        df_e.loc[mask_up_8, "Oil_Shock_Label"] = "通胀冲击"
+        df_e.loc[mask_up_8, "Oil_Shock_Reason"] = "WTI 单日暴涨 >= 8%"
+
+        df_e.loc[mask_up_5, "Oil_Shock_Adjustment"] = -10.0
+        df_e.loc[mask_up_5, "Oil_Shock_Label"] = "通胀冲击"
+        df_e.loc[mask_up_5, "Oil_Shock_Reason"] = "WTI 单日暴涨 >= 5%"
+
+        df_e.loc[mask_up_3, "Oil_Shock_Adjustment"] = -5.0
+        df_e.loc[mask_up_3, "Oil_Shock_Label"] = "短期升温"
+        df_e.loc[mask_up_3, "Oil_Shock_Reason"] = "WTI 单日上涨 >= 3%"
+
+        df_e.loc[mask_down_risk, "Oil_Shock_Adjustment"] = -8.0
+        df_e.loc[mask_down_risk, "Oil_Shock_Label"] = "需求冲击"
+        df_e.loc[mask_down_risk, "Oil_Shock_Reason"] = "WTI 暴跌且伴随风险共振"
+
+        df_e.loc[mask_down_relief, "Oil_Shock_Adjustment"] = 4.0
+        df_e.loc[mask_down_relief, "Oil_Shock_Label"] = "通胀缓和"
+        df_e.loc[mask_down_relief, "Oil_Shock_Reason"] = "WTI 暴跌但未见风险共振"
+
         df_e["Score_Energy"] = (df_e["Score_Energy_Base"] + df_e["Oil_Shock_Adjustment"]).clip(0, 100)
         df_e["Total_Score"] = (
             df_e["Score_USD"] * 0.20

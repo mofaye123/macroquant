@@ -280,3 +280,77 @@ export const ModuleBDetailPanels = ({ series }: { series: Record<string, TrendPo
     </div>
   );
 };
+
+export const ModuleEDetailPanels = ({ series }: { series: Record<string, TrendPoint[]> }) => {
+  const energyData = useMemo(
+    () => mergeSeriesByDate({ energyBase: series.energyBase, energyFinal: series.energyFinal }),
+    [series.energyBase, series.energyFinal]
+  );
+  const shockData = useMemo(
+    () => mergeSeriesByDate({ oilShock: series.oilShock, wti: series.wti }),
+    [series.oilShock, series.wti]
+  );
+
+  if (!series.energyFinal?.length) {
+    return null;
+  }
+
+  const latestShock = series.oilShock?.at(-1)?.value ?? 0;
+  const currentShockText = latestShock === 0 ? "未触发" : `${latestShock > 0 ? "+" : ""}${latestShock.toFixed(0)}分`;
+
+  return (
+    <div className="space-y-[14px]">
+      <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
+        <div className="flex flex-wrap items-center gap-[10px]">
+          <h3 className="text-[16px] font-bold text-app-text">Energy 主分 vs 即时修正后</h3>
+          <span className="rounded-full bg-slate-50 px-[8px] py-[3px] text-[11px] font-semibold text-app-muted">
+            当前修正: {currentShockText}
+          </span>
+        </div>
+        <p className="mt-[6px] text-[12px] leading-relaxed text-app-muted">
+          触发逻辑：WTI 单日涨幅达到 3% / 5% / 8% 时，分别即时减 5 / 10 / 18 分；单日跌幅达到 4% 时，
+          若伴随风险共振则减 8 分，否则加 4 分。
+        </p>
+        <ChartFrame height={300}>
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={energyData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+              <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
+              <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={42} label={{ value: "Score", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+              <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <ReferenceLine y={33} stroke="#fca5a5" strokeDasharray="4 4" />
+              <ReferenceLine y={50} stroke="#94a3b8" strokeDasharray="4 4" />
+              <ReferenceLine y={66} stroke="#86efac" strokeDasharray="4 4" />
+              <Line type="monotone" dataKey="energyBase" name="Energy 主分 (慢变量)" stroke="#64748b" strokeWidth={2.0} dot={false} />
+              <Line type="monotone" dataKey="energyFinal" name="Energy 修正后" stroke="#f97316" strokeWidth={2.5} dot={false} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </ChartFrame>
+      </div>
+
+      <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
+        <h3 className="text-[16px] font-bold text-app-text">Oil Shock 事件轨迹</h3>
+        <ChartFrame height={300}>
+          <ResponsiveContainer width="100%" height="100%">
+            <ComposedChart data={shockData} margin={{ top: 12, right: 16, left: 0, bottom: 6 }}>
+              <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
+              <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
+              <YAxis yAxisId="left" domain={[-20, 6]} tick={{ fontSize: 10, fill: "#64748b" }} width={46} label={{ value: "Shock (pts)", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
+              <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={46} label={{ value: "WTI", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
+              <Tooltip labelStyle={{ fontSize: 11, color: "#0f172a" }} contentStyle={tooltipStyle} />
+              <Legend wrapperStyle={{ fontSize: 11 }} />
+              <ReferenceLine yAxisId="left" y={4} stroke="#16a34a" strokeDasharray="4 4" label={{ value: "缓和 +4", position: "insideTopLeft", fill: "#15803d", fontSize: 10 }} />
+              <ReferenceLine yAxisId="left" y={0} stroke="#94a3b8" strokeDasharray="4 4" />
+              <ReferenceLine yAxisId="left" y={-5} stroke="#f59e0b" strokeDasharray="4 4" />
+              <ReferenceLine yAxisId="left" y={-10} stroke="#f97316" strokeDasharray="4 4" />
+              <ReferenceLine yAxisId="left" y={-18} stroke="#ef4444" strokeDasharray="4 4" label={{ value: "冲击 -18", position: "insideBottomLeft", fill: "#b91c1c", fontSize: 10 }} />
+              <Bar yAxisId="left" dataKey="oilShock" name="Oil Shock 修正" fill="#fb7185" barSize={6} radius={[4, 4, 0, 0]} />
+              <Line yAxisId="right" type="monotone" dataKey="wti" name="WTI" stroke="#2563eb" strokeWidth={2.0} dot={false} />
+            </ComposedChart>
+          </ResponsiveContainer>
+        </ChartFrame>
+      </div>
+    </div>
+  );
+};

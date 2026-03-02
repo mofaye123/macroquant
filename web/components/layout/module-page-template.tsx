@@ -4,7 +4,7 @@ import { useMemo } from "react";
 
 import { Database, FileText } from "lucide-react";
 
-import { ModuleADetailPanels, ModuleBDetailPanels } from "@/components/charts/module-detail-panels";
+import { ModuleADetailPanels, ModuleBDetailPanels, ModuleEDetailPanels } from "@/components/charts/module-detail-panels";
 import { LineScoreChart } from "@/components/charts/line-score-chart";
 import { MultiLineChart } from "@/components/charts/multi-line-chart";
 import { AppShell } from "@/components/layout/app-shell";
@@ -35,6 +35,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
   const normalizedGlossaryHtml = useMemo(() => stripLegacyGlossaryInlineStyles(glossaryHtml), [glossaryHtml]);
   const showSpecialAPanels = data.moduleId === "A" && Boolean(data.specialSeries?.score?.length);
   const showSpecialBPanels = data.moduleId === "B" && Boolean(data.specialSeries?.score?.length);
+  const showSpecialEPanels = data.moduleId === "E" && Boolean(data.specialSeries?.energyFinal?.length);
   const snapshots = useMemo(() => {
     const sanitized = data.snapshots.filter((item) => !/最新更新时间|generatedat|snapshotat|分数状态/i.test(item.label));
     return [
@@ -108,17 +109,18 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
           </SurfaceCard>
         </div>
 
-        {(showSpecialAPanels || showSpecialBPanels) && (
+        {(showSpecialAPanels || showSpecialBPanels || showSpecialEPanels) && (
           <SurfaceCard>
-            <SectionTitle title={showSpecialAPanels ? "A模块关键图表" : "B模块关键图表"} />
+            <SectionTitle title={showSpecialAPanels ? "A模块关键图表" : showSpecialBPanels ? "B模块关键图表" : "E模块关键图表"} />
             <div className="mt-[12px]">
               {showSpecialAPanels ? <ModuleADetailPanels series={data.specialSeries!} /> : null}
               {showSpecialBPanels ? <ModuleBDetailPanels series={data.specialSeries!} /> : null}
+              {showSpecialEPanels ? <ModuleEDetailPanels series={data.specialSeries!} /> : null}
             </div>
           </SurfaceCard>
         )}
 
-        {overlays.length > 0 && !showSpecialAPanels && !showSpecialBPanels && (
+        {overlays.length > 0 && !showSpecialAPanels && !showSpecialBPanels && !showSpecialEPanels && (
           <SurfaceCard>
             <SectionTitle title="因子趋势图" rightSlot={<span className="text-[11px] text-app-muted">统一评分轴: 0 - 100</span>} />
             <p className="mt-[8px] text-[12px] text-app-muted">同样使用 33 / 50 / 66 三条参考线。这样能直接看出因子是偏紧、均衡还是偏松，而不是只看绝对数值。</p>
