@@ -443,6 +443,25 @@ def _market_stat(series: Optional[pd.Series]) -> Dict[str, float]:
     return _latest_and_diff(series)
 
 
+def _format_combined_change(
+    diff_value: float,
+    pct_value: float,
+    diff_digits: int = 2,
+    pct_digits: int = 2,
+    diff_suffix: str = "",
+    pct_suffix: str = "%",
+) -> str:
+    has_diff = not pd.isna(diff_value)
+    has_pct = not pd.isna(pct_value)
+    if has_diff and has_pct:
+        return f"{_format_signed(diff_value, diff_digits, diff_suffix)} · {_format_signed(pct_value, pct_digits, pct_suffix)}"
+    if has_diff:
+        return _format_signed(diff_value, diff_digits, diff_suffix)
+    if has_pct:
+        return _format_signed(pct_value, pct_digits, pct_suffix)
+    return "-"
+
+
 def _merged_series(df_all: pd.DataFrame, *columns: str) -> Optional[pd.Series]:
     merged: Optional[pd.Series] = None
     for column in columns:
@@ -517,7 +536,7 @@ def _build_market_board(df_all: pd.DataFrame) -> Dict[str, Any]:
         {"asset": "DXY", "value": None if pd.isna(dxy["last"]) else round(float(dxy["last"]), 2), "delta": _format_signed(dxy["pct"], 2, "%")},
         {"asset": "SP500", "value": None if pd.isna(spx["last"]) else round(float(spx["last"]), 2), "delta": _format_signed(spx["pct"], 2, "%")},
         {"asset": "HY利差", "value": None if pd.isna(hy["last"]) else round(float(hy["last"]), 2), "delta": _format_signed(hy["diff"], 2)},
-        {"asset": "VIX", "value": None if pd.isna(vix["last"]) else round(float(vix["last"]), 2), "delta": _format_signed(vix["diff"], 2)},
+        {"asset": "VIX", "value": None if pd.isna(vix["last"]) else round(float(vix["last"]), 2), "delta": _format_combined_change(vix["diff"], vix["pct"], diff_digits=2, pct_digits=2)},
         {"asset": "WTI", "value": None if pd.isna(wti["last"]) else round(float(wti["last"]), 2), "delta": _format_signed(wti["pct"], 2, "%")},
     ]
     return {"cards": cards, "verdicts": verdicts, "rawRows": raw_rows}
@@ -1363,7 +1382,7 @@ def build_macro_payload() -> Dict[str, Any]:
         {
             "label": "VIX",
             "value": "-" if pd.isna(vix_stats["last"]) else f"{vix_stats['last']:.1f}",
-            "delta": _format_signed(vix_stats["diff"], digits=2),
+            "delta": _format_combined_change(vix_stats["diff"], vix_stats["pct"], diff_digits=2, pct_digits=2),
             "state": "negative" if (not pd.isna(vix_stats["diff"]) and vix_stats["diff"] > 0) else "positive",
         },
         {

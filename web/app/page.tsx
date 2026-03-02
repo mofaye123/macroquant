@@ -280,10 +280,10 @@ export default function HomePage() {
             {(marketBoard?.cards?.length ?? 0) > 0 && (
               <div className="mt-[14px] grid gap-[10px] sm:grid-cols-2">
                 {marketBoard?.cards.map((card) => (
-                  <div key={card.title} className="rounded-[14px] border border-app-border bg-slate-50 p-[14px]">
-                    <p className="text-[12px] font-semibold text-app-muted">{card.title}</p>
-                    <p className="mt-[8px] text-[15px] font-extrabold text-app-text">{card.headline}</p>
-                    <p className="mt-[8px] text-[12px] text-app-muted">{card.detail}</p>
+                  <div key={card.title} className="rounded-[16px] border border-app-border bg-white p-[18px]">
+                    <p className="text-[11px] font-semibold tracking-[0.12em] text-app-muted">{card.title}</p>
+                    <p className="mt-[14px] text-[22px] font-extrabold leading-[1.2] tracking-[-0.02em] text-app-text">{card.headline}</p>
+                    <p className="mt-[10px] text-[13px] text-app-muted">{card.detail}</p>
                   </div>
                 ))}
               </div>
