@@ -236,7 +236,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                 所以这里暂时只能展示分数序列样例。要看到你截图那种完整原始数据明细，需要重新生成一次新的静态快照。
               </div>
             )}
-            <div className="mt-[10px] max-h-[460px] overflow-auto overscroll-contain rounded-[10px] border border-slate-100">
+            <div className="mt-[10px] h-[520px] max-h-[62vh] w-full overflow-scroll overscroll-contain rounded-[10px] border border-slate-100">
               <table className="w-full min-w-[720px] text-[11px]">
                 <thead className="sticky top-0 z-20 bg-slate-50 text-app-muted">
                   <tr>

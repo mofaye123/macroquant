@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { ReactNode, useMemo, useState } from "react";
 import {
   BarChart3,
+  FileText,
   ChevronDown,
   ChevronRight,
   CircleDollarSign,
@@ -27,6 +28,9 @@ type AppShellProps = {
 
 const iconMap = {
   "/": LayoutDashboard,
+  "/market-analysis": BarChart3,
+  "/market-analysis/macro-report": FileText,
+  "/market-analysis/us-economic-data": Landmark,
   "/modules/a": Waves,
   "/modules/b": CircleDollarSign,
   "/modules/c": Landmark,
@@ -46,9 +50,15 @@ const dashboardGroupItems = [
   { href: "/modules/g", label: "G. 风险偏好" },
 ] as const;
 
+const marketAnalysisGroupItems = [
+  { href: "/market-analysis/macro-report", label: "宏观报告" },
+  { href: "/market-analysis/us-economic-data", label: "美国经济数据" },
+] as const;
+
 export const AppShell = ({ children, dataState }: AppShellProps) => {
   const pathname = usePathname();
   const [dashboardExpanded, setDashboardExpanded] = useState(true);
+  const [marketExpanded, setMarketExpanded] = useState(true);
   const fallbackState = useMacroData({ disabled: Boolean(dataState) });
   const { isLive, isDegraded, payload, error, sourceType } = dataState ?? fallbackState;
   const formatTimestamp = (iso: string, offsetHours = 0) => {
@@ -87,6 +97,11 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
   const dashboardActive = pathname === "/";
   const childActive = useMemo(
     () => dashboardGroupItems.some((item) => pathname.startsWith(item.href)),
+    [pathname]
+  );
+  const marketActive = pathname === "/market-analysis";
+  const marketChildActive = useMemo(
+    () => marketAnalysisGroupItems.some((item) => pathname.startsWith(item.href)),
     [pathname]
   );
 
@@ -162,6 +177,65 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
               {dashboardExpanded && (
                 <div className="space-y-[4px] pl-[18px]">
                   {dashboardGroupItems.map((item) => {
+                    const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
+                    const active = pathname.startsWith(item.href);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        className={cn(
+                          "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
+                          active
+                            ? "border-blue-200 bg-blue-50 text-blue-700"
+                            : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                        )}
+                      >
+                        <Icon className="h-[14px] w-[14px]" />
+                        <span>{item.label}</span>
+                      </Link>
+                    );
+                  })}
+                </div>
+              )}
+            </div>
+
+            <div className="space-y-[6px]">
+              <div
+                className={cn(
+                  "flex items-center gap-[8px] rounded-[12px] border px-[8px] py-[6px]",
+                  marketActive || marketChildActive ? "border-blue-200 bg-blue-50" : "border-transparent"
+                )}
+              >
+                <Link
+                  href="/market-analysis"
+                  className={cn(
+                    "flex min-w-0 flex-1 items-center gap-[10px] rounded-[10px] px-[2px] py-[3px] text-[12px] font-medium transition-colors",
+                    marketActive
+                      ? "text-blue-700"
+                      : "text-app-muted hover:text-app-text"
+                  )}
+                >
+                  <BarChart3 className="h-[14px] w-[14px]" />
+                  <span>市场行情分析</span>
+                </Link>
+                <button
+                  type="button"
+                  onClick={() => setMarketExpanded((value) => !value)}
+                  className={cn(
+                    "inline-flex h-[22px] w-[22px] items-center justify-center rounded-[8px] transition-colors",
+                    marketActive || marketChildActive
+                      ? "text-blue-700 hover:bg-blue-100"
+                      : "text-app-muted hover:bg-slate-100 hover:text-app-text"
+                  )}
+                  aria-label={marketExpanded ? "收起市场行情导航" : "展开市场行情导航"}
+                >
+                  {marketExpanded ? <ChevronDown className="h-[14px] w-[14px]" /> : <ChevronRight className="h-[14px] w-[14px]" />}
+                </button>
+              </div>
+
+              {marketExpanded && (
+                <div className="space-y-[4px] pl-[18px]">
+                  {marketAnalysisGroupItems.map((item) => {
                     const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
                     const active = pathname.startsWith(item.href);
                     return (

@@ -392,7 +392,7 @@ export const ModuleEDetailPanels = ({ series }: { series: Record<string, TrendPo
         </ChartFrame>
       </div>
 
-      <div className="grid gap-[14px] xl:grid-cols-2">
+      <div className="space-y-[14px]">
         <div className="rounded-[14px] border border-app-border bg-white p-[14px]">
           <div className="mb-[8px] flex flex-wrap items-center gap-[10px]">
             <h3 className="text-[16px] font-bold text-app-text">Oil Shock 事件轨迹</h3>
