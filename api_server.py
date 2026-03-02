@@ -85,6 +85,10 @@ MODULE_REQUIRED_COLUMNS: Dict[str, List[str]] = {
 }
 
 _MODULE_SOURCE_CACHE: Dict[str, str] = {}
+CHART_HISTORY_START = pd.Timestamp("2020-01-01")
+DAILY_CHART_LIMIT = 1800
+WEEKLY_CHART_LIMIT = 320
+MONTHLY_CHART_LIMIT = 84
 
 
 def _module_source_text(slug: str) -> str:
@@ -120,8 +124,12 @@ def _extract_glossary_html(slug: str) -> str:
     return "\n".join(html_parts)
 
 
-def _series_points(series: pd.Series, limit: int = 260) -> List[Dict[str, Any]]:
-    s = series.dropna().tail(limit)
+def _series_points(series: pd.Series, limit: Optional[int] = DAILY_CHART_LIMIT) -> List[Dict[str, Any]]:
+    s = series.dropna()
+    if not s.empty:
+        s = s[s.index >= CHART_HISTORY_START]
+    if limit is not None:
+        s = s.tail(limit)
     return [{"date": idx.strftime("%Y-%m-%d"), "value": round(float(val), 2)} for idx, val in s.items()]
 
 
@@ -257,51 +265,51 @@ def _build_module_special_series(module_id: str, frame: pd.DataFrame) -> Optiona
 
     if module_id == "A":
         payload: Dict[str, List[Dict[str, Any]]] = {
-            "score": _series_points(frame["Total_Score"], limit=320),
+            "score": _series_points(frame["Total_Score"], limit=DAILY_CHART_LIMIT),
         }
         if "Liquidity_Sink" in frame.columns:
-            payload["sink"] = _series_points(frame["Liquidity_Sink"] / 1000.0, limit=320)
+            payload["sink"] = _series_points(frame["Liquidity_Sink"] / 1000.0, limit=DAILY_CHART_LIMIT)
         if "WTREGEN" in frame.columns:
             tga_series = frame["WTREGEN"].where(frame["WTREGEN"] <= 10000, frame["WTREGEN"] / 1000.0)
-            payload["tga"] = _series_points(tga_series, limit=320)
+            payload["tga"] = _series_points(tga_series, limit=DAILY_CHART_LIMIT)
         if "RRP_Clean" in frame.columns:
-            payload["rrp"] = _series_points(frame["RRP_Clean"] / 1000.0, limit=320)
+            payload["rrp"] = _series_points(frame["RRP_Clean"] / 1000.0, limit=DAILY_CHART_LIMIT)
         return payload
 
     if module_id == "B":
         payload = {
-            "score": _series_points(frame["Total_Score"], limit=320),
+            "score": _series_points(frame["Total_Score"], limit=DAILY_CHART_LIMIT),
         }
         if "Corridor_Width" in frame.columns:
-            payload["corridor"] = _series_points(frame["Corridor_Width"] * 100.0, limit=320)
+            payload["corridor"] = _series_points(frame["Corridor_Width"] * 100.0, limit=DAILY_CHART_LIMIT)
         if "SRF_Weight" in frame.columns:
-            payload["srfWeight"] = _series_points(frame["SRF_Weight"] * 100.0, limit=320)
+            payload["srfWeight"] = _series_points(frame["SRF_Weight"] * 100.0, limit=DAILY_CHART_LIMIT)
         if "SOFR" in frame.columns:
-            payload["sofr"] = _series_points(frame["SOFR"], limit=320)
+            payload["sofr"] = _series_points(frame["SOFR"], limit=DAILY_CHART_LIMIT)
         if "IORB" in frame.columns:
-            payload["iorb"] = _series_points(frame["IORB"], limit=320)
+            payload["iorb"] = _series_points(frame["IORB"], limit=DAILY_CHART_LIMIT)
         if "RRPONTSYAWARD" in frame.columns:
-            payload["floor"] = _series_points(frame["RRPONTSYAWARD"], limit=320)
+            payload["floor"] = _series_points(frame["RRPONTSYAWARD"], limit=DAILY_CHART_LIMIT)
         if "SOFR_MA13" in frame.columns:
-            payload["sofrMa13"] = _series_points(frame["SOFR_MA13"], limit=320)
+            payload["sofrMa13"] = _series_points(frame["SOFR_MA13"], limit=DAILY_CHART_LIMIT)
         if "SOFR" in frame.columns and "IORB" in frame.columns:
-            payload["spread"] = _series_points((frame["SOFR"] - frame["IORB"]) * 100.0, limit=320)
+            payload["spread"] = _series_points((frame["SOFR"] - frame["IORB"]) * 100.0, limit=DAILY_CHART_LIMIT)
         if "RPONTSYD" in frame.columns:
-            payload["srf"] = _series_points(frame["RPONTSYD"], limit=320)
+            payload["srf"] = _series_points(frame["RPONTSYD"], limit=DAILY_CHART_LIMIT)
         return payload
 
     if module_id == "E":
         payload = {
-            "score": _series_points(frame["Total_Score"], limit=320),
+            "score": _series_points(frame["Total_Score"], limit=DAILY_CHART_LIMIT),
         }
         if "Score_Energy_Base" in frame.columns:
-            payload["energyBase"] = _series_points(frame["Score_Energy_Base"], limit=320)
+            payload["energyBase"] = _series_points(frame["Score_Energy_Base"], limit=DAILY_CHART_LIMIT)
         if "Score_Energy" in frame.columns:
-            payload["energyFinal"] = _series_points(frame["Score_Energy"], limit=320)
+            payload["energyFinal"] = _series_points(frame["Score_Energy"], limit=DAILY_CHART_LIMIT)
         if "Oil_Shock_Adjustment" in frame.columns:
-            payload["oilShock"] = _series_points(frame["Oil_Shock_Adjustment"], limit=320)
+            payload["oilShock"] = _series_points(frame["Oil_Shock_Adjustment"], limit=DAILY_CHART_LIMIT)
         if "WTI_Display" in frame.columns:
-            payload["wti"] = _series_points(frame["WTI_Display"], limit=320)
+            payload["wti"] = _series_points(frame["WTI_Display"], limit=DAILY_CHART_LIMIT)
         return payload
 
     return None
@@ -398,7 +406,7 @@ def _build_dashboard_heatmap(module_frames: Dict[str, pd.DataFrame], df_all: pd.
             module_hist[label] = frame["Total_Score"].reindex(base_idx, method="ffill")
         else:
             module_hist[label] = pd.Series(50.0, index=base_idx)
-    weekly = module_hist.resample("W-FRI").last().dropna(how="all").tail(26)
+    weekly = module_hist.resample("W-FRI").last().dropna(how="all").tail(WEEKLY_CHART_LIMIT)
     if weekly.empty:
         return {"weeks": [], "rows": []}
     weeks = [f"W{int(ts.isocalendar().week):02d}" for ts in weekly.index]
@@ -440,7 +448,7 @@ def _build_regime_view(df_all: pd.DataFrame) -> Dict[str, Any]:
         ["复苏", "过热", "滞胀", "放缓"],
         default="放缓",
     )
-    view = reg_m.tail(30).copy()
+    view = reg_m.tail(MONTHLY_CHART_LIMIT).copy()
     switches = view[view["Regime"] != view["Regime"].shift(1)]
     switch_text = "最近区间未发生象限切换。"
     if switches.shape[0] > 1:
@@ -710,16 +718,16 @@ def _build_reference_panels(df_all: pd.DataFrame, total_series: pd.Series) -> Di
         "liquidityMonitor": {
             "status": left_status,
             "series": {
-                "tga": _series_points(reference_window["WTREGEN"] / 1000.0, limit=800) if "WTREGEN" in reference_window.columns else [],
-                "sofr": _series_points(reference_window["SOFR"], limit=800) if "SOFR" in reference_window.columns else [],
-                "srf": _series_points(reference_window["RPONTSYD"], limit=800) if "RPONTSYD" in reference_window.columns else [],
+                "tga": _series_points(reference_window["WTREGEN"] / 1000.0, limit=DAILY_CHART_LIMIT) if "WTREGEN" in reference_window.columns else [],
+                "sofr": _series_points(reference_window["SOFR"], limit=DAILY_CHART_LIMIT) if "SOFR" in reference_window.columns else [],
+                "srf": _series_points(reference_window["RPONTSYD"], limit=DAILY_CHART_LIMIT) if "RPONTSYD" in reference_window.columns else [],
             },
         },
         "truthTest": {
             "series": {
-                "score": _series_points(score_window, limit=800),
-                "spx": _series_points(valid_window["SP500"], limit=800) if "SP500" in valid_window.columns else [],
-                "btc": _series_points(valid_window["CBBTCUSD"], limit=800) if "CBBTCUSD" in valid_window.columns else [],
+                "score": _series_points(score_window, limit=DAILY_CHART_LIMIT),
+                "spx": _series_points(valid_window["SP500"], limit=DAILY_CHART_LIMIT) if "SP500" in valid_window.columns else [],
+                "btc": _series_points(valid_window["CBBTCUSD"], limit=DAILY_CHART_LIMIT) if "CBBTCUSD" in valid_window.columns else [],
             },
         },
     }
@@ -1621,7 +1629,7 @@ def build_macro_payload() -> Dict[str, Any]:
                 "statusTags": [tga_tag, curve_tag, srf_tag, risk_tag],
             },
             "modules": module_cards,
-            "scoreSeries": _series_points(total_series, limit=260),
+            "scoreSeries": _series_points(total_series, limit=DAILY_CHART_LIMIT),
             "contributors": contributors,
             "realtimeSnapshots": realtime_snapshots,
             "liftDrag": lift_drag,
