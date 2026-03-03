@@ -27,7 +27,7 @@ export const DEFAULT_BACKTEST_CONTROLS: BacktestControls = {
   riskFreeRate: 4.0,
   costScale: 1.0,
   maxLeverage: 2.0,
-  rebalanceMode: "M",
+  rebalanceMode: "W",
   ethShockDropPct: 13.5,
   ethHedgeFraction: 0.33,
   ethHedgeLeverage: 2.0,
@@ -122,7 +122,11 @@ export const useBacktestData = ({ apiUrl, sourceType, seededPayload }: UseBackte
   );
 
   useEffect(() => {
-    if (!isDirty) {
+    const shouldHydrateDefault = sourceType === "static" && !isDirty;
+    const shouldRequest = isDirty || shouldHydrateDefault;
+    const suppressTransientError = shouldHydrateDefault;
+
+    if (!shouldRequest) {
       setLivePayload(null);
       setError(null);
       setIsLoading(false);
@@ -131,6 +135,7 @@ export const useBacktestData = ({ apiUrl, sourceType, seededPayload }: UseBackte
 
     let active = true;
     const controller = new AbortController();
+    setError(null);
     setIsLoading(true);
     const timeoutId = window.setTimeout(async () => {
       try {
@@ -140,28 +145,34 @@ export const useBacktestData = ({ apiUrl, sourceType, seededPayload }: UseBackte
         }
         if (payload.assets.length > 0) {
           setLivePayload(payload);
-          setError(payload.status === "degraded" ? payload.reason ?? "Backtest payload is degraded" : null);
+          if (!suppressTransientError) {
+            setError(payload.status === "degraded" ? payload.reason ?? "Backtest payload is degraded" : null);
+          }
         } else {
-          setError(payload.reason ?? "Backtest payload is empty");
+          if (!suppressTransientError) {
+            setError(payload.reason ?? "Backtest payload is empty");
+          }
         }
       } catch (err) {
         if (!active || controller.signal.aborted) {
           return;
         }
-        setError(err instanceof Error ? err.message : "Unknown backtest error");
+        if (!suppressTransientError) {
+          setError(err instanceof Error ? err.message : "Unknown backtest error");
+        }
       } finally {
         if (active) {
           setIsLoading(false);
         }
       }
-    }, 450);
+    }, shouldHydrateDefault ? 0 : 450);
 
     return () => {
       active = false;
       controller.abort();
       window.clearTimeout(timeoutId);
     };
-  }, [apiUrl, controls, isDirty]);
+  }, [apiUrl, controls, isDirty, sourceType]);
 
   const basePayload = sourceType !== "mock" && seededPayload?.status === "ok" && seededPayload.assets.length > 0
     ? seededPayload

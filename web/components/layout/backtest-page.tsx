@@ -74,7 +74,7 @@ export const BacktestPage = () => {
           </p>
           <p className="mt-[4px] text-[12px] text-app-muted">
             {isLoading
-              ? "参数已更新，正在请求后端重新计算回测..."
+              ? (isDirty ? "参数已更新，正在请求后端重新计算回测..." : "正在同步默认回测结果...")
               : isDirty && !error
                 ? `当前展示自定义参数回测结果，区间 ${payload.startDate ?? "-"} 至 ${payload.endDate ?? "-"}.`
                 : isDirty && error
