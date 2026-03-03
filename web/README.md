@@ -12,7 +12,7 @@
 推荐工作流是先用 Python 计算引擎生成静态 JSON，再由 Next.js 直接读取该文件：
 
 ```bash
-cd /Users/momo/Desktop/MacroQuant_副本
+cd /Users/momo/Desktop/MacroQuantV2
 pip install -r requirements.txt
 python3 generate_static_macro_json.py
 ```
@@ -39,7 +39,7 @@ curl -s "http://127.0.0.1:8000/api/v1/macro-data?refresh=true" > web/public/data
 如果你仍希望本地调试实时 API，也可以启动：
 
 ```bash
-cd /Users/momo/Desktop/MacroQuant_副本
+cd /Users/momo/Desktop/MacroQuantV2
 uvicorn api_server:app --host 0.0.0.0 --port 8000 --reload
 ```
 
@@ -138,7 +138,7 @@ npm run cf:deploy:fresh
 如果你希望从仓库根目录直接一键完成“生成快照 + Pages 部署”，使用：
 
 ```bash
-cd /Users/momo/Desktop/MacroQuant_副本
+cd /Users/momo/Desktop/MacroQuantV2
 chmod +x scripts/generate_and_deploy_pages.sh
 ./scripts/generate_and_deploy_pages.sh
 ```
@@ -186,7 +186,7 @@ chmod +x scripts/generate_and_deploy_pages.sh
 
 - Dashboard 与 A~G 模块页默认读取静态 JSON（由 GitHub Actions 每小时抓取真实 FRED / Yahoo 数据后生成）。
 - 静态文件不存在或静态快照完全降级时，前端会回退到 Python API；API 也不可用时，最后回退到 `lib/mock-data.ts`，避免白屏。
-- 回测页当前仍是前端 mock 交互版（下一步可继续接 Python 回测引擎）。
+- 回测页现在会优先读取 Python 回测引擎输出；若回测数据不可用，则自动回退到 `lib/mock-data.ts`，避免页面空白。
 
 ## 8. 定时生成（美股开盘）
 
@@ -207,7 +207,7 @@ chmod +x scripts/generate_and_deploy_pages.sh
 安装：
 
 ```bash
-cd /Users/momo/Desktop/MacroQuant_副本
+cd /Users/momo/Desktop/MacroQuantV2
 chmod +x scripts/scheduled_generate_static.sh scripts/install_launchd_agent.sh
 ./scripts/install_launchd_agent.sh
 ```
@@ -234,7 +234,7 @@ chmod +x scripts/scheduled_generate_static.sh scripts/install_launchd_agent.sh
 安装：
 
 ```bash
-cd /Users/momo/Desktop/MacroQuant_副本
+cd /Users/momo/Desktop/MacroQuantV2
 chmod +x scripts/scheduled_generate_static.sh scripts/install_cron_job.sh
 ./scripts/install_cron_job.sh
 ```

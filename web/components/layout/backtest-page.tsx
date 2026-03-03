@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { ChevronDown, Filter, SlidersHorizontal } from "lucide-react";
 
 import { LineScoreChart } from "@/components/charts/line-score-chart";
@@ -8,28 +8,45 @@ import { AppShell } from "@/components/layout/app-shell";
 import { SectionTitle } from "@/components/ui/section-title";
 import { SurfaceCard } from "@/components/ui/surface-card";
 import { backtestAssets, backtestSop } from "@/lib/mock-data";
+import { useMacroData } from "@/lib/use-macro-data";
 import { cn, formatSigned } from "@/lib/utils";
 
 const inputClass =
   "rounded-[10px] border border-slate-200 bg-white px-[10px] py-[8px] text-[12px] text-slate-700 outline-none focus:border-blue-300 focus:shadow-[0_0_0_4px_rgba(59,130,246,0.12)]";
 
 export const BacktestPage = () => {
-  const [selected, setSelected] = useState(backtestAssets[0].ticker);
+  const dataState = useMacroData();
+  const liveBacktest = dataState.payload.backtest;
+  const hasLiveBacktest = dataState.sourceType !== "mock" && liveBacktest?.status === "ok" && Boolean(liveBacktest?.assets?.length);
+  const assets = hasLiveBacktest ? liveBacktest!.assets : backtestAssets;
+  const sop = liveBacktest?.sop ?? backtestSop;
+  const [selected, setSelected] = useState(assets[0].ticker);
   const [showRiskPanel, setShowRiskPanel] = useState(false);
   const [showStrategyPanel, setShowStrategyPanel] = useState(false);
 
+  useEffect(() => {
+    if (!assets.some((item) => item.ticker === selected)) {
+      setSelected(assets[0].ticker);
+    }
+  }, [assets, selected]);
+
   const asset = useMemo(
-    () => backtestAssets.find((item) => item.ticker === selected) ?? backtestAssets[0],
-    [selected]
+    () => assets.find((item) => item.ticker === selected) ?? assets[0],
+    [assets, selected]
   );
 
   return (
-    <AppShell>
+    <AppShell dataState={dataState}>
       <div className="space-y-[16px]">
         <header className="rounded-[18px] border border-app-border bg-[linear-gradient(120deg,#f8faff_0%,#eff6ff_42%,#ffffff_100%)] p-[16px]">
           <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-app-text">量化策略分数回测</h1>
           <p className="mt-[6px] max-w-[980px] text-[13px] text-app-muted">
             沿用原 Streamlit 逻辑框架：宏观状态机定仓位 + 趋势跟随执行 + 低频调仓 + 下行风险控制。
+          </p>
+          <p className="mt-[4px] text-[12px] text-app-muted">
+            {hasLiveBacktest
+              ? `当前接入 Python 回测引擎，区间 ${liveBacktest?.startDate ?? "-"} 至 ${liveBacktest?.endDate ?? "-"}.`
+              : `当前显示前端回退样例数据。${liveBacktest?.reason ? `原因：${liveBacktest.reason}` : ""}`}
           </p>
         </header>
 
@@ -140,7 +157,7 @@ export const BacktestPage = () => {
         <SurfaceCard>
           <SectionTitle title="资产回测结果" />
           <div className="mt-[10px] flex flex-wrap gap-[8px]">
-            {backtestAssets.map((item) => {
+            {assets.map((item) => {
               const active = item.ticker === selected;
               return (
                 <button
@@ -208,7 +225,7 @@ export const BacktestPage = () => {
             <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[12px]">
               <h3 className="text-[13px] font-bold text-app-text">Crypto (BTC / ETH)</h3>
               <ul className="mt-[8px] list-disc space-y-[6px] pl-[18px] text-[12px] leading-relaxed text-app-muted">
-                {backtestSop.crypto.map((line) => (
+                {sop.crypto.map((line) => (
                   <li key={line}>{line}</li>
                 ))}
               </ul>
@@ -216,7 +233,7 @@ export const BacktestPage = () => {
             <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[12px]">
               <h3 className="text-[13px] font-bold text-app-text">SPY / Nasdaq / Gold / FX</h3>
               <ul className="mt-[8px] list-disc space-y-[6px] pl-[18px] text-[12px] leading-relaxed text-app-muted">
-                {backtestSop.traditional.map((line) => (
+                {sop.traditional.map((line) => (
                   <li key={line}>{line}</li>
                 ))}
               </ul>

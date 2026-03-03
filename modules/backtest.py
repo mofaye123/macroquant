@@ -1020,8 +1020,7 @@ def compute_perf_metrics(df, risk_free_rate=0.04):
 # ==========================================
 # 5. Yahoo 数据
 # ==========================================
-@st.cache_data(ttl=3600)
-def get_yahoo_data(start_date):
+def _download_yahoo_data(start_date):
     tickers = "BTC-USD ETH-USD GLD SPY ^IXIC EURUSD=X"
     return yf.download(
         tickers,
@@ -1031,6 +1030,226 @@ def get_yahoo_data(start_date):
         progress=False,
         threads=True
     )
+
+
+@st.cache_data(ttl=3600)
+def get_yahoo_data(start_date):
+    return _download_yahoo_data(start_date)
+
+
+DEFAULT_BACKTEST_SOP = {
+    "crypto": [
+        "宏观分 < 20: 风险防守，仓位降至低档并允许保护性对冲。",
+        "宏观分 20-50: 中性执行，使用 EMA20/60 判断加减仓。",
+        "宏观分 > 65: 允许进攻仓位，跌破 EMA60 则分级降仓。"
+    ],
+    "traditional": [
+        "SPY/QQQ/GLD 统一采用 MA20/60/120 三段确认。",
+        "宏观分触发换档后，最小持有天数避免高频抖动。",
+        "出现紧急风控条件时优先降杠杆，再处理择时信号。"
+    ]
+}
+
+DEFAULT_BACKTEST_ASSETS = [
+    {"label": "Bitcoin (BTC)", "ticker": "BTC", "symbol": "BTC-USD", "name": "Bitcoin"},
+    {"label": "Ethereum (ETH)", "ticker": "ETH", "symbol": "ETH-USD", "name": "Ethereum"},
+    {"label": "Gold (GLD)", "ticker": "GLD", "symbol": "GLD", "name": "Gold"},
+    {"label": "SPY (SPY)", "ticker": "SPY", "symbol": "SPY", "name": "S&P 500"},
+    {"label": "Nasdaq (IXIC)", "ticker": "IXIC", "symbol": "^IXIC", "name": "Nasdaq"},
+    {"label": "EUR/USD (EURUSD)", "ticker": "EURUSD", "symbol": "EURUSD=X", "name": "EUR/USD"},
+]
+
+DEFAULT_BACKTEST_PRESET = {
+    "macro_lag_days": 1,
+    "risk_free_rate": 0.04,
+    "cost_scale": 1.0,
+    "max_leverage": 2.0,
+    "allow_short": True,
+    "short_leverage": 0.4,
+    "short_min_risk_count": 3,
+    "cfg": {
+        "th1": 20.0, "th2": 35.0, "th3": 50.0, "th4": 65.0, "th5": 80.0,
+        "regime_low": 35.0, "regime_mid": 50.0, "regime_hi": 65.0, "regime_top": 80.0,
+        "base_risk_off": 0.05, "base_caution": 0.30, "base_neutral": 0.70, "base_risk_on": 0.95, "base_super": 1.10,
+        "floor_risk_off": 0.00, "floor_caution": 0.12, "floor_neutral": 0.45, "floor_risk_on": 0.62, "floor_super": 0.70,
+        "crypto_strong_mult": 1.00, "crypto_up_mult": 0.90, "crypto_flat_mult": 0.72, "crypto_down_mult": 0.45,
+        "other_strong_mult": 1.00, "other_up_mult": 0.90, "other_flat_mult": 0.75, "other_down_mult": 0.55,
+        "short_score_threshold": 22.0, "short_trigger_score": 28.0, "short_trigger_deep": 18.0,
+        "hedge_size_weak": 0.30, "hedge_size_strong": 0.70, "hedge_size_early": 0.15, "short_min_risk_count_early": 3,
+        "long_bias_mode": True, "long_bias_min": 0.25,
+        "rebalance_mode": "M", "min_hold_days": 15, "trade_buffer": 0.20, "position_step": 0.10,
+        "macro_smooth_span": 14, "regime_confirm_days": 5,
+        "emergency_risk_count": 3, "emergency_score": 20.0,
+        "liq_cut_mild": 0.82, "liq_cut_strong": 0.65,
+        "macro_trend_window": 25, "macro_up_th": 4.0, "macro_down_th": -4.0,
+        "macro_up_add": 0.08, "macro_down_cut": 0.18,
+        "regime_base_weight": 0.80, "regime_trend_weight": 0.15, "regime_fast_weight": 0.05,
+        "macro_trend_scale": 5.5, "macro_trend_fast_scale": 3.3,
+        "parallel_macro_weight": 0.68, "parallel_trend_weight": 0.32,
+        "parallel_bull_boost": 0.12, "parallel_bull_min_score": 32.0,
+        "trend_target_strong_crypto": 1.30, "trend_target_up_crypto": 1.05,
+        "trend_target_flat_crypto": 0.72, "trend_target_weak_crypto": 0.55, "trend_target_break_crypto": 0.22,
+        "trend_target_strong_other": 1.15, "trend_target_up_other": 0.92,
+        "trend_target_flat_other": 0.65, "trend_target_weak_other": 0.50, "trend_target_break_other": 0.20,
+        "ma60_break_cut_ratio": 0.82, "weak_floor_cap_ratio": 1.00,
+        "slippage_mult": 0.30, "funding_bps_daily": 1.0,
+        "reference_max_leverage": 1.5,
+        "leverage_follow_allocation": True
+    },
+    "eth": {
+        "eth_shock_enabled": True,
+        "eth_shock_drop_pct": 0.135,
+        "eth_shock_retain_ratio": 0.5,
+        "eth_event_hedge_enabled": True,
+        "eth_hedge_fraction": 1.0 / 3.0,
+        "eth_hedge_leverage": 2.0,
+        "eth_hedge_hold_days": 2,
+        "eth_hedge_takeprofit_drop": 0.20,
+        "eth_hedge_cap_ratio": 1.0,
+    }
+}
+
+
+def _extract_price_series(y_df, ticker):
+    if isinstance(y_df.columns, pd.MultiIndex):
+        lv0 = y_df.columns.get_level_values(0)
+        lv1 = y_df.columns.get_level_values(1)
+        if ticker in lv0:
+            part = y_df[ticker]
+            if 'Close' in part.columns:
+                return part['Close']
+            if 'Adj Close' in part.columns:
+                return part['Adj Close']
+        if 'Close' in lv0 and ticker in y_df['Close'].columns:
+            return y_df['Close'][ticker]
+        if 'Adj Close' in lv0 and ticker in y_df['Adj Close'].columns:
+            return y_df['Adj Close'][ticker]
+        if ticker in lv1 and 'Close' in y_df.columns.get_level_values(0):
+            return y_df['Close'][ticker]
+    else:
+        if 'Close' in y_df.columns:
+            return y_df['Close']
+        if 'Adj Close' in y_df.columns:
+            return y_df['Adj Close']
+    return pd.Series(dtype=float)
+
+
+def _default_cost_bps(asset_name):
+    if any(k in asset_name for k in ['BTC', 'Bitcoin', 'ETH', 'Ethereum']):
+        return 18.0
+    if 'EUR/USD' in asset_name or 'EURUSD' in asset_name:
+        return 3.0
+    return 4.0
+
+
+def _series_to_points(series, digits=4, limit=300):
+    clean = series.dropna()
+    if limit is not None:
+        clean = clean.tail(limit)
+    return [
+        {"date": idx.strftime("%Y-%m-%d"), "value": round(float(val), digits)}
+        for idx, val in clean.items()
+    ]
+
+
+def build_backtest_payload(df_all):
+    payload = {
+        "status": "degraded",
+        "reason": None,
+        "startDate": None,
+        "endDate": None,
+        "assets": [],
+        "sop": DEFAULT_BACKTEST_SOP,
+    }
+    if df_all is None or df_all.empty:
+        payload["reason"] = "回测失败：输入数据为空。"
+        return payload
+
+    idx_min = pd.Timestamp(df_all.index.min()).date()
+    idx_max = pd.Timestamp(df_all.index.max()).date()
+    default_start = pd.Timestamp("2023-01-01").date()
+    if default_start < idx_min:
+        default_start = idx_min
+    if default_start > idx_max:
+        default_start = idx_min
+
+    backtest_start = pd.Timestamp(default_start)
+    score_frame_full = _calculate_score_internal(df_all)
+    if score_frame_full.empty:
+        payload["reason"] = "回测失败：宏观总分序列为空。"
+        return payload
+
+    score_frame = score_frame_full[score_frame_full.index >= backtest_start].dropna(subset=['Total_Score']).copy()
+    if score_frame.empty:
+        payload["reason"] = f"回测失败：{backtest_start.strftime('%Y-%m-%d')} 之后没有可用宏观分数数据。"
+        return payload
+
+    y_data = _download_yahoo_data(backtest_start.strftime('%Y-%m-%d'))
+    if y_data is None or not isinstance(y_data, pd.DataFrame) or y_data.empty:
+        payload["reason"] = "回测失败：Yahoo 行情下载为空。"
+        return payload
+
+    assets = []
+    for item in DEFAULT_BACKTEST_ASSETS:
+        price_s = _extract_price_series(y_data, item["symbol"])
+        if price_s.empty:
+            continue
+        if getattr(price_s.index, "tz", None) is not None:
+            price_s.index = price_s.index.tz_localize(None)
+        df = score_frame.join(price_s.rename('Price'), how='inner').dropna(subset=['Total_Score', 'Price'])
+        if len(df) < 150:
+            continue
+
+        asset_cfg = DEFAULT_BACKTEST_PRESET["cfg"].copy()
+        asset_short_leverage = float(DEFAULT_BACKTEST_PRESET["short_leverage"])
+        if item["ticker"] == "ETH":
+            asset_cfg.update(DEFAULT_BACKTEST_PRESET["eth"])
+            asset_short_leverage = max(asset_short_leverage, float(DEFAULT_BACKTEST_PRESET["eth"]["eth_hedge_leverage"]))
+
+        df = run_strategy_logic(
+            df,
+            'Price',
+            item["label"],
+            macro_lag_days=int(DEFAULT_BACKTEST_PRESET["macro_lag_days"]),
+            one_way_cost_bps=_default_cost_bps(item["label"]) * float(DEFAULT_BACKTEST_PRESET["cost_scale"]),
+            risk_free_rate=float(DEFAULT_BACKTEST_PRESET["risk_free_rate"]),
+            max_leverage=float(DEFAULT_BACKTEST_PRESET["max_leverage"]),
+            strategy_cfg=asset_cfg,
+            allow_short=bool(DEFAULT_BACKTEST_PRESET["allow_short"]),
+            short_leverage=asset_short_leverage,
+            short_min_risk_count=int(DEFAULT_BACKTEST_PRESET["short_min_risk_count"])
+        )
+        perf = compute_perf_metrics(df, risk_free_rate=float(DEFAULT_BACKTEST_PRESET["risk_free_rate"]))
+        nav = df['Strategy_Nav'].dropna()
+        bench_nav = df['Benchmark_Nav'].dropna()
+        position = df['Target_Position'].dropna()
+        if nav.empty or bench_nav.empty or position.empty:
+            continue
+
+        alpha = (float(nav.iloc[-1]) - float(bench_nav.iloc[-1])) * 100.0
+        cagr = perf.get('cagr', np.nan)
+        sharpe = perf.get('sharpe_m', np.nan)
+        mdd = perf.get('mdd', np.nan)
+        assets.append({
+            "ticker": item["ticker"],
+            "name": item["name"],
+            "cagr": round(0.0 if pd.isna(cagr) else float(cagr) * 100.0, 2),
+            "sharpe": round(0.0 if pd.isna(sharpe) else float(sharpe), 2),
+            "mdd": round(0.0 if pd.isna(mdd) else float(mdd) * 100.0, 2),
+            "alpha": round(alpha, 2),
+            "navSeries": _series_to_points(nav, digits=4, limit=300),
+            "positionSeries": _series_to_points(position, digits=2, limit=300),
+        })
+
+    if not assets:
+        payload["reason"] = "回测失败：没有可用标的生成结果。"
+        return payload
+
+    payload["status"] = "ok"
+    payload["startDate"] = score_frame.index.min().strftime("%Y-%m-%d")
+    payload["endDate"] = score_frame.index.max().strftime("%Y-%m-%d")
+    payload["assets"] = assets
+    return payload
 
 # ==========================================
 # 6. 主渲染函数

@@ -15,7 +15,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import API_KEY, SERIES_IDS
 from data_engine import get_last_fetch_meta, get_mixed_data
-from modules.backtest import _calculate_score_internal
+from modules.backtest import _calculate_score_internal, build_backtest_payload
 
 
 MODULE_META = [
@@ -1617,6 +1617,21 @@ def build_macro_payload() -> Dict[str, Any]:
         },
     ]
 
+    try:
+        backtest_payload = build_backtest_payload(df_all)
+    except Exception as exc:
+        backtest_payload = {
+            "status": "degraded",
+            "reason": f"回测数据暂不可用: {exc}",
+            "startDate": None,
+            "endDate": None,
+            "assets": [],
+            "sop": {
+                "crypto": [],
+                "traditional": [],
+            },
+        }
+
     payload = {
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
         "dataQuality": {
@@ -1648,6 +1663,7 @@ def build_macro_payload() -> Dict[str, Any]:
             "riskRadar": risk_radar,
         },
         "modules": module_details,
+        "backtest": backtest_payload,
     }
     if warnings:
         payload["dataQuality"]["reason"] = "; ".join(warnings[:3])

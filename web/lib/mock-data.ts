@@ -1,5 +1,6 @@
 import {
   BacktestAsset,
+  BacktestPayload,
   MacroApiPayload,
   ModuleMeta,
   ModulePageData,
@@ -364,6 +365,15 @@ export const backtestSop = {
   ]
 };
 
+export const backtestPayload: BacktestPayload = {
+  status: "degraded",
+  reason: "Using local mock fallback because live backtest payload is unavailable.",
+  startDate: "2024-01-01",
+  endDate: "2026-02-27",
+  assets: backtestAssets,
+  sop: backtestSop
+};
+
 export const heroImage =
   "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&w=1800&q=80";
 
@@ -384,5 +394,6 @@ export const fallbackMacroPayload: MacroApiPayload = {
     contributors: dashboardContributors,
     realtimeSnapshots: realtimeSnapshots
   },
-  modules: modulePageDataMap
+  modules: modulePageDataMap,
+  backtest: backtestPayload
 };

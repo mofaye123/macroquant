@@ -64,6 +64,18 @@ export type BacktestAsset = {
   positionSeries: TrendPoint[];
 };
 
+export type BacktestPayload = {
+  status: "ok" | "degraded";
+  reason?: string | null;
+  startDate?: string | null;
+  endDate?: string | null;
+  assets: BacktestAsset[];
+  sop: {
+    crypto: string[];
+    traditional: string[];
+  };
+};
+
 export type DashboardPayload = {
   overallScore: {
     value: number;
@@ -160,4 +172,5 @@ export type MacroApiPayload = {
   };
   dashboard: DashboardPayload;
   modules: Record<ModuleMeta["slug"], ModulePageData>;
+  backtest?: BacktestPayload;
 };
