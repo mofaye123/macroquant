@@ -318,8 +318,26 @@ export const backtestAssets: BacktestAsset[] = [
     sharpe: 1.52,
     mdd: -42.1,
     alpha: 9.6,
+    strategyReturn: 864.2,
+    benchmarkReturn: 742.7,
+    endingCapital: 1021720,
+    currentPosition: -0.8,
+    currentScore: 18.6,
+    currentSignal: "⬇️ CTA做空",
     navSeries: rescale(baseNavSeries, 1.4 * BACKTEST_STARTING_CAPITAL),
-    positionSeries: makePriceSeries(300, 0.35, 0.0007, 0.2, 2)
+    positionSeries: makePriceSeries(300, 0.35, 0.0007, 0.2, 2).map((point, index, series) => ({
+      ...point,
+      value: index > series.length - 70 ? -0.8 : point.value
+    })),
+    rebalanceLog: [
+      { date: "2026-02-28", previousPosition: 0.0, position: -0.8, signal: "⬇️ CTA做空", score: 18.6, price: 62150 },
+      { date: "2026-02-14", previousPosition: 0.3, position: 0.0, signal: "⚪ 空仓 (Cash)", score: 24.1, price: 64890 },
+      { date: "2026-01-31", previousPosition: 0.6, position: 0.3, signal: "🛡️ 防守", score: 33.8, price: 66320 },
+    ],
+    tradeLog: [
+      { mode: "⬇️ CTA做空", side: "short", entryDate: "2026-02-28", exitDate: "Running", entryScore: 18.6, entryPrice: 62150, exitPrice: 61240, pnlPct: 1.46, result: "Floating" },
+      { mode: "🛡️ 防守", side: "long", entryDate: "2026-01-31", exitDate: "2026-02-14", entryScore: 33.8, entryPrice: 66320, exitPrice: 64890, pnlPct: -2.16, result: "Loss" },
+    ]
   },
   {
     ticker: "ETH",
@@ -328,8 +346,20 @@ export const backtestAssets: BacktestAsset[] = [
     sharpe: 1.39,
     mdd: -47.4,
     alpha: 6.8,
+    strategyReturn: 711.3,
+    benchmarkReturn: 640.2,
+    endingCapital: 928500,
+    currentPosition: -0.6,
+    currentScore: 21.3,
+    currentSignal: "↘️ 轻仓做空",
     navSeries: rescale(baseNavSeries, 1.25 * BACKTEST_STARTING_CAPITAL),
-    positionSeries: makePriceSeries(300, 0.33, 0.0006, 0.23, 5)
+    positionSeries: makePriceSeries(300, 0.33, 0.0006, 0.23, 5),
+    rebalanceLog: [
+      { date: "2026-02-27", previousPosition: 0.0, position: -0.6, signal: "↘️ 轻仓做空", score: 21.3, price: 3395 },
+    ],
+    tradeLog: [
+      { mode: "↘️ 轻仓做空", side: "short", entryDate: "2026-02-27", exitDate: "Running", entryScore: 21.3, entryPrice: 3395, exitPrice: 3310, pnlPct: 2.5, result: "Floating" },
+    ]
   },
   {
     ticker: "SPY",
@@ -338,8 +368,16 @@ export const backtestAssets: BacktestAsset[] = [
     sharpe: 1.05,
     mdd: -22.8,
     alpha: 2.4,
+    strategyReturn: 183.5,
+    benchmarkReturn: 151.8,
+    endingCapital: 287400,
+    currentPosition: 0.2,
+    currentScore: 42.7,
+    currentSignal: "🌤️ 试探",
     navSeries: rescale(baseNavSeries, 1.06 * BACKTEST_STARTING_CAPITAL),
-    positionSeries: makePriceSeries(300, 0.52, 0.0002, 0.08, 8)
+    positionSeries: makePriceSeries(300, 0.52, 0.0002, 0.08, 8),
+    rebalanceLog: [],
+    tradeLog: []
   },
   {
     ticker: "QQQ",
@@ -348,8 +386,16 @@ export const backtestAssets: BacktestAsset[] = [
     sharpe: 1.18,
     mdd: -28.6,
     alpha: 3.1,
+    strategyReturn: 224.1,
+    benchmarkReturn: 176.4,
+    endingCapital: 314900,
+    currentPosition: 0.4,
+    currentScore: 48.9,
+    currentSignal: "🛡️ 防守",
     navSeries: rescale(baseNavSeries, 1.12 * BACKTEST_STARTING_CAPITAL),
-    positionSeries: makePriceSeries(300, 0.55, 0.00025, 0.1, 11)
+    positionSeries: makePriceSeries(300, 0.55, 0.00025, 0.1, 11),
+    rebalanceLog: [],
+    tradeLog: []
   }
 ];
 
@@ -373,7 +419,21 @@ export const backtestPayload: BacktestPayload = {
   endDate: "2026-02-27",
   startingCapital: BACKTEST_STARTING_CAPITAL,
   assets: backtestAssets,
-  sop: backtestSop
+  sop: backtestSop,
+  strategyOverview: {
+    title: "宏观分驱动 CTA 执行框架",
+    summary: "宏观分决定风险档位，趋势决定是否进攻或切到净空，属于宏观过滤 + 趋势执行的 CTA。",
+    rebalance: "默认周频调仓，最小持有 10 天，仓位变化超过 0.20 才执行。",
+    shorting: "低宏观分且趋势破位时允许直接净空，而不是只减仓到 0。",
+    thresholds: [
+      { label: "Score < 20", min: null, max: 20, target: -1.0, bias: "short" },
+      { label: "20 - 35", min: 20, max: 35, target: 0.2, bias: "flat" },
+      { label: "35 - 50", min: 35, max: 50, target: 0.45, bias: "long" },
+      { label: "50 - 65", min: 50, max: 65, target: 0.65, bias: "long" },
+      { label: "65 - 80", min: 65, max: 80, target: 0.85, bias: "long" },
+      { label: "Score >= 80", min: 80, max: null, target: 1.0, bias: "long" },
+    ]
+  }
 };
 
 export const heroImage =

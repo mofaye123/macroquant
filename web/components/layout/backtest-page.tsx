@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { ChevronDown, Filter, SlidersHorizontal } from "lucide-react";
+import { ArrowDownRight, ArrowUpRight, ChevronDown, Clock3, Filter, Radar, SlidersHorizontal, Wallet } from "lucide-react";
 
 import { LineScoreChart } from "@/components/charts/line-score-chart";
 import { AppShell } from "@/components/layout/app-shell";
@@ -63,8 +63,14 @@ export const BacktestPage = () => {
     () => assets.find((item) => item.ticker === selected) ?? assets[0],
     [assets, selected]
   );
+  const strategyOverview = payload.strategyOverview;
+  const rebalanceLog = asset.rebalanceLog ?? [];
+  const tradeLog = asset.tradeLog ?? [];
   const startingCapital = payload.startingCapital ?? 100000;
   const latestCapital = asset.navSeries[asset.navSeries.length - 1]?.value ?? startingCapital;
+  const currentPosition = asset.currentPosition ?? (asset.positionSeries[asset.positionSeries.length - 1]?.value ?? 0);
+  const currentScore = asset.currentScore ?? 50;
+  const currentSignal = asset.currentSignal ?? "N/A";
   const capitalFormatter = useMemo(
     () => new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 }),
     []
@@ -74,9 +80,9 @@ export const BacktestPage = () => {
     <AppShell dataState={dataState}>
       <div className="space-y-[16px]">
         <header className="rounded-[18px] border border-app-border bg-[linear-gradient(120deg,#f8faff_0%,#eff6ff_42%,#ffffff_100%)] p-[16px]">
-          <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-app-text">量化策略分数回测</h1>
+          <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-app-text">宏观 CTA 回测分析台</h1>
           <p className="mt-[6px] max-w-[980px] text-[13px] text-app-muted">
-            沿用原 Streamlit 逻辑框架：宏观状态机定仓位 + 趋势跟随执行 + 低频调仓 + 下行风险控制。
+            用宏观总分决定风险档位，再用趋势执行做多或做空，面板直接给出资金、仓位、调仓与交易流水。
           </p>
           <p className="mt-[4px] text-[12px] text-app-muted">
             {isLoading
@@ -94,7 +100,7 @@ export const BacktestPage = () => {
 
         <SurfaceCard>
           <SectionTitle
-            title="核心参数"
+            title="策略控制台"
             rightSlot={
               <button
                 type="button"
@@ -292,52 +298,126 @@ export const BacktestPage = () => {
           )}
         </SurfaceCard>
 
+        <div className="grid gap-[14px] xl:grid-cols-[0.95fr_1.05fr]">
+          <SurfaceCard>
+            <SectionTitle title="策略地图" />
+            <div className="mt-[12px] space-y-[12px]">
+              <div className="rounded-[14px] border border-slate-200 bg-slate-50 p-[12px]">
+                <p className="text-[12px] font-semibold text-app-text">{strategyOverview?.title ?? "宏观分驱动 CTA 执行框架"}</p>
+                <p className="mt-[6px] text-[12px] leading-relaxed text-app-muted">
+                  {strategyOverview?.summary ?? "宏观分先决定风险档位，趋势再决定是否放大多头或翻为空头。"}
+                </p>
+                <p className="mt-[6px] text-[12px] leading-relaxed text-app-muted">{strategyOverview?.rebalance}</p>
+                <p className="mt-[6px] text-[12px] leading-relaxed text-app-muted">{strategyOverview?.shorting}</p>
+              </div>
+
+              <div className="rounded-[14px] border border-slate-200 bg-white p-[12px]">
+                <p className="text-[12px] font-semibold text-app-text">宏观分档与目标仓位</p>
+                <div className="mt-[10px] space-y-[8px]">
+                  {(strategyOverview?.thresholds ?? []).map((row) => (
+                    <div key={row.label} className="grid grid-cols-[120px_1fr_74px] items-center gap-[10px] text-[12px]">
+                      <span className="font-medium text-app-text">{row.label}</span>
+                      <div className="h-[8px] rounded-full bg-slate-100">
+                        <div
+                          className={cn(
+                            "h-full rounded-full",
+                            row.bias === "short" ? "bg-red-400" : row.bias === "flat" ? "bg-slate-400" : "bg-emerald-400"
+                          )}
+                          style={{ width: `${Math.min(100, Math.max(8, Math.abs(row.target) / Math.max(controls.maxLeverage, 1) * 100))}%` }}
+                        />
+                      </div>
+                      <span className={cn("text-right font-semibold", row.target >= 0 ? "text-app-text" : "text-app-danger")}>
+                        {row.target >= 0 ? `${row.target.toFixed(2)}x` : `${row.target.toFixed(2)}x`}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </SurfaceCard>
+
+          <SurfaceCard>
+            <SectionTitle title="执行驾驶舱" />
+            <div className="mt-[10px] flex flex-wrap gap-[8px]">
+              {assets.map((item) => {
+                const active = item.ticker === selected;
+                return (
+                  <button
+                    key={item.ticker}
+                    onClick={() => setSelected(item.ticker)}
+                    className={cn(
+                      "rounded-[10px] border px-[10px] py-[7px] text-[11px] font-semibold",
+                      active
+                        ? "border-blue-200 bg-blue-50 text-blue-700"
+                        : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
+                    )}
+                  >
+                    {item.ticker}
+                  </button>
+                );
+              })}
+            </div>
+
+            <div className="mt-[12px] grid gap-[10px] sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[12px]">
+                <div className="flex items-center gap-[8px] text-app-muted">
+                  <Radar className="h-[14px] w-[14px]" />
+                  <p className="text-[11px] uppercase tracking-[0.12em]">当前信号</p>
+                </div>
+                <p className="mt-[6px] text-[20px] font-bold text-app-text">{currentSignal}</p>
+                <p className="mt-[4px] text-[12px] text-app-muted">宏观分 {currentScore.toFixed(1)}</p>
+              </div>
+              <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[12px]">
+                <div className="flex items-center gap-[8px] text-app-muted">
+                  <Wallet className="h-[14px] w-[14px]" />
+                  <p className="text-[11px] uppercase tracking-[0.12em]">当前资金</p>
+                </div>
+                <p className="mt-[6px] text-[20px] font-bold text-app-text">{capitalFormatter.format(latestCapital)}</p>
+                <p className="mt-[4px] text-[12px] text-app-muted">起始 {capitalFormatter.format(startingCapital)}</p>
+              </div>
+              <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[12px]">
+                <div className="flex items-center gap-[8px] text-app-muted">
+                  {currentPosition >= 0 ? <ArrowUpRight className="h-[14px] w-[14px]" /> : <ArrowDownRight className="h-[14px] w-[14px]" />}
+                  <p className="text-[11px] uppercase tracking-[0.12em]">当前净仓位</p>
+                </div>
+                <p className={cn("mt-[6px] text-[20px] font-bold", currentPosition >= 0 ? "text-app-success" : "text-app-danger")}>
+                  {currentPosition.toFixed(2)}x
+                </p>
+                <p className="mt-[4px] text-[12px] text-app-muted">可多可空 CTA 仓位</p>
+              </div>
+              <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[12px]">
+                <div className="flex items-center gap-[8px] text-app-muted">
+                  <Clock3 className="h-[14px] w-[14px]" />
+                  <p className="text-[11px] uppercase tracking-[0.12em]">收益对比</p>
+                </div>
+                <p className="mt-[6px] text-[20px] font-bold text-app-text">{formatSigned(asset.strategyReturn ?? ((latestCapital / startingCapital - 1) * 100))}%</p>
+                <p className="mt-[4px] text-[12px] text-app-muted">Hold {formatSigned(asset.benchmarkReturn ?? 0)}% | Alpha {formatSigned(asset.alpha)}%</p>
+              </div>
+            </div>
+
+            <div className="mt-[12px] grid gap-[10px] sm:grid-cols-2 xl:grid-cols-4">
+              <div className="rounded-[12px] border border-slate-200 bg-white p-[10px]">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-app-muted">CAGR</p>
+                <p className="mt-[4px] text-[22px] font-bold text-app-text">{asset.cagr.toFixed(1)}%</p>
+              </div>
+              <div className="rounded-[12px] border border-slate-200 bg-white p-[10px]">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-app-muted">Sharpe</p>
+                <p className="mt-[4px] text-[22px] font-bold text-app-text">{asset.sharpe.toFixed(2)}</p>
+              </div>
+              <div className="rounded-[12px] border border-slate-200 bg-white p-[10px]">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-app-muted">MDD</p>
+                <p className="mt-[4px] text-[22px] font-bold text-app-danger">{asset.mdd.toFixed(1)}%</p>
+              </div>
+              <div className="rounded-[12px] border border-slate-200 bg-white p-[10px]">
+                <p className="text-[11px] uppercase tracking-[0.12em] text-app-muted">期末权益</p>
+                <p className="mt-[4px] text-[22px] font-bold text-app-text">{capitalFormatter.format(asset.endingCapital ?? latestCapital)}</p>
+              </div>
+            </div>
+          </SurfaceCard>
+        </div>
+
         <SurfaceCard>
-          <SectionTitle title="资产回测结果" />
-          <div className="mt-[10px] flex flex-wrap gap-[8px]">
-            {assets.map((item) => {
-              const active = item.ticker === selected;
-              return (
-                <button
-                  key={item.ticker}
-                  onClick={() => setSelected(item.ticker)}
-                  className={cn(
-                    "rounded-[10px] border px-[10px] py-[7px] text-[11px] font-semibold",
-                    active
-                      ? "border-blue-200 bg-blue-50 text-blue-700"
-                      : "border-slate-200 bg-white text-slate-600 hover:border-slate-300"
-                  )}
-                >
-                  {item.ticker}
-                </button>
-              );
-            })}
-          </div>
-          <p className="mt-[10px] text-[12px] text-app-muted">
-            当前资金: {capitalFormatter.format(latestCapital)} | 当前净仓位: {(asset.positionSeries[asset.positionSeries.length - 1]?.value ?? 0).toFixed(2)}x
-          </p>
-
-          <div className="mt-[12px] grid gap-[10px] sm:grid-cols-2 xl:grid-cols-4">
-            <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
-              <p className="text-[11px] uppercase tracking-[0.12em] text-app-muted">CAGR</p>
-              <p className="mt-[4px] text-[22px] font-bold text-app-text">{asset.cagr.toFixed(1)}%</p>
-            </div>
-            <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
-              <p className="text-[11px] uppercase tracking-[0.12em] text-app-muted">Sharpe</p>
-              <p className="mt-[4px] text-[22px] font-bold text-app-text">{asset.sharpe.toFixed(2)}</p>
-            </div>
-            <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
-              <p className="text-[11px] uppercase tracking-[0.12em] text-app-muted">MDD</p>
-              <p className="mt-[4px] text-[22px] font-bold text-app-danger">{asset.mdd.toFixed(1)}%</p>
-            </div>
-            <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
-              <p className="text-[11px] uppercase tracking-[0.12em] text-app-muted">Alpha vs Hold</p>
-              <p className={cn("mt-[4px] text-[22px] font-bold", asset.alpha >= 0 ? "text-app-success" : "text-app-danger")}>
-                {formatSigned(asset.alpha)}%
-              </p>
-            </div>
-          </div>
-
+          <SectionTitle title="资金轨迹与风险暴露" />
           <div className="mt-[12px] grid gap-[14px] xl:grid-cols-2">
             <div className="rounded-[14px] border border-slate-200 bg-white p-[10px]">
               <p className="mb-[4px] text-[12px] font-semibold text-app-text">策略资金曲线 ({asset.name})</p>
@@ -349,7 +429,7 @@ export const BacktestPage = () => {
               />
             </div>
             <div className="rounded-[14px] border border-slate-200 bg-white p-[10px]">
-              <p className="mb-[4px] text-[12px] font-semibold text-app-text">目标仓位路径 ({asset.ticker})</p>
+              <p className="mb-[4px] text-[12px] font-semibold text-app-text">目标净仓位路径 ({asset.ticker})</p>
               <LineScoreChart
                 data={asset.positionSeries}
                 color="#8b5cf6"
@@ -359,6 +439,84 @@ export const BacktestPage = () => {
             </div>
           </div>
         </SurfaceCard>
+
+        <div className="grid gap-[14px] xl:grid-cols-2">
+          <SurfaceCard>
+            <SectionTitle title="调仓审计" />
+            <div className="mt-[10px] overflow-x-auto">
+              <table className="w-full min-w-[620px] text-left text-[12px]">
+                <thead className="border-b border-slate-200 text-app-muted">
+                  <tr>
+                    <th className="px-[8px] py-[8px] font-semibold">日期</th>
+                    <th className="px-[8px] py-[8px] font-semibold">信号</th>
+                    <th className="px-[8px] py-[8px] font-semibold">宏观分</th>
+                    <th className="px-[8px] py-[8px] font-semibold">仓位变化</th>
+                    <th className="px-[8px] py-[8px] font-semibold">价格</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {rebalanceLog.length > 0 ? (
+                    rebalanceLog.map((row) => (
+                      <tr key={`${row.date}-${row.position}-${row.signal}`} className="border-b border-slate-100">
+                        <td className="px-[8px] py-[8px] text-app-text">{row.date}</td>
+                        <td className="px-[8px] py-[8px] text-app-text">{row.signal}</td>
+                        <td className="px-[8px] py-[8px] text-app-text">{row.score.toFixed(1)}</td>
+                        <td className="px-[8px] py-[8px] font-medium text-app-text">
+                          {row.previousPosition.toFixed(2)}x {"->"} {row.position.toFixed(2)}x
+                        </td>
+                        <td className="px-[8px] py-[8px] text-app-muted">{row.price.toFixed(2)}</td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={5} className="px-[8px] py-[12px] text-app-muted">当前窗口暂无调仓记录。</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </SurfaceCard>
+
+          <SurfaceCard>
+            <SectionTitle title="交易流水" />
+            <div className="mt-[10px] overflow-x-auto">
+              <table className="w-full min-w-[680px] text-left text-[12px]">
+                <thead className="border-b border-slate-200 text-app-muted">
+                  <tr>
+                    <th className="px-[8px] py-[8px] font-semibold">开仓</th>
+                    <th className="px-[8px] py-[8px] font-semibold">平仓</th>
+                    <th className="px-[8px] py-[8px] font-semibold">方向</th>
+                    <th className="px-[8px] py-[8px] font-semibold">模式</th>
+                    <th className="px-[8px] py-[8px] font-semibold">入场宏观分</th>
+                    <th className="px-[8px] py-[8px] font-semibold">PnL</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {tradeLog.length > 0 ? (
+                    tradeLog.map((row) => (
+                      <tr key={`${row.entryDate}-${row.exitDate}-${row.mode}`} className="border-b border-slate-100">
+                        <td className="px-[8px] py-[8px] text-app-text">{row.entryDate}</td>
+                        <td className="px-[8px] py-[8px] text-app-text">{row.exitDate}</td>
+                        <td className={cn("px-[8px] py-[8px] font-semibold", row.side === "short" ? "text-app-danger" : "text-app-success")}>
+                          {row.side === "short" ? "做空" : "做多"}
+                        </td>
+                        <td className="px-[8px] py-[8px] text-app-text">{row.mode}</td>
+                        <td className="px-[8px] py-[8px] text-app-text">{row.entryScore?.toFixed(1) ?? "-"}</td>
+                        <td className={cn("px-[8px] py-[8px] font-semibold", (row.pnlPct ?? 0) >= 0 ? "text-app-success" : "text-app-danger")}>
+                          {row.pnlPct === null ? "-" : `${formatSigned(row.pnlPct)}%`}
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan={6} className="px-[8px] py-[12px] text-app-muted">当前窗口暂无完整交易闭环记录。</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </SurfaceCard>
+        </div>
 
         <SurfaceCard>
           <SectionTitle title="策略操作手册 (SOP)" />

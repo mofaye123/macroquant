@@ -1179,6 +1179,17 @@ def _series_to_points(series, digits=4, limit=300):
     ]
 
 
+def _format_backtest_date(value):
+    if isinstance(value, pd.Timestamp):
+        return value.strftime("%Y-%m-%d")
+    if hasattr(value, "strftime"):
+        try:
+            return value.strftime("%Y-%m-%d")
+        except Exception:
+            return str(value)
+    return str(value)
+
+
 def _normalize_backtest_overrides(overrides=None):
     src = overrides or {}
     cfg = DEFAULT_BACKTEST_PRESET["cfg"].copy()
@@ -1253,6 +1264,21 @@ def _normalize_backtest_overrides(overrides=None):
 
 
 def build_backtest_payload(df_all, overrides=None):
+    resolved = _normalize_backtest_overrides(overrides)
+    cfg = resolved["cfg"]
+    th1 = float(cfg.get("th1", 20.0))
+    th2 = float(cfg.get("th2", 35.0))
+    th3 = float(cfg.get("th3", 50.0))
+    th4 = float(cfg.get("th4", 65.0))
+    th5 = float(cfg.get("th5", 80.0))
+    strategy_thresholds = [
+        {"label": f"Score < {th1:.0f}", "min": None, "max": th1, "target": -float(resolved["short_leverage"]), "bias": "short"},
+        {"label": f"{th1:.0f} - {th2:.0f}", "min": th1, "max": th2, "target": float(cfg.get("base_risk_off", 0.0)), "bias": "flat"},
+        {"label": f"{th2:.0f} - {th3:.0f}", "min": th2, "max": th3, "target": float(cfg.get("base_caution", 0.0)), "bias": "long"},
+        {"label": f"{th3:.0f} - {th4:.0f}", "min": th3, "max": th4, "target": float(cfg.get("base_neutral", 0.0)), "bias": "long"},
+        {"label": f"{th4:.0f} - {th5:.0f}", "min": th4, "max": th5, "target": float(cfg.get("base_risk_on", 0.0)), "bias": "long"},
+        {"label": f"Score >= {th5:.0f}", "min": th5, "max": None, "target": float(cfg.get("base_super", 0.0)), "bias": "long"},
+    ]
     payload = {
         "status": "degraded",
         "reason": None,
@@ -1261,8 +1287,14 @@ def build_backtest_payload(df_all, overrides=None):
         "startingCapital": DEFAULT_BACKTEST_INITIAL_CAPITAL,
         "assets": [],
         "sop": DEFAULT_BACKTEST_SOP,
+        "strategyOverview": {
+            "title": "宏观分驱动 CTA 执行框架",
+            "summary": "先用宏观总分决定风险档位，再用趋势条件确认是否放大多头或切换到净空头，属于宏观过滤 + 趋势执行的 CTA。",
+            "rebalance": f"当前使用{str(cfg.get('rebalance_mode', 'W')).upper()}频率调仓，最小持有 {int(cfg.get('min_hold_days', 10))} 天，触发阈值 {float(cfg.get('trade_buffer', 0.2)):.2f}。",
+            "shorting": f"允许做空，最大空头敞口 {float(resolved['short_leverage']):.2f}x；低宏观分且趋势走弱时可翻成净空。",
+            "thresholds": strategy_thresholds,
+        },
     }
-    resolved = _normalize_backtest_overrides(overrides)
     if df_all is None or df_all.empty:
         payload["reason"] = "回测失败：输入数据为空。"
         return payload
@@ -1321,6 +1353,7 @@ def build_backtest_payload(df_all, overrides=None):
             short_leverage=asset_short_leverage,
             short_min_risk_count=int(resolved["short_min_risk_count"])
         )
+        trade_log = generate_trade_log(df, 'Price')
         perf = compute_perf_metrics(df, risk_free_rate=float(resolved["risk_free_rate"]))
         nav = df['Strategy_Nav'].dropna()
         bench_nav = df['Benchmark_Nav'].dropna()
@@ -1328,11 +1361,46 @@ def build_backtest_payload(df_all, overrides=None):
         if nav.empty or bench_nav.empty or position.empty:
             continue
 
+        score_col = 'Score_Exec' if 'Score_Exec' in df.columns else 'Total_Score'
         alpha = (float(nav.iloc[-1]) - float(bench_nav.iloc[-1])) * 100.0
         cagr = perf.get('cagr', np.nan)
         sharpe = perf.get('sharpe_m', np.nan)
         mdd = perf.get('mdd', np.nan)
         equity_curve = nav * DEFAULT_BACKTEST_INITIAL_CAPITAL
+        current_position = float(position.iloc[-1])
+        current_score = float(df[score_col].dropna().iloc[-1]) if not df[score_col].dropna().empty else 50.0
+        current_signal = str(df['Signal_Type'].iloc[-1]) if 'Signal_Type' in df.columns else "N/A"
+
+        rebalance_mask = df['Target_Position'].diff().abs().fillna(df['Target_Position'].abs()) > 1e-8
+        rebalance_frame = df.loc[rebalance_mask, ['Target_Position', 'Signal_Type', score_col, 'Price']].copy()
+        rebalance_frame['Previous_Position'] = df['Target_Position'].shift(1).reindex(rebalance_frame.index).fillna(0.0)
+        rebalance_rows = []
+        for idx, row in rebalance_frame.tail(12).iloc[::-1].iterrows():
+            rebalance_rows.append({
+                "date": idx.strftime("%Y-%m-%d"),
+                "previousPosition": round(float(row['Previous_Position']), 2),
+                "position": round(float(row['Target_Position']), 2),
+                "signal": str(row['Signal_Type']),
+                "score": round(float(row[score_col]), 1),
+                "price": round(float(row['Price']), 2),
+            })
+
+        trade_rows = []
+        if not trade_log.empty:
+            for _, row in trade_log.tail(12).iloc[::-1].iterrows():
+                mode_text = str(row.get('Mode', ''))
+                trade_rows.append({
+                    "mode": mode_text,
+                    "side": "short" if ("空" in mode_text or "做空" in mode_text or "SHORT" in mode_text.upper()) else "long",
+                    "entryDate": _format_backtest_date(row.get('Entry Date')),
+                    "exitDate": _format_backtest_date(row.get('Exit Date')),
+                    "entryScore": None if pd.isna(row.get('Entry Score')) else round(float(row.get('Entry Score')), 1),
+                    "entryPrice": None if pd.isna(row.get('Entry Price')) else round(float(row.get('Entry Price')), 2),
+                    "exitPrice": None if pd.isna(row.get('Exit Price')) else round(float(row.get('Exit Price')), 2),
+                    "pnlPct": None if pd.isna(row.get('PnL')) else round(float(row.get('PnL')) * 100.0, 2),
+                    "result": str(row.get('Result', '')),
+                })
+
         assets.append({
             "ticker": item["ticker"],
             "name": item["name"],
@@ -1340,8 +1408,16 @@ def build_backtest_payload(df_all, overrides=None):
             "sharpe": round(0.0 if pd.isna(sharpe) else float(sharpe), 2),
             "mdd": round(0.0 if pd.isna(mdd) else float(mdd) * 100.0, 2),
             "alpha": round(alpha, 2),
+            "strategyReturn": round((float(nav.iloc[-1]) - 1.0) * 100.0, 2),
+            "benchmarkReturn": round((float(bench_nav.iloc[-1]) - 1.0) * 100.0, 2),
+            "endingCapital": round(float(equity_curve.iloc[-1]), 2),
+            "currentPosition": round(current_position, 2),
+            "currentScore": round(current_score, 1),
+            "currentSignal": current_signal,
             "navSeries": _series_to_points(equity_curve, digits=2, limit=300),
             "positionSeries": _series_to_points(position, digits=2, limit=300),
+            "rebalanceLog": rebalance_rows,
+            "tradeLog": trade_rows,
         })
 
     if not assets:

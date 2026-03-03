@@ -60,8 +60,33 @@ export type BacktestAsset = {
   sharpe: number;
   mdd: number;
   alpha: number;
+  strategyReturn?: number;
+  benchmarkReturn?: number;
+  endingCapital?: number;
+  currentPosition?: number;
+  currentScore?: number;
+  currentSignal?: string;
   navSeries: TrendPoint[];
   positionSeries: TrendPoint[];
+  rebalanceLog?: {
+    date: string;
+    previousPosition: number;
+    position: number;
+    signal: string;
+    score: number;
+    price: number;
+  }[];
+  tradeLog?: {
+    mode: string;
+    side: "long" | "short";
+    entryDate: string;
+    exitDate: string;
+    entryScore: number | null;
+    entryPrice: number | null;
+    exitPrice: number | null;
+    pnlPct: number | null;
+    result: string;
+  }[];
 };
 
 export type BacktestPayload = {
@@ -74,6 +99,19 @@ export type BacktestPayload = {
   sop: {
     crypto: string[];
     traditional: string[];
+  };
+  strategyOverview?: {
+    title: string;
+    summary: string;
+    rebalance: string;
+    shorting: string;
+    thresholds: {
+      label: string;
+      min: number | null;
+      max: number | null;
+      target: number;
+      bias: "short" | "flat" | "long";
+    }[];
   };
 };
 
