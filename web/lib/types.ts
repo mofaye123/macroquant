@@ -69,6 +69,7 @@ export type BacktestPayload = {
   reason?: string | null;
   startDate?: string | null;
   endDate?: string | null;
+  startingCapital?: number;
   assets: BacktestAsset[];
   sop: {
     crypto: string[];

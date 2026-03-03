@@ -305,6 +305,7 @@ export const realtimeSnapshots = [
 ];
 
 const baseNavSeries = makePriceSeries(300, 1.0, 0.0022, 0.04, 9);
+const BACKTEST_STARTING_CAPITAL = 100000;
 
 const rescale = (series: TrendPoint[], scale: number) =>
   series.map((point) => ({ ...point, value: Number((point.value * scale).toFixed(4)) }));
@@ -317,7 +318,7 @@ export const backtestAssets: BacktestAsset[] = [
     sharpe: 1.52,
     mdd: -42.1,
     alpha: 9.6,
-    navSeries: rescale(baseNavSeries, 1.4),
+    navSeries: rescale(baseNavSeries, 1.4 * BACKTEST_STARTING_CAPITAL),
     positionSeries: makePriceSeries(300, 0.35, 0.0007, 0.2, 2)
   },
   {
@@ -327,7 +328,7 @@ export const backtestAssets: BacktestAsset[] = [
     sharpe: 1.39,
     mdd: -47.4,
     alpha: 6.8,
-    navSeries: rescale(baseNavSeries, 1.25),
+    navSeries: rescale(baseNavSeries, 1.25 * BACKTEST_STARTING_CAPITAL),
     positionSeries: makePriceSeries(300, 0.33, 0.0006, 0.23, 5)
   },
   {
@@ -337,7 +338,7 @@ export const backtestAssets: BacktestAsset[] = [
     sharpe: 1.05,
     mdd: -22.8,
     alpha: 2.4,
-    navSeries: rescale(baseNavSeries, 1.06),
+    navSeries: rescale(baseNavSeries, 1.06 * BACKTEST_STARTING_CAPITAL),
     positionSeries: makePriceSeries(300, 0.52, 0.0002, 0.08, 8)
   },
   {
@@ -347,7 +348,7 @@ export const backtestAssets: BacktestAsset[] = [
     sharpe: 1.18,
     mdd: -28.6,
     alpha: 3.1,
-    navSeries: rescale(baseNavSeries, 1.12),
+    navSeries: rescale(baseNavSeries, 1.12 * BACKTEST_STARTING_CAPITAL),
     positionSeries: makePriceSeries(300, 0.55, 0.00025, 0.1, 11)
   }
 ];
@@ -370,6 +371,7 @@ export const backtestPayload: BacktestPayload = {
   reason: "Using local mock fallback because live backtest payload is unavailable.",
   startDate: "2024-01-01",
   endDate: "2026-02-27",
+  startingCapital: BACKTEST_STARTING_CAPITAL,
   assets: backtestAssets,
   sop: backtestSop
 };

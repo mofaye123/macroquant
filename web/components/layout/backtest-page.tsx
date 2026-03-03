@@ -63,6 +63,12 @@ export const BacktestPage = () => {
     () => assets.find((item) => item.ticker === selected) ?? assets[0],
     [assets, selected]
   );
+  const startingCapital = payload.startingCapital ?? 100000;
+  const latestCapital = asset.navSeries[asset.navSeries.length - 1]?.value ?? startingCapital;
+  const capitalFormatter = useMemo(
+    () => new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 }),
+    []
+  );
 
   return (
     <AppShell dataState={dataState}>
@@ -83,6 +89,7 @@ export const BacktestPage = () => {
                     ? `当前展示默认参数的 Python 回测结果，区间 ${seededBacktest?.startDate ?? "-"} 至 ${seededBacktest?.endDate ?? "-"}.`
                     : `当前显示前端回退样例数据。${seededBacktest?.reason ? `原因：${seededBacktest.reason}` : ""}`}
           </p>
+          <p className="mt-[4px] text-[12px] text-app-muted">起始资金: {capitalFormatter.format(startingCapital)}</p>
         </header>
 
         <SurfaceCard>
@@ -306,6 +313,9 @@ export const BacktestPage = () => {
               );
             })}
           </div>
+          <p className="mt-[10px] text-[12px] text-app-muted">
+            当前资金: {capitalFormatter.format(latestCapital)} | 当前净仓位: {(asset.positionSeries[asset.positionSeries.length - 1]?.value ?? 0).toFixed(2)}x
+          </p>
 
           <div className="mt-[12px] grid gap-[10px] sm:grid-cols-2 xl:grid-cols-4">
             <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
@@ -330,12 +340,12 @@ export const BacktestPage = () => {
 
           <div className="mt-[12px] grid gap-[14px] xl:grid-cols-2">
             <div className="rounded-[14px] border border-slate-200 bg-white p-[10px]">
-              <p className="mb-[4px] text-[12px] font-semibold text-app-text">策略净值曲线 ({asset.name})</p>
+              <p className="mb-[4px] text-[12px] font-semibold text-app-text">策略资金曲线 ({asset.name})</p>
               <LineScoreChart
                 data={asset.navSeries}
                 color="#0ea5e9"
                 yDomain={["dataMin", "dataMax"]}
-                valueFormatter={(value) => value.toFixed(4)}
+                valueFormatter={(value) => capitalFormatter.format(value)}
               />
             </div>
             <div className="rounded-[14px] border border-slate-200 bg-white p-[10px]">

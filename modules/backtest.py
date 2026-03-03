@@ -5,6 +5,8 @@ import yfinance as yf
 import plotly.graph_objects as go
 import plotly.express as px
 
+DEFAULT_BACKTEST_INITIAL_CAPITAL = 100000.0
+
 
 def _compute_macro_regime_series(df_all, target_index, z_window=60):
     """
@@ -710,7 +712,7 @@ def run_strategy_logic(
     )
     df['Short_Risk_Count'] = risk_count
 
-    use_default_short_logic = allow_short and is_shortable and (not eth_event_hedge_enabled)
+    use_default_short_logic = allow_short and is_shortable
     if use_default_short_logic:
         hedge_weak = float(np.clip(float(cfg.get('hedge_size_weak', 0.35)), 0.0, 1.0))
         hedge_strong = float(np.clip(float(cfg.get('hedge_size_strong', 0.70)), 0.0, 1.0))
@@ -724,13 +726,29 @@ def run_strategy_logic(
             np.where(bear_weak, short_notional * hedge_weak, np.where(bear_early, short_notional * hedge_early, 0.0))
         )
         df['Hedge_Notional'] = pd.Series(hedge_notional, index=df.index).astype(float)
-        target = np.maximum(target_long - df['Hedge_Notional'], long_bias_min)
-        # 极端下行才允许少量净空
-        extreme_short = bear_strong & (target_long <= long_bias_min * 0.6)
-        target = np.where(extreme_short, -np.minimum(short_notional, df['Hedge_Notional'] * 0.6), target)
+        residual_long = np.maximum(target_long - df['Hedge_Notional'], 0.0)
+        direct_short = np.where(
+            bear_strong,
+            short_notional,
+            np.where(
+                bear_weak,
+                short_notional * max(0.5, hedge_weak),
+                np.where(bear_early & (score_regime < th1), short_notional * max(0.25, hedge_early), 0.0)
+            )
+        )
+        flip_to_short = bear_weak | (bear_early & (score_regime < th1))
+        target = pd.Series(
+            np.where(
+                flip_to_short,
+                -direct_short,
+                np.maximum(residual_long, np.where(bear_weak, 0.0, long_bias_min))
+            ),
+            index=df.index,
+            dtype=float
+        )
     else:
         df['Hedge_Notional'] = 0.0
-        target = target_long
+        target = pd.Series(target_long, index=df.index, dtype=float)
 
     # ETH 专属应急对冲：单日急跌触发，T+1~T+2 快速平仓，或达到累计跌幅目标即刻平仓
     eth_event_hedge = pd.Series(0.0, index=df.index, dtype=float)
@@ -767,10 +785,14 @@ def run_strategy_logic(
                 eth_event_hedge.iloc[open_i:close_i + 1], hedge_size
             )
 
-    df['ETH_Event_Hedge'] = eth_event_hedge
+    base_target_series = pd.Series(target, index=df.index, dtype=float)
     if eth_event_hedge_enabled:
-        # 保持长仓主导，对冲仓位作为独立腿位叠加在净仓位中
-        target = np.maximum(pd.Series(target, index=df.index).astype(float) - eth_event_hedge, 0.0)
+        # 已经净空时不再叠加事件对冲，避免双重放大空仓。
+        eth_event_hedge = eth_event_hedge.where(base_target_series > 0, 0.0)
+        target = base_target_series - eth_event_hedge
+    else:
+        target = base_target_series
+    df['ETH_Event_Hedge'] = eth_event_hedge
 
     desired_target = pd.Series(target, index=df.index).astype(float)
     desired_target = (np.round(desired_target / position_step) * position_step).astype(float)
@@ -836,29 +858,34 @@ def run_strategy_logic(
         df['Target_Position'] = df['Target_Position'].clip(0.0, max_leverage)
 
     df['Long_Target_Position'] = df['Target_Position'].clip(0.0, max_leverage)
+    df['Short_Target_Position'] = df['Target_Position'].clip(-short_notional, 0.0) if use_default_short_logic else 0.0
     df['Hedge_Target_Position'] = -df['ETH_Event_Hedge'] if eth_event_hedge_enabled else 0.0
-    df['Target_Position_Net'] = df['Long_Target_Position'] + df['Hedge_Target_Position']
+    df['Target_Position_Net'] = df['Long_Target_Position'] + df['Short_Target_Position'] + df['Hedge_Target_Position']
     df['Target_Position'] = df['Target_Position_Net']
 
     signal_labels = np.select(
         [
+            df['Short_Target_Position'] <= -min(short_notional, 0.8),
+            df['Short_Target_Position'] < -0.05,
             df['Hedge_Target_Position'] < -0.05,
             df['Long_Target_Position'] >= min(max_leverage, 1.2),
             df['Long_Target_Position'] >= 0.9,
             df['Long_Target_Position'] >= 0.45,
             df['Long_Target_Position'] > 0
         ],
-        ['🔻 对冲做空', '🔥 杠杆进攻', '🚀 进攻', '🛡️ 防守', '🌤️ 试探'],
+        ['⬇️ CTA做空', '↘️ 轻仓做空', '🔻 对冲做空', '🔥 杠杆进攻', '🚀 进攻', '🛡️ 防守', '🌤️ 试探'],
         default='⚪ 空仓 (Cash)'
     )
     df['Signal_Type'] = pd.Series(signal_labels, index=df.index)
     df['Long_Position'] = df['Long_Target_Position'].shift(1).fillna(0.0)
+    df['Short_Position'] = df['Short_Target_Position'].shift(1).fillna(0.0) if use_default_short_logic else 0.0
     df['Hedge_Position'] = df['Hedge_Target_Position'].shift(1).fillna(0.0)
-    df['Position'] = df['Long_Position'] + df['Hedge_Position']
+    df['Position'] = df['Long_Position'] + df['Short_Position'] + df['Hedge_Position']
 
     df['Turnover_Long'] = df['Long_Position'].diff().abs().fillna(df['Long_Position'].abs())
+    df['Turnover_Short'] = df['Short_Position'].diff().abs().fillna(df['Short_Position'].abs()) if use_default_short_logic else 0.0
     df['Turnover_Hedge'] = df['Hedge_Position'].diff().abs().fillna(df['Hedge_Position'].abs())
-    df['Turnover'] = df['Turnover_Long'] + df['Turnover_Hedge']
+    df['Turnover'] = df['Turnover_Long'] + df['Turnover_Short'] + df['Turnover_Hedge']
     fee_rate = float(one_way_cost_bps) / 10000.0
     df['Tx_Cost'] = df['Turnover'] * fee_rate
 
@@ -1064,8 +1091,8 @@ DEFAULT_BACKTEST_PRESET = {
     "risk_free_rate": 0.04,
     "cost_scale": 1.0,
     "max_leverage": 2.0,
-    "allow_short": False,
-    "short_leverage": 0.5,
+    "allow_short": True,
+    "short_leverage": 1.0,
     "short_min_risk_count": 2,
     "cfg": {
         "th1": 20.0, "th2": 35.0, "th3": 50.0, "th4": 65.0, "th5": 80.0,
@@ -1231,6 +1258,7 @@ def build_backtest_payload(df_all, overrides=None):
         "reason": None,
         "startDate": None,
         "endDate": None,
+        "startingCapital": DEFAULT_BACKTEST_INITIAL_CAPITAL,
         "assets": [],
         "sop": DEFAULT_BACKTEST_SOP,
     }
@@ -1304,6 +1332,7 @@ def build_backtest_payload(df_all, overrides=None):
         cagr = perf.get('cagr', np.nan)
         sharpe = perf.get('sharpe_m', np.nan)
         mdd = perf.get('mdd', np.nan)
+        equity_curve = nav * DEFAULT_BACKTEST_INITIAL_CAPITAL
         assets.append({
             "ticker": item["ticker"],
             "name": item["name"],
@@ -1311,7 +1340,7 @@ def build_backtest_payload(df_all, overrides=None):
             "sharpe": round(0.0 if pd.isna(sharpe) else float(sharpe), 2),
             "mdd": round(0.0 if pd.isna(mdd) else float(mdd) * 100.0, 2),
             "alpha": round(alpha, 2),
-            "navSeries": _series_to_points(nav, digits=4, limit=300),
+            "navSeries": _series_to_points(equity_curve, digits=2, limit=300),
             "positionSeries": _series_to_points(position, digits=2, limit=300),
         })
 
