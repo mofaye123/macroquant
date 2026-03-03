@@ -7,7 +7,7 @@ import { LineScoreChart } from "@/components/charts/line-score-chart";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionTitle } from "@/components/ui/section-title";
 import { SurfaceCard } from "@/components/ui/surface-card";
-import { backtestAssets, backtestSop } from "@/lib/mock-data";
+import { DEFAULT_BACKTEST_CONTROLS, useBacktestData } from "@/lib/use-backtest-data";
 import { useMacroData } from "@/lib/use-macro-data";
 import { cn, formatSigned } from "@/lib/utils";
 
@@ -16,13 +16,42 @@ const inputClass =
 
 export const BacktestPage = () => {
   const dataState = useMacroData();
-  const liveBacktest = dataState.payload.backtest;
-  const hasLiveBacktest = dataState.sourceType !== "mock" && liveBacktest?.status === "ok" && Boolean(liveBacktest?.assets?.length);
-  const assets = hasLiveBacktest ? liveBacktest!.assets : backtestAssets;
-  const sop = liveBacktest?.sop ?? backtestSop;
+  const seededBacktest = dataState.payload.backtest;
+  const {
+    controls,
+    setControls,
+    resetControls,
+    payload,
+    isLoading,
+    error,
+    isDirty,
+  } = useBacktestData({
+    apiUrl: dataState.apiUrl,
+    sourceType: dataState.sourceType,
+    seededPayload: seededBacktest,
+  });
+  const hasSeededLiveBacktest =
+    dataState.sourceType !== "mock" &&
+    seededBacktest?.status === "ok" &&
+    Boolean(seededBacktest.assets.length);
+  const assets = payload.assets;
+  const sop = payload.sop;
   const [selected, setSelected] = useState(assets[0].ticker);
   const [showRiskPanel, setShowRiskPanel] = useState(false);
   const [showStrategyPanel, setShowStrategyPanel] = useState(false);
+
+  const updateNumeric = (
+    key: keyof Omit<typeof DEFAULT_BACKTEST_CONTROLS, "rebalanceMode">,
+    nextValue: number
+  ) => {
+    if (!Number.isFinite(nextValue)) {
+      return;
+    }
+    setControls((current) => ({
+      ...current,
+      [key]: nextValue,
+    }));
+  };
 
   useEffect(() => {
     if (!assets.some((item) => item.ticker === selected)) {
@@ -44,9 +73,15 @@ export const BacktestPage = () => {
             沿用原 Streamlit 逻辑框架：宏观状态机定仓位 + 趋势跟随执行 + 低频调仓 + 下行风险控制。
           </p>
           <p className="mt-[4px] text-[12px] text-app-muted">
-            {hasLiveBacktest
-              ? `当前接入 Python 回测引擎，区间 ${liveBacktest?.startDate ?? "-"} 至 ${liveBacktest?.endDate ?? "-"}.`
-              : `当前显示前端回退样例数据。${liveBacktest?.reason ? `原因：${liveBacktest.reason}` : ""}`}
+            {isLoading
+              ? "参数已更新，正在请求后端重新计算回测..."
+              : isDirty && !error
+                ? `当前展示自定义参数回测结果，区间 ${payload.startDate ?? "-"} 至 ${payload.endDate ?? "-"}.`
+                : isDirty && error
+                  ? `自定义参数回测请求失败，当前显示最近可用结果。原因：${error}`
+                  : hasSeededLiveBacktest
+                    ? `当前展示默认参数的 Python 回测结果，区间 ${seededBacktest?.startDate ?? "-"} 至 ${seededBacktest?.endDate ?? "-"}.`
+                    : `当前显示前端回退样例数据。${seededBacktest?.reason ? `原因：${seededBacktest.reason}` : ""}`}
           </p>
         </header>
 
@@ -54,7 +89,12 @@ export const BacktestPage = () => {
           <SectionTitle
             title="核心参数"
             rightSlot={
-              <button className="inline-flex items-center gap-[6px] rounded-[10px] border border-slate-300 bg-white px-[10px] py-[6px] text-[11px] font-semibold text-slate-700">
+              <button
+                type="button"
+                onClick={resetControls}
+                disabled={!isDirty && !error}
+                className="inline-flex items-center gap-[6px] rounded-[10px] border border-slate-300 bg-white px-[10px] py-[6px] text-[11px] font-semibold text-slate-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
                 <Filter className="h-[12px] w-[12px]" />
                 恢复默认
               </button>
@@ -64,26 +104,64 @@ export const BacktestPage = () => {
           <div className="mt-[12px] grid gap-[10px] sm:grid-cols-2 xl:grid-cols-5">
             <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
               宏观信号滞后(交易日)
-              <input className={inputClass} type="number" defaultValue={1} min={0} max={10} />
+              <input
+                className={inputClass}
+                type="number"
+                value={controls.macroLagDays}
+                min={0}
+                max={10}
+                onChange={(event) => updateNumeric("macroLagDays", Number(event.target.value))}
+              />
             </label>
             <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
               年化无风险利率(%)
-              <input className={inputClass} type="number" defaultValue={4.0} step={0.1} />
+              <input
+                className={inputClass}
+                type="number"
+                value={controls.riskFreeRate}
+                step={0.1}
+                onChange={(event) => updateNumeric("riskFreeRate", Number(event.target.value))}
+              />
             </label>
             <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
               交易成本系数
-              <input className={inputClass} type="number" defaultValue={1.0} step={0.1} min={0.5} max={2.0} />
+              <input
+                className={inputClass}
+                type="number"
+                value={controls.costScale}
+                step={0.1}
+                min={0.5}
+                max={2.0}
+                onChange={(event) => updateNumeric("costScale", Number(event.target.value))}
+              />
             </label>
             <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
               最大杠杆
-              <input className={inputClass} type="number" defaultValue={2.0} step={0.1} min={1.0} max={2.0} />
+              <input
+                className={inputClass}
+                type="number"
+                value={controls.maxLeverage}
+                step={0.1}
+                min={1.0}
+                max={2.0}
+                onChange={(event) => updateNumeric("maxLeverage", Number(event.target.value))}
+              />
             </label>
             <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
               调仓频率
-              <select className={inputClass} defaultValue="weekly">
-                <option value="weekly">每周</option>
-                <option value="monthly">每月</option>
-                <option value="daily">每日</option>
+              <select
+                className={inputClass}
+                value={controls.rebalanceMode}
+                onChange={(event) =>
+                  setControls((current) => ({
+                    ...current,
+                    rebalanceMode: event.target.value as "D" | "W" | "M",
+                  }))
+                }
+              >
+                <option value="W">每周</option>
+                <option value="M">每月</option>
+                <option value="D">每日</option>
               </select>
             </label>
           </div>
@@ -111,19 +189,45 @@ export const BacktestPage = () => {
             <div className="mt-[10px] grid gap-[10px] rounded-[12px] border border-slate-200 bg-slate-50 p-[10px] sm:grid-cols-2 xl:grid-cols-4">
               <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
                 ETH 急跌阈值(%)
-                <input className={inputClass} type="number" defaultValue={13.5} step={0.5} />
+                <input
+                  className={inputClass}
+                  type="number"
+                  value={controls.ethShockDropPct}
+                  step={0.5}
+                  onChange={(event) => updateNumeric("ethShockDropPct", Number(event.target.value))}
+                />
               </label>
               <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
                 对冲资金比例
-                <input className={inputClass} type="number" defaultValue={0.33} step={0.05} />
+                <input
+                  className={inputClass}
+                  type="number"
+                  value={controls.ethHedgeFraction}
+                  step={0.05}
+                  onChange={(event) => updateNumeric("ethHedgeFraction", Number(event.target.value))}
+                />
               </label>
               <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
                 对冲杠杆上限(x)
-                <input className={inputClass} type="number" defaultValue={2.0} step={0.1} />
+                <input
+                  className={inputClass}
+                  type="number"
+                  value={controls.ethHedgeLeverage}
+                  step={0.1}
+                  onChange={(event) => updateNumeric("ethHedgeLeverage", Number(event.target.value))}
+                />
               </label>
               <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
                 对冲持有天数
-                <input className={inputClass} type="number" defaultValue={2} step={1} min={1} max={2} />
+                <input
+                  className={inputClass}
+                  type="number"
+                  value={controls.ethHedgeHoldDays}
+                  step={1}
+                  min={1}
+                  max={2}
+                  onChange={(event) => updateNumeric("ethHedgeHoldDays", Number(event.target.value))}
+                />
               </label>
             </div>
           )}
@@ -132,23 +236,50 @@ export const BacktestPage = () => {
             <div className="mt-[10px] grid gap-[10px] rounded-[12px] border border-slate-200 bg-slate-50 p-[10px] sm:grid-cols-2 xl:grid-cols-5">
               <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
                 阈值1
-                <input className={inputClass} type="number" defaultValue={20} />
+                <input
+                  className={inputClass}
+                  type="number"
+                  value={controls.th1}
+                  onChange={(event) => updateNumeric("th1", Number(event.target.value))}
+                />
               </label>
               <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
                 阈值2
-                <input className={inputClass} type="number" defaultValue={35} />
+                <input
+                  className={inputClass}
+                  type="number"
+                  value={controls.th2}
+                  onChange={(event) => updateNumeric("th2", Number(event.target.value))}
+                />
               </label>
               <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
                 阈值3
-                <input className={inputClass} type="number" defaultValue={50} />
+                <input
+                  className={inputClass}
+                  type="number"
+                  value={controls.th3}
+                  onChange={(event) => updateNumeric("th3", Number(event.target.value))}
+                />
               </label>
               <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
                 0-20仓位
-                <input className={inputClass} type="number" defaultValue={0.2} step={0.05} />
+                <input
+                  className={inputClass}
+                  type="number"
+                  value={controls.alloc0To20}
+                  step={0.05}
+                  onChange={(event) => updateNumeric("alloc0To20", Number(event.target.value))}
+                />
               </label>
               <label className="space-y-[6px] text-[11px] font-semibold text-app-muted">
                 65-80仓位
-                <input className={inputClass} type="number" defaultValue={1.0} step={0.05} />
+                <input
+                  className={inputClass}
+                  type="number"
+                  value={controls.alloc65To80}
+                  step={0.05}
+                  onChange={(event) => updateNumeric("alloc65To80", Number(event.target.value))}
+                />
               </label>
             </div>
           )}

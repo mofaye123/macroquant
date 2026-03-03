@@ -1403,24 +1403,7 @@ def _build_module_snapshots(
 
 
 def build_macro_payload() -> Dict[str, Any]:
-    fred_api_key = os.getenv("FRED_API_KEY", API_KEY)
-    start_date = os.getenv("MACRO_START_DATE", "2010-01-01")
-    warnings: List[str] = []
-
-    loader = getattr(get_mixed_data, "__wrapped__", get_mixed_data)
-    try:
-        df_all = loader(fred_api_key, SERIES_IDS, start_date=start_date)
-    except Exception as exc:
-        warnings.append(f"data loader error: {exc}")
-        df_all = pd.DataFrame()
-    fetch_meta = get_last_fetch_meta()
-
-    if df_all is None or df_all.empty:
-        warnings.append("python data engine returned empty dataset")
-        fallback_idx = pd.DatetimeIndex([pd.Timestamp.utcnow().normalize()])
-        df_all = pd.DataFrame(index=fallback_idx)
-
-    df_all = df_all.sort_index().ffill()
+    df_all, fetch_meta, warnings = _load_live_dataset()
     latest_raw = df_all.iloc[-1]
 
     try:
@@ -1681,6 +1664,7 @@ app.add_middleware(
 )
 
 _cache: Dict[str, Any] = {"payload": None, "expires_at": 0.0}
+_dataset_cache: Dict[str, Any] = {"df_all": None, "fetch_meta": None, "warnings": None, "expires_at": 0.0}
 _CACHE_TTL = int(os.getenv("MACRO_API_CACHE_TTL", "300"))
 _BOOTSTRAP_TTL = int(os.getenv("MACRO_API_BOOTSTRAP_TTL", "15"))
 _SNAPSHOT_PATH = Path(os.getenv("MACRO_API_SNAPSHOT_PATH", ".cache/macro_payload.json"))
@@ -1707,6 +1691,40 @@ def _payload_has_live_modules(payload: Optional[Dict[str, Any]]) -> bool:
     data_quality = payload.get("dataQuality", {})
     ready_modules = data_quality.get("readyModules", [])
     return isinstance(ready_modules, list) and len(ready_modules) > 0
+
+
+def _load_live_dataset(refresh: bool = False) -> tuple[pd.DataFrame, Dict[str, Any], List[str]]:
+    now = time.time()
+    use_cache = (not refresh) and _dataset_cache["df_all"] is not None and now < _dataset_cache["expires_at"]
+    if use_cache:
+        cached_df = _dataset_cache["df_all"]
+        cached_meta = _dataset_cache["fetch_meta"] or {}
+        cached_warnings = _dataset_cache["warnings"] or []
+        return cached_df.copy(), copy.deepcopy(cached_meta), list(cached_warnings)
+
+    fred_api_key = os.getenv("FRED_API_KEY", API_KEY)
+    start_date = os.getenv("MACRO_START_DATE", "2010-01-01")
+    warnings: List[str] = []
+
+    loader = getattr(get_mixed_data, "__wrapped__", get_mixed_data)
+    try:
+        df_all = loader(fred_api_key, SERIES_IDS, start_date=start_date)
+    except Exception as exc:
+        warnings.append(f"data loader error: {exc}")
+        df_all = pd.DataFrame()
+    fetch_meta = get_last_fetch_meta()
+
+    if df_all is None or df_all.empty:
+        warnings.append("python data engine returned empty dataset")
+        fallback_idx = pd.DatetimeIndex([pd.Timestamp.utcnow().normalize()])
+        df_all = pd.DataFrame(index=fallback_idx)
+
+    df_all = df_all.sort_index().ffill()
+    _dataset_cache["df_all"] = df_all.copy()
+    _dataset_cache["fetch_meta"] = copy.deepcopy(fetch_meta)
+    _dataset_cache["warnings"] = list(warnings)
+    _dataset_cache["expires_at"] = now + _CACHE_TTL
+    return df_all, fetch_meta, warnings
 
 
 def _load_snapshot_payload() -> Optional[Dict[str, Any]]:
@@ -1784,6 +1802,51 @@ def macro_data(refresh: bool = Query(False)) -> Dict[str, Any]:
 
     _cache["payload"] = payload
     _cache["expires_at"] = now + _CACHE_TTL
+    return payload
+
+
+@app.get("/api/v1/backtest")
+def backtest_data(
+    refresh: bool = Query(False),
+    macro_lag_days: int = Query(1, ge=0, le=10),
+    risk_free_rate: float = Query(4.0, ge=0.0, le=15.0),
+    cost_scale: float = Query(1.0, ge=0.5, le=2.0),
+    max_leverage: float = Query(2.0, ge=1.0, le=2.0),
+    rebalance_mode: str = Query("M"),
+    eth_shock_drop_pct: float = Query(13.5, ge=3.0, le=20.0),
+    eth_hedge_fraction: float = Query(1.0 / 3.0, ge=0.10, le=1.0),
+    eth_hedge_leverage: float = Query(2.0, ge=1.0, le=3.0),
+    eth_hedge_hold_days: int = Query(2, ge=1, le=2),
+    th1: float = Query(20.0, ge=0.0, le=99.0),
+    th2: float = Query(35.0, ge=0.0, le=99.0),
+    th3: float = Query(50.0, ge=0.0, le=99.0),
+    alloc_0_20: float = Query(0.20, ge=0.0, le=2.0),
+    alloc_65_80: float = Query(1.0, ge=0.0, le=2.0),
+) -> Dict[str, Any]:
+    try:
+        df_all, _, _ = _load_live_dataset(refresh=refresh)
+        payload = build_backtest_payload(
+            df_all,
+            overrides={
+                "macro_lag_days": macro_lag_days,
+                "risk_free_rate": risk_free_rate,
+                "cost_scale": cost_scale,
+                "max_leverage": max_leverage,
+                "rebalance_mode": rebalance_mode,
+                "eth_shock_drop_pct": eth_shock_drop_pct,
+                "eth_hedge_fraction": eth_hedge_fraction,
+                "eth_hedge_leverage": eth_hedge_leverage,
+                "eth_hedge_hold_days": eth_hedge_hold_days,
+                "th1": th1,
+                "th2": th2,
+                "th3": th3,
+                "alloc_0_20": alloc_0_20,
+                "alloc_65_80": alloc_65_80,
+            },
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to compute backtest payload: {exc}") from exc
+
     return payload
 
 

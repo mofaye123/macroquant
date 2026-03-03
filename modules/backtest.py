@@ -1152,7 +1152,80 @@ def _series_to_points(series, digits=4, limit=300):
     ]
 
 
-def build_backtest_payload(df_all):
+def _normalize_backtest_overrides(overrides=None):
+    src = overrides or {}
+    cfg = DEFAULT_BACKTEST_PRESET["cfg"].copy()
+    eth_cfg = DEFAULT_BACKTEST_PRESET["eth"].copy()
+
+    def get_float(key, default, min_value=None, max_value=None):
+        raw = src.get(key, default)
+        try:
+            value = float(raw)
+        except Exception:
+            value = float(default)
+        if min_value is not None:
+            value = max(float(min_value), value)
+        if max_value is not None:
+            value = min(float(max_value), value)
+        return value
+
+    def get_int(key, default, min_value=None, max_value=None):
+        raw = src.get(key, default)
+        try:
+            value = int(raw)
+        except Exception:
+            value = int(default)
+        if min_value is not None:
+            value = max(int(min_value), value)
+        if max_value is not None:
+            value = min(int(max_value), value)
+        return value
+
+    rebalance_mode = str(src.get("rebalance_mode", cfg.get("rebalance_mode", "M"))).upper()
+    if rebalance_mode not in {"D", "W", "M"}:
+        rebalance_mode = str(cfg.get("rebalance_mode", "M")).upper()
+
+    th1 = get_float("th1", cfg["th1"], 0.0, 99.0)
+    th2 = get_float("th2", cfg["th2"], 0.0, 99.0)
+    th3 = get_float("th3", cfg["th3"], 0.0, 99.0)
+    th2 = max(th1, th2)
+    th3 = max(th2, th3)
+
+    alloc_0_20 = get_float("alloc_0_20", cfg["base_risk_off"], 0.0, 2.0)
+    alloc_65_80 = get_float("alloc_65_80", cfg["base_super"], 0.0, 2.0)
+
+    cfg.update({
+        "th1": th1,
+        "th2": th2,
+        "th3": th3,
+        "rebalance_mode": rebalance_mode,
+        "base_risk_off": alloc_0_20,
+        # Use the visible high-score control to drive the upper-risk buckets together.
+        "base_risk_on": min(2.0, alloc_65_80),
+        "base_super": min(2.0, alloc_65_80),
+    })
+
+    eth_cfg.update({
+        "eth_shock_drop_pct": get_float("eth_shock_drop_pct", eth_cfg["eth_shock_drop_pct"] * 100.0, 3.0, 20.0) / 100.0,
+        "eth_hedge_fraction": get_float("eth_hedge_fraction", eth_cfg["eth_hedge_fraction"], 0.10, 1.0),
+        "eth_hedge_leverage": get_float("eth_hedge_leverage", eth_cfg["eth_hedge_leverage"], 1.0, 3.0),
+        "eth_hedge_hold_days": get_int("eth_hedge_hold_days", eth_cfg["eth_hedge_hold_days"], 1, 2),
+    })
+
+    return {
+        "macro_lag_days": get_int("macro_lag_days", DEFAULT_BACKTEST_PRESET["macro_lag_days"], 0, 10),
+        "risk_free_rate": get_float("risk_free_rate", DEFAULT_BACKTEST_PRESET["risk_free_rate"] * 100.0, 0.0, 15.0) / 100.0,
+        "cost_scale": get_float("cost_scale", DEFAULT_BACKTEST_PRESET["cost_scale"], 0.5, 2.0),
+        "max_leverage": get_float("max_leverage", DEFAULT_BACKTEST_PRESET["max_leverage"], 1.0, 2.0),
+        "allow_short": bool(DEFAULT_BACKTEST_PRESET["allow_short"]),
+        "short_leverage": float(DEFAULT_BACKTEST_PRESET["short_leverage"]),
+        "short_min_risk_count": int(DEFAULT_BACKTEST_PRESET["short_min_risk_count"]),
+        "cfg": cfg,
+        "eth": eth_cfg,
+    }
+
+
+def build_backtest_payload(df_all, overrides=None):
     payload = {
         "status": "degraded",
         "reason": None,
@@ -1161,6 +1234,7 @@ def build_backtest_payload(df_all):
         "assets": [],
         "sop": DEFAULT_BACKTEST_SOP,
     }
+    resolved = _normalize_backtest_overrides(overrides)
     if df_all is None or df_all.empty:
         payload["reason"] = "回测失败：输入数据为空。"
         return payload
@@ -1200,26 +1274,26 @@ def build_backtest_payload(df_all):
         if len(df) < 150:
             continue
 
-        asset_cfg = DEFAULT_BACKTEST_PRESET["cfg"].copy()
-        asset_short_leverage = float(DEFAULT_BACKTEST_PRESET["short_leverage"])
+        asset_cfg = resolved["cfg"].copy()
+        asset_short_leverage = float(resolved["short_leverage"])
         if item["ticker"] == "ETH":
-            asset_cfg.update(DEFAULT_BACKTEST_PRESET["eth"])
-            asset_short_leverage = max(asset_short_leverage, float(DEFAULT_BACKTEST_PRESET["eth"]["eth_hedge_leverage"]))
+            asset_cfg.update(resolved["eth"])
+            asset_short_leverage = max(asset_short_leverage, float(resolved["eth"]["eth_hedge_leverage"]))
 
         df = run_strategy_logic(
             df,
             'Price',
             item["label"],
-            macro_lag_days=int(DEFAULT_BACKTEST_PRESET["macro_lag_days"]),
-            one_way_cost_bps=_default_cost_bps(item["label"]) * float(DEFAULT_BACKTEST_PRESET["cost_scale"]),
-            risk_free_rate=float(DEFAULT_BACKTEST_PRESET["risk_free_rate"]),
-            max_leverage=float(DEFAULT_BACKTEST_PRESET["max_leverage"]),
+            macro_lag_days=int(resolved["macro_lag_days"]),
+            one_way_cost_bps=_default_cost_bps(item["label"]) * float(resolved["cost_scale"]),
+            risk_free_rate=float(resolved["risk_free_rate"]),
+            max_leverage=float(resolved["max_leverage"]),
             strategy_cfg=asset_cfg,
-            allow_short=bool(DEFAULT_BACKTEST_PRESET["allow_short"]),
+            allow_short=bool(resolved["allow_short"]),
             short_leverage=asset_short_leverage,
-            short_min_risk_count=int(DEFAULT_BACKTEST_PRESET["short_min_risk_count"])
+            short_min_risk_count=int(resolved["short_min_risk_count"])
         )
-        perf = compute_perf_metrics(df, risk_free_rate=float(DEFAULT_BACKTEST_PRESET["risk_free_rate"]))
+        perf = compute_perf_metrics(df, risk_free_rate=float(resolved["risk_free_rate"]))
         nav = df['Strategy_Nav'].dropna()
         bench_nav = df['Benchmark_Nav'].dropna()
         position = df['Target_Position'].dropna()
