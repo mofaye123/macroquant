@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-04T19:50:40Z",
+  "generatedAt": "2026-03-04T20:48:26Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -82,8 +82,8 @@
   },
   "dashboard": {
     "overallScore": {
-      "value": 53.3,
-      "wow": -3.9,
+      "value": 52.9,
+      "wow": -4.3,
       "statusTags": [
         {
           "label": "TGA 抽水",
@@ -150,9 +150,9 @@
         "title": "外部冲击与汇率",
         "subtitle": "External",
         "weight": "15%",
-        "score": 41.1,
-        "change": -0.7,
-        "description": "美元指数 98.82，外部冲击处于中性偏缓状态。"
+        "score": 41.2,
+        "change": -0.6,
+        "description": "美元指数 98.74，外部冲击处于中性偏缓状态。"
       },
       {
         "id": "F",
@@ -170,8 +170,8 @@
         "title": "风险偏好",
         "subtitle": "Risk",
         "weight": "7.5%",
-        "score": 29.0,
-        "change": -8.3,
+        "score": 24.2,
+        "change": -13.2,
         "description": "风险偏好由波动率与动量共同驱动，需关注趋势持续性。"
       }
     ],
@@ -7374,7 +7374,7 @@
       },
       {
         "date": "2026-03-04",
-        "value": 53.26
+        "value": 52.91
       }
     ],
     "contributors": [
@@ -7389,24 +7389,24 @@
         "bucket": "Level"
       },
       {
+        "name": "风险偏好",
+        "delta": -0.99,
+        "bucket": "Flow"
+      },
+      {
         "name": "系统流动性",
         "delta": 0.76,
-        "bucket": "Flow"
-      },
-      {
-        "name": "风险偏好",
-        "delta": -0.62,
-        "bucket": "Flow"
-      },
-      {
-        "name": "外部冲击与汇率",
-        "delta": -0.11,
         "bucket": "Flow"
       },
       {
         "name": "实际利率与通胀",
         "delta": 0.1,
         "bucket": "Level"
+      },
+      {
+        "name": "外部冲击与汇率",
+        "delta": -0.09,
+        "bucket": "Flow"
       }
     ],
     "realtimeSnapshots": [
@@ -7418,14 +7418,14 @@
       },
       {
         "label": "DXY",
-        "value": "98.82",
-        "delta": "-0.23%",
+        "value": "98.74",
+        "delta": "-0.31%",
         "state": "positive"
       },
       {
         "label": "VIX",
-        "value": "20.6",
-        "delta": "-2.94 · -12.47%",
+        "value": "21.1",
+        "delta": "-2.45 · -10.39%",
         "state": "positive"
       },
       {
@@ -7471,10 +7471,10 @@
         }
       ],
       "summary": {
-        "level": -0.37,
-        "flow": -2.94,
+        "level": -0.69,
+        "flow": -2.92,
         "penalty": 0.33,
-        "structural": -0.04,
+        "structural": -0.36,
         "driver": "短期波动主导"
       }
     },
@@ -15822,7 +15822,7 @@
             },
             {
               "week": "W10",
-              "score": 41.1,
+              "score": 41.2,
               "bucket": "warning"
             }
           ]
@@ -19032,7 +19032,7 @@
             },
             {
               "week": "W10",
-              "score": 29.0,
+              "score": 24.2,
               "bucket": "critical"
             }
           ]
@@ -19421,7 +19421,7 @@
         },
         {
           "title": "权益表现",
-          "headline": "SPX 6817 / VIX 20.6",
+          "headline": "SPX 6817 / VIX 21.1",
           "detail": "风格切换/补跌监测",
           "changes": [
             {
@@ -19431,19 +19431,19 @@
             },
             {
               "label": "VIX",
-              "value": "-2.94 · -12.47%",
+              "value": "-2.45 · -10.39%",
               "tone": "negative"
             }
           ]
         },
         {
           "title": "信用与美元",
-          "headline": "DXY 98.82 / HY 3.08",
-          "detail": "WTI 74.48",
+          "headline": "DXY 98.74 / HY 3.08",
+          "detail": "WTI 75.23",
           "changes": [
             {
               "label": "DXY",
-              "value": "-0.23%",
+              "value": "-0.31%",
               "tone": "negative"
             },
             {
@@ -19453,8 +19453,8 @@
             },
             {
               "label": "WTI",
-              "value": "-0.11%",
-              "tone": "negative"
+              "value": "+0.90%",
+              "tone": "positive"
             }
           ]
         }
@@ -19491,8 +19491,8 @@
         },
         {
           "asset": "DXY",
-          "value": 98.82,
-          "delta": "-0.23%"
+          "value": 98.74,
+          "delta": "-0.31%"
         },
         {
           "asset": "SP500",
@@ -19506,13 +19506,13 @@
         },
         {
           "asset": "VIX",
-          "value": 20.63,
-          "delta": "-2.94 · -12.47%"
+          "value": 21.12,
+          "delta": "-2.45 · -10.39%"
         },
         {
           "asset": "WTI",
-          "value": 74.48,
-          "delta": "-0.11%"
+          "value": 75.23,
+          "delta": "+0.90%"
         }
       ]
     },
@@ -37765,7 +37765,7 @@
             },
             {
               "date": "2026-03-04",
-              "value": 53.26
+              "value": 52.91
             }
           ],
           "spx": [
@@ -46452,7 +46452,7 @@
         {
           "level": "red",
           "title": "G模块 (风险偏好): 风险厌恶升温",
-          "trigger": "VIX=20.6 / VIX/VXV=0.88。",
+          "trigger": "VIX=21.1 / VIX/VXV=0.90。",
           "off": "VIX 回落至 20 以下且 VIX/VXV 低于 0.95。"
         }
       ],
@@ -150565,9 +150565,9 @@
             23.54,
             3.08,
             1.78,
-            74.48,
-            98.82,
-            20.63,
+            75.23,
+            98.744,
+            21.12,
             null,
             3.6723,
             -0.012,
@@ -293769,9 +293769,9 @@
             23.54,
             3.08,
             1.78,
-            74.48,
-            98.82,
-            20.63,
+            75.23,
+            98.744,
+            21.12,
             null,
             64.5635,
             96.7063,
@@ -421722,9 +421722,9 @@
             23.54,
             3.08,
             1.78,
-            74.48,
-            98.82,
-            20.63,
+            75.23,
+            98.744,
+            21.12,
             null,
             64.9206,
             98.8889,
@@ -511688,7 +511688,7 @@
       "moduleId": "E",
       "title": "E 模块 · 外部冲击与汇率",
       "subtitle": "External",
-      "overview": "美元指数 98.82，外部冲击处于中性偏缓状态。",
+      "overview": "美元指数 98.74，外部冲击处于中性偏缓状态。",
       "factors": [
         {
           "name": "Broad USD",
@@ -511698,8 +511698,8 @@
         },
         {
           "name": "DXY",
-          "score": 39.4,
-          "change": -11.1,
+          "score": 40.1,
+          "change": -10.5,
           "contribution": "20%"
         },
         {
@@ -511718,14 +511718,14 @@
       "snapshots": [
         {
           "label": "E 模块当前分数",
-          "value": "41.1",
-          "delta": "-0.7",
+          "value": "41.2",
+          "delta": "-0.6",
           "state": "negative"
         },
         {
           "label": "DXY",
-          "value": "98.82",
-          "delta": "-0.23%",
+          "value": "98.74",
+          "delta": "-0.31%",
           "state": "positive"
         },
         {
@@ -511736,20 +511736,20 @@
         },
         {
           "label": "WTI",
-          "value": "74.48",
-          "delta": "-0.11%",
-          "state": "positive"
+          "value": "75.23",
+          "delta": "+0.90%",
+          "state": "negative"
         },
         {
           "label": "Oil Shock",
           "value": "未触发",
-          "delta": "+0分 · -0.11%",
+          "delta": "+0分 · +0.90%",
           "state": "neutral"
         },
         {
           "label": "分数状态",
           "value": "偏紧",
-          "delta": "41.1 / 100",
+          "delta": "41.2 / 100",
           "state": "negative"
         }
       ],
@@ -518952,7 +518952,7 @@
         },
         {
           "date": "2026-03-04",
-          "value": 41.12
+          "value": 41.25
         }
       ],
       "auxiliarySeries": [
@@ -533363,7 +533363,7 @@
             },
             {
               "date": "2026-03-04",
-              "value": 39.44
+              "value": 40.08
             }
           ],
           "color": "#10b981"
@@ -547793,7 +547793,7 @@
           },
           {
             "date": "2026-03-04",
-            "value": 41.12
+            "value": 41.25
           }
         ],
         "energyBase": [
@@ -576601,7 +576601,7 @@
           },
           {
             "date": "2026-03-04",
-            "value": 74.48
+            "value": 75.23
           }
         ],
         "dxy": [
@@ -583803,7 +583803,7 @@
           },
           {
             "date": "2026-03-04",
-            "value": 98.82
+            "value": 98.74
           }
         ]
       },
@@ -583921,14 +583921,14 @@
             23.54,
             3.08,
             1.78,
-            74.48,
-            98.82,
-            20.63,
+            75.23,
+            98.744,
+            21.12,
             null,
             -0.0161,
             72.381,
-            0.0055,
-            39.4444,
+            0.0047,
+            40.0794,
             0.0048,
             31.1111,
             2.4603,
@@ -583939,17 +583939,17 @@
             -0.2525,
             79.9206,
             40.0,
-            74.48,
-            98.82,
+            75.23,
+            98.744,
             6816.63,
-            20.63,
+            21.12,
             3.08,
             0.0,
             "未触发",
             "日度波动仍处于正常区间",
-            -0.1073,
+            0.8986,
             40.0,
-            41.1198
+            41.2468
           ],
           [
             "2026-03-03",
@@ -740675,9 +740675,9 @@
             23.54,
             3.08,
             1.78,
-            74.48,
-            98.82,
-            20.63,
+            75.23,
+            98.744,
+            21.12,
             null,
             3.08,
             46.9577,
@@ -832445,14 +832445,14 @@
       "factors": [
         {
           "name": "VIX/VXV Term",
-          "score": 53.0,
-          "change": 3.0,
+          "score": 42.5,
+          "change": -7.5,
           "contribution": "40%"
         },
         {
           "name": "VIX Level",
-          "score": 15.3,
-          "change": -16.6,
+          "score": 13.2,
+          "change": -18.7,
           "contribution": "30%"
         },
         {
@@ -832465,20 +832465,20 @@
       "snapshots": [
         {
           "label": "G 模块当前分数",
-          "value": "29.0",
-          "delta": "-8.3",
+          "value": "24.2",
+          "delta": "-13.2",
           "state": "negative"
         },
         {
           "label": "VIX",
-          "value": "20.63",
-          "delta": "-2.94",
+          "value": "21.12",
+          "delta": "-2.45",
           "state": "positive"
         },
         {
           "label": "VIX/VXV",
-          "value": "0.88",
-          "delta": "-0.12",
+          "value": "0.90",
+          "delta": "-0.10",
           "state": "positive"
         },
         {
@@ -832490,7 +832490,7 @@
         {
           "label": "分数状态",
           "value": "极紧",
-          "delta": "29.0 / 100",
+          "delta": "24.2 / 100",
           "state": "negative"
         }
       ],
@@ -839693,7 +839693,7 @@
         },
         {
           "date": "2026-03-04",
-          "value": 29.03
+          "value": 24.17
         }
       ],
       "auxiliarySeries": [
@@ -854104,7 +854104,7 @@
             },
             {
               "date": "2026-03-04",
-              "value": 53.04
+              "value": 42.46
             }
           ],
           "color": "#0ea5e9"
@@ -861310,7 +861310,7 @@
             },
             {
               "date": "2026-03-04",
-              "value": 15.34
+              "value": 13.23
             }
           ],
           "color": "#38bdf8"
@@ -861351,13 +861351,13 @@
           [
             "2026-03-04",
             6816.63,
-            20.63,
+            21.12,
             23.54,
-            0.8764,
-            15.3439,
-            53.0423,
+            0.8972,
+            13.2275,
+            42.4603,
             10.7143,
-            29.0344
+            24.1667
           ],
           [
             "2026-03-03",
@@ -881162,13 +881162,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 52.21,
+        "cagr": 52.15,
         "sharpe": 0.74,
         "mdd": -51.33,
-        "alpha": -64.58,
-        "strategyReturn": 278.79,
-        "benchmarkReturn": 343.37,
-        "endingCapital": 378788.05,
+        "alpha": -64.0,
+        "strategyReturn": 278.32,
+        "benchmarkReturn": 342.32,
+        "endingCapital": 378319.56,
         "currentPosition": 1.2,
         "currentScore": 50.9,
         "currentSignal": "🔥 杠杆进攻",
@@ -882371,7 +882371,7 @@
           },
           {
             "date": "2026-03-04",
-            "value": 378788.05
+            "value": 378319.56
           }
         ],
         "positionSeries": [
@@ -883583,7 +883583,7 @@
             "position": 1.2,
             "signal": "🔥 杠杆进攻",
             "score": 50.9,
-            "price": 73711.05
+            "price": 73535.4
           },
           {
             "date": "2026-01-16",
@@ -883682,8 +883682,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 73711.05,
-            "pnlPct": 159.4,
+            "exitPrice": 73535.4,
+            "pnlPct": 158.78,
             "result": "Floating"
           },
           {
@@ -883735,13 +883735,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 11.59,
+        "cagr": 11.53,
         "sharpe": 0.41,
         "mdd": -74.43,
-        "alpha": -40.03,
-        "strategyReturn": 41.58,
-        "benchmarkReturn": 81.62,
-        "endingCapital": 141583.25,
+        "alpha": -39.67,
+        "strategyReturn": 41.33,
+        "benchmarkReturn": 81.0,
+        "endingCapital": 141329.85,
         "currentPosition": 1.2,
         "currentScore": 50.9,
         "currentSignal": "🔥 杠杆进攻",
@@ -884944,7 +884944,7 @@
           },
           {
             "date": "2026-03-04",
-            "value": 141583.25
+            "value": 141329.85
           }
         ],
         "positionSeries": [
@@ -886156,7 +886156,7 @@
             "position": 1.2,
             "signal": "🔥 杠杆进攻",
             "score": 50.9,
-            "price": 2181.15
+            "price": 2173.7
           },
           {
             "date": "2026-02-20",
@@ -886255,8 +886255,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 2181.15,
-            "pnlPct": 10.51,
+            "exitPrice": 2173.7,
+            "pnlPct": 10.13,
             "result": "Floating"
           },
           {
@@ -886352,13 +886352,13 @@
       {
         "ticker": "GLD",
         "name": "Gold",
-        "cagr": 42.12,
-        "sharpe": 1.37,
+        "cagr": 42.22,
+        "sharpe": 1.38,
         "mdd": -26.96,
-        "alpha": 28.39,
-        "strategyReturn": 204.17,
-        "benchmarkReturn": 175.78,
-        "endingCapital": 304166.95,
+        "alpha": 28.76,
+        "strategyReturn": 204.85,
+        "benchmarkReturn": 176.09,
+        "endingCapital": 304845.38,
         "currentPosition": 2.0,
         "currentScore": 50.9,
         "currentSignal": "🔥 杠杆进攻",
@@ -887561,7 +887561,7 @@
           },
           {
             "date": "2026-03-04",
-            "value": 304166.95
+            "value": 304845.38
           }
         ],
         "positionSeries": [
@@ -888872,8 +888872,8 @@
             "exitDate": "Running",
             "entryScore": null,
             "entryPrice": 172.67,
-            "exitPrice": 471.75,
-            "pnlPct": 173.21,
+            "exitPrice": 472.28,
+            "pnlPct": 173.52,
             "result": "Floating"
           }
         ]
@@ -888881,13 +888881,13 @@
       {
         "ticker": "SPY",
         "name": "S&P 500",
-        "cagr": 14.02,
+        "cagr": 14.01,
         "sharpe": 0.74,
         "mdd": -20.31,
-        "alpha": -28.89,
-        "strategyReturn": 51.49,
-        "benchmarkReturn": 80.37,
-        "endingCapital": 151485.34,
+        "alpha": -28.83,
+        "strategyReturn": 51.42,
+        "benchmarkReturn": 80.25,
+        "endingCapital": 151422.09,
         "currentPosition": 0.6,
         "currentScore": 50.9,
         "currentSignal": "🛡️ 防守",
@@ -890090,7 +890090,7 @@
           },
           {
             "date": "2026-03-04",
-            "value": 151485.34
+            "value": 151422.09
           }
         ],
         "positionSeries": [
@@ -891401,8 +891401,8 @@
             "exitDate": "Running",
             "entryScore": null,
             "entryPrice": 383.76,
-            "exitPrice": 686.9,
-            "pnlPct": 78.99,
+            "exitPrice": 686.42,
+            "pnlPct": 78.87,
             "result": "Floating"
           }
         ]
@@ -891410,13 +891410,13 @@
       {
         "ticker": "IXIC",
         "name": "Nasdaq",
-        "cagr": 14.07,
+        "cagr": 14.04,
         "sharpe": 0.58,
         "mdd": -23.15,
-        "alpha": -68.51,
-        "strategyReturn": 51.71,
-        "benchmarkReturn": 120.22,
-        "endingCapital": 151705.17,
+        "alpha": -68.27,
+        "strategyReturn": 51.57,
+        "benchmarkReturn": 119.84,
+        "endingCapital": 151573.48,
         "currentPosition": 0.5,
         "currentScore": 50.9,
         "currentSignal": "🛡️ 防守",
@@ -892619,7 +892619,7 @@
           },
           {
             "date": "2026-03-04",
-            "value": 151705.17
+            "value": 151573.48
           }
         ],
         "positionSeries": [
@@ -893930,8 +893930,8 @@
             "exitDate": "Running",
             "entryScore": null,
             "entryPrice": 10458.76,
-            "exitPrice": 22874.12,
-            "pnlPct": 118.71,
+            "exitPrice": 22834.71,
+            "pnlPct": 118.33,
             "result": "Floating"
           }
         ]
@@ -893942,10 +893942,10 @@
         "cagr": -0.9,
         "sharpe": -0.63,
         "mdd": -13.13,
-        "alpha": -11.47,
-        "strategyReturn": -2.84,
-        "benchmarkReturn": 8.64,
-        "endingCapital": 97162.58,
+        "alpha": -11.55,
+        "strategyReturn": -2.81,
+        "benchmarkReturn": 8.74,
+        "endingCapital": 97190.35,
         "currentPosition": 0.3,
         "currentScore": 50.9,
         "currentSignal": "🌤️ 试探",
@@ -895148,7 +895148,7 @@
           },
           {
             "date": "2026-03-04",
-            "value": 97162.58
+            "value": 97190.35
           }
         ],
         "positionSeries": [
@@ -896460,7 +896460,7 @@
             "entryScore": 44.6,
             "entryPrice": 1.07,
             "exitPrice": 1.16,
-            "pnlPct": 8.84,
+            "pnlPct": 8.94,
             "result": "Floating"
           },
           {
