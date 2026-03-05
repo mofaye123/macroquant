@@ -90,6 +90,11 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
     payload.backtest?.endDate ??
     payload.dashboard.scoreSeries?.at(-1)?.date ??
     latestUpdatedIso.slice(0, 10);
+  const dailyExpectedTimeLabel = "17:00 ET（美股收盘后 1 小时）";
+  const dailyGeneratedIso = payload.marketDaily?.generatedAt;
+  const dailyGeneratedUtc = dailyGeneratedIso ? formatTimestamp(dailyGeneratedIso, 0) : "N/A";
+  const dailyGeneratedUtc8 = dailyGeneratedIso ? formatTimestamp(dailyGeneratedIso, 8) : "N/A";
+  const dailyGeneratedState = dailyGeneratedIso ? "已生成" : "未生成";
   const sourceLabel = !isLive || sourceType === "mock"
     ? "FALLBACK (Mock)"
     : sourceType === "static"
@@ -121,7 +126,6 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
             <p className="text-[11px] uppercase tracking-[0.18em] text-slate-300">MacroQuant</p>
             <h1 className="mt-[6px] text-[17px] font-bold leading-[1.3]">宏观金融环境量化</h1>
             <p className="mt-[6px] text-[11px] text-slate-300">Data Cutoff (Date): {dataCutoffDate}</p>
-            <p className="mt-[2px] text-[11px] text-slate-300">Snapshot Time (UTC): {latestUpdatedUtc}</p>
           </div>
 
           <div
@@ -137,8 +141,11 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
             <p className="font-semibold">Data Source: {sourceLabel}</p>
             <p className="mt-[2px] opacity-90">最新更新时间 (UTC): {latestUpdatedUtc}</p>
             <p className="mt-[2px] opacity-90">最新更新时间 (UTC+8): {latestUpdatedUtc8}</p>
-            <p className="mt-[2px] opacity-90">当前环境: {scoreState.label}</p>
-            <p className="mt-[2px] opacity-90">总分状态: {payload.dashboard.overallScore.value.toFixed(1)} / 100 · {scoreState.hint}</p>
+            <p className="mt-[2px] opacity-90">总分: {payload.dashboard.overallScore.value.toFixed(1)} / 100</p>
+            <p className="mt-[2px] opacity-90">日报预期生成时间: {dailyExpectedTimeLabel}</p>
+            <p className="mt-[2px] opacity-90">日报状态: {dailyGeneratedState}</p>
+            {dailyGeneratedIso ? <p className="mt-[2px] opacity-90">日报生成时间 (UTC): {dailyGeneratedUtc}</p> : null}
+            {dailyGeneratedIso ? <p className="mt-[2px] opacity-90">日报生成时间 (UTC+8): {dailyGeneratedUtc8}</p> : null}
             {servedFromSnapshot ? <p className="mt-[2px] opacity-90">交付模式: 静态快照发布</p> : null}
             {isLive && isDegraded ? (
               <p className="mt-[2px] opacity-90">Missing modules: {missingModules} / 7</p>
