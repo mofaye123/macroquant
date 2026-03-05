@@ -21,6 +21,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
+          ref: main
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -95,6 +96,8 @@ jobs:
             const body = [
               "The hourly macro snapshot refresh detected a data quality problem. The workflow did not publish the new snapshot.",
               "",
+              `- Workflow ref: ${context.ref}`,
+              `- Workflow sha: ${context.sha}`,
               `- Result: ${process.env.STATUS_RESULT}`,
               `- Exit code: ${process.env.GENERATE_EXIT_CODE}`,
               `- Mode: ${process.env.STATUS_MODE || "unknown"}`,
