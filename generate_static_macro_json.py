@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import argparse
+import importlib
 import json
 import math
 import sys
@@ -7,8 +8,6 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
-
-from api_server import build_macro_payload
 
 
 DEFAULT_OUTPUT = Path(__file__).resolve().parent / "web" / "public" / "data" / "macro-data.json"
@@ -56,6 +55,14 @@ def write_status(path, status):
     path.write_text(json.dumps(_json_safe(status), ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
 
 
+def load_build_macro_payload():
+    module = importlib.import_module("api_server")
+    builder = getattr(module, "build_macro_payload", None)
+    if builder is None:
+        raise RuntimeError("api_server.build_macro_payload not found")
+    return builder
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate static MacroQuant payload JSON for Next.js.")
     parser.add_argument(
@@ -87,6 +94,21 @@ def main():
     as_of_date = None
     if as_of_days_ago > 0:
         as_of_date = (datetime.now(timezone.utc).date() - timedelta(days=as_of_days_ago)).isoformat()
+
+    try:
+        build_macro_payload = load_build_macro_payload()
+    except Exception as exc:
+        status = {
+            "result": "error",
+            "outputPath": str(output_path),
+            "mode": None,
+            "readyModules": 0,
+            "reason": f"as_of_days_ago={as_of_days_ago}" if as_of_days_ago else None,
+            "message": f"Failed to import payload builder: {exc}",
+        }
+        write_status(status_path, status)
+        print(status["message"], file=sys.stderr)
+        return 1
 
     try:
         payload = build_macro_payload(as_of_date=as_of_date)
