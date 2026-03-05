@@ -120,7 +120,8 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
           <div className="mb-[16px] rounded-[14px] bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_55%,#334155_100%)] p-[14px] text-white">
             <p className="text-[11px] uppercase tracking-[0.18em] text-slate-300">MacroQuant</p>
             <h1 className="mt-[6px] text-[17px] font-bold leading-[1.3]">宏观金融环境量化</h1>
-            <p className="mt-[6px] text-[11px] text-slate-300">Data Cutoff: {dataCutoffDate}</p>
+            <p className="mt-[6px] text-[11px] text-slate-300">Data Cutoff (Date): {dataCutoffDate}</p>
+            <p className="mt-[2px] text-[11px] text-slate-300">Snapshot Time (UTC): {latestUpdatedUtc}</p>
           </div>
 
           <div
