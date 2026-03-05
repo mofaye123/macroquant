@@ -153,14 +153,14 @@ chmod +x scripts/generate_and_deploy_pages.sh
 
 如果你不希望依赖本机常驻运行，仓库现在也提供了 GitHub Actions 定时任务：
 
-- 工作流文件：`.github/workflows/refresh-macro-snapshot.yml`
-- 生成脚本：`scripts/refresh_static_snapshot_ci.sh`
+- Dashboard 数据刷新：`.github/workflows/refresh-macro-snapshot.yml`
+- 日报任务（收盘后）：`.github/workflows/daily-report-post-close.yml`
+- 数据生成脚本：`scripts/refresh_static_snapshot_ci.sh`
+- 日报摘要脚本：`scripts/generate_daily_report_digest.py`
 
 行为：
-- 你 `push` 到 `main`（且命中 `web/**` 或工作流文件变更）会立即触发一次 Cloudflare Pages 构建发布
-- GitHub 在工作日触发两次工作流（`21:05 UTC` 和 `22:05 UTC`），用于覆盖美东夏令时/冬令时
-- 工作流内部会再判断纽约时间，只有在 `17:xx ET`（美股收盘后 1 小时窗口）才真正生成快照
-- 真正执行时会重新抓取并生成候选快照
+- Dashboard 主链路每小时触发一次（`5 * * * *`），持续更新 `macro-data.json`
+- 日报链路在美东收盘后 1 小时窗口执行（工作日 `17:xx ET`），用于日报摘要/推送前处理
 - 如果 `web/public/data/macro-data.json` 有变化，就自动提交回仓库
 - 如果仓库配置了 Cloudflare 凭据，会继续自动部署到 Pages
 - 如果新数据异常，生成脚本会保留上一版健康快照，并自动创建或更新一个 GitHub Issue 告警
@@ -168,8 +168,9 @@ chmod +x scripts/generate_and_deploy_pages.sh
 这样做的结果是：
 - 你的电脑不用开着
 - 不需要手动运行本地命令
-- 前端改完推到 `main` 就会自动发布
-- 数据正常时，站点会在美股收盘后 1 小时自动刷新到最新版本
+- 前端改完推到 `main` 后，你可以去 GitHub Actions 手动点 `Run workflow` 立即发布
+- Dashboard 数据会按小时自动刷新
+- 日报会在美股收盘后 1 小时单独生成
 - 数据异常时，不会用坏数据覆盖线上版本
 
 首次启用前要确认：
@@ -182,12 +183,16 @@ chmod +x scripts/generate_and_deploy_pages.sh
 5. 在仓库 `Settings -> Secrets and variables -> Actions -> Variables` 里添加：
    - `CLOUDFLARE_PAGES_PROJECT_NAME`
    - 值填你 Cloudflare Pages 里的实际项目名（必须和 Dashboard 完全一致）
+6. 如果要启用日报推送（可选）：
+   - Secrets: `DAILY_REPORT_WEBHOOK_URL`（你的推送网关/Webhook）
+   - Secrets: `CLAUDE_API_KEY`（用于 Claude 决策链路配置态）
+   - Variables: `CLAUDE_MODEL`（默认 `claude-sonnet-4`，可选）
 
 你也可以在 GitHub Actions 页面手动点 `workflow_dispatch` 立即跑一次。
 
 ## 7. 说明
 
-- Dashboard 与 A~G 模块页默认读取静态 JSON（由 GitHub Actions 在美股收盘后 1 小时抓取真实 FRED / Yahoo 数据后生成）。
+- Dashboard 与 A~G 模块页默认读取静态 JSON（由 GitHub Actions 每小时抓取真实 FRED / Yahoo 数据后生成）。
 - 静态文件不存在或静态快照完全降级时，前端会回退到 Python API；API 也不可用时，最后回退到 `lib/mock-data.ts`，避免白屏。
 - 回测页现在会优先读取 Python 回测引擎输出；若回测数据不可用，则自动回退到 `lib/mock-data.ts`，避免页面空白。
 

@@ -1,0 +1,127 @@
+name: Generate Market Daily Report
+
+on:
+  schedule:
+    - cron: "20 21 * * 1-5"
+    - cron: "20 22 * * 1-5"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: market-daily-report
+  cancel-in-progress: false
+
+jobs:
+  generate-daily-report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Gate publish window (US close + 1h)
+        id: publish_window
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "window_reason=manual_dispatch" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          et_weekday="$(TZ=America/New_York date +%u)"
+          et_hour="$(TZ=America/New_York date +%H)"
+          et_stamp="$(TZ=America/New_York date '+%F %H:%M')"
+          echo "Current ET: $et_stamp"
+
+          if [ "$et_weekday" -gt 5 ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "window_reason=weekend" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$et_hour" = "17" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "window_reason=market_close_plus_1h" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "window_reason=outside_publish_hour" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stop outside publish window
+        if: steps.publish_window.outputs.should_run != 'true'
+        run: |
+          echo "Skip daily report generation: ${{ steps.publish_window.outputs.window_reason }}"
+          exit 0
+
+      - name: Set up Python
+        if: steps.publish_window.outputs.should_run == 'true'
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install Python dependencies
+        if: steps.publish_window.outputs.should_run == 'true'
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Refresh snapshot before daily report
+        if: steps.publish_window.outputs.should_run == 'true'
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+        run: |
+          chmod +x scripts/refresh_static_snapshot_ci.sh
+          STATUS_FILE="$RUNNER_TEMP/macro_snapshot_status.json" ./scripts/refresh_static_snapshot_ci.sh --force
+
+      - name: Generate daily report digest
+        if: steps.publish_window.outputs.should_run == 'true'
+        env:
+          FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
+          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+          MARKET_NEWS_RSS_URLS: ${{ vars.MARKET_NEWS_RSS_URLS }}
+        run: |
+          python scripts/generate_daily_report_digest.py \
+            --json-output .cache/daily-report/market-daily.json \
+            --md-output .cache/daily-report/market-daily.md
+
+      - name: Publish workflow summary
+        if: steps.publish_window.outputs.should_run == 'true'
+        run: |
+          cat .cache/daily-report/market-daily.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Optional webhook push
+        if: steps.publish_window.outputs.should_run == 'true' && env.DAILY_REPORT_WEBHOOK_URL != ''
+        env:
+          DAILY_REPORT_WEBHOOK_URL: ${{ secrets.DAILY_REPORT_WEBHOOK_URL }}
+        run: |
+          python - <<'PY'
+          import json
+          import os
+          import urllib.request
+          from pathlib import Path
+
+          url = os.environ["DAILY_REPORT_WEBHOOK_URL"].strip()
+          text = Path(".cache/daily-report/market-daily.md").read_text(encoding="utf-8")
+          payload = {"text": text}
+          req = urllib.request.Request(
+              url,
+              data=json.dumps(payload).encode("utf-8"),
+              headers={"Content-Type": "application/json"},
+              method="POST",
+          )
+          with urllib.request.urlopen(req, timeout=10) as resp:
+              print(f"Webhook pushed with status {resp.status}")
+          PY
+
+      - name: Upload daily report artifact
+        if: steps.publish_window.outputs.should_run == 'true'
+        uses: actions/upload-artifact@v4
+        with:
+          name: market-daily-report
+          path: |
+            .cache/daily-report/market-daily.json
+            .cache/daily-report/market-daily.md
+          if-no-files-found: error
+          retention-days: 7
