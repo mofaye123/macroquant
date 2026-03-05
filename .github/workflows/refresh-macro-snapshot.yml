@@ -1,6 +1,12 @@
 name: Refresh Macro Snapshot
 
 on:
+  push:
+    branches:
+      - main
+    paths:
+      - "web/**"
+      - ".github/workflows/refresh-macro-snapshot.yml"
   schedule:
     - cron: "5 21 * * 1-5"
     - cron: "5 22 * * 1-5"
@@ -69,6 +75,21 @@ jobs:
           chmod +x scripts/refresh_static_snapshot_ci.sh
           STATUS_FILE="$RUNNER_TEMP/macro_snapshot_status.json"
           echo "status_file=$STATUS_FILE" >> "$GITHUB_OUTPUT"
+
+          if [ "${{ github.event_name }}" = "push" ]; then
+            printf '%s\n' \
+              '{' \
+              '  "result": "skipped_push",' \
+              '  "message": "Push-triggered deployment run: skip snapshot refresh and use repository static data.",' \
+              '  "mode": null,' \
+              '  "readyModules": 0,' \
+              '  "reason": "push_deploy"' \
+              '}' > "$STATUS_FILE"
+            echo "exit_code=0" >> "$GITHUB_OUTPUT"
+            cat "$STATUS_FILE"
+            exit 0
+          fi
+
           should_run="${{ steps.publish_window.outputs.should_run }}"
           window_reason="${{ steps.publish_window.outputs.window_reason }}"
 
@@ -224,7 +245,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Validate Cloudflare credentials
-        if: (steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated'
+        if: (github.event_name == 'push') || ((steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated')
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -240,7 +261,7 @@ jobs:
           fi
 
       - name: Set up Node
-        if: (steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated'
+        if: (github.event_name == 'push') || ((steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated')
         uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -248,15 +269,15 @@ jobs:
           cache-dependency-path: web/package-lock.json
 
       - name: Install web dependencies
-        if: (steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated'
+        if: (github.event_name == 'push') || ((steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated')
         run: cd web && npm ci
 
       - name: Build static site
-        if: (steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated'
+        if: (github.event_name == 'push') || ((steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated')
         run: cd web && npm run build:cf
 
       - name: Deploy to Cloudflare Pages
-        if: (steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated'
+        if: (github.event_name == 'push') || ((steps.detect_changes.outputs.changed == 'true' || github.event_name == 'workflow_dispatch') && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated')
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}

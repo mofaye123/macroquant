@@ -157,6 +157,7 @@ chmod +x scripts/generate_and_deploy_pages.sh
 - 生成脚本：`scripts/refresh_static_snapshot_ci.sh`
 
 行为：
+- 你 `push` 到 `main`（且命中 `web/**` 或工作流文件变更）会立即触发一次 Cloudflare Pages 构建发布
 - GitHub 在工作日触发两次工作流（`21:05 UTC` 和 `22:05 UTC`），用于覆盖美东夏令时/冬令时
 - 工作流内部会再判断纽约时间，只有在 `17:xx ET`（美股收盘后 1 小时窗口）才真正生成快照
 - 真正执行时会重新抓取并生成候选快照
@@ -167,6 +168,7 @@ chmod +x scripts/generate_and_deploy_pages.sh
 这样做的结果是：
 - 你的电脑不用开着
 - 不需要手动运行本地命令
+- 前端改完推到 `main` 就会自动发布
 - 数据正常时，站点会在美股收盘后 1 小时自动刷新到最新版本
 - 数据异常时，不会用坏数据覆盖线上版本
 
