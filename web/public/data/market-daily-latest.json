@@ -1,8 +1,301 @@
 {
-  "reportStatus": "not_generated",
-  "reportGeneratedAt": null,
-  "asOfDate": null,
-  "headline": null,
-  "markdown": "",
-  "daily": null
+  "reportStatus": "generated",
+  "reportGeneratedAt": "2026-03-05T17:54:47Z",
+  "asOfDate": "2026-03-04",
+  "headline": "宏观中性，建议事件驱动下的结构化交易。",
+  "markdown": "# MacroQuant 市场研究日报（2026-03-04）\n\n**Headline**: 宏观中性，建议事件驱动下的结构化交易。\n\n## 快速视图\n- 宏观总分: 55.42\n- 风险等级: 中\n- 行情源: live\n- 新闻源: live\n\n## 热点要闻\n- [38% of altcoins near all-time lows, worse than FTX crash: Analyst](https://cointelegraph.com/news/38-altcoins-near-all-time-lows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Core Scientific secures up to $1B credit from Morgan Stanley for data centers](https://cointelegraph.com/news/core-scientific-secures-up-to-1b-credit-facility-from-morgan-stanley-for-data-center-development?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Son of U.S. government contractor, accused of stealing millions in seized crypto, arrested in France](https://www.coindesk.com/business/2026/03/05/son-of-u-s-government-contractor-accused-of-stealing-millions-in-seized-crypto-arrested-in-france) (CoinDesk)\n- [Sanctions evasions using crypto increased by 700% in 2025: Chainalysis](https://www.coindesk.com/business/2026/03/05/sanctions-evasions-using-crypto-increased-by-700-in-2025-chainalysis) (CoinDesk)\n- [CleanSpark sold 97% of February bitcoin production to fund AI pivot](https://www.coindesk.com/markets/2026/03/05/cleanspark-sold-97-of-february-bitcoin-production-to-fund-ai-pivot) (CoinDesk)\n- [SoFi taps BitGo to provide infrastructure for bank-issued stablecoin](https://cointelegraph.com/news/sofi-bitgo-bank-issued-stablecoin-sofiusd?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [FBI arrests custody company CEO‘s son over alleged $46M crypto theft](https://cointelegraph.com/news/fbi-arrest-bitcoin-theft-crypto-custody-company?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Crypto for Advisors: Tokenization offers always-on global investment access](https://www.coindesk.com/coindesk-indices/2026/03/04/crypto-for-advisors-tokenization-offers-always-on-global-investment-access) (CoinDesk)\n\n## 市场复盘\n- 总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。\n- 本周主驱动来自 系统流动性，边际变化 +4.2。\n- 主要拖累来自 风险偏好，边际变化 -18.1。\n- BTC 24H +6.47%，7D +6.99%，执行上优先看关键位是否放量确认。\n\n## AI 决策摘要\n- 提供方: gemini\n- 状态: pending_config\n- 模型: gemini-2.5-pro\n- 结论: 建议偏多执行，回调分批加仓。\n- 建议动作:\n  - 优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。\n  - 事件窗口前将杠杆下调到策略上限的 50%-70%。\n  - 若宏观总分连续两周下行，降低趋势策略开仓频率。\n",
+  "daily": {
+    "asOfDate": "2026-03-04",
+    "generatedAt": "2026-03-05T17:54:45Z",
+    "headline": "宏观中性，建议事件驱动下的结构化交易。",
+    "quickView": {
+      "overallScore": 55.42,
+      "riskLevel": "中",
+      "quoteSourceMode": "live",
+      "newsSourceMode": "live",
+      "deepDiveSourceMode": "live",
+      "configuredPushChannels": 0
+    },
+    "marketSnapshots": [
+      {
+        "ticker": "BTC",
+        "name": "BTC",
+        "bucket": "crypto",
+        "spot": 72710.58,
+        "change24hPct": 6.47,
+        "change7dPct": 6.99,
+        "realizedVol14dPct": 60.47,
+        "source": "yfinance"
+      },
+      {
+        "ticker": "ETH",
+        "name": "ETH",
+        "bucket": "crypto",
+        "spot": 2126.51,
+        "change24hPct": 7.25,
+        "change7dPct": 3.5,
+        "realizedVol14dPct": 83.49,
+        "source": "yfinance"
+      },
+      {
+        "ticker": "SOL",
+        "name": "SOL",
+        "bucket": "crypto",
+        "spot": 90.83,
+        "change24hPct": 4.38,
+        "change7dPct": 3.32,
+        "realizedVol14dPct": 82.33,
+        "source": "yfinance"
+      },
+      {
+        "ticker": "SPY",
+        "name": "SPY",
+        "bucket": "equity",
+        "spot": 685.13,
+        "change24hPct": 0.71,
+        "change7dPct": -1.16,
+        "realizedVol14dPct": 11.48,
+        "source": "yfinance"
+      },
+      {
+        "ticker": "QQQ",
+        "name": "QQQ",
+        "bucket": "equity",
+        "spot": 610.75,
+        "change24hPct": 1.52,
+        "change7dPct": -0.96,
+        "realizedVol14dPct": 17.29,
+        "source": "yfinance"
+      }
+    ],
+    "hotNews": [
+      {
+        "title": "38% of altcoins near all-time lows, worse than FTX crash: Analyst",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/38-altcoins-near-all-time-lows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-05T17:44:21Z"
+      },
+      {
+        "title": "Core Scientific secures up to $1B credit from Morgan Stanley for data centers",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/core-scientific-secures-up-to-1b-credit-facility-from-morgan-stanley-for-data-center-development?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-05T17:16:02Z"
+      },
+      {
+        "title": "Son of U.S. government contractor, accused of stealing millions in seized crypto, arrested in France",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/03/05/son-of-u-s-government-contractor-accused-of-stealing-millions-in-seized-crypto-arrested-in-france",
+        "publishedAt": "2026-03-05T17:11:34Z"
+      },
+      {
+        "title": "Sanctions evasions using crypto increased by 700% in 2025: Chainalysis",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/03/05/sanctions-evasions-using-crypto-increased-by-700-in-2025-chainalysis",
+        "publishedAt": "2026-03-05T16:52:09Z"
+      },
+      {
+        "title": "CleanSpark sold 97% of February bitcoin production to fund AI pivot",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/05/cleanspark-sold-97-of-february-bitcoin-production-to-fund-ai-pivot",
+        "publishedAt": "2026-03-05T16:47:44Z"
+      },
+      {
+        "title": "SoFi taps BitGo to provide infrastructure for bank-issued stablecoin",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/sofi-bitgo-bank-issued-stablecoin-sofiusd?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-05T16:42:24Z"
+      },
+      {
+        "title": "FBI arrests custody company CEO‘s son over alleged $46M crypto theft",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/fbi-arrest-bitcoin-theft-crypto-custody-company?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-05T16:28:51Z"
+      },
+      {
+        "title": "Crypto for Advisors: Tokenization offers always-on global investment access",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/coindesk-indices/2026/03/04/crypto-for-advisors-tokenization-offers-always-on-global-investment-access",
+        "publishedAt": "2026-03-05T16:00:00Z"
+      }
+    ],
+    "marketReplay": [
+      "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
+      "本周主驱动来自 系统流动性，边际变化 +4.2。",
+      "主要拖累来自 风险偏好，边际变化 -18.1。",
+      "BTC 24H +6.47%，7D +6.99%，执行上优先看关键位是否放量确认。"
+    ],
+    "deepStockDives": [
+      {
+        "name": "NVIDIA",
+        "ticker": "NVDA",
+        "signal": "震荡",
+        "summary": "方向未明，关注突破/跌破关键区间后的确认信号。",
+        "rsi14": 42.88,
+        "ret20dPct": 1.5
+      },
+      {
+        "name": "Apple",
+        "ticker": "AAPL",
+        "signal": "震荡",
+        "summary": "方向未明，关注突破/跌破关键区间后的确认信号。",
+        "rsi14": 38.91,
+        "ret20dPct": -2.58
+      },
+      {
+        "name": "Tesla",
+        "ticker": "TSLA",
+        "signal": "趋势走弱",
+        "summary": "中短期结构偏弱，优先防守，等待放量企稳信号。",
+        "rsi14": 37.49,
+        "ret20dPct": -3.8
+      }
+    ],
+    "cryptoProjectUpdates": [
+      {
+        "project": "比特币生态",
+        "headline": "比特币生态暂无重大突发，维持跟踪链上活跃度与资金流向。",
+        "source": "MacroQuant Engine",
+        "url": ""
+      },
+      {
+        "project": "以太坊生态",
+        "headline": "以太坊生态暂无重大突发，维持跟踪链上活跃度与资金流向。",
+        "source": "MacroQuant Engine",
+        "url": ""
+      },
+      {
+        "project": "Solana 生态",
+        "headline": "CleanSpark sold 97% of February bitcoin production to fund AI pivot",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/05/cleanspark-sold-97-of-february-bitcoin-production-to-fund-ai-pivot"
+      }
+    ],
+    "marketCalendar": [
+      {
+        "date": "2026-03-04",
+        "timeUtc": "13:30",
+        "category": "Macro",
+        "event": "美国初请失业金",
+        "importance": "高"
+      },
+      {
+        "date": "2026-03-05",
+        "timeUtc": "12:30",
+        "category": "Macro",
+        "event": "美国非农就业数据",
+        "importance": "高"
+      },
+      {
+        "date": "2026-03-05",
+        "timeUtc": "14:00",
+        "category": "Macro",
+        "event": "FOMC 官员讲话",
+        "importance": "中"
+      },
+      {
+        "date": "2026-03-06",
+        "timeUtc": "00:00",
+        "category": "Crypto",
+        "event": "主要交易所周度持仓与资金费率复盘",
+        "importance": "中"
+      }
+    ],
+    "aiDecision": {
+      "provider": "gemini",
+      "status": "pending_config",
+      "model": "gemini-2.5-pro",
+      "reasoningMode": "deep_think",
+      "riskLevel": "中",
+      "summary": "建议偏多执行，回调分批加仓。",
+      "recommendedActions": [
+        "优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。",
+        "事件窗口前将杠杆下调到策略上限的 50%-70%。",
+        "若宏观总分连续两周下行，降低趋势策略开仓频率。"
+      ],
+      "driverModules": [
+        "D",
+        "B"
+      ],
+      "pressureModules": [
+        "C",
+        "G"
+      ],
+      "nextStep": "配置 GEMINI_API_KEY 后可调用 Gemini Deep Think 生成完整日报正文与交易建议。"
+    },
+    "claudeDecision": {
+      "provider": "gemini",
+      "status": "pending_config",
+      "model": "gemini-2.5-pro",
+      "reasoningMode": "deep_think",
+      "riskLevel": "中",
+      "summary": "建议偏多执行，回调分批加仓。",
+      "recommendedActions": [
+        "优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。",
+        "事件窗口前将杠杆下调到策略上限的 50%-70%。",
+        "若宏观总分连续两周下行，降低趋势策略开仓频率。"
+      ],
+      "driverModules": [
+        "D",
+        "B"
+      ],
+      "pressureModules": [
+        "C",
+        "G"
+      ],
+      "nextStep": "配置 GEMINI_API_KEY 后可调用 Gemini Deep Think 生成完整日报正文与交易建议。"
+    },
+    "pushChannels": [
+      {
+        "channel": "telegram",
+        "label": "Telegram",
+        "configured": 0,
+        "target": "",
+        "status": "pending"
+      },
+      {
+        "channel": "feishu",
+        "label": "飞书群机器人",
+        "configured": 0,
+        "target": "",
+        "status": "pending"
+      },
+      {
+        "channel": "wecom",
+        "label": "企业微信机器人",
+        "configured": 0,
+        "target": "",
+        "status": "pending"
+      },
+      {
+        "channel": "email",
+        "label": "Email",
+        "configured": 0,
+        "target": "",
+        "status": "pending"
+      }
+    ],
+    "sourceStatus": {
+      "marketData": {
+        "provider": "yfinance",
+        "mode": "live"
+      },
+      "newsData": {
+        "provider": "rss",
+        "mode": "live",
+        "feeds": [
+          "CoinDesk",
+          "Cointelegraph",
+          "Yahoo Finance Crypto"
+        ]
+      },
+      "decisionEngine": {
+        "provider": "gemini",
+        "mode": "pending_config"
+      },
+      "delivery": {
+        "provider": "multi-channel",
+        "mode": "pending_config"
+      }
+    }
+  }
 }
