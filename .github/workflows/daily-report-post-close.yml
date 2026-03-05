@@ -85,8 +85,9 @@ jobs:
             DAYS_AGO="0"
           fi
           echo "Generating snapshot for days_ago=${DAYS_AGO}"
+          mkdir -p .cache/daily-report
           python generate_static_macro_json.py \
-            --output web/public/data/macro-data.json \
+            --output .cache/daily-report/macro-data.json \
             --as-of-days-ago "${DAYS_AGO}" \
             --allow-degraded
 
@@ -102,6 +103,7 @@ jobs:
           MARKET_NEWS_RSS_URLS: ${{ vars.MARKET_NEWS_RSS_URLS }}
         run: |
           python scripts/generate_daily_report_digest.py \
+            --input .cache/daily-report/macro-data.json \
             --json-output .cache/daily-report/market-daily.json \
             --md-output .cache/daily-report/market-daily.md \
             --publish-output web/public/data/market-daily-latest.json
