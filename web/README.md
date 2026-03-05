@@ -157,8 +157,9 @@ chmod +x scripts/generate_and_deploy_pages.sh
 - 生成脚本：`scripts/refresh_static_snapshot_ci.sh`
 
 行为：
-- GitHub 每小时触发一次工作流（默认在每小时 `:05`）
-- 每次都会重新抓取并生成候选快照
+- GitHub 在工作日触发两次工作流（`21:05 UTC` 和 `22:05 UTC`），用于覆盖美东夏令时/冬令时
+- 工作流内部会再判断纽约时间，只有在 `17:xx ET`（美股收盘后 1 小时窗口）才真正生成快照
+- 真正执行时会重新抓取并生成候选快照
 - 如果 `web/public/data/macro-data.json` 有变化，就自动提交回仓库
 - 如果仓库配置了 Cloudflare 凭据，会继续自动部署到 Pages
 - 如果新数据异常，生成脚本会保留上一版健康快照，并自动创建或更新一个 GitHub Issue 告警
@@ -166,7 +167,7 @@ chmod +x scripts/generate_and_deploy_pages.sh
 这样做的结果是：
 - 你的电脑不用开着
 - 不需要手动运行本地命令
-- 数据正常时，站点可每小时自动刷新到最新版本
+- 数据正常时，站点会在美股收盘后 1 小时自动刷新到最新版本
 - 数据异常时，不会用坏数据覆盖线上版本
 
 首次启用前要确认：
@@ -184,13 +185,13 @@ chmod +x scripts/generate_and_deploy_pages.sh
 
 ## 7. 说明
 
-- Dashboard 与 A~G 模块页默认读取静态 JSON（由 GitHub Actions 每小时抓取真实 FRED / Yahoo 数据后生成）。
+- Dashboard 与 A~G 模块页默认读取静态 JSON（由 GitHub Actions 在美股收盘后 1 小时抓取真实 FRED / Yahoo 数据后生成）。
 - 静态文件不存在或静态快照完全降级时，前端会回退到 Python API；API 也不可用时，最后回退到 `lib/mock-data.ts`，避免白屏。
 - 回测页现在会优先读取 Python 回测引擎输出；若回测数据不可用，则自动回退到 `lib/mock-data.ts`，避免页面空白。
 
-## 8. 定时生成（美股开盘）
+## 8. 定时生成（美股收盘后 1 小时）
 
-美股常规开盘时间是工作日 `09:30 America/New_York`。  
+默认发布时间是工作日 `17:00 America/New_York`（美股 16:00 收盘后 1 小时）。  
 仓库内提供的定时脚本不会依赖你 Mac 当前的本地时区，而是每次运行时自己判断纽约时间。
 
 核心脚本：
@@ -198,7 +199,7 @@ chmod +x scripts/generate_and_deploy_pages.sh
 
 它会每分钟被调起一次，但只有在：
 - 周一到周五
-- 纽约时间 `09:30`
+- 纽约时间 `17:00`（可用环境变量 `MARKET_DAILY_PUBLISH_ET` 覆盖）
 
 才真正执行 `generate_static_macro_json.py`。
 
@@ -215,9 +216,9 @@ chmod +x scripts/scheduled_generate_static.sh scripts/install_launchd_agent.sh
 这会：
 - 把 launchd 配置安装到 `~/Library/LaunchAgents/com.macroquant.generate-static-json.plist`
 - 自动创建一个 ASCII 安全软链接：`~/.macroquant/current -> 当前仓库`
-- 自动创建实际执行脚本：`~/.macroquant/run_market_open_generate.sh`
+- 自动创建实际执行脚本：`~/.macroquant/run_market_daily_generate.sh`
 - 每分钟检查一次
-- 真正生成时间锁定在美股开盘 `09:30 ET`
+- 真正生成时间锁定在美股收盘后 1 小时 `17:00 ET`
 
 日志位置：
 - `~/.macroquant/logs/launchd-static-generate.out.log`
@@ -247,4 +248,4 @@ cron 日志位置：
 
 cron 安装脚本也会自动生成：
 - `~/.macroquant/current`
-- `~/.macroquant/run_market_open_generate.sh`
+- `~/.macroquant/run_market_daily_generate.sh`

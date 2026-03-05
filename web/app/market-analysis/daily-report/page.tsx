@@ -49,6 +49,9 @@ export default function MarketDailyReportPage() {
               <p className="mt-[6px] text-[13px] text-app-muted">
                 {displayDate} · 热点要闻 + 市场复盘 + 深度个股解读
               </p>
+              <p className="mt-[2px] text-[11px] text-app-muted">
+                默认发布时间：美股收盘后 1 小时（17:00 ET，可用 MARKET_DAILY_PUBLISH_ET 调整）
+              </p>
             </div>
             <div className="rounded-[10px] border border-blue-100 bg-blue-50 px-[10px] py-[7px] text-[12px] text-blue-700">
               可扩展: Claude API + 自动推送
