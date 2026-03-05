@@ -32,12 +32,16 @@ def _fallback_blended_rank_score(
     short_window: int = 252,
     long_window: int = 1260,
     short_weight: float = 0.4,
+    short_min_periods: Optional[int] = None,
+    long_min_periods: Optional[int] = None,
 ) -> pd.Series:
     s = pd.Series(series, copy=False)
-    short_rank = s.rolling(short_window, min_periods=max(20, short_window // 8)).apply(
+    short_mp = int(short_min_periods) if short_min_periods is not None else max(20, short_window // 8)
+    long_mp = int(long_min_periods) if long_min_periods is not None else max(30, long_window // 8)
+    short_rank = s.rolling(short_window, min_periods=short_mp).apply(
         lambda x: pd.Series(x).rank(pct=True).iloc[-1], raw=False
     )
-    long_rank = s.rolling(long_window, min_periods=max(30, long_window // 8)).apply(
+    long_rank = s.rolling(long_window, min_periods=long_mp).apply(
         lambda x: pd.Series(x).rank(pct=True).iloc[-1], raw=False
     )
     score = (short_rank * short_weight + long_rank * (1.0 - short_weight)).fillna(0.5) * 100.0
