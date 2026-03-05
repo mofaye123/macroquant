@@ -2231,6 +2231,13 @@ def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
     if not calendar_lines:
         calendar_lines = ["- 无日历事件"]
 
+    snapshot_block = "\n".join(snapshot_lines)
+    news_block = "\n".join(news_lines)
+    replay_block = "\n".join(replay_lines)
+    deep_block = "\n".join(deep_lines)
+    crypto_block = "\n".join(crypto_lines)
+    calendar_block = "\n".join(calendar_lines)
+
     return textwrap.dedent(
         f"""
         你是机构级宏观交易台研究员，请基于以下结构化数据，输出一份“本地预览版市场研究日报”。
@@ -2271,22 +2278,22 @@ def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
                    quoteSourceMode={quick.get("quoteSourceMode", "-")}, newsSourceMode={quick.get("newsSourceMode", "-")}
 
         [行情快照]
-        {"\n".join(snapshot_lines)}
+        {snapshot_block}
 
         [热点新闻]
-        {"\n".join(news_lines)}
+        {news_block}
 
         [市场复盘线索]
-        {"\n".join(replay_lines)}
+        {replay_block}
 
         [深度个股]
-        {"\n".join(deep_lines)}
+        {deep_block}
 
         [加密项目动态]
-        {"\n".join(crypto_lines)}
+        {crypto_block}
 
         [市场日历]
-        {"\n".join(calendar_lines)}
+        {calendar_block}
         === 输入数据结束 ===
         """
     ).strip()
