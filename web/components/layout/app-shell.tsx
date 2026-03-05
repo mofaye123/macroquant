@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ReactNode, useMemo, useState } from "react";
+import { ReactNode, useEffect, useMemo, useState } from "react";
 import {
   BarChart3,
   FileText,
@@ -64,6 +64,35 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
   const [marketExpanded, setMarketExpanded] = useState(true);
   const fallbackState = useMacroData({ disabled: Boolean(dataState) });
   const { isLive, isDegraded, payload, error, sourceType } = dataState ?? fallbackState;
+  const [dailyReportMeta, setDailyReportMeta] = useState<{ reportStatus?: string; reportGeneratedAt?: string | null } | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const loadDailyReportMeta = async () => {
+      try {
+        const response = await fetch(`/data/market-daily-latest.json?t=${Date.now()}`, { cache: "no-store" });
+        if (!response.ok) {
+          if (alive) {
+            setDailyReportMeta(null);
+          }
+          return;
+        }
+        const data = await response.json();
+        if (alive && data && typeof data === "object") {
+          setDailyReportMeta(data as { reportStatus?: string; reportGeneratedAt?: string | null });
+        }
+      } catch {
+        if (alive) {
+          setDailyReportMeta(null);
+        }
+      }
+    };
+    void loadDailyReportMeta();
+    return () => {
+      alive = false;
+    };
+  }, [payload.generatedAt]);
+
   const formatTimestamp = (iso: string, offsetHours = 0) => {
     const sourceDate = new Date(iso);
     if (Number.isNaN(sourceDate.getTime())) {
@@ -91,7 +120,10 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
     payload.dashboard.scoreSeries?.at(-1)?.date ??
     latestUpdatedIso.slice(0, 10);
   const dailyExpectedTimeLabel = "17:00 ET（美股收盘后 1 小时）";
-  const dailyGeneratedIso = payload.marketDaily?.generatedAt;
+  const dailyGeneratedIso =
+    dailyReportMeta?.reportStatus === "generated" && typeof dailyReportMeta?.reportGeneratedAt === "string"
+      ? dailyReportMeta.reportGeneratedAt
+      : null;
   const dailyGeneratedUtc = dailyGeneratedIso ? formatTimestamp(dailyGeneratedIso, 0) : "N/A";
   const dailyGeneratedUtc8 = dailyGeneratedIso ? formatTimestamp(dailyGeneratedIso, 8) : "N/A";
   const dailyGeneratedState = dailyGeneratedIso ? "已生成" : "未生成";

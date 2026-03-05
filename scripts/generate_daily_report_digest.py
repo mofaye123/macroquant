@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import argparse
 import json
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List
 
@@ -74,11 +75,24 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     return "\n".join(lines).strip() + "\n"
 
 
+def _build_publish_payload(daily: Dict[str, Any], markdown: str) -> Dict[str, Any]:
+    report_generated_at = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    return {
+        "reportStatus": "generated",
+        "reportGeneratedAt": report_generated_at,
+        "asOfDate": daily.get("asOfDate"),
+        "headline": daily.get("headline"),
+        "markdown": markdown,
+        "daily": _json_safe(daily),
+    }
+
+
 def main() -> int:
     parser = argparse.ArgumentParser(description="Generate market daily report digest markdown/json.")
     parser.add_argument("--input", default="web/public/data/macro-data.json")
     parser.add_argument("--json-output", default=".cache/daily-report/market-daily.json")
     parser.add_argument("--md-output", default=".cache/daily-report/market-daily.md")
+    parser.add_argument("--publish-output", default="")
     args = parser.parse_args()
 
     input_path = Path(args.input).expanduser().resolve()
@@ -97,8 +111,18 @@ def main() -> int:
     json_output.parent.mkdir(parents=True, exist_ok=True)
     md_output.parent.mkdir(parents=True, exist_ok=True)
 
+    rendered_markdown = _render_markdown(daily)
     json_output.write_text(json.dumps(_json_safe(daily), ensure_ascii=False, indent=2), encoding="utf-8")
-    md_output.write_text(_render_markdown(daily), encoding="utf-8")
+    md_output.write_text(rendered_markdown, encoding="utf-8")
+
+    publish_output_raw = (args.publish_output or "").strip()
+    if publish_output_raw:
+        publish_output = Path(publish_output_raw).expanduser().resolve()
+        publish_output.parent.mkdir(parents=True, exist_ok=True)
+        publish_payload = _build_publish_payload(daily, rendered_markdown)
+        publish_output.write_text(json.dumps(publish_payload, ensure_ascii=False, indent=2), encoding="utf-8")
+        print(f"Wrote publish cache JSON: {publish_output}")
+
     print(f"Wrote daily report JSON: {json_output}")
     print(f"Wrote daily report Markdown: {md_output}")
     return 0

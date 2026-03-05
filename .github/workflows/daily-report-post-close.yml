@@ -12,7 +12,7 @@ on:
         default: "0"
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: market-daily-report
@@ -24,6 +24,9 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: main
 
       - name: Gate publish window (US close + 1h)
         id: publish_window
@@ -100,7 +103,8 @@ jobs:
         run: |
           python scripts/generate_daily_report_digest.py \
             --json-output .cache/daily-report/market-daily.json \
-            --md-output .cache/daily-report/market-daily.md
+            --md-output .cache/daily-report/market-daily.md \
+            --publish-output web/public/data/market-daily-latest.json
 
       - name: Publish workflow summary
         if: steps.publish_window.outputs.should_run == 'true'
@@ -139,5 +143,73 @@ jobs:
           path: |
             .cache/daily-report/market-daily.json
             .cache/daily-report/market-daily.md
+            web/public/data/market-daily-latest.json
           if-no-files-found: error
           retention-days: 7
+
+      - name: Detect daily cache changes
+        if: steps.publish_window.outputs.should_run == 'true'
+        id: detect_daily_cache
+        run: |
+          if [ -n "$(git status --porcelain -- web/public/data/market-daily-latest.json)" ]; then
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit daily cache
+        if: steps.publish_window.outputs.should_run == 'true' && steps.detect_daily_cache.outputs.changed == 'true'
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add web/public/data/market-daily-latest.json
+          git commit -m "chore(data): refresh market daily report cache"
+          git fetch origin main
+          if ! git rebase origin/main; then
+            git rebase --abort || true
+            echo "Failed to rebase daily cache commit onto latest origin/main." >&2
+            exit 1
+          fi
+          git push origin HEAD:main
+
+      - name: Validate Cloudflare credentials
+        if: steps.publish_window.outputs.should_run == 'true' && steps.detect_daily_cache.outputs.changed == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
+        run: |
+          if [ -z "${CLOUDFLARE_API_TOKEN}" ] || [ -z "${CLOUDFLARE_ACCOUNT_ID}" ]; then
+            echo "Missing Cloudflare secrets. Set CLOUDFLARE_API_TOKEN and CLOUDFLARE_ACCOUNT_ID in GitHub repository secrets." >&2
+            exit 1
+          fi
+          if [ -z "${PAGES_PROJECT_NAME}" ]; then
+            echo "Missing CLOUDFLARE_PAGES_PROJECT_NAME repository variable." >&2
+            exit 1
+          fi
+
+      - name: Set up Node
+        if: steps.publish_window.outputs.should_run == 'true' && steps.detect_daily_cache.outputs.changed == 'true'
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Install web dependencies
+        if: steps.publish_window.outputs.should_run == 'true' && steps.detect_daily_cache.outputs.changed == 'true'
+        run: cd web && npm ci
+
+      - name: Build static site
+        if: steps.publish_window.outputs.should_run == 'true' && steps.detect_daily_cache.outputs.changed == 'true'
+        run: cd web && npm run build:cf
+
+      - name: Deploy to Cloudflare Pages
+        if: steps.publish_window.outputs.should_run == 'true' && steps.detect_daily_cache.outputs.changed == 'true'
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+          PAGES_PROJECT_NAME: ${{ vars.CLOUDFLARE_PAGES_PROJECT_NAME }}
+        run: |
+          cd web
+          npx wrangler pages deploy out --project-name "${PAGES_PROJECT_NAME}" --commit-dirty=true

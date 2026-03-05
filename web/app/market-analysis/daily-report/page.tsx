@@ -8,6 +8,7 @@ import {
   CalendarDays,
   ChevronRight,
   Clock3,
+  FileText,
   Newspaper,
   RadioTower,
   ScanSearch,
@@ -19,6 +20,7 @@ import { AppShell } from "@/components/layout/app-shell";
 import { SectionTitle } from "@/components/ui/section-title";
 import { SurfaceCard } from "@/components/ui/surface-card";
 import { marketDailyPayload as fallbackMarketDailyPayload } from "@/lib/mock-data";
+import type { MarketDailyPayload } from "@/lib/types";
 import { useMacroData } from "@/lib/use-macro-data";
 import { cn, describeScoreState, formatSigned } from "@/lib/utils";
 
@@ -35,6 +37,7 @@ const chipTone = (mode: string) =>
     : "border-amber-200 bg-amber-50 text-amber-700";
 
 const SOURCE_CONFIG_STORAGE_KEY = "macroquant:daily-source-config:v1";
+const PUBLISHED_DAILY_CACHE_PATH = "/data/market-daily-latest.json";
 
 type SourceCheckItem = {
   ok?: boolean;
@@ -84,6 +87,15 @@ type AIPreviewResponse = {
     latencyMs?: number;
     promptDigest?: string;
   };
+};
+
+type PublishedDailyCache = {
+  reportStatus?: string;
+  reportGeneratedAt?: string | null;
+  asOfDate?: string | null;
+  headline?: string | null;
+  markdown?: string;
+  daily?: MarketDailyPayload | null;
 };
 
 type SourceConfig = {
@@ -205,17 +217,15 @@ const renderMarkdownPreview = (markdown: string): string => {
 
 export default function MarketDailyReportPage() {
   const dataState = useMacroData();
-  const report = dataState.payload.marketDaily ?? fallbackMarketDailyPayload;
-  const aiDecision = report.aiDecision ?? report.claudeDecision;
-  const scoreState = describeScoreState(report.quickView.overallScore);
-  const displayDate = report.asOfDate;
   const defaultApiBase = useMemo(() => getApiBaseFromMacroUrl(dataState.apiUrl), [dataState.apiUrl]);
 
+  const [publishedDailyCache, setPublishedDailyCache] = useState<PublishedDailyCache | null>(null);
+  const [publishedDailyError, setPublishedDailyError] = useState<string | null>(null);
   const [sourceConfig, setSourceConfig] = useState<SourceConfig>({
     apiBase: defaultApiBase,
     newsRssUrls: "",
     geminiApiKey: "",
-    geminiModel: aiDecision.model ?? "gemini-2.5-pro",
+    geminiModel: "gemini-2.5-pro",
     deliveryWebhookUrl: "",
   });
   const [checkResult, setCheckResult] = useState<SourceCheckResponse | null>(null);
@@ -228,10 +238,57 @@ export default function MarketDailyReportPage() {
   const [previewDaysAgo, setPreviewDaysAgo] = useState(1);
   const [previewTargetChars, setPreviewTargetChars] = useState(1800);
   const [previewExpanded, setPreviewExpanded] = useState(false);
+  const publishedReport = useMemo<MarketDailyPayload | null>(() => {
+    if (publishedDailyCache?.reportStatus !== "generated") {
+      return null;
+    }
+    const candidate = publishedDailyCache.daily;
+    if (!candidate || typeof candidate !== "object") {
+      return null;
+    }
+    return candidate as MarketDailyPayload;
+  }, [publishedDailyCache?.daily, publishedDailyCache?.reportStatus]);
+  const report = publishedReport ?? dataState.payload.marketDaily ?? fallbackMarketDailyPayload;
+  const aiDecision = report.aiDecision ?? report.claudeDecision;
+  const scoreState = describeScoreState(report.quickView.overallScore);
+  const displayDate = report.asOfDate;
+  const publishedMarkdownHtml = useMemo(
+    () => renderMarkdownPreview(publishedDailyCache?.markdown || "暂无日报正文"),
+    [publishedDailyCache?.markdown]
+  );
   const aiPreviewHtml = useMemo(
     () => renderMarkdownPreview(aiPreview?.preview?.previewText || "暂无输出"),
     [aiPreview?.preview?.previewText]
   );
+
+  useEffect(() => {
+    let alive = true;
+    const loadPublishedDailyCache = async () => {
+      try {
+        const resp = await fetch(`${PUBLISHED_DAILY_CACHE_PATH}?t=${Date.now()}`, { cache: "no-store" });
+        if (!resp.ok) {
+          if (alive) {
+            setPublishedDailyCache(null);
+          }
+          return;
+        }
+        const data = (await resp.json()) as PublishedDailyCache;
+        if (alive) {
+          setPublishedDailyCache(data);
+          setPublishedDailyError(null);
+        }
+      } catch (err) {
+        if (alive) {
+          setPublishedDailyCache(null);
+          setPublishedDailyError(err instanceof Error ? err.message : "读取日报缓存失败");
+        }
+      }
+    };
+    void loadPublishedDailyCache();
+    return () => {
+      alive = false;
+    };
+  }, [dataState.payload.generatedAt]);
 
   useEffect(() => {
     if (typeof window === "undefined") {
@@ -377,6 +434,36 @@ export default function MarketDailyReportPage() {
             </span>
           </div>
         </header>
+
+        <SurfaceCard>
+          <SectionTitle title="最新已生成日报（缓存）" rightSlot={<FileText className="h-[15px] w-[15px] text-app-muted" />} />
+          <div className="mt-[10px] rounded-[12px] border border-app-border bg-white p-[10px]">
+            {publishedDailyCache?.reportStatus === "generated" ? (
+              <div className="space-y-[8px]">
+                <p className="text-[12px] text-app-muted">
+                  数据日: {publishedDailyCache.asOfDate ?? "-"} · 生成时间: {publishedDailyCache.reportGeneratedAt ?? "-"}
+                </p>
+                {publishedDailyCache.headline ? (
+                  <p className="text-[14px] font-semibold text-app-text">{publishedDailyCache.headline}</p>
+                ) : null}
+                <div
+                  className="max-h-[85vh] overflow-auto rounded-[10px] border border-slate-200 bg-slate-50 p-[10px] text-[13px] leading-relaxed text-slate-700 [&>h1]:mb-2 [&>h1]:text-[18px] [&>h2]:mb-2 [&>h2]:text-[16px] [&>h3]:mb-1 [&>h3]:text-[14px] [&>p]:mb-2"
+                  dangerouslySetInnerHTML={{ __html: publishedMarkdownHtml }}
+                />
+              </div>
+            ) : (
+              <div className="space-y-[4px]">
+                <p className="text-[13px] text-app-text">
+                  暂无已生成日报内容。请先运行 GitHub Actions 的 `Generate Market Daily Report`。
+                </p>
+                <p className="text-[11px] text-app-muted">
+                  只有该 workflow 真正执行并产出缓存后，这里和侧边栏才会显示“已生成”与“生成时间”。
+                </p>
+              </div>
+            )}
+            {publishedDailyError ? <p className="mt-[6px] text-[12px] text-rose-600">{publishedDailyError}</p> : null}
+          </div>
+        </SurfaceCard>
 
         <SurfaceCard>
           <SectionTitle title="数据源配置与连通性" rightSlot={<Clock3 className="h-[15px] w-[15px] text-app-muted" />} />
