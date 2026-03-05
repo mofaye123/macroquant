@@ -15,7 +15,19 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from config import API_KEY, SERIES_IDS
 from data_engine import get_last_fetch_meta, get_mixed_data
-from modules.backtest import _calculate_score_internal, build_backtest_payload
+from modules.backtest import (
+    _blended_rank_score,
+    _calculate_score_internal,
+    _curve_regime_score,
+    _policy_hike_cycle_penalty,
+    _policy_regime_bonus,
+    _real_rate_level_penalty,
+    _real_rate_macro_discount,
+    _real_rate_module_weight,
+    _real_rate_momentum_penalty,
+    build_backtest_payload,
+)
+from modules.market_daily import build_market_daily_payload
 
 
 MODULE_META = [
@@ -92,6 +104,14 @@ WEEKLY_CHART_LIMIT = 320
 MONTHLY_CHART_LIMIT = 84
 
 
+def _drop_timezone_index(frame_or_series: Any) -> Any:
+    if hasattr(frame_or_series, "index") and isinstance(frame_or_series.index, pd.DatetimeIndex) and frame_or_series.index.tz is not None:
+        normalized = frame_or_series.copy()
+        normalized.index = normalized.index.tz_localize(None)
+        return normalized
+    return frame_or_series
+
+
 def _module_source_text(slug: str) -> str:
     cached = _MODULE_SOURCE_CACHE.get(slug)
     if cached is not None:
@@ -126,7 +146,7 @@ def _extract_glossary_html(slug: str) -> str:
 
 
 def _series_points(series: pd.Series, limit: Optional[int] = DAILY_CHART_LIMIT) -> List[Dict[str, Any]]:
-    s = series.dropna()
+    s = _drop_timezone_index(series).dropna()
     if not s.empty:
         s = s[s.index >= CHART_HISTORY_START]
     if limit is not None:
@@ -235,7 +255,7 @@ def _build_raw_table(frame: pd.DataFrame, fallback_points: List[Dict[str, Any]])
             "rows": [[point["date"], round(float(point["value"]), 2)] for point in reversed(fallback_points[-DAILY_CHART_LIMIT:])],
         }
 
-    raw = frame.copy()
+    raw = _drop_timezone_index(frame)
     if isinstance(raw.index, pd.DatetimeIndex):
         raw = raw[raw.index >= CHART_HISTORY_START]
     raw = raw.tail(DAILY_CHART_LIMIT).copy()
@@ -768,13 +788,15 @@ def _build_risk_radar(
             add_risk("orange", "B模块 (资金面): 资金价格偏贵", f"SOFR {sofr:.2f}% 高于 IORB {iorb:.2f}%。", "SOFR 回落至 IORB 下方并持续 2-3 天。")
 
     frame_c = module_frames.get("c", pd.DataFrame())
-    if not frame_c.empty and "Penalty_Factor" in frame_c.columns and float(frame_c["Penalty_Factor"].dropna().iloc[-1]) < 1.0:
+    if not frame_c.empty and "Inversion_Structural_Cap" in frame_c.columns and float(frame_c["Inversion_Structural_Cap"].dropna().iloc[-1]) <= 30.0:
+        add_risk("red", "C模块 (国债): 倒挂持续过久，结构性熊市标记触发", f"Curve cap={float(frame_c['Inversion_Structural_Cap'].dropna().iloc[-1]):.0f}。", "2s10s 回升至 > -0.20 且维持数周。")
+    elif not frame_c.empty and "Penalty_Factor" in frame_c.columns and float(frame_c["Penalty_Factor"].dropna().iloc[-1]) < 1.0:
         add_risk("red", "C模块 (国债): 长端利率急涨，估值压力增加", f"长端斜率惩罚触发，Penalty={float(frame_c['Penalty_Factor'].dropna().iloc[-1]):.1f}x。", "Penalty 恢复到 1.0x 且 10Y 60日斜率回到温和区间。")
     elif "T10Y2Y" in df_all.columns and not df_all["T10Y2Y"].dropna().empty and float(df_all["T10Y2Y"].dropna().iloc[-1]) < -0.5:
         add_risk("orange", "C模块 (国债): 曲线深度倒挂", f"2s10s={float(df_all['T10Y2Y'].dropna().iloc[-1]):.2f} (< -0.50)。", "2s10s 回升至 > -0.20 且保持。")
 
-    if "DFII10" in df_all.columns and not df_all["DFII10"].dropna().empty and float(df_all["DFII10"].dropna().iloc[-1]) > 2.0:
-        add_risk("orange", "D模块 (实利): 实际利率偏高", f"10Y 实际利率 {float(df_all['DFII10'].dropna().iloc[-1]):.2f}% > 2.0%。", "10Y 实际利率回落至 <1.8%。")
+    if "DFII10" in df_all.columns and not df_all["DFII10"].dropna().empty and float(df_all["DFII10"].dropna().iloc[-1]) > 1.5:
+        add_risk("orange", "D模块 (实利): 实际利率高位压制估值", f"10Y 实际利率 {float(df_all['DFII10'].dropna().iloc[-1]):.2f}% > 1.5%。", "10Y 实际利率回落至 <1.4%。")
 
     if "DEXJPUS" in df_all.columns and df_all["DEXJPUS"].dropna().shape[0] > 5:
         usd_jpy_move = float(df_all["DEXJPUS"].pct_change(5).dropna().iloc[-1])
@@ -853,17 +875,31 @@ def _ensure_df(frame: pd.DataFrame, cols: List[str]) -> pd.DataFrame:
 
 
 def _rolling_percentile(series: pd.Series, window: int = 156, min_periods: int = 20) -> pd.Series:
-    return series.rolling(window, min_periods=min_periods).apply(
-        lambda s: s.rank(pct=True).iloc[-1],
-        raw=False,
-    ) * 100
+    short_window = max(26, int(window * 0.5))
+    short_min_periods = max(8, min_periods // 2)
+    return _blended_rank_score(
+        series,
+        higher_is_better=True,
+        short_window=short_window,
+        long_window=window,
+        short_weight=0.42,
+        short_min_periods=short_min_periods,
+        long_min_periods=min_periods,
+    )
 
 
 def _rolling_percentile_long(series: pd.Series, window: int = 756, min_periods: int = 30) -> pd.Series:
-    return series.rolling(window, min_periods=min_periods).apply(
-        lambda s: s.rank(pct=True).iloc[-1],
-        raw=False,
-    ) * 100
+    short_window = 252 if window >= 252 else max(63, int(window * 0.4))
+    short_min_periods = max(20, min_periods // 2)
+    return _blended_rank_score(
+        series,
+        higher_is_better=True,
+        short_window=short_window,
+        long_window=window,
+        short_weight=0.40,
+        short_min_periods=short_min_periods,
+        long_min_periods=min_periods,
+    )
 
 
 def _get_slope_score(series: pd.Series, target: float, tol: float) -> pd.Series:
@@ -944,22 +980,22 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     df_b = _ensure_df(df_all, ["SOFR", "IORB", "RRPONTSYAWARD", "TGCRRATE", "RPONTSYD"])
     if not df_b.empty:
         df_b["SOFR_MA13"] = df_b["SOFR"].rolling(65, min_periods=1).mean()
-        df_b["SOFR_Trend"] = df_b["SOFR_MA13"].diff(21)
-        df_b["Score_Trend"] = df_b["SOFR_Trend"].rolling(1260, min_periods=1).rank(pct=True, ascending=False) * 100
-
-        def get_regime_bonus(sofr: float) -> int:
-            if sofr < 1.0:
-                return 20
-            if sofr < 2.5:
-                return 10
-            if sofr > 5.0:
-                return -20
-            if sofr > 4.0:
-                return -10
-            return 0
-
-        df_b["Regime_Bonus"] = df_b["SOFR"].apply(get_regime_bonus)
-        df_b["Score_Policy"] = (df_b["Score_Trend"] + df_b["Regime_Bonus"]).clip(0, 100)
+        df_b["SOFR_MA5"] = df_b["SOFR"].rolling(25, min_periods=1).mean()
+        df_b["SOFR_Trend"] = df_b["SOFR_MA5"].diff(21)
+        df_b["Policy_Pressure"] = (
+            df_b["SOFR_Trend"].clip(lower=0) * (1.0 + ((df_b["SOFR"] - 3.0).clip(lower=0) * 0.9))
+            - (-df_b["SOFR_Trend"]).clip(lower=0) * 0.6
+        ).clip(lower=0)
+        df_b["Score_Trend"] = _blended_rank_score(df_b["Policy_Pressure"], higher_is_better=False)
+        df_b["Regime_Bonus"] = [
+            _policy_regime_bonus(sofr, trend)
+            for sofr, trend in zip(df_b["SOFR"], df_b["SOFR_Trend"])
+        ]
+        df_b["Hike_Cycle_Penalty"] = [
+            _policy_hike_cycle_penalty(sofr, trend)
+            for sofr, trend in zip(df_b["SOFR"], df_b["SOFR_Trend"])
+        ]
+        df_b["Score_Policy"] = (df_b["Score_Trend"] + df_b["Regime_Bonus"] - df_b["Hike_Cycle_Penalty"]).clip(0, 100)
         df_b["Corridor_Width"] = (df_b["IORB"] - df_b["RRPONTSYAWARD"]).abs().clip(lower=0.05)
         df_b["F1_Ratio"] = (df_b["SOFR"] - df_b["IORB"]).clip(lower=0) / df_b["Corridor_Width"]
         df_b["F2_Ratio"] = (df_b["SOFR"] - df_b["RRPONTSYAWARD"]).abs() / df_b["Corridor_Width"]
@@ -994,11 +1030,19 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     # C
     df_c = _ensure_df(df_all, ["DGS10", "DGS2", "DGS30", "T10Y2Y", "T10Y3M"])
     if not df_c.empty:
-        df_c["Score_10Y"] = df_c["DGS10"].rolling(1260, min_periods=1).rank(pct=True, ascending=False) * 100
-        df_c["Score_2Y"] = df_c["DGS2"].rolling(1260, min_periods=1).rank(pct=True, ascending=False) * 100
-        df_c["Score_30Y"] = df_c["DGS30"].rolling(1260, min_periods=1).rank(pct=True, ascending=False) * 100
-        df_c["Score_Curve_2s10s"] = _get_slope_score(df_c["T10Y2Y"], 0.5, 1.5)
-        df_c["Score_Curve_3m10s"] = _get_slope_score(df_c["T10Y3M"], 0.75, 2.0)
+        df_c["Score_10Y"] = _blended_rank_score(df_c["DGS10"], higher_is_better=False)
+        df_c["Score_2Y"] = _blended_rank_score(df_c["DGS2"], higher_is_better=False)
+        df_c["Score_30Y"] = _blended_rank_score(df_c["DGS30"], higher_is_better=False)
+        (
+            df_c["Score_Curve_2s10s"],
+            df_c["Curve_Cap_2s10s"],
+            df_c["Deep_Inversion_Streak_2s10s"],
+        ) = _curve_regime_score(df_c["T10Y2Y"], 0.5, 1.5, deep_inversion=-0.30, sustained_window=63, structural_cap=30.0)
+        (
+            df_c["Score_Curve_3m10s"],
+            df_c["Curve_Cap_3m10s"],
+            df_c["Deep_Inversion_Streak_3m10s"],
+        ) = _curve_regime_score(df_c["T10Y3M"], 0.75, 2.0, deep_inversion=-0.20, sustained_window=63, structural_cap=35.0)
         df_c["Total_Score1"] = (
             df_c["Score_Curve_2s10s"] * 0.3
             + df_c["Score_Curve_3m10s"] * 0.3
@@ -1009,6 +1053,7 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         slope_10 = df_c["DGS10"].diff(60)
         slope_30 = df_c["DGS30"].diff(60)
         df_c["Max_Slope"] = pd.concat([slope_10, slope_30], axis=1).max(axis=1)
+        df_c["Curve_Flattening_63D"] = pd.concat([df_c["T10Y2Y"].diff(63), df_c["T10Y3M"].diff(63)], axis=1).min(axis=1)
 
         def get_slope_penalty(s: float) -> float:
             if s > 0.50:
@@ -1019,37 +1064,66 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
                 return 0.8
             return 1.0
 
-        df_c["Penalty_Factor"] = df_c["Max_Slope"].apply(get_slope_penalty)
-        df_c["Total_Score"] = (df_c["Total_Score1"] * df_c["Penalty_Factor"]).clip(0, 100)
+        def get_flattening_penalty(s: float) -> float:
+            if s < -1.00:
+                return 0.6
+            if s < -0.60:
+                return 0.75
+            if s < -0.30:
+                return 0.9
+            return 1.0
+
+        df_c["Flattening_Penalty"] = df_c["Curve_Flattening_63D"].apply(get_flattening_penalty)
+        df_c["Penalty_Factor"] = (df_c["Max_Slope"].apply(get_slope_penalty) * df_c["Flattening_Penalty"]).clip(0.15, 1.0)
+        df_c["Inversion_Structural_Cap"] = pd.concat([df_c["Curve_Cap_2s10s"], df_c["Curve_Cap_3m10s"]], axis=1).min(axis=1)
+        df_c["Total_Score"] = (df_c["Total_Score1"] * df_c["Penalty_Factor"]).clip(0, 100).clip(upper=df_c["Inversion_Structural_Cap"])
     frames["c"] = df_c
 
     # D
     df_d = _ensure_df(df_all, ["DFII10", "DFII5", "T10YIE"])
     if not df_d.empty:
-        df_d["Score_Real_10Y"] = df_d["DFII10"].rolling(1260, min_periods=1).rank(pct=True, ascending=False) * 100
-        df_d["Score_Real_5Y"] = df_d["DFII5"].rolling(1260, min_periods=1).rank(pct=True, ascending=False) * 100
+        df_d["Score_Real_10Y"] = _blended_rank_score(df_d["DFII10"], higher_is_better=False)
+        df_d["Score_Real_5Y"] = _blended_rank_score(df_d["DFII5"], higher_is_better=False)
         df_d["Score_Breakeven"] = _get_slope_score(df_d["T10YIE"], 2.1, 0.6)
-        df_d["Total_Score"] = (
-            df_d["Score_Real_10Y"] * 0.4 + df_d["Score_Real_5Y"] * 0.3 + df_d["Score_Breakeven"] * 0.3
-        ).clip(0, 100)
+        df_d["RealRate_60D_Change"] = df_d["DFII10"].diff(60)
+        df_d["RealRate_Level_Penalty"] = df_d["DFII10"].apply(_real_rate_level_penalty)
+        df_d["RealRate_Momentum_Penalty"] = df_d["RealRate_60D_Change"].apply(_real_rate_momentum_penalty)
+        df_d["RealRate_Penalty"] = (df_d["RealRate_Level_Penalty"] * df_d["RealRate_Momentum_Penalty"]).clip(0.35, 1.0)
+        df_d["Aggregate_Weight"] = [
+            _real_rate_module_weight(real_rate, delta)
+            for real_rate, delta in zip(df_d["DFII10"], df_d["RealRate_60D_Change"])
+        ]
+        df_d["Weight_10Y"] = np.where(df_d["DFII10"] > 2.0, 0.55, np.where(df_d["DFII10"] > 1.5, 0.48, 0.40))
+        df_d["Weight_5Y"] = np.where(df_d["DFII10"] > 2.0, 0.30, np.where(df_d["DFII10"] > 1.5, 0.32, 0.30))
+        df_d["Weight_Breakeven"] = 1.0 - df_d["Weight_10Y"] - df_d["Weight_5Y"]
+        df_d["Total_Score_Base"] = (
+            df_d["Score_Real_10Y"] * df_d["Weight_10Y"]
+            + df_d["Score_Real_5Y"] * df_d["Weight_5Y"]
+            + df_d["Score_Breakeven"] * df_d["Weight_Breakeven"]
+        )
+        df_d["Macro_Discount"] = [
+            _real_rate_macro_discount(level_pen, mom_pen)
+            for level_pen, mom_pen in zip(df_d["RealRate_Level_Penalty"], df_d["RealRate_Momentum_Penalty"])
+        ]
+        df_d["Total_Score"] = (df_d["Total_Score_Base"] * df_d["RealRate_Penalty"]).clip(0, 100)
     frames["d"] = df_d
 
     # E
     df_e = _ensure_df(df_all, ["DTWEXBGS", "DXY", "DEXJPUS", "IRSTCI01JPM156N", "DCOILWTICO", "DHHNGSP"])
     if not df_e.empty:
         df_e["Chg_USD"] = df_e["DTWEXBGS"].pct_change(63)
-        df_e["Score_USD"] = (1 - df_e["Chg_USD"].rolling(1260, min_periods=1).rank(pct=True)) * 100
+        df_e["Score_USD"] = _blended_rank_score(df_e["Chg_USD"], higher_is_better=False)
         df_e["Chg_DXY"] = df_e["DXY"].pct_change(63)
-        df_e["Score_DXY"] = (1 - df_e["Chg_DXY"].rolling(1260, min_periods=1).rank(pct=True)) * 100
+        df_e["Score_DXY"] = _blended_rank_score(df_e["Chg_DXY"], higher_is_better=False)
         df_e["Yen_Appreciation"] = -1 * df_e["DEXJPUS"].pct_change(63)
-        df_e["Score_Yen_FX"] = (1 - df_e["Yen_Appreciation"].rolling(1260, min_periods=1).rank(pct=True)) * 100
-        df_e["Score_BoJ_Rate"] = (1 - df_e["IRSTCI01JPM156N"].rolling(1260, min_periods=1).rank(pct=True)) * 100
+        df_e["Score_Yen_FX"] = _blended_rank_score(df_e["Yen_Appreciation"], higher_is_better=False)
+        df_e["Score_BoJ_Rate"] = _blended_rank_score(df_e["IRSTCI01JPM156N"], higher_is_better=False)
         df_e["Score_Yen_Total"] = df_e["Score_Yen_FX"] * 0.7 + df_e["Score_BoJ_Rate"] * 0.3
         df_e["Chg_Oil"] = df_e["DCOILWTICO"].pct_change(63)
-        df_e["Score_Oil_Long"] = (1 - df_e["Chg_Oil"].rolling(1260, min_periods=1).rank(pct=True)) * 100
+        df_e["Score_Oil_Long"] = _blended_rank_score(df_e["Chg_Oil"], higher_is_better=False)
         df_e["Score_Oil"] = df_e["Score_Oil_Long"]
         df_e["Chg_Gas"] = df_e["DHHNGSP"].pct_change(63)
-        df_e["Score_Gas"] = (1 - df_e["Chg_Gas"].rolling(1260, min_periods=1).rank(pct=True)) * 100
+        df_e["Score_Gas"] = _blended_rank_score(df_e["Chg_Gas"], higher_is_better=False)
         df_e["Score_Energy_Base"] = df_e["Score_Oil_Long"] * 0.5 + df_e["Score_Gas"] * 0.5
         df_e["WTI_Display"] = df_e["DCOILWTICO"]
         wti_display = _merged_series(df_all, "WTI_YH", "DCOILWTICO")
@@ -1198,6 +1272,7 @@ def _build_module_factors(module_id: str, frame: pd.DataFrame, weight_text: str)
         return [
             _factor_from_col(frame, "Score_Policy", "SOFR Policy", "40%"),
             _factor_from_col(frame, "Score_Friction", "Friction Composite", "60%"),
+            _factor_from_col(frame, "Hike_Cycle_Penalty", "Hike Cycle Penalty", "Penalty"),
             _factor_from_col(frame, "Score_F1", "F1 Corridor", "Flow"),
             _factor_from_col(frame, "Score_F2", "F2 Corridor", "Flow"),
             _factor_from_col(frame, "Score_SRF", "SRF", "Penalty"),
@@ -1209,12 +1284,15 @@ def _build_module_factors(module_id: str, frame: pd.DataFrame, weight_text: str)
             _factor_from_col(frame, "Score_10Y", "10Y Level", "20%"),
             _factor_from_col(frame, "Score_2Y", "2Y Level", "10%"),
             _factor_from_col(frame, "Penalty_Factor", "Curve Penalty", "Penalty", scale=100.0),
+            _factor_from_col(frame, "Inversion_Structural_Cap", "Inversion Cap", "Penalty"),
         ]
     if module_id == "D":
         return [
             _factor_from_col(frame, "Score_Real_10Y", "10Y Real Rate", "40%"),
             _factor_from_col(frame, "Score_Real_5Y", "5Y Real Rate", "30%"),
             _factor_from_col(frame, "Score_Breakeven", "10Y Breakeven", "30%"),
+            _factor_from_col(frame, "RealRate_Penalty", "Real Rate Penalty", "Penalty", scale=100.0),
+            _factor_from_col(frame, "Macro_Discount", "Macro Discount", "Penalty", scale=100.0),
         ]
     if module_id == "E":
         return [
@@ -1614,6 +1692,51 @@ def build_macro_payload() -> Dict[str, Any]:
                 "traditional": [],
             },
         }
+    try:
+        market_daily_payload = build_market_daily_payload(
+            df_all=df_all,
+            module_cards=module_cards,
+            overall_score=overall_value,
+        )
+    except Exception as exc:
+        market_daily_payload = {
+            "asOfDate": total_series.index[-1].strftime("%Y-%m-%d"),
+            "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
+            "headline": "日报数据源暂不可用，已降级为基础框架。",
+            "quickView": {
+                "overallScore": round(overall_value, 2),
+                "riskLevel": "中",
+                "quoteSourceMode": "fallback",
+                "newsSourceMode": "fallback",
+                "deepDiveSourceMode": "fallback",
+                "configuredPushChannels": 0,
+            },
+            "marketSnapshots": [],
+            "hotNews": [],
+            "marketReplay": [f"Market daily payload degraded: {exc}"],
+            "deepStockDives": [],
+            "cryptoProjectUpdates": [],
+            "marketCalendar": [],
+            "claudeDecision": {
+                "provider": "claude",
+                "status": "pending_config",
+                "model": os.getenv("CLAUDE_MODEL", "claude-sonnet-4"),
+                "riskLevel": "中",
+                "summary": "日报暂未接入 Claude 自动决策。",
+                "recommendedActions": [],
+                "driverModules": [],
+                "pressureModules": [],
+                "nextStep": "检查 market_daily 数据源配置。",
+            },
+            "pushChannels": [],
+            "sourceStatus": {
+                "marketData": {"provider": "yfinance", "mode": "fallback"},
+                "newsData": {"provider": "rss", "mode": "fallback", "feeds": []},
+                "decisionEngine": {"provider": "claude", "mode": "pending_config"},
+                "delivery": {"provider": "multi-channel", "mode": "pending_config"},
+            },
+            "degradedReason": str(exc),
+        }
 
     payload = {
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -1647,6 +1770,7 @@ def build_macro_payload() -> Dict[str, Any]:
         },
         "modules": module_details,
         "backtest": backtest_payload,
+        "marketDaily": market_daily_payload,
     }
     if warnings:
         payload["dataQuality"]["reason"] = "; ".join(warnings[:3])
@@ -1720,6 +1844,7 @@ def _load_live_dataset(refresh: bool = False) -> tuple[pd.DataFrame, Dict[str, A
         df_all = pd.DataFrame(index=fallback_idx)
 
     df_all = df_all.sort_index().ffill()
+    df_all = _drop_timezone_index(df_all)
     _dataset_cache["df_all"] = df_all.copy()
     _dataset_cache["fetch_meta"] = copy.deepcopy(fetch_meta)
     _dataset_cache["warnings"] = list(warnings)
@@ -1805,13 +1930,46 @@ def macro_data(refresh: bool = Query(False)) -> Dict[str, Any]:
     return payload
 
 
+@app.get("/api/v1/market-daily")
+def market_daily(refresh: bool = Query(False)) -> Dict[str, Any]:
+    payload = macro_data(refresh=refresh)
+    return payload.get("marketDaily", {})
+
+
+@app.get("/api/v1/market-daily/push-preview")
+def market_daily_push_preview(refresh: bool = Query(False)) -> Dict[str, Any]:
+    daily_payload = market_daily(refresh=refresh)
+    quick = daily_payload.get("quickView", {}) if isinstance(daily_payload, dict) else {}
+    headline = daily_payload.get("headline", "") if isinstance(daily_payload, dict) else ""
+    replay = daily_payload.get("marketReplay", []) if isinstance(daily_payload, dict) else []
+    channels = daily_payload.get("pushChannels", []) if isinstance(daily_payload, dict) else []
+
+    summary_lines = [
+        f"【MacroQuant 日报】{daily_payload.get('asOfDate', '-')}",
+        f"Headline: {headline}",
+        f"Overall Score: {quick.get('overallScore', '-')}",
+        f"Risk Level: {quick.get('riskLevel', '-')}",
+    ]
+    for line in replay[:3]:
+        summary_lines.append(f"- {line}")
+
+    return {
+        "status": "ok",
+        "previewText": "\n".join(summary_lines),
+        "channelStatuses": channels,
+    }
+
+
 @app.get("/api/v1/backtest")
 def backtest_data(
     refresh: bool = Query(False),
+    start_date: Optional[str] = Query(None),
+    end_date: Optional[str] = Query(None),
+    correlation_horizon_days: int = Query(20, ge=5, le=60),
     macro_lag_days: int = Query(1, ge=0, le=10),
     risk_free_rate: float = Query(4.0, ge=0.0, le=15.0),
     cost_scale: float = Query(1.0, ge=0.5, le=2.0),
-    max_leverage: float = Query(2.0, ge=1.0, le=2.0),
+    max_leverage: float = Query(3.0, ge=1.0, le=3.0),
     rebalance_mode: str = Query("M"),
     eth_shock_drop_pct: float = Query(13.5, ge=3.0, le=20.0),
     eth_hedge_fraction: float = Query(1.0 / 3.0, ge=0.10, le=1.0),
@@ -1820,14 +1978,17 @@ def backtest_data(
     th1: float = Query(20.0, ge=0.0, le=99.0),
     th2: float = Query(35.0, ge=0.0, le=99.0),
     th3: float = Query(50.0, ge=0.0, le=99.0),
-    alloc_0_20: float = Query(0.20, ge=0.0, le=2.0),
-    alloc_65_80: float = Query(1.0, ge=0.0, le=2.0),
+    alloc_0_20: float = Query(0.25, ge=0.0, le=3.0),
+    alloc_65_80: float = Query(2.4, ge=0.0, le=3.0),
 ) -> Dict[str, Any]:
     try:
         df_all, _, _ = _load_live_dataset(refresh=refresh)
         payload = build_backtest_payload(
             df_all,
             overrides={
+                "start_date": start_date,
+                "end_date": end_date,
+                "correlation_horizon_days": correlation_horizon_days,
                 "macro_lag_days": macro_lag_days,
                 "risk_free_rate": risk_free_rate,
                 "cost_scale": cost_scale,

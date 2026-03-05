@@ -3,6 +3,67 @@ export type TrendPoint = {
   value: number;
 };
 
+export type ChartMarker = {
+  date: string;
+  label: string;
+  tone: "buy" | "sell" | "neutral";
+};
+
+export type BacktestMacroFactor = {
+  key: string;
+  label: string;
+  score: number;
+  weight: number;
+  impact: number;
+};
+
+export type BacktestFactorForecast = {
+  key: string;
+  label: string;
+  score: number;
+  weight: number;
+  direction: "推涨" | "压盘";
+  strength: number;
+  expectedMovePct: number;
+  fitCorrelation: number;
+  fitWindow: number;
+  horizonDays: number;
+};
+
+export type BacktestSignalRule = {
+  regime: string;
+  phase: string;
+  trigger: string;
+  action: string;
+  invalidation: string;
+};
+
+export type BacktestModuleCorrelation = {
+  key: string;
+  label: string;
+  weight: number;
+  currentScore: number;
+  wowChange: number;
+  levelCorrFwd: number;
+  changeCorrFwd: number;
+  changeCorrSpot: number;
+  bias: "推涨" | "压盘";
+  fitWindow: number;
+  horizonDays: number;
+  deltaDays: number;
+};
+
+export type BacktestCrashStudy = {
+  triggerPct: number;
+  sampleCount: number;
+  avg3MReturnPct: number | null;
+  median3MReturnPct: number | null;
+  winRate3M: number | null;
+  best3MReturnPct: number | null;
+  worst3MReturnPct: number | null;
+  horizonDays: number;
+};
+
 export type StatusTag = {
   label: string;
   tone: "positive" | "negative" | "neutral";
@@ -66,15 +127,28 @@ export type BacktestAsset = {
   currentPosition?: number;
   currentScore?: number;
   currentSignal?: string;
+  currentTrendState?: string;
+  currentMacroBudget?: number;
   navSeries: TrendPoint[];
+  benchmarkNavSeries?: TrendPoint[];
   positionSeries: TrendPoint[];
+  signalMarkers?: ChartMarker[];
+  macroFactors?: BacktestMacroFactor[];
+  factorForecast?: BacktestFactorForecast[];
+  moduleCorrelations?: BacktestModuleCorrelation[];
+  crashReboundStudy?: BacktestCrashStudy[];
+  signalPlan?: BacktestSignalRule[];
   rebalanceLog?: {
     date: string;
+    action?: string;
     previousPosition: number;
     position: number;
     signal: string;
+    trendState?: string;
+    macroBudget?: number;
     score: number;
     price: number;
+    reason?: string;
   }[];
   tradeLog?: {
     mode: string;
@@ -113,6 +187,97 @@ export type BacktestPayload = {
       bias: "short" | "flat" | "long";
     }[];
   };
+};
+
+export type MarketDailySnapshot = {
+  ticker: string;
+  name: string;
+  bucket: string;
+  spot: number;
+  change24hPct: number;
+  change7dPct: number;
+  realizedVol14dPct: number;
+  source: string;
+};
+
+export type MarketDailyNews = {
+  title: string;
+  source: string;
+  url: string;
+  publishedAt: string;
+};
+
+export type MarketDailyDeepDive = {
+  name: string;
+  ticker: string;
+  signal: string;
+  summary: string;
+  rsi14: number;
+  ret20dPct: number;
+};
+
+export type MarketDailyProjectUpdate = {
+  project: string;
+  headline: string;
+  source: string;
+  url: string;
+};
+
+export type MarketDailyCalendarEvent = {
+  date: string;
+  timeUtc: string;
+  category: string;
+  event: string;
+  importance: string;
+};
+
+export type MarketDailyPushChannel = {
+  channel: string;
+  label: string;
+  configured: boolean;
+  target: string;
+  status: "ready" | "pending";
+};
+
+export type MarketDailyClaudeDecision = {
+  provider: string;
+  status: string;
+  model: string;
+  riskLevel: string;
+  summary: string;
+  recommendedActions: string[];
+  driverModules: string[];
+  pressureModules: string[];
+  nextStep: string;
+};
+
+export type MarketDailyPayload = {
+  asOfDate: string;
+  generatedAt: string;
+  headline: string;
+  quickView: {
+    overallScore: number;
+    riskLevel: string;
+    quoteSourceMode: string;
+    newsSourceMode: string;
+    deepDiveSourceMode: string;
+    configuredPushChannels: number;
+  };
+  marketSnapshots: MarketDailySnapshot[];
+  hotNews: MarketDailyNews[];
+  marketReplay: string[];
+  deepStockDives: MarketDailyDeepDive[];
+  cryptoProjectUpdates: MarketDailyProjectUpdate[];
+  marketCalendar: MarketDailyCalendarEvent[];
+  claudeDecision: MarketDailyClaudeDecision;
+  pushChannels: MarketDailyPushChannel[];
+  sourceStatus: {
+    marketData: { provider: string; mode: string };
+    newsData: { provider: string; mode: string; feeds: string[] };
+    decisionEngine: { provider: string; mode: string };
+    delivery: { provider: string; mode: string };
+  };
+  degradedReason?: string;
 };
 
 export type DashboardPayload = {
@@ -212,4 +377,5 @@ export type MacroApiPayload = {
   dashboard: DashboardPayload;
   modules: Record<ModuleMeta["slug"], ModulePageData>;
   backtest?: BacktestPayload;
+  marketDaily?: MarketDailyPayload;
 };

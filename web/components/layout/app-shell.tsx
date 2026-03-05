@@ -8,6 +8,7 @@ import {
   FileText,
   ChevronDown,
   ChevronRight,
+  Newspaper,
   CircleDollarSign,
   Gauge,
   Globe,
@@ -29,6 +30,7 @@ type AppShellProps = {
 const iconMap = {
   "/": LayoutDashboard,
   "/market-analysis": BarChart3,
+  "/market-analysis/daily-report": Newspaper,
   "/market-analysis/macro-report": FileText,
   "/market-analysis/us-economic-data": Landmark,
   "/modules/a": Waves,
@@ -51,6 +53,7 @@ const dashboardGroupItems = [
 ] as const;
 
 const marketAnalysisGroupItems = [
+  { href: "/market-analysis/daily-report", label: "日报" },
   { href: "/market-analysis/macro-report", label: "宏观报告" },
   { href: "/market-analysis/us-economic-data", label: "美国经济数据" },
 ] as const;
