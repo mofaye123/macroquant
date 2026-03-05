@@ -3,6 +3,7 @@ import argparse
 import json
 import math
 import sys
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 import numpy as np
@@ -71,21 +72,31 @@ def main():
         "--status-file",
         help="Optional JSON file to write generation status metadata to.",
     )
+    parser.add_argument(
+        "--as-of-days-ago",
+        type=int,
+        default=0,
+        help="Optional cutoff in days ago for backfill/testing (e.g. 1 means generate payload as of yesterday UTC).",
+    )
     args = parser.parse_args()
 
     output_path = Path(args.output).expanduser().resolve()
     status_path = Path(args.status_file).expanduser().resolve() if args.status_file else None
     existing_payload = load_existing_payload(output_path)
+    as_of_days_ago = max(0, int(args.as_of_days_ago))
+    as_of_date = None
+    if as_of_days_ago > 0:
+        as_of_date = (datetime.now(timezone.utc).date() - timedelta(days=as_of_days_ago)).isoformat()
 
     try:
-        payload = build_macro_payload()
+        payload = build_macro_payload(as_of_date=as_of_date)
     except Exception as exc:
         status = {
             "result": "error",
             "outputPath": str(output_path),
             "mode": None,
             "readyModules": 0,
-            "reason": None,
+            "reason": f"as_of_days_ago={as_of_days_ago}" if as_of_days_ago else None,
             "message": f"Snapshot generation failed: {exc}",
         }
         write_status(status_path, status)

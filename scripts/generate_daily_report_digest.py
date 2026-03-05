@@ -23,7 +23,9 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     quick = daily.get("quickView", {}) if isinstance(daily.get("quickView"), dict) else {}
     news = daily.get("hotNews", []) if isinstance(daily.get("hotNews"), list) else []
     replay = daily.get("marketReplay", []) if isinstance(daily.get("marketReplay"), list) else []
-    claude = daily.get("claudeDecision", {}) if isinstance(daily.get("claudeDecision"), dict) else {}
+    ai = daily.get("aiDecision", {}) if isinstance(daily.get("aiDecision"), dict) else {}
+    if not ai and isinstance(daily.get("claudeDecision"), dict):
+        ai = daily.get("claudeDecision", {})
 
     lines: List[str] = []
     lines.append(f"# MacroQuant 市场研究日报（{as_of}）")
@@ -57,10 +59,11 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
         lines.append("- 无复盘内容")
     lines.append("")
     lines.append("## AI 决策摘要")
-    lines.append(f"- 状态: {claude.get('status', '-')}")
-    lines.append(f"- 模型: {claude.get('model', '-')}")
-    lines.append(f"- 结论: {claude.get('summary', '-')}")
-    actions = claude.get("recommendedActions", [])
+    lines.append(f"- 提供方: {ai.get('provider', '-')}")
+    lines.append(f"- 状态: {ai.get('status', '-')}")
+    lines.append(f"- 模型: {ai.get('model', '-')}")
+    lines.append(f"- 结论: {ai.get('summary', '-')}")
+    actions = ai.get("recommendedActions", [])
     if isinstance(actions, list) and actions:
         lines.append("- 建议动作:")
         for action in actions[:4]:

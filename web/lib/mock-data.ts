@@ -671,10 +671,11 @@ export const marketDailyPayload: MarketDailyPayload = {
     { date: "2026-02-28", timeUtc: "14:00", category: "Macro", event: "FOMC 官员讲话", importance: "中" },
     { date: "2026-03-01", timeUtc: "00:00", category: "Crypto", event: "主要交易所周度持仓复盘", importance: "中" },
   ],
-  claudeDecision: {
-    provider: "claude",
+  aiDecision: {
+    provider: "gemini",
     status: "pending_config",
-    model: "claude-sonnet-4",
+    model: "gemini-2.5-pro",
+    reasoningMode: "deep_think",
     riskLevel: "中",
     summary: "建议中性偏多，事件前后执行分批策略。",
     recommendedActions: [
@@ -684,7 +685,23 @@ export const marketDailyPayload: MarketDailyPayload = {
     ],
     driverModules: ["A", "E"],
     pressureModules: ["B", "F"],
-    nextStep: "配置 CLAUDE_API_KEY 后可启用自动决策摘要。",
+    nextStep: "配置 GEMINI_API_KEY 后可启用自动决策摘要。",
+  },
+  claudeDecision: {
+    provider: "gemini",
+    status: "pending_config",
+    model: "gemini-2.5-pro",
+    reasoningMode: "deep_think",
+    riskLevel: "中",
+    summary: "建议中性偏多，事件前后执行分批策略。",
+    recommendedActions: [
+      "BTC/ETH 维持主仓，SOL 使用交易仓。",
+      "数据公布前将杠杆下调到策略上限 50%-70%。",
+      "若宏观总分连续下行两周，降低开仓频率。",
+    ],
+    driverModules: ["A", "E"],
+    pressureModules: ["B", "F"],
+    nextStep: "配置 GEMINI_API_KEY 后可启用自动决策摘要。",
   },
   pushChannels: [
     { channel: "telegram", label: "Telegram", configured: false, target: "", status: "pending" },
@@ -695,7 +712,7 @@ export const marketDailyPayload: MarketDailyPayload = {
   sourceStatus: {
     marketData: { provider: "yfinance", mode: "fallback" },
     newsData: { provider: "rss", mode: "fallback", feeds: ["CoinDesk", "Cointelegraph", "Yahoo Finance Crypto"] },
-    decisionEngine: { provider: "claude", mode: "pending_config" },
+    decisionEngine: { provider: "gemini", mode: "pending_config" },
     delivery: { provider: "multi-channel", mode: "pending_config" },
   },
 };

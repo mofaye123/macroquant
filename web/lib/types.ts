@@ -239,10 +239,11 @@ export type MarketDailyPushChannel = {
   status: "ready" | "pending";
 };
 
-export type MarketDailyClaudeDecision = {
+export type MarketDailyAIDecision = {
   provider: string;
   status: string;
   model: string;
+  reasoningMode?: string;
   riskLevel: string;
   summary: string;
   recommendedActions: string[];
@@ -250,6 +251,8 @@ export type MarketDailyClaudeDecision = {
   pressureModules: string[];
   nextStep: string;
 };
+
+export type MarketDailyClaudeDecision = MarketDailyAIDecision;
 
 export type MarketDailyPayload = {
   asOfDate: string;
@@ -269,7 +272,8 @@ export type MarketDailyPayload = {
   deepStockDives: MarketDailyDeepDive[];
   cryptoProjectUpdates: MarketDailyProjectUpdate[];
   marketCalendar: MarketDailyCalendarEvent[];
-  claudeDecision: MarketDailyClaudeDecision;
+  aiDecision?: MarketDailyAIDecision;
+  claudeDecision: MarketDailyAIDecision;
   pushChannels: MarketDailyPushChannel[];
   sourceStatus: {
     marketData: { provider: string; mode: string };

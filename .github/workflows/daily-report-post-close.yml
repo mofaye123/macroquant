@@ -5,6 +5,11 @@ on:
     - cron: "20 21 * * 1-5"
     - cron: "20 22 * * 1-5"
   workflow_dispatch:
+    inputs:
+      days_ago:
+        description: "Manual backfill days (0=today/latest, 1=yesterday)"
+        required: false
+        default: "0"
 
 permissions:
   contents: read
@@ -71,15 +76,26 @@ jobs:
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
         run: |
-          chmod +x scripts/refresh_static_snapshot_ci.sh
-          STATUS_FILE="$RUNNER_TEMP/macro_snapshot_status.json" ./scripts/refresh_static_snapshot_ci.sh --force
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            DAYS_AGO="${{ github.event.inputs.days_ago || '0' }}"
+          else
+            DAYS_AGO="0"
+          fi
+          echo "Generating snapshot for days_ago=${DAYS_AGO}"
+          python generate_static_macro_json.py \
+            --output web/public/data/macro-data.json \
+            --as-of-days-ago "${DAYS_AGO}" \
+            --allow-degraded
 
       - name: Generate daily report digest
         if: steps.publish_window.outputs.should_run == 'true'
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
-          CLAUDE_API_KEY: ${{ secrets.CLAUDE_API_KEY }}
-          CLAUDE_MODEL: ${{ vars.CLAUDE_MODEL }}
+          MARKET_DAILY_AI_PROVIDER: gemini
+          MARKET_DAILY_AI_REASONING_MODE: deep_think
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          MARKET_DAILY_AI_MODEL: ${{ vars.MARKET_DAILY_AI_MODEL }}
           MARKET_NEWS_RSS_URLS: ${{ vars.MARKET_NEWS_RSS_URLS }}
         run: |
           python scripts/generate_daily_report_digest.py \

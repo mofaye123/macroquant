@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import {
   BellRing,
   Bot,
@@ -33,11 +34,314 @@ const chipTone = (mode: string) =>
     ? "border-emerald-200 bg-emerald-50 text-emerald-700"
     : "border-amber-200 bg-amber-50 text-amber-700";
 
+const SOURCE_CONFIG_STORAGE_KEY = "macroquant:daily-source-config:v1";
+
+type SourceCheckItem = {
+  ok?: boolean;
+  detail?: string;
+  provider?: string;
+  model?: string;
+  latencyMs?: number;
+};
+
+type SourceCheckResponse = {
+  status?: string;
+  overallOk?: boolean;
+  checkedAt?: string;
+  checks?: {
+    marketData?: SourceCheckItem;
+    newsData?: SourceCheckItem;
+    aiDecision?: SourceCheckItem;
+    delivery?: SourceCheckItem;
+  };
+  appliedConfig?: {
+    newsRssUrls?: string;
+    geminiModel?: string;
+    geminiApiKeyMasked?: string;
+    deliveryWebhookMasked?: string;
+  };
+};
+
+type AIPreviewResponse = {
+  status?: string;
+  asOfDate?: string;
+  generatedAt?: string;
+  preview?: {
+    status?: string;
+    provider?: string;
+    model?: string;
+    reasoningMode?: string;
+    previewText?: string;
+    usedFallback?: boolean;
+    rateLimited?: boolean;
+    retryAfterSec?: number | null;
+    cached?: boolean;
+    charCount?: number;
+    minCharTarget?: number;
+    tooShort?: boolean;
+    finishReason?: string;
+    detail?: string;
+    latencyMs?: number;
+    promptDigest?: string;
+  };
+};
+
+type SourceConfig = {
+  apiBase: string;
+  newsRssUrls: string;
+  geminiApiKey: string;
+  geminiModel: string;
+  deliveryWebhookUrl: string;
+};
+
+type StoredSourceConfig = Omit<SourceConfig, "geminiApiKey">;
+
+const getApiBaseFromMacroUrl = (apiUrl: string): string =>
+  apiUrl.replace(/\/api\/v1\/macro-data(?:\?.*)?$/, "");
+
+const checkBadgeTone = (ok?: boolean) => {
+  if (ok === true) {
+    return "border-emerald-200 bg-emerald-50 text-emerald-700";
+  }
+  if (ok === false) {
+    return "border-rose-200 bg-rose-50 text-rose-700";
+  }
+  return "border-slate-200 bg-slate-100 text-slate-600";
+};
+
+const escapeHtml = (value: string): string =>
+  value
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
+
+const formatMarkdownInline = (value: string): string => {
+  let text = value;
+  text = text.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g, "<a href=\"$2\" target=\"_blank\" rel=\"noreferrer\" class=\"text-blue-600 underline underline-offset-2\">$1</a>");
+  text = text.replace(/`([^`]+)`/g, "<code class=\"rounded bg-slate-100 px-1 py-0.5 text-[11px] text-slate-700\">$1</code>");
+  text = text.replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
+  text = text.replace(/\*([^*]+)\*/g, "<em>$1</em>");
+  return text;
+};
+
+const renderMarkdownPreview = (markdown: string): string => {
+  const safe = escapeHtml(markdown.replace(/\r\n/g, "\n"));
+  const lines = safe.split("\n");
+  const chunks: string[] = [];
+  let inUl = false;
+  let inOl = false;
+
+  const closeLists = () => {
+    if (inUl) {
+      chunks.push("</ul>");
+      inUl = false;
+    }
+    if (inOl) {
+      chunks.push("</ol>");
+      inOl = false;
+    }
+  };
+
+  for (const rawLine of lines) {
+    const line = rawLine.trim();
+    if (!line) {
+      closeLists();
+      chunks.push("<div class=\"h-2\"></div>");
+      continue;
+    }
+
+    const heading = line.match(/^(#{1,6})\s+(.+)$/);
+    if (heading) {
+      closeLists();
+      const level = Math.min(6, heading[1].length);
+      const content = formatMarkdownInline(heading[2]);
+      chunks.push(`<h${level} class="font-bold text-slate-800">${content}</h${level}>`);
+      continue;
+    }
+
+    const ul = line.match(/^[-*]\s+(.+)$/);
+    if (ul) {
+      if (inOl) {
+        chunks.push("</ol>");
+        inOl = false;
+      }
+      if (!inUl) {
+        chunks.push("<ul class=\"list-disc space-y-1 pl-5\">");
+        inUl = true;
+      }
+      chunks.push(`<li>${formatMarkdownInline(ul[1])}</li>`);
+      continue;
+    }
+
+    const ol = line.match(/^\d+\.\s+(.+)$/);
+    if (ol) {
+      if (inUl) {
+        chunks.push("</ul>");
+        inUl = false;
+      }
+      if (!inOl) {
+        chunks.push("<ol class=\"list-decimal space-y-1 pl-5\">");
+        inOl = true;
+      }
+      chunks.push(`<li>${formatMarkdownInline(ol[1])}</li>`);
+      continue;
+    }
+
+    const quote = line.match(/^>\s+(.+)$/);
+    if (quote) {
+      closeLists();
+      chunks.push(`<blockquote class="border-l-2 border-slate-300 pl-3 text-slate-600">${formatMarkdownInline(quote[1])}</blockquote>`);
+      continue;
+    }
+
+    closeLists();
+    chunks.push(`<p>${formatMarkdownInline(line)}</p>`);
+  }
+  closeLists();
+  return chunks.join("");
+};
+
 export default function MarketDailyReportPage() {
   const dataState = useMacroData();
   const report = dataState.payload.marketDaily ?? fallbackMarketDailyPayload;
+  const aiDecision = report.aiDecision ?? report.claudeDecision;
   const scoreState = describeScoreState(report.quickView.overallScore);
   const displayDate = report.asOfDate;
+  const defaultApiBase = useMemo(() => getApiBaseFromMacroUrl(dataState.apiUrl), [dataState.apiUrl]);
+
+  const [sourceConfig, setSourceConfig] = useState<SourceConfig>({
+    apiBase: defaultApiBase,
+    newsRssUrls: "",
+    geminiApiKey: "",
+    geminiModel: aiDecision.model ?? "gemini-2.5-pro",
+    deliveryWebhookUrl: "",
+  });
+  const [checkResult, setCheckResult] = useState<SourceCheckResponse | null>(null);
+  const [checkError, setCheckError] = useState<string | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
+  const [savedAt, setSavedAt] = useState<string | null>(null);
+  const [aiPreview, setAiPreview] = useState<AIPreviewResponse | null>(null);
+  const [aiPreviewError, setAiPreviewError] = useState<string | null>(null);
+  const [isPreviewing, setIsPreviewing] = useState(false);
+  const [previewDaysAgo, setPreviewDaysAgo] = useState(1);
+  const [previewTargetChars, setPreviewTargetChars] = useState(1800);
+  const [previewExpanded, setPreviewExpanded] = useState(false);
+  const aiPreviewHtml = useMemo(
+    () => renderMarkdownPreview(aiPreview?.preview?.previewText || "暂无输出"),
+    [aiPreview?.preview?.previewText]
+  );
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    try {
+      const raw = window.localStorage.getItem(SOURCE_CONFIG_STORAGE_KEY);
+      if (!raw) {
+        setSourceConfig((prev) => ({ ...prev, apiBase: prev.apiBase || defaultApiBase }));
+        return;
+      }
+      const parsed = JSON.parse(raw) as Partial<StoredSourceConfig>;
+      setSourceConfig((prev) => ({
+        ...prev,
+        ...parsed,
+        geminiApiKey: "",
+        apiBase: (parsed.apiBase ?? "").trim() || defaultApiBase,
+      }));
+    } catch {
+      setSourceConfig((prev) => ({ ...prev, apiBase: prev.apiBase || defaultApiBase }));
+    }
+  }, [defaultApiBase]);
+
+  const saveSourceConfig = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const persisted: StoredSourceConfig = {
+      apiBase: sourceConfig.apiBase,
+      newsRssUrls: sourceConfig.newsRssUrls,
+      geminiModel: sourceConfig.geminiModel,
+      deliveryWebhookUrl: sourceConfig.deliveryWebhookUrl,
+    };
+    window.localStorage.setItem(SOURCE_CONFIG_STORAGE_KEY, JSON.stringify(persisted));
+    setSavedAt(new Date().toLocaleString());
+  };
+
+  const runSourceCheck = async () => {
+    const base = sourceConfig.apiBase.trim().replace(/\/$/, "");
+    if (!base) {
+      setCheckError("请先填写 API Base URL，例如 http://127.0.0.1:8000");
+      return;
+    }
+    setIsChecking(true);
+    setCheckError(null);
+    try {
+      const resp = await fetch(`${base}/api/v1/market-daily/source-check`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          newsRssUrls: sourceConfig.newsRssUrls,
+          geminiApiKey: sourceConfig.geminiApiKey,
+          geminiModel: sourceConfig.geminiModel,
+          deliveryWebhookUrl: sourceConfig.deliveryWebhookUrl,
+        }),
+      });
+      if (!resp.ok) {
+        const message = await resp.text();
+        throw new Error(message || `HTTP ${resp.status}`);
+      }
+      const data = (await resp.json()) as SourceCheckResponse;
+      setCheckResult(data);
+    } catch (err) {
+      setCheckError(err instanceof Error ? err.message : "连接测试失败");
+    } finally {
+      setIsChecking(false);
+    }
+  };
+
+  const runAiPreview = async () => {
+    const base = sourceConfig.apiBase.trim().replace(/\/$/, "");
+    if (!base) {
+      setAiPreviewError("请先填写 API Base URL，例如 http://127.0.0.1:8000");
+      return;
+    }
+    setIsPreviewing(true);
+    setAiPreviewError(null);
+    try {
+      const resp = await fetch(`${base}/api/v1/market-daily/ai-preview`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Accept: "application/json",
+        },
+        body: JSON.stringify({
+          daysAgo: previewDaysAgo,
+          refresh: true,
+          geminiApiKey: sourceConfig.geminiApiKey,
+          geminiModel: sourceConfig.geminiModel,
+          reasoningMode: "deep_think",
+          minChars: previewTargetChars,
+          maxOutputTokens: Math.max(4096, Math.min(12288, previewTargetChars * 4)),
+          continuationRounds: 8,
+        }),
+      });
+      if (!resp.ok) {
+        const message = await resp.text();
+        throw new Error(message || `HTTP ${resp.status}`);
+      }
+      const data = (await resp.json()) as AIPreviewResponse;
+      setAiPreview(data);
+    } catch (err) {
+      setAiPreviewError(err instanceof Error ? err.message : "AI 预览生成失败");
+    } finally {
+      setIsPreviewing(false);
+    }
+  };
 
   return (
     <AppShell dataState={dataState}>
@@ -54,7 +358,7 @@ export default function MarketDailyReportPage() {
               </p>
             </div>
             <div className="rounded-[10px] border border-blue-100 bg-blue-50 px-[10px] py-[7px] text-[12px] text-blue-700">
-              可扩展: Claude API + 自动推送
+              可扩展: Gemini Deep Think + 自动推送
             </div>
           </div>
           <p className="mt-[10px] text-[14px] leading-relaxed text-app-text">{report.headline}</p>
@@ -74,6 +378,205 @@ export default function MarketDailyReportPage() {
           </div>
         </header>
 
+        <SurfaceCard>
+          <SectionTitle title="数据源配置与连通性" rightSlot={<Clock3 className="h-[15px] w-[15px] text-app-muted" />} />
+          <div className="mt-[12px] grid gap-[10px] xl:grid-cols-2">
+            <div className="rounded-[12px] border border-app-border bg-white p-[10px]">
+              <div className="mb-[6px] flex items-center justify-between gap-[8px]">
+                <p className="text-[12px] font-semibold text-app-text">行情源（Dashboard / 日报行情）</p>
+                <span className={cn("rounded-full border px-[8px] py-[2px] text-[11px] font-semibold", checkBadgeTone(checkResult?.checks?.marketData?.ok))}>
+                  {checkResult?.checks?.marketData?.ok === true ? "已连通" : checkResult?.checks?.marketData?.ok === false ? "未连通" : "未检测"}
+                </span>
+              </div>
+              <p className="text-[11px] text-app-muted">API Base URL（用于连通性测试接口）</p>
+              <input
+                value={sourceConfig.apiBase}
+                onChange={(e) => setSourceConfig((prev) => ({ ...prev, apiBase: e.target.value }))}
+                className="mt-[4px] w-full rounded-[8px] border border-slate-200 px-[8px] py-[6px] text-[12px] text-app-text outline-none focus:border-blue-300"
+                placeholder="http://127.0.0.1:8000"
+              />
+              <p className="mt-[6px] text-[11px] text-app-muted">{checkResult?.checks?.marketData?.detail ?? "通过 yfinance 拉取 BTC-USD 连通性。"}</p>
+            </div>
+
+            <div className="rounded-[12px] border border-app-border bg-white p-[10px]">
+              <div className="mb-[6px] flex items-center justify-between gap-[8px]">
+                <p className="text-[12px] font-semibold text-app-text">新闻源（热点要闻）</p>
+                <span className={cn("rounded-full border px-[8px] py-[2px] text-[11px] font-semibold", checkBadgeTone(checkResult?.checks?.newsData?.ok))}>
+                  {checkResult?.checks?.newsData?.ok === true ? "已连通" : checkResult?.checks?.newsData?.ok === false ? "未连通" : "未检测"}
+                </span>
+              </div>
+              <p className="text-[11px] text-app-muted">RSS 列表（逗号分隔，支持 `名称|URL`）</p>
+              <textarea
+                value={sourceConfig.newsRssUrls}
+                onChange={(e) => setSourceConfig((prev) => ({ ...prev, newsRssUrls: e.target.value }))}
+                className="mt-[4px] h-[60px] w-full rounded-[8px] border border-slate-200 px-[8px] py-[6px] text-[12px] text-app-text outline-none focus:border-blue-300"
+                placeholder="CoinDesk|https://www.coindesk.com/arc/outboundfeeds/rss/, Cointelegraph|https://cointelegraph.com/rss"
+              />
+              <p className="mt-[6px] text-[11px] text-app-muted">{checkResult?.checks?.newsData?.detail ?? "未配置时使用默认 RSS 源。"}</p>
+            </div>
+
+            <div className="rounded-[12px] border border-app-border bg-white p-[10px]">
+              <div className="mb-[6px] flex items-center justify-between gap-[8px]">
+                <p className="text-[12px] font-semibold text-app-text">Gemini（AI 决策）</p>
+                <span className={cn("rounded-full border px-[8px] py-[2px] text-[11px] font-semibold", checkBadgeTone(checkResult?.checks?.aiDecision?.ok))}>
+                  {checkResult?.checks?.aiDecision?.ok === true ? "已连通" : checkResult?.checks?.aiDecision?.ok === false ? "未连通" : "未检测"}
+                </span>
+              </div>
+              <div className="grid gap-[6px] md:grid-cols-2">
+                <input
+                  type="password"
+                  value={sourceConfig.geminiApiKey}
+                  onChange={(e) => setSourceConfig((prev) => ({ ...prev, geminiApiKey: e.target.value }))}
+                  className="rounded-[8px] border border-slate-200 px-[8px] py-[6px] text-[12px] text-app-text outline-none focus:border-blue-300"
+                  placeholder="GEMINI_API_KEY"
+                />
+                <input
+                  value={sourceConfig.geminiModel}
+                  onChange={(e) => setSourceConfig((prev) => ({ ...prev, geminiModel: e.target.value }))}
+                  className="rounded-[8px] border border-slate-200 px-[8px] py-[6px] text-[12px] text-app-text outline-none focus:border-blue-300"
+                  placeholder="gemini-2.5-pro"
+                />
+              </div>
+              <p className="mt-[6px] text-[11px] text-app-muted">{checkResult?.checks?.aiDecision?.detail ?? "检测会验证 key 是否可访问 Gemini models 接口。"}</p>
+              <p className="mt-[2px] text-[11px] text-app-muted">
+                API Key 仅当前会话使用，不会写入本地存储。
+                {checkResult?.appliedConfig?.geminiApiKeyMasked ? ` 当前检测 key: ${checkResult.appliedConfig.geminiApiKeyMasked}` : ""}
+              </p>
+            </div>
+
+            <div className="rounded-[12px] border border-app-border bg-white p-[10px]">
+              <div className="mb-[6px] flex items-center justify-between gap-[8px]">
+                <p className="text-[12px] font-semibold text-app-text">推送源（Webhook）</p>
+                <span className={cn("rounded-full border px-[8px] py-[2px] text-[11px] font-semibold", checkBadgeTone(checkResult?.checks?.delivery?.ok))}>
+                  {checkResult?.checks?.delivery?.ok === true ? "已配置" : checkResult?.checks?.delivery?.ok === false ? "未配置/无效" : "未检测"}
+                </span>
+              </div>
+              <input
+                value={sourceConfig.deliveryWebhookUrl}
+                onChange={(e) => setSourceConfig((prev) => ({ ...prev, deliveryWebhookUrl: e.target.value }))}
+                className="w-full rounded-[8px] border border-slate-200 px-[8px] py-[6px] text-[12px] text-app-text outline-none focus:border-blue-300"
+                placeholder="https://example.com/webhook"
+              />
+              <p className="mt-[6px] text-[11px] text-app-muted">{checkResult?.checks?.delivery?.detail ?? "仅校验 URL 格式，不会主动推送消息。"}</p>
+            </div>
+          </div>
+
+          <div className="mt-[10px] flex flex-wrap items-center gap-[8px]">
+            <button
+              type="button"
+              onClick={saveSourceConfig}
+              className="rounded-[8px] border border-slate-300 bg-white px-[10px] py-[6px] text-[12px] font-semibold text-slate-700"
+            >
+              保存本地配置
+            </button>
+            <button
+              type="button"
+              onClick={runSourceCheck}
+              className="rounded-[8px] border border-blue-200 bg-blue-50 px-[10px] py-[6px] text-[12px] font-semibold text-blue-700"
+              disabled={isChecking}
+            >
+              {isChecking ? "检测中..." : "测试全部连通性"}
+            </button>
+            {savedAt ? <p className="text-[11px] text-app-muted">已保存: {savedAt}</p> : null}
+            {checkResult?.checkedAt ? <p className="text-[11px] text-app-muted">最近检测: {checkResult.checkedAt}</p> : null}
+          </div>
+          {checkError ? <p className="mt-[6px] text-[12px] text-rose-600">{checkError}</p> : null}
+
+          <div className="mt-[12px] rounded-[12px] border border-app-border bg-white p-[10px]">
+            <div className="flex flex-wrap items-center gap-[8px]">
+              <p className="text-[12px] font-semibold text-app-text">本地 AI 输出预览</p>
+              <span className="text-[11px] text-app-muted">days_ago</span>
+              <input
+                type="number"
+                min={0}
+                max={14}
+                value={previewDaysAgo}
+                onChange={(e) => {
+                  const raw = Number(e.target.value);
+                  if (Number.isNaN(raw)) {
+                    return;
+                  }
+                  setPreviewDaysAgo(Math.max(0, Math.min(14, Math.trunc(raw))));
+                }}
+                className="w-[84px] rounded-[8px] border border-slate-200 px-[8px] py-[4px] text-[12px] text-app-text outline-none focus:border-blue-300"
+              />
+              <span className="text-[11px] text-app-muted">目标字数</span>
+              <input
+                type="number"
+                min={800}
+                max={6000}
+                step={100}
+                value={previewTargetChars}
+                onChange={(e) => {
+                  const raw = Number(e.target.value);
+                  if (Number.isNaN(raw)) {
+                    return;
+                  }
+                  setPreviewTargetChars(Math.max(800, Math.min(6000, Math.trunc(raw))));
+                }}
+                className="w-[100px] rounded-[8px] border border-slate-200 px-[8px] py-[4px] text-[12px] text-app-text outline-none focus:border-blue-300"
+              />
+              <button
+                type="button"
+                onClick={runAiPreview}
+                className="rounded-[8px] border border-blue-200 bg-blue-50 px-[10px] py-[6px] text-[12px] font-semibold text-blue-700"
+                disabled={isPreviewing}
+              >
+                {isPreviewing ? "生成中..." : "生成本地AI预览"}
+              </button>
+              <button
+                type="button"
+                onClick={() => setPreviewExpanded((prev) => !prev)}
+                className="rounded-[8px] border border-slate-300 bg-white px-[10px] py-[6px] text-[12px] font-semibold text-slate-700"
+              >
+                {previewExpanded ? "收起预览" : "展开全文"}
+              </button>
+              {aiPreview?.generatedAt ? <span className="text-[11px] text-app-muted">最近生成: {aiPreview.generatedAt}</span> : null}
+            </div>
+            <p className="mt-[6px] text-[11px] text-app-muted">
+              使用当前页面填写的 Gemini Key/Model 生成文本，仅预览，不会推送。可设置目标字数，后端会自动续写补全。
+            </p>
+            {aiPreviewError ? <p className="mt-[6px] text-[12px] text-rose-600">{aiPreviewError}</p> : null}
+            {aiPreview?.preview ? (
+              <div className="mt-[8px] space-y-[6px]">
+                <p className="text-[11px] text-app-muted">
+                  {aiPreview.preview.provider} · {aiPreview.preview.model} · {aiPreview.preview.reasoningMode} ·
+                  {" "}
+                  {aiPreview.preview.latencyMs ?? "-"}ms ·
+                  {" "}
+                  数据日 {aiPreview.asOfDate ?? "-"} ·
+                  {" "}
+                  {aiPreview.preview.usedFallback ? "回退输出" : "模型输出"}
+                  {aiPreview.preview.cached ? " · 缓存" : ""}
+                  {" "}
+                  ·
+                  {" "}
+                  字数 {aiPreview.preview.charCount ?? "-"} / 目标≥{aiPreview.preview.minCharTarget ?? 1400}
+                </p>
+                {aiPreview.preview.rateLimited ? (
+                  <p className="rounded-[8px] border border-amber-200 bg-amber-50 px-[8px] py-[6px] text-[12px] text-amber-700">
+                    Gemini 触发限流（429），已自动回退输出。
+                    {aiPreview.preview.retryAfterSec ? ` 建议 ${aiPreview.preview.retryAfterSec} 秒后重试。` : " 建议稍后重试。"}
+                  </p>
+                ) : null}
+                {aiPreview.preview.tooShort ? (
+                  <p className="rounded-[8px] border border-amber-200 bg-amber-50 px-[8px] py-[6px] text-[12px] text-amber-700">
+                    本次输出字数不足，后端已自动补写/重试；如仍不足，建议切换到 `gemini-2.5-pro` 再生成一次。
+                  </p>
+                ) : null}
+                <div
+                  className={cn(
+                    "overflow-auto rounded-[10px] border border-slate-200 bg-slate-50 p-[10px] text-[13px] leading-relaxed text-slate-700 [&>h1]:mb-2 [&>h1]:text-[18px] [&>h2]:mb-2 [&>h2]:text-[16px] [&>h3]:mb-1 [&>h3]:text-[14px] [&>p]:mb-2",
+                    previewExpanded ? "max-h-none" : "max-h-[70vh]"
+                  )}
+                  dangerouslySetInnerHTML={{ __html: aiPreviewHtml }}
+                />
+                <p className="text-[11px] text-app-muted">{aiPreview.preview.detail}</p>
+              </div>
+            ) : null}
+          </div>
+        </SurfaceCard>
+
         <div className="grid gap-[12px] md:grid-cols-4">
           <SurfaceCard className="p-[14px]">
             <p className="text-[12px] text-app-muted">宏观总分</p>
@@ -91,9 +594,11 @@ export default function MarketDailyReportPage() {
             <p className="mt-[4px] text-[12px] text-app-muted">支持 Telegram / 飞书 / 企微 / Email</p>
           </SurfaceCard>
           <SurfaceCard className="p-[14px]">
-            <p className="text-[12px] text-app-muted">Claude 状态</p>
-            <p className="mt-[4px] text-[20px] font-bold text-app-text">{report.claudeDecision.status}</p>
-            <p className="mt-[4px] text-[12px] text-app-muted">{report.claudeDecision.model}</p>
+            <p className="text-[12px] text-app-muted">AI 状态</p>
+            <p className="mt-[4px] text-[20px] font-bold text-app-text">{aiDecision.status}</p>
+            <p className="mt-[4px] text-[12px] text-app-muted">
+              {aiDecision.provider} · {aiDecision.model}
+            </p>
           </SurfaceCard>
         </div>
 
@@ -217,25 +722,25 @@ export default function MarketDailyReportPage() {
 
         <div className="grid gap-[12px] xl:grid-cols-[1.25fr_1fr]">
           <SurfaceCard>
-            <SectionTitle title="Claude 决策仪表盘" rightSlot={<Bot className="h-[15px] w-[15px] text-app-muted" />} />
+            <SectionTitle title="AI 决策仪表盘" rightSlot={<Bot className="h-[15px] w-[15px] text-app-muted" />} />
             <div className="mt-[12px] space-y-[10px]">
               <div className="rounded-[12px] border border-app-border bg-white p-[12px]">
                 <p className="text-[12px] text-app-muted">总结</p>
-                <p className="mt-[4px] text-[13px] font-semibold text-app-text">{report.claudeDecision.summary}</p>
+                <p className="mt-[4px] text-[13px] font-semibold text-app-text">{aiDecision.summary}</p>
                 <p className="mt-[6px] text-[12px] text-app-muted">
-                  风险等级 {report.claudeDecision.riskLevel} · 驱动模块 {report.claudeDecision.driverModules.join(", ") || "-"} · 压力模块 {report.claudeDecision.pressureModules.join(", ") || "-"}
+                  风险等级 {aiDecision.riskLevel} · 驱动模块 {aiDecision.driverModules.join(", ") || "-"} · 压力模块 {aiDecision.pressureModules.join(", ") || "-"}
                 </p>
               </div>
               <div className="rounded-[12px] border border-app-border bg-white p-[12px]">
                 <p className="text-[12px] text-app-muted">建议动作</p>
                 <div className="mt-[6px] space-y-[6px] text-[12px] text-app-text">
-                  {report.claudeDecision.recommendedActions.map((action, idx) => (
+                  {aiDecision.recommendedActions.map((action, idx) => (
                     <p key={`${idx}-${action}`}>{idx + 1}. {action}</p>
                   ))}
                 </div>
               </div>
               <div className="rounded-[12px] border border-blue-200 bg-blue-50 p-[10px] text-[12px] text-blue-700">
-                下一步：{report.claudeDecision.nextStep}
+                下一步：{aiDecision.nextStep}
               </div>
             </div>
           </SurfaceCard>

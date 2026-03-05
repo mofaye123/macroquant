@@ -185,10 +185,15 @@ chmod +x scripts/generate_and_deploy_pages.sh
    - 值填你 Cloudflare Pages 里的实际项目名（必须和 Dashboard 完全一致）
 6. 如果要启用日报推送（可选）：
    - Secrets: `DAILY_REPORT_WEBHOOK_URL`（你的推送网关/Webhook）
-   - Secrets: `CLAUDE_API_KEY`（用于 Claude 决策链路配置态）
-   - Variables: `CLAUDE_MODEL`（默认 `claude-sonnet-4`，可选）
+   - Secrets: `GEMINI_API_KEY`（用于 Gemini Deep Think 决策链路配置态）
+   - Variables: `GEMINI_MODEL`（默认 `gemini-2.5-pro`，可选）
+   - Variables: `MARKET_DAILY_AI_MODEL`（可覆盖默认模型名，可选）
 
 你也可以在 GitHub Actions 页面手动点 `workflow_dispatch` 立即跑一次。
+日报工作流支持手动回放：`Generate Market Daily Report` 的 `days_ago=1` 表示按昨天数据测试。
+本地 API 也提供快捷入口：`/api/v1/market-daily/test-yesterday` 与 `/api/v1/market-daily/test-yesterday/push-preview`。
+连通性检测接口：`POST /api/v1/market-daily/source-check`（用于日报页数据源配置面板）。
+本地 AI 预览接口：`POST /api/v1/market-daily/ai-preview`（输入 `daysAgo/geminiApiKey/geminiModel`，返回可读日报文本，不执行推送）。
 
 ## 7. 说明
 

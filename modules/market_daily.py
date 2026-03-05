@@ -39,6 +39,15 @@ _DEEP_DIVE_SYMBOLS: Tuple[Tuple[str, str], ...] = (
 )
 
 
+def _normalize_as_of(as_of_dt: Optional[datetime]) -> Optional[pd.Timestamp]:
+    if as_of_dt is None:
+        return None
+    ts = pd.Timestamp(as_of_dt)
+    if ts.tzinfo is not None:
+        ts = ts.tz_convert(None)
+    return ts
+
+
 def _safe_float(value: Any, fallback: Optional[float] = None) -> Optional[float]:
     try:
         if pd.isna(value):
@@ -187,13 +196,16 @@ def _news_feeds_from_env() -> List[Tuple[str, str]]:
     return feeds or list(_DEFAULT_NEWS_FEEDS)
 
 
-def _build_market_snapshots() -> Tuple[List[Dict[str, Any]], str]:
+def _build_market_snapshots(as_of_dt: Optional[datetime] = None) -> Tuple[List[Dict[str, Any]], str]:
     now = time.time()
-    if _QUOTE_CACHE["items"] and now < _QUOTE_CACHE["expires_at"]:
+    as_of_ts = _normalize_as_of(as_of_dt)
+    if as_of_ts is None and _QUOTE_CACHE["items"] and now < _QUOTE_CACHE["expires_at"]:
         return list(_QUOTE_CACHE["items"]), str(_QUOTE_CACHE["source_mode"])
 
     symbols = [symbol for _, symbol, _ in _QUOTE_SYMBOLS]
     close_frame = _download_close_series(symbols, period="3mo")
+    if as_of_ts is not None and not close_frame.empty:
+        close_frame = close_frame[close_frame.index <= as_of_ts]
     rows: List[Dict[str, Any]] = []
     source_mode = "live"
 
@@ -257,9 +269,10 @@ def _build_market_snapshots() -> Tuple[List[Dict[str, Any]], str]:
                 }
             )
 
-    _QUOTE_CACHE["items"] = list(rows)
-    _QUOTE_CACHE["source_mode"] = source_mode
-    _QUOTE_CACHE["expires_at"] = now + _QUOTE_TTL
+    if as_of_ts is None:
+        _QUOTE_CACHE["items"] = list(rows)
+        _QUOTE_CACHE["source_mode"] = source_mode
+        _QUOTE_CACHE["expires_at"] = now + _QUOTE_TTL
     return rows, source_mode
 
 
@@ -311,9 +324,12 @@ def _build_hot_news(module_cards: List[Dict[str, Any]]) -> Tuple[List[Dict[str, 
     return news_items, source_mode
 
 
-def _build_deep_dives() -> Tuple[List[Dict[str, Any]], str]:
+def _build_deep_dives(as_of_dt: Optional[datetime] = None) -> Tuple[List[Dict[str, Any]], str]:
+    as_of_ts = _normalize_as_of(as_of_dt)
     symbols = [symbol for _, symbol in _DEEP_DIVE_SYMBOLS]
     close_frame = _download_close_series(symbols, period="12mo")
+    if as_of_ts is not None and not close_frame.empty:
+        close_frame = close_frame[close_frame.index <= as_of_ts]
     if close_frame.empty:
         return (
             [
@@ -512,15 +528,26 @@ def _risk_level(overall_score: float) -> str:
     return "高"
 
 
-def _build_claude_decision_panel(overall_score: float, modules: List[Dict[str, Any]]) -> Dict[str, Any]:
-    has_api = bool(os.getenv("CLAUDE_API_KEY"))
+def _build_ai_decision_panel(overall_score: float, modules: List[Dict[str, Any]]) -> Dict[str, Any]:
+    provider = (os.getenv("MARKET_DAILY_AI_PROVIDER", "gemini") or "gemini").strip().lower()
+    reasoning_mode = (os.getenv("MARKET_DAILY_AI_REASONING_MODE", "deep_think") or "deep_think").strip()
+    if provider.startswith("gemini"):
+        has_api = bool(os.getenv("GEMINI_API_KEY"))
+        default_model = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
+        pending_hint = "配置 GEMINI_API_KEY 后可调用 Gemini Deep Think 生成完整日报正文与交易建议。"
+    else:
+        has_api = bool(os.getenv("CLAUDE_API_KEY"))
+        default_model = os.getenv("CLAUDE_MODEL", "claude-sonnet-4")
+        pending_hint = "配置 CLAUDE_API_KEY 后可调用模型生成完整日报正文与交易建议。"
+    model = (os.getenv("MARKET_DAILY_AI_MODEL") or default_model).strip()
     top_two = sorted(modules, key=lambda x: x.get("score", 50), reverse=True)[:2]
     weak_two = sorted(modules, key=lambda x: x.get("score", 50))[:2]
     long_bias = overall_score >= 55
     return {
-        "provider": "claude",
+        "provider": provider,
         "status": "ready" if has_api else "pending_config",
-        "model": os.getenv("CLAUDE_MODEL", "claude-sonnet-4"),
+        "model": model,
+        "reasoningMode": reasoning_mode,
         "riskLevel": _risk_level(overall_score),
         "summary": "建议偏多执行，回调分批加仓。"
         if long_bias
@@ -532,9 +559,7 @@ def _build_claude_decision_panel(overall_score: float, modules: List[Dict[str, A
         ],
         "driverModules": [item.get("id", "") for item in top_two],
         "pressureModules": [item.get("id", "") for item in weak_two],
-        "nextStep": "配置 CLAUDE_API_KEY 后可调用模型生成完整日报正文与交易建议。"
-        if not has_api
-        else "已具备调用条件，可在日报任务中接入自动总结与执行建议生成。",
+        "nextStep": pending_hint if not has_api else "已具备调用条件，可在日报任务中接入自动总结与执行建议生成。",
     }
 
 
@@ -542,21 +567,24 @@ def build_market_daily_payload(
     df_all: pd.DataFrame,
     module_cards: List[Dict[str, Any]],
     overall_score: float,
+    as_of_dt: Optional[datetime] = None,
 ) -> Dict[str, Any]:
-    if isinstance(df_all.index, pd.DatetimeIndex) and len(df_all.index) > 0:
-        as_of_dt = df_all.index[-1].to_pydatetime()
-        if as_of_dt.tzinfo is None:
-            as_of_dt = as_of_dt.replace(tzinfo=timezone.utc)
-    else:
-        as_of_dt = datetime.now(timezone.utc)
+    resolved_as_of_dt = as_of_dt
+    if resolved_as_of_dt is None:
+        if isinstance(df_all.index, pd.DatetimeIndex) and len(df_all.index) > 0:
+            resolved_as_of_dt = df_all.index[-1].to_pydatetime()
+            if resolved_as_of_dt.tzinfo is None:
+                resolved_as_of_dt = resolved_as_of_dt.replace(tzinfo=timezone.utc)
+        else:
+            resolved_as_of_dt = datetime.now(timezone.utc)
 
-    snapshots, quote_mode = _build_market_snapshots()
+    snapshots, quote_mode = _build_market_snapshots(as_of_dt=resolved_as_of_dt)
     hot_news, news_mode = _build_hot_news(module_cards)
-    deep_dives, deep_dive_mode = _build_deep_dives()
+    deep_dives, deep_dive_mode = _build_deep_dives(as_of_dt=resolved_as_of_dt)
     crypto_updates = _build_crypto_project_updates(hot_news)
-    calendar = _build_market_calendar(as_of_dt)
+    calendar = _build_market_calendar(resolved_as_of_dt)
     push_channels = _build_push_channels()
-    claude = _build_claude_decision_panel(overall_score, module_cards)
+    ai_decision = _build_ai_decision_panel(overall_score, module_cards)
     replay_lines = _build_replay_lines(overall_score, module_cards, snapshots)
 
     headline = "风险偏好回暖，维持顺势偏多框架。"
@@ -566,7 +594,7 @@ def build_market_daily_payload(
         headline = "宏观中性，建议事件驱动下的结构化交易。"
 
     return {
-        "asOfDate": as_of_dt.strftime("%Y-%m-%d"),
+        "asOfDate": resolved_as_of_dt.strftime("%Y-%m-%d"),
         "generatedAt": _to_iso_utc(datetime.now(timezone.utc)),
         "headline": headline,
         "quickView": {
@@ -583,16 +611,19 @@ def build_market_daily_payload(
         "deepStockDives": deep_dives,
         "cryptoProjectUpdates": crypto_updates,
         "marketCalendar": calendar,
-        "claudeDecision": claude,
+        "aiDecision": ai_decision,
+        "claudeDecision": ai_decision,
         "pushChannels": push_channels,
         "sourceStatus": {
             "marketData": {"provider": "yfinance", "mode": quote_mode},
             "newsData": {"provider": "rss", "mode": news_mode, "feeds": [label for label, _ in _news_feeds_from_env()]},
-            "decisionEngine": {"provider": "claude", "mode": claude.get("status", "pending_config")},
+            "decisionEngine": {
+                "provider": ai_decision.get("provider", "gemini"),
+                "mode": ai_decision.get("status", "pending_config"),
+            },
             "delivery": {
                 "provider": "multi-channel",
                 "mode": "ready" if any(item.get("configured") for item in push_channels) else "pending_config",
             },
         },
     }
-

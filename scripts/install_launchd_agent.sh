@@ -7,7 +7,7 @@ TARGET_DIR="$HOME/Library/LaunchAgents"
 TARGET_PATH="$TARGET_DIR/com.macroquant.generate-static-json.plist"
 SAFE_BASE="$HOME/.macroquant"
 SAFE_ROOT="$SAFE_BASE/current"
-SAFE_RUNNER="$SAFE_BASE/run_market_open_generate.sh"
+SAFE_RUNNER="$SAFE_BASE/run_market_daily_generate.sh"
 LOG_DIR="$SAFE_BASE/logs"
 
 mkdir -p "$TARGET_DIR" "$LOG_DIR"
@@ -19,7 +19,8 @@ set -euo pipefail
 
 SAFE_ROOT="$SAFE_ROOT"
 CACHE_DIR="\$SAFE_ROOT/.cache"
-STATE_FILE="\$CACHE_DIR/last_market_open_run_et.txt"
+STATE_FILE="\$CACHE_DIR/last_market_daily_run_et.txt"
+PUBLISH_ET="\${MARKET_DAILY_PUBLISH_ET:-17:00}"
 FORCE_MODE="\${1:-}"
 PYTHON_BIN="\${PYTHON_BIN:-python3}"
 
@@ -32,7 +33,7 @@ if [[ "\$FORCE_MODE" != "--force" ]]; then
     exit 0
   fi
 
-  if [[ "\$ET_TIME" != "09:30" ]]; then
+  if [[ "\$ET_TIME" != "\$PUBLISH_ET" ]]; then
     exit 0
   fi
 
@@ -46,7 +47,7 @@ cd "\$SAFE_ROOT"
 "\$PYTHON_BIN" "\$SAFE_ROOT/generate_static_macro_json.py"
 print -r -- "\$ET_DATE" > "\$STATE_FILE"
 
-echo "Generated macro-data.json for US market open at \$ET_DATE \$ET_TIME ET"
+echo "Generated macro-data.json for market daily publish window at \$ET_DATE \$ET_TIME ET"
 EOF
 
 chmod +x "$SAFE_RUNNER"
@@ -69,4 +70,4 @@ launchctl enable "gui/$(id -u)/com.macroquant.generate-static-json"
 echo "Installed launchd agent at $TARGET_PATH"
 echo "Safe launch root symlink: $SAFE_ROOT"
 echo "Safe runner script: $SAFE_RUNNER"
-echo "It checks every minute and only generates once at 09:30 America/New_York on weekdays."
+echo "It checks every minute and only generates once at \${MARKET_DAILY_PUBLISH_ET:-17:00} America/New_York on weekdays."

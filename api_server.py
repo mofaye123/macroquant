@@ -3,31 +3,145 @@ import json
 import math
 import os
 import re
+import urllib.error
+import urllib.parse
+import urllib.request
 import textwrap
 import time
+import xml.etree.ElementTree as ET
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Dict, List, Optional
 
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException, Query
+import yfinance as yf
+from fastapi import Body, FastAPI, HTTPException, Query
 from fastapi.middleware.cors import CORSMiddleware
 
 from config import API_KEY, SERIES_IDS
 from data_engine import get_last_fetch_meta, get_mixed_data
-from modules.backtest import (
-    _blended_rank_score,
-    _calculate_score_internal,
-    _curve_regime_score,
-    _policy_hike_cycle_penalty,
-    _policy_regime_bonus,
-    _real_rate_level_penalty,
-    _real_rate_macro_discount,
-    _real_rate_module_weight,
-    _real_rate_momentum_penalty,
-    build_backtest_payload,
-)
+from modules import backtest as backtest_module
 from modules.market_daily import build_market_daily_payload
+
+
+def _fallback_blended_rank_score(
+    series: pd.Series,
+    *,
+    higher_is_better: bool = True,
+    short_window: int = 252,
+    long_window: int = 1260,
+    short_weight: float = 0.4,
+) -> pd.Series:
+    s = pd.Series(series, copy=False)
+    short_rank = s.rolling(short_window, min_periods=max(20, short_window // 8)).apply(
+        lambda x: pd.Series(x).rank(pct=True).iloc[-1], raw=False
+    )
+    long_rank = s.rolling(long_window, min_periods=max(30, long_window // 8)).apply(
+        lambda x: pd.Series(x).rank(pct=True).iloc[-1], raw=False
+    )
+    score = (short_rank * short_weight + long_rank * (1.0 - short_weight)).fillna(0.5) * 100.0
+    if higher_is_better:
+        return score.clip(0, 100)
+    return (100.0 - score).clip(0, 100)
+
+
+def _fallback_curve_regime_score(
+    curve_series: pd.Series,
+    target_mid: float,
+    tol: float,
+    *,
+    deep_inversion: float = -0.30,
+    sustained_window: int = 63,
+    structural_cap: float = 30.0,
+) -> tuple[pd.Series, pd.Series, pd.Series]:
+    curve = pd.Series(curve_series, copy=False)
+    deviation = (curve - target_mid).abs()
+    level_score = (100.0 - (deviation / max(tol, 1e-6) * 100.0)).clip(0, 100).fillna(50.0)
+    momentum_raw = curve.diff(21).fillna(0.0)
+    momentum_score = _fallback_blended_rank_score(momentum_raw, higher_is_better=True)
+    deep_mask = (curve < deep_inversion).fillna(False)
+    sustained = deep_mask.rolling(sustained_window, min_periods=1).sum() >= sustained_window
+    cap = pd.Series(np.where(sustained, structural_cap, 100.0), index=curve.index).astype(float)
+    return level_score, momentum_score, cap
+
+
+def _fallback_policy_regime_bonus(sofr: float, sofr_trend_21d: float = 0.0) -> float:
+    if sofr < 1.0:
+        base = 20.0
+    elif sofr < 2.0:
+        base = 10.0
+    elif sofr < 3.0:
+        base = 0.0
+    elif sofr < 3.5:
+        base = -8.0
+    elif sofr < 4.0:
+        base = -15.0
+    elif sofr < 5.0:
+        base = -25.0
+    else:
+        base = -35.0
+    if sofr > 3.5 and sofr_trend_21d < -0.08:
+        relief = min(15.0, abs(sofr_trend_21d) * 80.0)
+        return float(base + relief)
+    return float(base)
+
+
+def _fallback_policy_hike_cycle_penalty(sofr: float, sofr_trend_21d: float = 0.0) -> float:
+    if sofr <= 3.0:
+        return 1.0
+    hike_speed = max(0.0, float(sofr_trend_21d))
+    if float(sofr) >= 5.0 and hike_speed > 0.12:
+        return 0.65
+    if sofr >= 4.0 and hike_speed > 0.08:
+        return 0.8
+    if sofr >= 3.5 and hike_speed > 0.05:
+        return 0.9
+    return 1.0
+
+
+def _fallback_real_rate_level_penalty(real_rate_10y: float) -> float:
+    if real_rate_10y > 2.0:
+        return 0.70
+    if real_rate_10y > 1.5:
+        return 0.82
+    if real_rate_10y > 1.0:
+        return 0.90
+    return 1.0
+
+
+def _fallback_real_rate_momentum_penalty(real_rate_60d_change: float) -> float:
+    if real_rate_60d_change > 0.80:
+        return 0.70
+    if real_rate_60d_change > 0.50:
+        return 0.80
+    if real_rate_60d_change > 0.20:
+        return 0.90
+    return 1.0
+
+
+def _fallback_real_rate_module_weight(real_rate_10y: float, real_rate_60d_change: float) -> float:
+    if real_rate_10y > 2.0 or real_rate_60d_change > 0.50:
+        return 0.55
+    if real_rate_10y > 1.5 or real_rate_60d_change > 0.20:
+        return 0.48
+    return 0.40
+
+
+def _fallback_real_rate_macro_discount(level_penalty: float, momentum_penalty: float) -> float:
+    return float(max(0.5, min(1.0, level_penalty * momentum_penalty)))
+
+
+_blended_rank_score = getattr(backtest_module, "_blended_rank_score", _fallback_blended_rank_score)
+_curve_regime_score = getattr(backtest_module, "_curve_regime_score", _fallback_curve_regime_score)
+_policy_regime_bonus = getattr(backtest_module, "_policy_regime_bonus", _fallback_policy_regime_bonus)
+_policy_hike_cycle_penalty = getattr(backtest_module, "_policy_hike_cycle_penalty", _fallback_policy_hike_cycle_penalty)
+_real_rate_level_penalty = getattr(backtest_module, "_real_rate_level_penalty", _fallback_real_rate_level_penalty)
+_real_rate_momentum_penalty = getattr(backtest_module, "_real_rate_momentum_penalty", _fallback_real_rate_momentum_penalty)
+_real_rate_module_weight = getattr(backtest_module, "_real_rate_module_weight", _fallback_real_rate_module_weight)
+_real_rate_macro_discount = getattr(backtest_module, "_real_rate_macro_discount", _fallback_real_rate_macro_discount)
+_calculate_score_internal = backtest_module._calculate_score_internal
+build_backtest_payload = backtest_module.build_backtest_payload
 
 
 MODULE_META = [
@@ -1480,8 +1594,23 @@ def _build_module_snapshots(
     return snapshots
 
 
-def build_macro_payload() -> Dict[str, Any]:
+def build_macro_payload(as_of_date: Optional[pd.Timestamp] = None) -> Dict[str, Any]:
     df_all, fetch_meta, warnings = _load_live_dataset()
+    market_daily_as_of_dt: Optional[datetime] = None
+    if as_of_date is not None:
+        cutoff = pd.Timestamp(as_of_date)
+        if cutoff.tzinfo is not None:
+            cutoff = cutoff.tz_convert(None)
+        market_daily_as_of_dt = cutoff.to_pydatetime().replace(tzinfo=timezone.utc)
+        filtered = df_all[df_all.index <= cutoff]
+        if filtered.empty:
+            warnings.append(
+                f"requested as_of_date={cutoff.strftime('%Y-%m-%d')} has no rows; fallback to latest available date"
+            )
+        else:
+            df_all = filtered
+        fetch_meta = dict(fetch_meta or {})
+        fetch_meta["asOfDate"] = cutoff.strftime("%Y-%m-%d")
     latest_raw = df_all.iloc[-1]
 
     try:
@@ -1697,8 +1826,18 @@ def build_macro_payload() -> Dict[str, Any]:
             df_all=df_all,
             module_cards=module_cards,
             overall_score=overall_value,
+            as_of_dt=market_daily_as_of_dt
+            if market_daily_as_of_dt is not None
+            else (df_all.index[-1].to_pydatetime() if isinstance(df_all.index, pd.DatetimeIndex) else None),
         )
     except Exception as exc:
+        ai_provider = (os.getenv("MARKET_DAILY_AI_PROVIDER", "gemini") or "gemini").strip().lower()
+        if ai_provider.startswith("gemini"):
+            ai_model = (os.getenv("MARKET_DAILY_AI_MODEL") or os.getenv("GEMINI_MODEL", "gemini-2.5-pro")).strip()
+            ai_pending = "日报暂未接入 Gemini 自动决策。"
+        else:
+            ai_model = (os.getenv("MARKET_DAILY_AI_MODEL") or os.getenv("CLAUDE_MODEL", "claude-sonnet-4")).strip()
+            ai_pending = "日报暂未接入 Claude 自动决策。"
         market_daily_payload = {
             "asOfDate": total_series.index[-1].strftime("%Y-%m-%d"),
             "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -1717,12 +1856,23 @@ def build_macro_payload() -> Dict[str, Any]:
             "deepStockDives": [],
             "cryptoProjectUpdates": [],
             "marketCalendar": [],
-            "claudeDecision": {
-                "provider": "claude",
+            "aiDecision": {
+                "provider": ai_provider,
                 "status": "pending_config",
-                "model": os.getenv("CLAUDE_MODEL", "claude-sonnet-4"),
+                "model": ai_model,
                 "riskLevel": "中",
-                "summary": "日报暂未接入 Claude 自动决策。",
+                "summary": ai_pending,
+                "recommendedActions": [],
+                "driverModules": [],
+                "pressureModules": [],
+                "nextStep": "检查 market_daily 数据源配置。",
+            },
+            "claudeDecision": {
+                "provider": ai_provider,
+                "status": "pending_config",
+                "model": ai_model,
+                "riskLevel": "中",
+                "summary": ai_pending,
                 "recommendedActions": [],
                 "driverModules": [],
                 "pressureModules": [],
@@ -1732,7 +1882,7 @@ def build_macro_payload() -> Dict[str, Any]:
             "sourceStatus": {
                 "marketData": {"provider": "yfinance", "mode": "fallback"},
                 "newsData": {"provider": "rss", "mode": "fallback", "feeds": []},
-                "decisionEngine": {"provider": "claude", "mode": "pending_config"},
+                "decisionEngine": {"provider": ai_provider, "mode": "pending_config"},
                 "delivery": {"provider": "multi-channel", "mode": "pending_config"},
             },
             "degradedReason": str(exc),
@@ -1789,8 +1939,10 @@ app.add_middleware(
 
 _cache: Dict[str, Any] = {"payload": None, "expires_at": 0.0}
 _dataset_cache: Dict[str, Any] = {"df_all": None, "fetch_meta": None, "warnings": None, "expires_at": 0.0}
+_ai_preview_cache: Dict[str, Any] = {"items": {}}
 _CACHE_TTL = int(os.getenv("MACRO_API_CACHE_TTL", "300"))
 _BOOTSTRAP_TTL = int(os.getenv("MACRO_API_BOOTSTRAP_TTL", "15"))
+_AI_PREVIEW_CACHE_TTL = int(os.getenv("MARKET_DAILY_AI_PREVIEW_CACHE_TTL", "90"))
 _SNAPSHOT_PATH = Path(os.getenv("MACRO_API_SNAPSHOT_PATH", ".cache/macro_payload.json"))
 
 
@@ -1815,6 +1967,633 @@ def _payload_has_live_modules(payload: Optional[Dict[str, Any]]) -> bool:
     data_quality = payload.get("dataQuality", {})
     ready_modules = data_quality.get("readyModules", [])
     return isinstance(ready_modules, list) and len(ready_modules) > 0
+
+
+def _now_iso_utc() -> str:
+    return datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+
+
+def _mask_secret(value: str) -> str:
+    if not value:
+        return ""
+    if len(value) <= 8:
+        return "*" * len(value)
+    return f"{value[:4]}...{value[-3:]}"
+
+
+def _parse_retry_after_seconds(value: Optional[str]) -> Optional[int]:
+    if not value:
+        return None
+    try:
+        seconds = int(float(str(value).strip()))
+        return max(1, min(seconds, 30))
+    except Exception:
+        return None
+
+
+def _check_market_data_source() -> Dict[str, Any]:
+    started = time.time()
+    try:
+        raw = yf.download("BTC-USD", period="5d", interval="1d", progress=False, auto_adjust=False)
+        if raw is None or raw.empty:
+            raise ValueError("yfinance returned empty frame")
+
+        if isinstance(raw.columns, pd.MultiIndex):
+            close = raw["Close"] if "Close" in raw.columns.levels[0] else raw.xs("Close", level=0, axis=1)
+            close_series = close.iloc[:, 0] if isinstance(close, pd.DataFrame) else close
+        else:
+            close_series = raw["Close"] if "Close" in raw.columns else raw.iloc[:, 0]
+
+        close_series = pd.Series(close_series).dropna()
+        if close_series.empty:
+            raise ValueError("close price series is empty")
+
+        last_close = float(close_series.iloc[-1])
+        return {
+            "ok": True,
+            "provider": "yfinance",
+            "detail": f"Fetched BTC-USD close successfully ({last_close:.2f}).",
+            "latencyMs": int((time.time() - started) * 1000),
+        }
+    except Exception as exc:
+        return {
+            "ok": False,
+            "provider": "yfinance",
+            "detail": f"Market source check failed: {exc}",
+            "latencyMs": int((time.time() - started) * 1000),
+        }
+
+
+def _parse_news_feed_urls(raw_value: Optional[str]) -> List[str]:
+    raw = (raw_value or "").strip()
+    if not raw:
+        env_raw = (os.getenv("MARKET_NEWS_RSS_URLS") or "").strip()
+        raw = env_raw
+    if not raw:
+        return [
+            "https://www.coindesk.com/arc/outboundfeeds/rss/",
+            "https://cointelegraph.com/rss",
+            "https://finance.yahoo.com/topic/crypto/rssindex",
+        ]
+
+    urls: List[str] = []
+    for chunk in raw.split(","):
+        part = chunk.strip()
+        if not part:
+            continue
+        if "|" in part:
+            _, maybe_url = part.split("|", 1)
+            url = maybe_url.strip()
+        else:
+            url = part
+        if url:
+            urls.append(url)
+    return urls[:8]
+
+
+def _check_news_data_source(news_rss_urls: Optional[str]) -> Dict[str, Any]:
+    started = time.time()
+    urls = _parse_news_feed_urls(news_rss_urls)
+    success_count = 0
+    total_items = 0
+    sample_errors: List[str] = []
+
+    for url in urls[:4]:
+        try:
+            req = urllib.request.Request(
+                url,
+                headers={
+                    "User-Agent": "MacroQuant/1.0",
+                    "Accept": "application/rss+xml,application/xml,text/xml;q=0.9,*/*;q=0.8",
+                },
+            )
+            with urllib.request.urlopen(req, timeout=8) as resp:
+                body = resp.read()
+            root = ET.fromstring(body)
+            rss_items = len(root.findall(".//item"))
+            atom_items = len(root.findall(".//{http://www.w3.org/2005/Atom}entry"))
+            item_count = rss_items + atom_items
+            if item_count == 0:
+                # XML valid but no entries still counts as reachable.
+                item_count = 0
+            total_items += item_count
+            success_count += 1
+        except Exception as exc:
+            sample_errors.append(f"{url}: {exc}")
+
+    ok = success_count > 0
+    detail = (
+        f"Reachable feeds {success_count}/{min(len(urls), 4)}, parsed items: {total_items}."
+        if ok
+        else f"No RSS feed reachable. Sample error: {sample_errors[0] if sample_errors else 'unknown'}"
+    )
+    return {
+        "ok": ok,
+        "provider": "rss",
+        "detail": detail,
+        "feedCount": len(urls),
+        "reachableCount": success_count,
+        "sampleErrors": sample_errors[:2],
+        "latencyMs": int((time.time() - started) * 1000),
+    }
+
+
+def _check_gemini_source(gemini_api_key: Optional[str], gemini_model: Optional[str]) -> Dict[str, Any]:
+    started = time.time()
+    key = (gemini_api_key or os.getenv("GEMINI_API_KEY") or "").strip()
+    model = (gemini_model or os.getenv("MARKET_DAILY_AI_MODEL") or os.getenv("GEMINI_MODEL") or "gemini-2.5-pro").strip()
+    if not key:
+        return {
+            "ok": False,
+            "provider": "gemini",
+            "model": model,
+            "detail": "GEMINI_API_KEY 未配置。",
+            "latencyMs": int((time.time() - started) * 1000),
+        }
+
+    try:
+        encoded_key = urllib.parse.quote(key, safe="")
+        url = f"https://generativelanguage.googleapis.com/v1beta/models?key={encoded_key}"
+        req = urllib.request.Request(url, headers={"Accept": "application/json"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            data = json.loads(resp.read().decode("utf-8"))
+        models = data.get("models", []) if isinstance(data, dict) else []
+        model_available = any(model in str(item.get("name", "")) for item in models if isinstance(item, dict))
+        return {
+            "ok": True,
+            "provider": "gemini",
+            "model": model,
+            "modelAvailable": model_available,
+            "detail": (
+                f"Gemini key valid, listed models={len(models)}; target model {'found' if model_available else 'not found in list'}."
+            ),
+            "latencyMs": int((time.time() - started) * 1000),
+        }
+    except Exception as exc:
+        return {
+            "ok": False,
+            "provider": "gemini",
+            "model": model,
+            "detail": f"Gemini check failed: {exc}",
+            "latencyMs": int((time.time() - started) * 1000),
+        }
+
+
+def _check_delivery_source(delivery_webhook_url: Optional[str]) -> Dict[str, Any]:
+    started = time.time()
+    url = (delivery_webhook_url or os.getenv("DAILY_REPORT_WEBHOOK_URL") or "").strip()
+    if not url:
+        return {
+            "ok": False,
+            "provider": "webhook",
+            "detail": "DAILY_REPORT_WEBHOOK_URL 未配置。",
+            "latencyMs": int((time.time() - started) * 1000),
+        }
+
+    parsed = urllib.parse.urlparse(url)
+    valid = parsed.scheme in {"https", "http"} and bool(parsed.netloc)
+    return {
+        "ok": valid,
+        "provider": "webhook",
+        "detail": "Webhook URL 格式有效。" if valid else "Webhook URL 格式无效。",
+        "latencyMs": int((time.time() - started) * 1000),
+    }
+
+
+def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
+    as_of = str(daily_payload.get("asOfDate", "-"))
+    headline = str(daily_payload.get("headline", "-"))
+    quick = daily_payload.get("quickView", {}) if isinstance(daily_payload.get("quickView"), dict) else {}
+    snapshots = daily_payload.get("marketSnapshots", []) if isinstance(daily_payload.get("marketSnapshots"), list) else []
+    hot_news = daily_payload.get("hotNews", []) if isinstance(daily_payload.get("hotNews"), list) else []
+    replay = daily_payload.get("marketReplay", []) if isinstance(daily_payload.get("marketReplay"), list) else []
+    deep_dives = daily_payload.get("deepStockDives", []) if isinstance(daily_payload.get("deepStockDives"), list) else []
+    crypto_updates = (
+        daily_payload.get("cryptoProjectUpdates", [])
+        if isinstance(daily_payload.get("cryptoProjectUpdates"), list)
+        else []
+    )
+    calendar = daily_payload.get("marketCalendar", []) if isinstance(daily_payload.get("marketCalendar"), list) else []
+
+    snapshot_lines: List[str] = []
+    for row in snapshots[:8]:
+        ticker = str(row.get("ticker", "-"))
+        spot = row.get("spot", "-")
+        chg24 = row.get("change24hPct", "-")
+        chg7 = row.get("change7dPct", "-")
+        vol14 = row.get("realizedVol14dPct", "-")
+        source = str(row.get("source", "-"))
+        snapshot_lines.append(
+            f"- {ticker}: spot={spot}, 24h={chg24}%, 7d={chg7}%, vol14d={vol14}%, source={source}"
+        )
+    if not snapshot_lines:
+        snapshot_lines = ["- 无行情快照"]
+
+    news_lines: List[str] = []
+    for item in hot_news[:8]:
+        title = str(item.get("title", "-"))
+        source = str(item.get("source", "-"))
+        published_at = str(item.get("publishedAt", "-"))
+        news_lines.append(f"- [{source}] {title} ({published_at})")
+    if not news_lines:
+        news_lines = ["- 无新闻数据"]
+
+    replay_lines = [f"- {str(line)}" for line in replay[:5]] or ["- 无复盘数据"]
+
+    deep_lines: List[str] = []
+    for item in deep_dives[:5]:
+        name = str(item.get("name", "-"))
+        ticker = str(item.get("ticker", "-"))
+        signal = str(item.get("signal", "-"))
+        ret20 = item.get("ret20dPct", "-")
+        summary = str(item.get("summary", "-"))
+        deep_lines.append(f"- {name}({ticker}) signal={signal}, ret20d={ret20}%: {summary}")
+    if not deep_lines:
+        deep_lines = ["- 无深度个股数据"]
+
+    crypto_lines: List[str] = []
+    for item in crypto_updates[:6]:
+        project = str(item.get("project", "-"))
+        headline_item = str(item.get("headline", "-"))
+        source = str(item.get("source", "-"))
+        crypto_lines.append(f"- {project}: {headline_item} [{source}]")
+    if not crypto_lines:
+        crypto_lines = ["- 无项目动态"]
+
+    calendar_lines: List[str] = []
+    for event in calendar[:8]:
+        date = str(event.get("date", "-"))
+        time_utc = str(event.get("timeUtc", "-"))
+        category = str(event.get("category", "-"))
+        title = str(event.get("event", "-"))
+        importance = str(event.get("importance", "-"))
+        calendar_lines.append(f"- {date} {time_utc} UTC | {category} | {title} | 重要性={importance}")
+    if not calendar_lines:
+        calendar_lines = ["- 无日历事件"]
+
+    return textwrap.dedent(
+        f"""
+        你是机构级宏观交易台研究员，请基于以下结构化数据，输出一份“本地预览版市场研究日报”。
+        输出语言：中文；风格：专业、可审计、可执行；禁止空话和泛化表述。
+
+        长度要求：
+        - 正文总长度 1500-2000 字；
+        - 不得低于 1400 字；
+        - 每个一级板块都必须有实质分析，不允许只写1-2句。
+
+        输出格式（严格按以下一级标题）：
+        # 今日结论
+        # 热点要闻
+        # 市场复盘
+        # 深度个股解读
+        # 加密项目动态
+        # 今日交易计划
+        # 风险清单与失效条件
+
+        板块要求：
+        - 今日结论：先给“偏多/偏空/中性”立场，再给3-5条核心依据。
+        - 热点要闻：至少5条，每条包含“事件-影响-交易含义”。
+        - 市场复盘：必须覆盖 BTC / ETH / SOL / 美股风险偏好，并解释分化原因。
+        - 深度个股解读：至少2个标的，每个标的给“趋势判断 + 触发位 + 失效位”。
+        - 加密项目动态：分 BTC生态 / ETH生态 / SOL生态，给资金与情绪线索。
+        - 今日交易计划：分低/中/高风险三档，给仓位区间、触发条件、止损条件。
+        - 风险清单与失效条件：至少4条，明确何时撤销当前观点。
+
+        约束：
+        - 所有判断都要尽可能引用输入数据（分数、涨跌幅、波动率、事件）。
+        - 若数据不足，明确写“数据不足”，并给出保守执行建议。
+        - 不要输出免责声明，不要输出“仅供参考”。
+
+        === 输入数据开始 ===
+        asOfDate: {as_of}
+        headline: {headline}
+        quickView: overallScore={quick.get("overallScore", "-")}, riskLevel={quick.get("riskLevel", "-")},
+                   quoteSourceMode={quick.get("quoteSourceMode", "-")}, newsSourceMode={quick.get("newsSourceMode", "-")}
+
+        [行情快照]
+        {"\n".join(snapshot_lines)}
+
+        [热点新闻]
+        {"\n".join(news_lines)}
+
+        [市场复盘线索]
+        {"\n".join(replay_lines)}
+
+        [深度个股]
+        {"\n".join(deep_lines)}
+
+        [加密项目动态]
+        {"\n".join(crypto_lines)}
+
+        [市场日历]
+        {"\n".join(calendar_lines)}
+        === 输入数据结束 ===
+        """
+    ).strip()
+
+
+def _call_gemini_daily_preview(
+    *,
+    daily_payload: Dict[str, Any],
+    gemini_api_key: Optional[str],
+    gemini_model: Optional[str],
+    reasoning_mode: Optional[str],
+    min_chars_target: Optional[int] = None,
+    max_output_tokens: Optional[int] = None,
+    continuation_rounds: Optional[int] = None,
+) -> Dict[str, Any]:
+    started = time.time()
+    key = (gemini_api_key or os.getenv("GEMINI_API_KEY") or "").strip()
+    model = (
+        gemini_model
+        or os.getenv("MARKET_DAILY_AI_MODEL")
+        or os.getenv("GEMINI_MODEL")
+        or "gemini-2.5-pro"
+    ).strip()
+    mode = (reasoning_mode or os.getenv("MARKET_DAILY_AI_REASONING_MODE") or "deep_think").strip()
+    prompt = _build_market_daily_ai_prompt(daily_payload)
+    as_of = str(daily_payload.get("asOfDate", "-"))
+    cache_key = f"{as_of}|{model}|{mode}|{abs(hash(prompt))}|{min_chars_target}|{max_output_tokens}|{continuation_rounds}"
+
+    fallback_ai = (
+        daily_payload.get("aiDecision")
+        if isinstance(daily_payload.get("aiDecision"), dict)
+        else daily_payload.get("claudeDecision")
+        if isinstance(daily_payload.get("claudeDecision"), dict)
+        else {}
+    )
+    fallback_summary = str(fallback_ai.get("summary", "暂无 AI 输出，可先完成 key 与模型配置。"))
+    fallback_actions = fallback_ai.get("recommendedActions", [])
+    fallback_lines = [fallback_summary]
+    if isinstance(fallback_actions, list):
+        for idx, action in enumerate(fallback_actions[:3]):
+            fallback_lines.append(f"{idx + 1}. {action}")
+    fallback_text = "\n".join(fallback_lines).strip()
+
+    now = time.time()
+    cached_items = _ai_preview_cache.get("items", {})
+    cached = cached_items.get(cache_key) if isinstance(cached_items, dict) else None
+    if isinstance(cached, dict) and now < float(cached.get("expires_at", 0.0)):
+        payload = copy.deepcopy(cached.get("payload", {}))
+        if isinstance(payload, dict):
+            payload["cached"] = True
+            payload["latencyMs"] = int((time.time() - started) * 1000)
+            payload["detail"] = str(payload.get("detail", "Gemini preview generated.")) + " (cache)"
+            return payload
+
+    if not key:
+        return {
+            "status": "pending_config",
+            "provider": "gemini",
+            "model": model,
+            "reasoningMode": mode,
+            "previewText": fallback_text,
+            "usedFallback": True,
+            "rateLimited": False,
+            "retryAfterSec": None,
+            "cached": False,
+            "charCount": len(fallback_text),
+            "minCharTarget": int(min_chars_target or os.getenv("MARKET_DAILY_AI_PREVIEW_MIN_CHARS", "1400")),
+            "tooShort": len(fallback_text) < int(min_chars_target or os.getenv("MARKET_DAILY_AI_PREVIEW_MIN_CHARS", "1400")),
+            "finishReason": "FALLBACK_NO_KEY",
+            "detail": "GEMINI_API_KEY 未配置，返回本地回退预览。",
+            "latencyMs": int((time.time() - started) * 1000),
+            "promptDigest": prompt[:600],
+        }
+
+    max_attempts = max(1, int(os.getenv("MARKET_DAILY_AI_PREVIEW_MAX_ATTEMPTS", "3")))
+    min_chars = max(800, int(min_chars_target or os.getenv("MARKET_DAILY_AI_PREVIEW_MIN_CHARS", "1400")))
+    max_tokens = max(1024, int(max_output_tokens or os.getenv("MARKET_DAILY_AI_PREVIEW_MAX_TOKENS", "4096")))
+    rewrite_attempts = max(0, int(os.getenv("MARKET_DAILY_AI_PREVIEW_REWRITE_ATTEMPTS", "2")))
+    continue_rounds = max(0, int(continuation_rounds or os.getenv("MARKET_DAILY_AI_PREVIEW_CONTINUE_ROUNDS", "6")))
+    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{urllib.parse.quote(model, safe='')}:generateContent"
+    request_url = f"{endpoint}?key={urllib.parse.quote(key, safe='')}"
+
+    def _cache_result(result: Dict[str, Any]) -> None:
+        cached_payload = copy.deepcopy(result)
+        cached_payload["cached"] = False
+        items = _ai_preview_cache.setdefault("items", {})
+        if not isinstance(items, dict):
+            return
+        items[cache_key] = {
+            "expires_at": time.time() + _AI_PREVIEW_CACHE_TTL,
+            "payload": cached_payload,
+        }
+        if len(items) > 64:
+            for stale_key in list(items.keys())[: len(items) - 64]:
+                items.pop(stale_key, None)
+
+    def _invoke_once(prompt_text: str) -> tuple[str, str]:
+        body = {
+            "contents": [{"parts": [{"text": prompt_text}]}],
+            "generationConfig": {
+                "temperature": 0.25,
+                "topP": 0.9,
+                "maxOutputTokens": max_tokens,
+            },
+        }
+        req = urllib.request.Request(
+            request_url,
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=40) as resp:
+            raw = json.loads(resp.read().decode("utf-8"))
+        candidates = raw.get("candidates", []) if isinstance(raw, dict) else []
+        text_parts: List[str] = []
+        finish_reason = ""
+        if candidates and isinstance(candidates[0], dict):
+            finish_reason = str(candidates[0].get("finishReason", "") or "")
+            content = candidates[0].get("content", {})
+            if isinstance(content, dict):
+                for part in content.get("parts", []):
+                    if isinstance(part, dict) and part.get("text"):
+                        text_parts.append(str(part["text"]))
+        return "\n".join(text_parts).strip(), finish_reason
+
+    def _append_continuation(base_text: str, piece: str) -> str:
+        current = (base_text or "").strip()
+        addon = (piece or "").strip()
+        if not addon:
+            return current
+        if addon in current:
+            return current
+        if not current:
+            return addon
+        return (current.rstrip() + "\n\n" + addon).strip()
+
+    last_error = "unknown"
+    for attempt in range(max_attempts):
+        try:
+            generated_text, finish_reason = _invoke_once(prompt)
+            preview_text = generated_text or fallback_text
+            char_count = len(preview_text)
+            if generated_text and char_count < min_chars and rewrite_attempts > 0:
+                for rewrite_idx in range(rewrite_attempts):
+                    strict_prompt = (
+                        prompt
+                        + "\n\n"
+                        + f"你上一版只写了约 {char_count} 字，未达到 1500-2000 字要求。"
+                        + "请重新完整输出一版，不要省略任何一级标题，不要只写提纲，必须给出可执行细节。"
+                    )
+                    try:
+                        rewrite_text, rewrite_finish = _invoke_once(strict_prompt)
+                    except Exception:
+                        break
+                    if len(rewrite_text) > len(generated_text):
+                        generated_text = rewrite_text
+                        finish_reason = rewrite_finish or finish_reason
+                        preview_text = generated_text
+                        char_count = len(preview_text)
+                    if char_count >= min_chars:
+                        break
+                    if rewrite_idx < rewrite_attempts - 1:
+                        time.sleep(1.0)
+
+            if generated_text and len(generated_text) < min_chars and continue_rounds > 0:
+                for cont_idx in range(continue_rounds):
+                    remaining_chars = max(220, min_chars - len(generated_text))
+                    continuation_prompt = textwrap.dedent(
+                        f"""
+                        你上一条输出尚未完成。请在不重复前文的前提下继续写同一篇日报正文。
+                        要求：
+                        - 只输出“续写内容”，不要重复已经写过的句子和标题；
+                        - 优先补全还没写完的一级章节；
+                        - 本次至少补写 {remaining_chars} 字；
+                        - 保持同样的专业风格。
+
+                        === 已有正文（末段）开始 ===
+                        {generated_text[-4500:]}
+                        === 已有正文（末段）结束 ===
+                        """
+                    ).strip()
+                    try:
+                        continuation_text, continuation_finish = _invoke_once(continuation_prompt)
+                    except Exception:
+                        break
+                    merged_text = _append_continuation(generated_text, continuation_text)
+                    if len(merged_text) <= len(generated_text):
+                        break
+                    generated_text = merged_text
+                    finish_reason = continuation_finish or finish_reason
+                    if len(generated_text) >= min_chars:
+                        break
+                    if cont_idx < continue_rounds - 1:
+                        time.sleep(0.8)
+
+            used_fallback = not bool(generated_text)
+            too_short = bool(generated_text) and len(generated_text) < min_chars
+            result = {
+                "status": "ok",
+                "provider": "gemini",
+                "model": model,
+                "reasoningMode": mode,
+                "previewText": preview_text,
+                "usedFallback": used_fallback,
+                "rateLimited": False,
+                "retryAfterSec": None,
+                "cached": False,
+                "charCount": len(preview_text),
+                "minCharTarget": min_chars,
+                "tooShort": too_short,
+                "finishReason": finish_reason or ("FALLBACK_EMPTY" if used_fallback else "UNKNOWN"),
+                "detail": (
+                    f"Gemini preview generated ({len(preview_text)} chars, finishReason={finish_reason or 'unknown'})."
+                    + (" Output shorter than target length." if too_short else "")
+                ),
+                "latencyMs": int((time.time() - started) * 1000),
+                "promptDigest": prompt[:600],
+            }
+            _cache_result(result)
+            return result
+        except urllib.error.HTTPError as exc:
+            status_code = int(getattr(exc, "code", 0) or 0)
+            retry_after = _parse_retry_after_seconds(
+                exc.headers.get("Retry-After") if getattr(exc, "headers", None) is not None else None
+            )
+            error_body = ""
+            try:
+                error_body = exc.read().decode("utf-8", errors="ignore")[:320]
+            except Exception:
+                error_body = ""
+            last_error = f"HTTP {status_code}: {exc.reason}"
+            if status_code == 429 and attempt < max_attempts - 1:
+                wait_seconds = retry_after or min(2 ** attempt, 8)
+                time.sleep(wait_seconds)
+                continue
+            if status_code >= 500 and attempt < max_attempts - 1:
+                time.sleep(min(2 ** attempt, 4))
+                continue
+            result = {
+                "status": "degraded",
+                "provider": "gemini",
+                "model": model,
+                "reasoningMode": mode,
+                "previewText": fallback_text,
+                "usedFallback": True,
+                "rateLimited": status_code == 429,
+                "retryAfterSec": retry_after,
+                "cached": False,
+                "charCount": len(fallback_text),
+                "minCharTarget": min_chars,
+                "tooShort": len(fallback_text) < min_chars,
+                "finishReason": f"HTTP_{status_code}",
+                "detail": f"Gemini preview failed: HTTP {status_code} {exc.reason}. {error_body}".strip(),
+                "latencyMs": int((time.time() - started) * 1000),
+                "promptDigest": prompt[:600],
+            }
+            _cache_result(result)
+            return result
+        except Exception as exc:
+            last_error = str(exc)
+            if attempt < max_attempts - 1:
+                time.sleep(min(2 ** attempt, 4))
+                continue
+            result = {
+                "status": "degraded",
+                "provider": "gemini",
+                "model": model,
+                "reasoningMode": mode,
+                "previewText": fallback_text,
+                "usedFallback": True,
+                "rateLimited": False,
+                "retryAfterSec": None,
+                "cached": False,
+                "charCount": len(fallback_text),
+                "minCharTarget": min_chars,
+                "tooShort": len(fallback_text) < min_chars,
+                "finishReason": "EXCEPTION",
+                "detail": f"Gemini preview failed: {exc}",
+                "latencyMs": int((time.time() - started) * 1000),
+                "promptDigest": prompt[:600],
+            }
+            _cache_result(result)
+            return result
+
+    result = {
+        "status": "degraded",
+        "provider": "gemini",
+        "model": model,
+        "reasoningMode": mode,
+        "previewText": fallback_text,
+        "usedFallback": True,
+        "rateLimited": False,
+        "retryAfterSec": None,
+        "cached": False,
+        "charCount": len(fallback_text),
+        "minCharTarget": min_chars,
+        "tooShort": len(fallback_text) < min_chars,
+        "finishReason": "FAILED",
+        "detail": f"Gemini preview failed: {last_error}",
+        "latencyMs": int((time.time() - started) * 1000),
+        "promptDigest": prompt[:600],
+    }
+    _cache_result(result)
+    return result
 
 
 def _load_live_dataset(refresh: bool = False) -> tuple[pd.DataFrame, Dict[str, Any], List[str]]:
@@ -1931,14 +2710,24 @@ def macro_data(refresh: bool = Query(False)) -> Dict[str, Any]:
 
 
 @app.get("/api/v1/market-daily")
-def market_daily(refresh: bool = Query(False)) -> Dict[str, Any]:
-    payload = macro_data(refresh=refresh)
+def market_daily(
+    refresh: bool = Query(False),
+    days_ago: int = Query(0, ge=0, le=14),
+) -> Dict[str, Any]:
+    if days_ago > 0:
+        cutoff = pd.Timestamp.utcnow().normalize() - pd.Timedelta(days=days_ago)
+        payload = build_macro_payload(as_of_date=cutoff)
+    else:
+        payload = macro_data(refresh=refresh)
     return payload.get("marketDaily", {})
 
 
 @app.get("/api/v1/market-daily/push-preview")
-def market_daily_push_preview(refresh: bool = Query(False)) -> Dict[str, Any]:
-    daily_payload = market_daily(refresh=refresh)
+def market_daily_push_preview(
+    refresh: bool = Query(False),
+    days_ago: int = Query(0, ge=0, le=14),
+) -> Dict[str, Any]:
+    daily_payload = market_daily(refresh=refresh, days_ago=days_ago)
     quick = daily_payload.get("quickView", {}) if isinstance(daily_payload, dict) else {}
     headline = daily_payload.get("headline", "") if isinstance(daily_payload, dict) else ""
     replay = daily_payload.get("marketReplay", []) if isinstance(daily_payload, dict) else []
@@ -1958,6 +2747,118 @@ def market_daily_push_preview(refresh: bool = Query(False)) -> Dict[str, Any]:
         "previewText": "\n".join(summary_lines),
         "channelStatuses": channels,
     }
+
+
+@app.post("/api/v1/market-daily/source-check")
+def market_daily_source_check(
+    payload: Optional[Dict[str, Any]] = Body(default=None),
+) -> Dict[str, Any]:
+    payload = payload or {}
+    news_rss_urls = str(payload.get("newsRssUrls", "") or payload.get("news_rss_urls", "")).strip() or None
+    gemini_api_key = str(payload.get("geminiApiKey", "") or payload.get("gemini_api_key", "")).strip() or None
+    gemini_model = str(payload.get("geminiModel", "") or payload.get("gemini_model", "")).strip() or None
+    delivery_webhook_url = str(payload.get("deliveryWebhookUrl", "") or payload.get("delivery_webhook_url", "")).strip() or None
+
+    checks = {
+        "marketData": _check_market_data_source(),
+        "newsData": _check_news_data_source(news_rss_urls),
+        "aiDecision": _check_gemini_source(gemini_api_key, gemini_model),
+        "delivery": _check_delivery_source(delivery_webhook_url),
+    }
+    overall_ok = all(bool(item.get("ok")) for item in checks.values())
+
+    return {
+        "status": "ok",
+        "overallOk": overall_ok,
+        "checkedAt": _now_iso_utc(),
+        "checks": checks,
+        "appliedConfig": {
+            "newsRssUrls": news_rss_urls or "",
+            "geminiModel": gemini_model or os.getenv("MARKET_DAILY_AI_MODEL") or os.getenv("GEMINI_MODEL") or "gemini-2.5-pro",
+            "geminiApiKeyMasked": _mask_secret(gemini_api_key or os.getenv("GEMINI_API_KEY") or ""),
+            "deliveryWebhookMasked": _mask_secret(delivery_webhook_url or os.getenv("DAILY_REPORT_WEBHOOK_URL") or ""),
+        },
+    }
+
+
+@app.post("/api/v1/market-daily/ai-preview")
+def market_daily_ai_preview(
+    payload: Optional[Dict[str, Any]] = Body(default=None),
+) -> Dict[str, Any]:
+    payload = payload or {}
+    days_ago_raw = payload.get("daysAgo", payload.get("days_ago", 0))
+    try:
+        days_ago = int(days_ago_raw)
+    except Exception:
+        days_ago = 0
+    days_ago = max(0, min(14, days_ago))
+
+    refresh_raw = payload.get("refresh", False)
+    refresh = bool(refresh_raw)
+    if isinstance(refresh_raw, str):
+        refresh = refresh_raw.strip().lower() in {"1", "true", "yes", "y", "on"}
+
+    daily_payload = market_daily(refresh=refresh, days_ago=days_ago)
+    gemini_api_key = str(payload.get("geminiApiKey", "") or payload.get("gemini_api_key", "")).strip() or None
+    gemini_model = str(payload.get("geminiModel", "") or payload.get("gemini_model", "")).strip() or None
+    reasoning_mode = str(payload.get("reasoningMode", "") or payload.get("reasoning_mode", "")).strip() or None
+    min_chars_raw = payload.get("minChars", payload.get("min_chars", payload.get("targetChars", 1400)))
+    max_tokens_raw = payload.get("maxOutputTokens", payload.get("max_output_tokens", None))
+    continuation_rounds_raw = payload.get("continuationRounds", payload.get("continuation_rounds", None))
+
+    try:
+        min_chars = int(min_chars_raw)
+    except Exception:
+        min_chars = 1400
+    min_chars = max(800, min(6000, min_chars))
+
+    max_output_tokens: Optional[int] = None
+    if max_tokens_raw is not None:
+        try:
+            max_output_tokens = int(max_tokens_raw)
+        except Exception:
+            max_output_tokens = None
+    if max_output_tokens is not None:
+        max_output_tokens = max(1024, min(12288, max_output_tokens))
+
+    continuation_rounds: Optional[int] = None
+    if continuation_rounds_raw is not None:
+        try:
+            continuation_rounds = int(continuation_rounds_raw)
+        except Exception:
+            continuation_rounds = None
+    if continuation_rounds is not None:
+        continuation_rounds = max(0, min(12, continuation_rounds))
+
+    preview = _call_gemini_daily_preview(
+        daily_payload=daily_payload,
+        gemini_api_key=gemini_api_key,
+        gemini_model=gemini_model,
+        reasoning_mode=reasoning_mode,
+        min_chars_target=min_chars,
+        max_output_tokens=max_output_tokens,
+        continuation_rounds=continuation_rounds,
+    )
+    return {
+        "status": "ok" if preview.get("status") == "ok" else "degraded",
+        "asOfDate": daily_payload.get("asOfDate"),
+        "generatedAt": _now_iso_utc(),
+        "preview": preview,
+    }
+
+
+@app.get("/api/v1/market-daily/test-yesterday")
+def market_daily_test_yesterday(
+    refresh: bool = Query(True),
+) -> Dict[str, Any]:
+    return market_daily(refresh=refresh, days_ago=1)
+
+
+@app.get("/api/v1/market-daily/test-yesterday/push-preview")
+def market_daily_test_yesterday_push_preview(
+    refresh: bool = Query(True),
+) -> Dict[str, Any]:
+    return market_daily_push_preview(refresh=refresh, days_ago=1)
 
 
 @app.get("/api/v1/backtest")
