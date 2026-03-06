@@ -138,6 +138,16 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
         : isDegraded
           ? `DEGRADED (Python API ${readyModules}/7)`
           : "LIVE (Python API)";
+  const sourceToneClass = !isLive
+    ? "border-amber-200 bg-amber-50 text-amber-800"
+    : isDegraded
+      ? "border-orange-200 bg-orange-50 text-orange-800"
+      : "border-emerald-200 bg-emerald-50 text-emerald-800";
+  const sourceBadgeClass = !isLive
+    ? "bg-amber-100 text-amber-700"
+    : isDegraded
+      ? "bg-orange-100 text-orange-700"
+      : "bg-emerald-100 text-emerald-700";
   const dashboardActive = pathname === "/";
   const childActive = useMemo(
     () => dashboardGroupItems.some((item) => pathname.startsWith(item.href)),
@@ -160,45 +170,52 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
             <p className="mt-[6px] text-[11px] text-slate-300">Data Cutoff (Date): {dataCutoffDate}</p>
           </div>
 
-          <div
-            className={cn(
-              "mb-[12px] rounded-[12px] border px-[10px] py-[8px] text-[11px]",
-              !isLive
-                ? "border-amber-200 bg-amber-50 text-amber-700"
-                : isDegraded
-                  ? "border-orange-200 bg-orange-50 text-orange-700"
-                  : "border-emerald-200 bg-emerald-50 text-emerald-700"
-            )}
-          >
-            <p className="font-semibold">Data Source: {sourceLabel}</p>
-            <p className="mt-[2px] opacity-90">最新更新时间 (UTC): {latestUpdatedUtc}</p>
-            <p className="mt-[2px] opacity-90">最新更新时间 (UTC+8): {latestUpdatedUtc8}</p>
-            <p className="mt-[2px] opacity-90">总分: {payload.dashboard.overallScore.value.toFixed(1)} / 100</p>
-            <p className="mt-[2px] opacity-90">日报预期生成时间: {dailyExpectedTimeLabel}</p>
-            <p className="mt-[2px] opacity-90">日报状态: {dailyGeneratedState}</p>
-            {dailyGeneratedIso ? <p className="mt-[2px] opacity-90">日报生成时间 (UTC): {dailyGeneratedUtc}</p> : null}
-            {dailyGeneratedIso ? <p className="mt-[2px] opacity-90">日报生成时间 (UTC+8): {dailyGeneratedUtc8}</p> : null}
-            {servedFromSnapshot ? <p className="mt-[2px] opacity-90">交付模式: 静态快照发布</p> : null}
-            {isLive && isDegraded ? (
-              <p className="mt-[2px] opacity-90">Missing modules: {missingModules} / 7</p>
-            ) : (
-              <p className="mt-[2px] opacity-90">模块覆盖: {readyModules} / 7</p>
-            )}
-            {error ? <p className="mt-[2px] opacity-90">Reason: {error}</p> : null}
+          <div className={cn("mb-[12px] rounded-[12px] border px-[10px] py-[9px] text-[11px]", sourceToneClass)}>
+            <div className="flex items-center justify-between gap-[8px]">
+              <p className="font-semibold">Data Source</p>
+              <span className={cn("rounded-full px-[8px] py-[2px] text-[10px] font-semibold", sourceBadgeClass)}>
+                {sourceLabel}
+              </span>
+            </div>
+            <div className="mt-[8px] grid grid-cols-[auto_1fr] gap-x-[8px] gap-y-[3px] text-[10px] leading-tight">
+              <p className="opacity-80">UTC</p>
+              <p>{latestUpdatedUtc}</p>
+              <p className="opacity-80">UTC+8</p>
+              <p>{latestUpdatedUtc8}</p>
+              <p className="opacity-80">总分</p>
+              <p>{payload.dashboard.overallScore.value.toFixed(1)} / 100</p>
+              <p className="opacity-80">日报</p>
+              <p>{dailyGeneratedState}</p>
+            </div>
+            <details className="mt-[6px]">
+              <summary className="cursor-pointer text-[10px] font-semibold opacity-90">展开更多</summary>
+              <div className="mt-[5px] space-y-[2px] text-[10px] opacity-90">
+                <p>日报预期生成时间: {dailyExpectedTimeLabel}</p>
+                {dailyGeneratedIso ? <p>日报生成时间 (UTC): {dailyGeneratedUtc}</p> : null}
+                {dailyGeneratedIso ? <p>日报生成时间 (UTC+8): {dailyGeneratedUtc8}</p> : null}
+                {servedFromSnapshot ? <p>交付模式: 静态快照发布</p> : null}
+                {isLive && isDegraded ? (
+                  <p>Missing modules: {missingModules} / 7</p>
+                ) : (
+                  <p>模块覆盖: {readyModules} / 7</p>
+                )}
+                {error ? <p>Reason: {error}</p> : null}
+              </div>
+            </details>
           </div>
 
-          <nav className="space-y-[6px]">
+          <nav className="space-y-[8px] rounded-[14px] border border-app-border bg-white/70 p-[8px]">
               <div className="space-y-[6px]">
                 <div
                   className={cn(
-                    "flex items-center gap-[8px] rounded-[12px] border px-[8px] py-[6px]",
+                    "flex items-center gap-[8px] rounded-[10px] border px-[8px] py-[5px]",
                     dashboardActive || childActive ? "border-blue-200 bg-blue-50" : "border-transparent"
                   )}
                 >
                   <Link
                     href="/"
                     className={cn(
-                      "flex min-w-0 flex-1 items-center gap-[10px] rounded-[10px] px-[2px] py-[3px] text-[12px] font-medium transition-colors",
+                      "flex min-w-0 flex-1 items-center gap-[8px] rounded-[8px] px-[2px] py-[2px] text-[11px] font-semibold transition-colors",
                       dashboardActive
                         ? "text-blue-700"
                         : "text-app-muted hover:text-app-text"
@@ -211,10 +228,10 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                     type="button"
                     onClick={() => setDashboardExpanded((value) => !value)}
                     className={cn(
-                      "inline-flex h-[22px] w-[22px] items-center justify-center rounded-[8px] transition-colors",
-                      dashboardActive || childActive
-                        ? "text-blue-700 hover:bg-blue-100"
-                        : "text-app-muted hover:bg-slate-100 hover:text-app-text"
+                    "inline-flex h-[20px] w-[20px] items-center justify-center rounded-[6px] transition-colors",
+                    dashboardActive || childActive
+                      ? "text-blue-700 hover:bg-blue-100"
+                      : "text-app-muted hover:bg-slate-100 hover:text-app-text"
                     )}
                     aria-label={dashboardExpanded ? "收起模块导航" : "展开模块导航"}
                   >
@@ -223,7 +240,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                 </div>
 
                 {dashboardExpanded && (
-                  <div className="space-y-[4px] pl-[18px]">
+                  <div className="space-y-[3px] pl-[10px]">
                     {dashboardGroupItems.map((item) => {
                       const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
                       const active = pathname.startsWith(item.href);
@@ -232,7 +249,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                           key={item.href}
                           href={item.href}
                           className={cn(
-                            "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
+                            "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
                             active
                               ? "border-blue-200 bg-blue-50 text-blue-700"
                               : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
@@ -250,14 +267,14 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
               <div className="space-y-[6px]">
                 <div
                   className={cn(
-                    "flex items-center gap-[8px] rounded-[12px] border px-[8px] py-[6px]",
+                    "flex items-center gap-[8px] rounded-[10px] border px-[8px] py-[5px]",
                     marketActive || marketChildActive ? "border-blue-200 bg-blue-50" : "border-transparent"
                   )}
                 >
                   <Link
                     href="/market-analysis"
                     className={cn(
-                      "flex min-w-0 flex-1 items-center gap-[10px] rounded-[10px] px-[2px] py-[3px] text-[12px] font-medium transition-colors",
+                      "flex min-w-0 flex-1 items-center gap-[8px] rounded-[8px] px-[2px] py-[2px] text-[11px] font-semibold transition-colors",
                       marketActive
                         ? "text-blue-700"
                         : "text-app-muted hover:text-app-text"
@@ -270,10 +287,10 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                     type="button"
                     onClick={() => setMarketExpanded((value) => !value)}
                     className={cn(
-                      "inline-flex h-[22px] w-[22px] items-center justify-center rounded-[8px] transition-colors",
-                      marketActive || marketChildActive
-                        ? "text-blue-700 hover:bg-blue-100"
-                        : "text-app-muted hover:bg-slate-100 hover:text-app-text"
+                    "inline-flex h-[20px] w-[20px] items-center justify-center rounded-[6px] transition-colors",
+                    marketActive || marketChildActive
+                      ? "text-blue-700 hover:bg-blue-100"
+                      : "text-app-muted hover:bg-slate-100 hover:text-app-text"
                     )}
                     aria-label={marketExpanded ? "收起市场行情导航" : "展开市场行情导航"}
                   >
@@ -282,7 +299,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                 </div>
 
                 {marketExpanded && (
-                  <div className="space-y-[4px] pl-[18px]">
+                  <div className="space-y-[3px] pl-[10px]">
                     {marketAnalysisGroupItems.map((item) => {
                       const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
                       const active = pathname.startsWith(item.href);
@@ -291,7 +308,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                           key={item.href}
                           href={item.href}
                           className={cn(
-                            "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
+                            "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
                             active
                               ? "border-blue-200 bg-blue-50 text-blue-700"
                               : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
@@ -308,7 +325,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
             <Link
               href="/backtest"
               className={cn(
-                "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
+                "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
                 backtestActive
                   ? "border-blue-200 bg-blue-50 text-blue-700"
                   : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
