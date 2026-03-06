@@ -1,15 +1,21 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-03-06T07:20:52Z",
+  "reportGeneratedAt": "2026-03-06T08:44:04Z",
   "asOfDate": "2026-03-06",
   "headline": "宏观中性，建议事件驱动下的结构化交易。",
-  "markdown": "# MacroQuant 市场研究日报（2026-03-06）\n\n**Headline**: 宏观中性，建议事件驱动下的结构化交易。\n\n## 快速视图\n- 宏观总分: 57.03\n- 风险等级: 中\n- 行情源: live\n- 新闻源: live\n\n## 热点要闻\n- [Pudgy Penguins accused of infringing Original Penguin trademark](https://cointelegraph.com/news/pei-licensing-files-trademark-infringement-lawsuit-against-pudgy-penguins?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Altcoin seasons are over, expect ‘non-traditional’ cycles ahead: Bitwise exec](https://cointelegraph.com/news/altcoin-seasons-are-over-expect-non-traditional-cycles-ahead-bitwise-cio?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Bitcoin relief rally faces headwinds as bear market persists: analysts](https://cointelegraph.com/news/bitcoin-relief-rally-faces-headwinds-as-bear-market-persists-analysts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Bitcoin and stocks stabilize after early-week slide. The bond market isn’t convinced.](https://www.coindesk.com/markets/2026/03/06/bitcoin-and-stocks-stabilize-after-early-week-slide-the-bond-market-isn-t-convinced) (CoinDesk)\n- [Lyn Alden tips Bitcoin outperforming gold over next ‘two to three years’](https://cointelegraph.com/news/bitcoin-gold-outperform-prediction-macroeconomist-lyn-alden?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Almost nobody is talking about altseason anymore. That may be bullish](https://www.coindesk.com/markets/2026/03/06/almost-nobody-is-talking-about-altseason-anymore-that-may-be-bullish) (CoinDesk)\n- [XRP drops 3% after failing to break $1.45 resistance](https://www.coindesk.com/markets/2026/03/06/xrp-drops-3-after-failing-to-break-usd1-45-resistance) (CoinDesk)\n- [Bitcoin drops under $71,000, ETH, DOGE slide as war-week rally runs into resistance](https://www.coindesk.com/markets/2026/03/06/bitcoin-drops-under-usd71-000-eth-doge-slide-as-war-week-rally-runs-into-resistance) (CoinDesk)\n\n## 市场复盘\n- 总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。\n- 本周主驱动来自 信用压力，边际变化 +11.9。\n- 主要拖累来自 风险偏好，边际变化 -11.7。\n- BTC 24H -0.28%，7D +7.22%，执行上优先看关键位是否放量确认。\n\n## AI 决策摘要\n- 提供方: gemini\n- 状态: pending_config\n- 模型: gemini-2.5-pro\n- 结论: 建议偏多执行，回调分批加仓。\n- 建议动作:\n  - 优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。\n  - 事件窗口前将杠杆下调到策略上限的 50%-70%。\n  - 若宏观总分连续两周下行，降低趋势策略开仓频率。\n",
+  "markdownSource": "template",
+  "markdownCharCount": 2323,
+  "aiRender": {
+    "enabled": true,
+    "reason": "import_error:No module named 'api_server'"
+  },
+  "markdown": "# MacroQuant 市场研究日报（2026-03-06）\n\n**Headline**: 宏观中性，建议事件驱动下的结构化交易。\n\n## 快速视图\n- 宏观总分: 50.88\n- 风险等级: 中\n- 行情源: live\n- 新闻源: live\n\n## 热点要闻\n- [Vancouver mayor's bitcoin investment proposal blocked by city, provincial law](https://www.coindesk.com/markets/2026/03/06/vancouver-mayor-s-bitcoin-investment-proposal-blocked-by-city-provincial-law) (CoinDesk)\n- [Dubai regulator orders KuCoin entities to stop unlicensed operations](https://cointelegraph.com/news/dubai-vara-kucoin-unlicensed-crypto-activity-warning?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Pudgy Penguins accused of infringing Original Penguin trademark](https://cointelegraph.com/news/pei-licensing-files-trademark-infringement-lawsuit-against-pudgy-penguins?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Altcoin seasons are over, expect ‘non-traditional’ cycles ahead: Bitwise exec](https://cointelegraph.com/news/altcoin-seasons-are-over-expect-non-traditional-cycles-ahead-bitwise-cio?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Bitcoin relief rally faces headwinds as bear market persists: analysts](https://cointelegraph.com/news/bitcoin-relief-rally-faces-headwinds-as-bear-market-persists-analysts?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Bitcoin and stocks stabilize after early week slide. The bond market isn’t convinced.](https://www.coindesk.com/markets/2026/03/06/bitcoin-and-stocks-stabilize-after-early-week-slide-the-bond-market-isn-t-convinced) (CoinDesk)\n- [Almost nobody is talking about altseason anymore. That may be bullish](https://www.coindesk.com/markets/2026/03/06/almost-nobody-is-talking-about-altseason-anymore-that-may-be-bullish) (CoinDesk)\n- [XRP drops 3% after failing to break $1.45 resistance](https://www.coindesk.com/markets/2026/03/06/xrp-drops-3-after-failing-to-break-usd1-45-resistance) (CoinDesk)\n\n## 市场复盘\n- 总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。\n- 本周主驱动来自 信用压力，边际变化 +11.9。\n- 主要拖累来自 风险偏好，边际变化 -11.4。\n- BTC 24H +0.13%，7D +7.67%，执行上优先看关键位是否放量确认。\n\n## AI 决策摘要\n- 提供方: gemini\n- 状态: pending_config\n- 模型: gemini-2.5-pro\n- 结论: 建议防守执行，等待趋势与宏观重新共振后再扩仓。\n- 建议动作:\n  - 优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。\n  - 事件窗口前将杠杆下调到策略上限的 50%-70%。\n  - 若宏观总分连续两周下行，降低趋势策略开仓频率。\n",
   "daily": {
     "asOfDate": "2026-03-06",
-    "generatedAt": "2026-03-06T07:20:50Z",
+    "generatedAt": "2026-03-06T08:44:02Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
-      "overallScore": 57.03,
+      "overallScore": 50.88,
       "riskLevel": "中",
       "quoteSourceMode": "live",
       "newsSourceMode": "live",
@@ -21,30 +27,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 70640.74,
-        "change24hPct": -0.28,
-        "change7dPct": 7.22,
-        "realizedVol14dPct": 62.5,
+        "spot": 70933.48,
+        "change24hPct": 0.13,
+        "change7dPct": 7.67,
+        "realizedVol14dPct": 62.42,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 2073.68,
-        "change24hPct": 0.1,
-        "change7dPct": 7.4,
-        "realizedVol14dPct": 85.02,
+        "spot": 2081.08,
+        "change24hPct": 0.46,
+        "change7dPct": 7.79,
+        "realizedVol14dPct": 84.99,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 88.05,
-        "change24hPct": -0.73,
-        "change7dPct": 7.44,
-        "realizedVol14dPct": 83.35,
+        "spot": 88.43,
+        "change24hPct": -0.29,
+        "change7dPct": 7.91,
+        "realizedVol14dPct": 83.22,
         "source": "yfinance"
       },
       {
@@ -70,6 +76,18 @@
     ],
     "hotNews": [
       {
+        "title": "Vancouver mayor's bitcoin investment proposal blocked by city, provincial law",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/06/vancouver-mayor-s-bitcoin-investment-proposal-blocked-by-city-provincial-law",
+        "publishedAt": "2026-03-06T08:39:40Z"
+      },
+      {
+        "title": "Dubai regulator orders KuCoin entities to stop unlicensed operations",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/dubai-vara-kucoin-unlicensed-crypto-activity-warning?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-06T08:22:22Z"
+      },
+      {
         "title": "Pudgy Penguins accused of infringing Original Penguin trademark",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/pei-licensing-files-trademark-infringement-lawsuit-against-pudgy-penguins?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
@@ -88,16 +106,10 @@
         "publishedAt": "2026-03-06T05:57:49Z"
       },
       {
-        "title": "Bitcoin and stocks stabilize after early-week slide. The bond market isn’t convinced.",
+        "title": "Bitcoin and stocks stabilize after early week slide. The bond market isn’t convinced.",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/06/bitcoin-and-stocks-stabilize-after-early-week-slide-the-bond-market-isn-t-convinced",
         "publishedAt": "2026-03-06T05:35:09Z"
-      },
-      {
-        "title": "Lyn Alden tips Bitcoin outperforming gold over next ‘two to three years’",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/bitcoin-gold-outperform-prediction-macroeconomist-lyn-alden?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-06T05:26:22Z"
       },
       {
         "title": "Almost nobody is talking about altseason anymore. That may be bullish",
@@ -110,19 +122,13 @@
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/06/xrp-drops-3-after-failing-to-break-usd1-45-resistance",
         "publishedAt": "2026-03-06T04:55:03Z"
-      },
-      {
-        "title": "Bitcoin drops under $71,000, ETH, DOGE slide as war-week rally runs into resistance",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/06/bitcoin-drops-under-usd71-000-eth-doge-slide-as-war-week-rally-runs-into-resistance",
-        "publishedAt": "2026-03-06T04:38:14Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 信用压力，边际变化 +11.9。",
-      "主要拖累来自 风险偏好，边际变化 -11.7。",
-      "BTC 24H -0.28%，7D +7.22%，执行上优先看关键位是否放量确认。"
+      "主要拖累来自 风险偏好，边际变化 -11.4。",
+      "BTC 24H +0.13%，7D +7.67%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
@@ -159,9 +165,9 @@
       },
       {
         "project": "以太坊生态",
-        "headline": "Bitcoin drops under $71,000, ETH, DOGE slide as war-week rally runs into resistance",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/06/bitcoin-drops-under-usd71-000-eth-doge-slide-as-war-week-rally-runs-into-resistance"
+        "headline": "以太坊生态暂无重大突发，维持跟踪链上活跃度与资金流向。",
+        "source": "MacroQuant Engine",
+        "url": ""
       },
       {
         "project": "Solana 生态",
@@ -206,19 +212,19 @@
       "model": "gemini-2.5-pro",
       "reasoningMode": "deep_think",
       "riskLevel": "中",
-      "summary": "建议偏多执行，回调分批加仓。",
+      "summary": "建议防守执行，等待趋势与宏观重新共振后再扩仓。",
       "recommendedActions": [
         "优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。",
         "事件窗口前将杠杆下调到策略上限的 50%-70%。",
         "若宏观总分连续两周下行，降低趋势策略开仓频率。"
       ],
       "driverModules": [
-        "D",
-        "B"
+        "C",
+        "D"
       ],
       "pressureModules": [
         "G",
-        "C"
+        "F"
       ],
       "nextStep": "配置 GEMINI_API_KEY 后可调用 Gemini Deep Think 生成完整日报正文与交易建议。"
     },
@@ -228,19 +234,19 @@
       "model": "gemini-2.5-pro",
       "reasoningMode": "deep_think",
       "riskLevel": "中",
-      "summary": "建议偏多执行，回调分批加仓。",
+      "summary": "建议防守执行，等待趋势与宏观重新共振后再扩仓。",
       "recommendedActions": [
         "优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。",
         "事件窗口前将杠杆下调到策略上限的 50%-70%。",
         "若宏观总分连续两周下行，降低趋势策略开仓频率。"
       ],
       "driverModules": [
-        "D",
-        "B"
+        "C",
+        "D"
       ],
       "pressureModules": [
         "G",
-        "C"
+        "F"
       ],
       "nextStep": "配置 GEMINI_API_KEY 后可调用 Gemini Deep Think 生成完整日报正文与交易建议。"
     },
