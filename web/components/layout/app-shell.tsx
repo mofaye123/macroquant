@@ -153,7 +153,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
   return (
     <div className="min-h-screen bg-[radial-gradient(circle_at_0%_0%,#f8fbff_0%,#eef2f7_35%,#f8fafc_100%)] text-app-text">
       <div className="mx-auto grid max-w-[1600px] gap-[16px] px-[12px] py-[14px] lg:grid-cols-[250px_1fr] lg:px-[16px]">
-        <aside className="sticky top-[12px] h-[calc(100vh-24px)] rounded-[20px] border border-app-border bg-app-card p-[16px] shadow-[0_24px_56px_-38px_rgba(15,23,42,0.34)]">
+        <aside className="sticky top-[12px] flex h-[calc(100vh-24px)] flex-col overflow-hidden rounded-[20px] border border-app-border bg-app-card p-[16px] shadow-[0_24px_56px_-38px_rgba(15,23,42,0.34)]">
           <div className="mb-[16px] rounded-[14px] bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_55%,#334155_100%)] p-[14px] text-white">
             <p className="text-[11px] uppercase tracking-[0.18em] text-slate-300">MacroQuant</p>
             <h1 className="mt-[6px] text-[17px] font-bold leading-[1.3]">宏观金融环境量化</h1>
@@ -187,141 +187,143 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
             {error ? <p className="mt-[2px] opacity-90">Reason: {error}</p> : null}
           </div>
 
-          <nav className="space-y-[6px]">
-            <div className="space-y-[6px]">
-              <div
-                className={cn(
-                  "flex items-center gap-[8px] rounded-[12px] border px-[8px] py-[6px]",
-                  dashboardActive || childActive ? "border-blue-200 bg-blue-50" : "border-transparent"
+          <div className="min-h-0 flex-1 overflow-y-auto pr-[4px]">
+            <nav className="space-y-[6px]">
+              <div className="space-y-[6px]">
+                <div
+                  className={cn(
+                    "flex items-center gap-[8px] rounded-[12px] border px-[8px] py-[6px]",
+                    dashboardActive || childActive ? "border-blue-200 bg-blue-50" : "border-transparent"
+                  )}
+                >
+                  <Link
+                    href="/"
+                    className={cn(
+                      "flex min-w-0 flex-1 items-center gap-[10px] rounded-[10px] px-[2px] py-[3px] text-[12px] font-medium transition-colors",
+                      dashboardActive
+                        ? "text-blue-700"
+                        : "text-app-muted hover:text-app-text"
+                    )}
+                  >
+                    <LayoutDashboard className="h-[14px] w-[14px]" />
+                    <span>DASHBOARD</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setDashboardExpanded((value) => !value)}
+                    className={cn(
+                      "inline-flex h-[22px] w-[22px] items-center justify-center rounded-[8px] transition-colors",
+                      dashboardActive || childActive
+                        ? "text-blue-700 hover:bg-blue-100"
+                        : "text-app-muted hover:bg-slate-100 hover:text-app-text"
+                    )}
+                    aria-label={dashboardExpanded ? "收起模块导航" : "展开模块导航"}
+                  >
+                    {dashboardExpanded ? <ChevronDown className="h-[14px] w-[14px]" /> : <ChevronRight className="h-[14px] w-[14px]" />}
+                  </button>
+                </div>
+
+                {dashboardExpanded && (
+                  <div className="space-y-[4px] pl-[18px]">
+                    {dashboardGroupItems.map((item) => {
+                      const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
+                      const active = pathname.startsWith(item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={cn(
+                            "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
+                            active
+                              ? "border-blue-200 bg-blue-50 text-blue-700"
+                              : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                          )}
+                        >
+                          <Icon className="h-[14px] w-[14px]" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
-              >
-                <Link
-                  href="/"
-                  className={cn(
-                    "flex min-w-0 flex-1 items-center gap-[10px] rounded-[10px] px-[2px] py-[3px] text-[12px] font-medium transition-colors",
-                    dashboardActive
-                      ? "text-blue-700"
-                      : "text-app-muted hover:text-app-text"
-                  )}
-                >
-                  <LayoutDashboard className="h-[14px] w-[14px]" />
-                  <span>DASHBOARD</span>
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => setDashboardExpanded((value) => !value)}
-                  className={cn(
-                    "inline-flex h-[22px] w-[22px] items-center justify-center rounded-[8px] transition-colors",
-                    dashboardActive || childActive
-                      ? "text-blue-700 hover:bg-blue-100"
-                      : "text-app-muted hover:bg-slate-100 hover:text-app-text"
-                  )}
-                  aria-label={dashboardExpanded ? "收起模块导航" : "展开模块导航"}
-                >
-                  {dashboardExpanded ? <ChevronDown className="h-[14px] w-[14px]" /> : <ChevronRight className="h-[14px] w-[14px]" />}
-                </button>
               </div>
 
-              {dashboardExpanded && (
-                <div className="space-y-[4px] pl-[18px]">
-                  {dashboardGroupItems.map((item) => {
-                    const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
-                    const active = pathname.startsWith(item.href);
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                          "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
-                          active
-                            ? "border-blue-200 bg-blue-50 text-blue-700"
-                            : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
-                        )}
-                      >
-                        <Icon className="h-[14px] w-[14px]" />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
+              <div className="space-y-[6px]">
+                <div
+                  className={cn(
+                    "flex items-center gap-[8px] rounded-[12px] border px-[8px] py-[6px]",
+                    marketActive || marketChildActive ? "border-blue-200 bg-blue-50" : "border-transparent"
+                  )}
+                >
+                  <Link
+                    href="/market-analysis"
+                    className={cn(
+                      "flex min-w-0 flex-1 items-center gap-[10px] rounded-[10px] px-[2px] py-[3px] text-[12px] font-medium transition-colors",
+                      marketActive
+                        ? "text-blue-700"
+                        : "text-app-muted hover:text-app-text"
+                    )}
+                  >
+                    <BarChart3 className="h-[14px] w-[14px]" />
+                    <span>市场行情分析</span>
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => setMarketExpanded((value) => !value)}
+                    className={cn(
+                      "inline-flex h-[22px] w-[22px] items-center justify-center rounded-[8px] transition-colors",
+                      marketActive || marketChildActive
+                        ? "text-blue-700 hover:bg-blue-100"
+                        : "text-app-muted hover:bg-slate-100 hover:text-app-text"
+                    )}
+                    aria-label={marketExpanded ? "收起市场行情导航" : "展开市场行情导航"}
+                  >
+                    {marketExpanded ? <ChevronDown className="h-[14px] w-[14px]" /> : <ChevronRight className="h-[14px] w-[14px]" />}
+                  </button>
                 </div>
-              )}
-            </div>
 
-            <div className="space-y-[6px]">
-              <div
-                className={cn(
-                  "flex items-center gap-[8px] rounded-[12px] border px-[8px] py-[6px]",
-                  marketActive || marketChildActive ? "border-blue-200 bg-blue-50" : "border-transparent"
+                {marketExpanded && (
+                  <div className="space-y-[4px] pl-[18px]">
+                    {marketAnalysisGroupItems.map((item) => {
+                      const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
+                      const active = pathname.startsWith(item.href);
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          className={cn(
+                            "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
+                            active
+                              ? "border-blue-200 bg-blue-50 text-blue-700"
+                              : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                          )}
+                        >
+                          <Icon className="h-[14px] w-[14px]" />
+                          <span>{item.label}</span>
+                        </Link>
+                      );
+                    })}
+                  </div>
                 )}
-              >
-                <Link
-                  href="/market-analysis"
-                  className={cn(
-                    "flex min-w-0 flex-1 items-center gap-[10px] rounded-[10px] px-[2px] py-[3px] text-[12px] font-medium transition-colors",
-                    marketActive
-                      ? "text-blue-700"
-                      : "text-app-muted hover:text-app-text"
-                  )}
-                >
-                  <BarChart3 className="h-[14px] w-[14px]" />
-                  <span>市场行情分析</span>
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => setMarketExpanded((value) => !value)}
-                  className={cn(
-                    "inline-flex h-[22px] w-[22px] items-center justify-center rounded-[8px] transition-colors",
-                    marketActive || marketChildActive
-                      ? "text-blue-700 hover:bg-blue-100"
-                      : "text-app-muted hover:bg-slate-100 hover:text-app-text"
-                  )}
-                  aria-label={marketExpanded ? "收起市场行情导航" : "展开市场行情导航"}
-                >
-                  {marketExpanded ? <ChevronDown className="h-[14px] w-[14px]" /> : <ChevronRight className="h-[14px] w-[14px]" />}
-                </button>
               </div>
 
-              {marketExpanded && (
-                <div className="space-y-[4px] pl-[18px]">
-                  {marketAnalysisGroupItems.map((item) => {
-                    const Icon = iconMap[item.href as keyof typeof iconMap] ?? BarChart3;
-                    const active = pathname.startsWith(item.href);
-                    return (
-                      <Link
-                        key={item.href}
-                        href={item.href}
-                        className={cn(
-                          "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
-                          active
-                            ? "border-blue-200 bg-blue-50 text-blue-700"
-                            : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
-                        )}
-                      >
-                        <Icon className="h-[14px] w-[14px]" />
-                        <span>{item.label}</span>
-                      </Link>
-                    );
-                  })}
-                </div>
-              )}
+              <Link
+                href="/backtest"
+                className={cn(
+                  "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
+                  backtestActive
+                    ? "border-blue-200 bg-blue-50 text-blue-700"
+                    : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                )}
+              >
+                <BarChart3 className="h-[14px] w-[14px]" />
+                <span>量化回测</span>
+              </Link>
+            </nav>
+
+            <div className="mt-[14px] rounded-[12px] border border-amber-100 bg-amber-50 px-[10px] py-[9px] text-[11px] text-amber-700">
+              实时行情仅用于盘面验证，不直接覆盖模块因子打分。
             </div>
-
-            <Link
-              href="/backtest"
-              className={cn(
-                "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
-                backtestActive
-                  ? "border-blue-200 bg-blue-50 text-blue-700"
-                  : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
-              )}
-            >
-              <BarChart3 className="h-[14px] w-[14px]" />
-              <span>量化回测</span>
-            </Link>
-          </nav>
-
-          <div className="mt-[14px] rounded-[12px] border border-amber-100 bg-amber-50 px-[10px] py-[9px] text-[11px] text-amber-700">
-            实时行情仅用于盘面验证，不直接覆盖模块因子打分。
           </div>
         </aside>
 
