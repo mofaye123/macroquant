@@ -106,6 +106,10 @@ jobs:
             --input .cache/daily-report/macro-data.json \
             --json-output .cache/daily-report/market-daily.json \
             --md-output .cache/daily-report/market-daily.md \
+            --prefer-ai-markdown \
+            --min-chars 1500 \
+            --max-output-tokens 12288 \
+            --continuation-rounds 10 \
             --publish-output web/public/data/market-daily-latest.json
 
       - name: Publish workflow summary
