@@ -64,6 +64,14 @@ def build_payload(
     useco_script: Path,
     useco_requirements: Path,
 ) -> dict:
+    def safe_source_label(path: Path) -> str:
+        name = path.name
+        if name == "us_economics.py":
+            return "USeco/us_economics.py"
+        if name == "requirements.txt":
+            return "USeco/requirements.txt"
+        return name
+
     macro_inputs = [
         {
             "id": "macro-quant-2026-02",
@@ -90,7 +98,7 @@ def build_payload(
                 "title": item["title"],
                 "date": item["date"],
                 "tags": item["tags"],
-                "sourceFiles": [str(item["path"])],
+                "sourceFiles": [safe_source_label(item["path"])],
                 "preview": pick_preview(lines),
                 "toc": build_toc(lines),
                 "content": "\n\n".join(lines),
@@ -105,7 +113,7 @@ def build_payload(
             "title": "宏观+市场深度合并解读（2026-01 ~ 2026-02）",
             "date": "2026-02-13",
             "tags": ["合并版", "执行框架", "资产配置"],
-            "sourceFiles": [str(macro_doc_a), str(macro_doc_b)],
+            "sourceFiles": [safe_source_label(macro_doc_a), safe_source_label(macro_doc_b)],
             "preview": "把 2026 年 1 月市场深度与 2 月宏观量化框架合并，形成统一的监控触发器与仓位执行模板。",
             "toc": [
                 "一、共同主线：伪稳态与高敏感系统",
@@ -169,7 +177,7 @@ def build_payload(
             "title": "USeco 美国经济数据项目（合并版）",
             "date": datetime.now(timezone.utc).date().isoformat(),
             "tags": ["USeco", "合并版", "requirements", "FRED API"],
-            "sourceFiles": [str(useco_script), str(useco_requirements)],
+            "sourceFiles": [safe_source_label(useco_script), safe_source_label(useco_requirements)],
             "preview": "已合并 requirements 与主脚本结构，便于在「美国经济数据」页面直接阅读项目说明和数据口径。",
             "toc": [
                 "一、依赖与运行环境",
@@ -205,7 +213,7 @@ def build_payload(
             "title": "USeco 原始脚本节选（us_economics.py）",
             "date": datetime.now(timezone.utc).date().isoformat(),
             "tags": ["代码节选", "Streamlit", "量化函数"],
-            "sourceFiles": [str(useco_script)],
+            "sourceFiles": [safe_source_label(useco_script)],
             "preview": "保留原始脚本关键片段（前 240 行），用于对照迁移时的指标定义与函数逻辑。",
             "toc": ["脚本节选（前 240 行）"],
             "content": "\n".join(script_lines[:240]),

@@ -89,7 +89,7 @@ export function DocumentCollectionView({
       {activeDoc ? (
         <SurfaceCard>
           <SectionTitle title={`正文 · ${activeDoc.title}`} />
-          <p className="mt-[8px] text-[12px] text-app-muted">来源文件：{activeDoc.sourceFiles.join("；")}</p>
+          <p className="mt-[8px] text-[12px] text-app-muted">来源：云端文档库（已脱敏）</p>
           {!!activeDoc.toc.length && (
             <div className="mt-[10px] rounded-[12px] border border-app-border bg-app-bg px-[12px] py-[10px]">
               <p className="text-[12px] font-semibold text-app-text">目录预览</p>

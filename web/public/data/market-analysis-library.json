@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-06T13:26:50.868872Z",
+  "generatedAt": "2026-03-06T14:16:40.636630Z",
   "macroReports": [
     {
       "id": "macro-merged-2026-01-02",
@@ -11,8 +11,8 @@
         "资产配置"
       ],
       "sourceFiles": [
-        "/Users/momo/Desktop/研报/宏观量化研报（2026.02 月中）.docx",
-        "/Users/momo/Desktop/研报/市场深度研报（2026.01）.docx"
+        "宏观量化研报（2026.02 月中）.docx",
+        "市场深度研报（2026.01）.docx"
       ],
       "preview": "把 2026 年 1 月市场深度与 2 月宏观量化框架合并，形成统一的监控触发器与仓位执行模板。",
       "toc": [
@@ -37,7 +37,7 @@
         "情景推演"
       ],
       "sourceFiles": [
-        "/Users/momo/Desktop/研报/宏观量化研报（2026.02 月中）.docx"
+        "宏观量化研报（2026.02 月中）.docx"
       ],
       "preview": "宏观量化研报（2026.02）",
       "toc": [
@@ -70,7 +70,7 @@
         "市场复盘"
       ],
       "sourceFiles": [
-        "/Users/momo/Desktop/研报/市场深度研报（2026.01）.docx"
+        "市场深度研报（2026.01）.docx"
       ],
       "preview": "市场深度研报（2026.01）",
       "toc": [
@@ -105,8 +105,8 @@
         "FRED API"
       ],
       "sourceFiles": [
-        "/Users/momo/Desktop/USeco/us_economics.py",
-        "/Users/momo/Desktop/USeco/requirements.txt"
+        "USeco/us_economics.py",
+        "USeco/requirements.txt"
       ],
       "preview": "已合并 requirements 与主脚本结构，便于在「美国经济数据」页面直接阅读项目说明和数据口径。",
       "toc": [
@@ -129,7 +129,7 @@
         "量化函数"
       ],
       "sourceFiles": [
-        "/Users/momo/Desktop/USeco/us_economics.py"
+        "USeco/us_economics.py"
       ],
       "preview": "保留原始脚本关键片段（前 240 行），用于对照迁移时的指标定义与函数逻辑。",
       "toc": [
