@@ -307,21 +307,24 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                 )}
               </div>
 
-              <Link
-                href="/backtest"
-                className={cn(
-                  "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
-                  backtestActive
-                    ? "border-blue-200 bg-blue-50 text-blue-700"
-                    : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
-                )}
-              >
-                <BarChart3 className="h-[14px] w-[14px]" />
-                <span>量化回测</span>
-              </Link>
             </nav>
+          </div>
 
-            <div className="mt-[14px] rounded-[12px] border border-amber-100 bg-amber-50 px-[10px] py-[9px] text-[11px] text-amber-700">
+          <div className="mt-[12px] shrink-0 space-y-[8px]">
+            <Link
+              href="/backtest"
+              className={cn(
+                "flex items-center gap-[10px] rounded-[12px] border px-[10px] py-[9px] text-[12px] font-medium transition-colors",
+                backtestActive
+                  ? "border-blue-200 bg-blue-50 text-blue-700"
+                  : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+              )}
+            >
+              <BarChart3 className="h-[14px] w-[14px]" />
+              <span>量化回测</span>
+            </Link>
+
+            <div className="rounded-[12px] border border-amber-100 bg-amber-50 px-[10px] py-[9px] text-[11px] text-amber-700">
               实时行情仅用于盘面验证，不直接覆盖模块因子打分。
             </div>
           </div>
