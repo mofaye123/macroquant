@@ -80,6 +80,8 @@ def _try_render_ai_markdown(
         "enabled": True,
         "status": status,
         "usedFallback": used_fallback,
+        "requestedModel": str(preview.get("requestedModel", model)),
+        "usedModelFallback": bool(preview.get("usedModelFallback", False)),
         "charCount": int(preview.get("charCount", len(text)) or len(text)),
         "minCharTarget": int(preview.get("minCharTarget", min_chars) or min_chars),
         "finishReason": str(preview.get("finishReason", "")),

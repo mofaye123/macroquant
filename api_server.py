@@ -2357,16 +2357,20 @@ def _call_gemini_daily_preview(
 ) -> Dict[str, Any]:
     started = time.time()
     key = (gemini_api_key or os.getenv("GEMINI_API_KEY") or "").strip()
-    model = (
+    requested_model = (
         gemini_model
         or os.getenv("MARKET_DAILY_AI_MODEL")
         or os.getenv("GEMINI_MODEL")
         or "gemini-2.5-pro"
     ).strip()
+    fallback_model = (os.getenv("MARKET_DAILY_AI_FALLBACK_MODEL") or "gemini-2.5-flash").strip()
+    model_candidates: List[str] = [requested_model]
+    if fallback_model and fallback_model not in model_candidates:
+        model_candidates.append(fallback_model)
     mode = (reasoning_mode or os.getenv("MARKET_DAILY_AI_REASONING_MODE") or "deep_think").strip()
     prompt = _build_market_daily_ai_prompt(daily_payload)
     as_of = str(daily_payload.get("asOfDate", "-"))
-    cache_key = f"{as_of}|{model}|{mode}|{abs(hash(prompt))}|{min_chars_target}|{max_output_tokens}|{continuation_rounds}"
+    cache_key = f"{as_of}|{requested_model}|{mode}|{abs(hash(prompt))}|{min_chars_target}|{max_output_tokens}|{continuation_rounds}"
 
     fallback_ai = (
         daily_payload.get("aiDecision")
@@ -2398,7 +2402,7 @@ def _call_gemini_daily_preview(
         return {
             "status": "pending_config",
             "provider": "gemini",
-            "model": model,
+            "model": requested_model,
             "reasoningMode": mode,
             "previewText": fallback_text,
             "usedFallback": True,
@@ -2419,9 +2423,6 @@ def _call_gemini_daily_preview(
     max_tokens = max(1024, int(max_output_tokens or os.getenv("MARKET_DAILY_AI_PREVIEW_MAX_TOKENS", "4096")))
     rewrite_attempts = max(0, int(os.getenv("MARKET_DAILY_AI_PREVIEW_REWRITE_ATTEMPTS", "2")))
     continue_rounds = max(0, int(continuation_rounds or os.getenv("MARKET_DAILY_AI_PREVIEW_CONTINUE_ROUNDS", "6")))
-    endpoint = f"https://generativelanguage.googleapis.com/v1beta/models/{urllib.parse.quote(model, safe='')}:generateContent"
-    request_url = f"{endpoint}?key={urllib.parse.quote(key, safe='')}"
-
     def _cache_result(result: Dict[str, Any]) -> None:
         cached_payload = copy.deepcopy(result)
         cached_payload["cached"] = False
@@ -2436,7 +2437,12 @@ def _call_gemini_daily_preview(
             for stale_key in list(items.keys())[: len(items) - 64]:
                 items.pop(stale_key, None)
 
-    def _invoke_once(prompt_text: str) -> tuple[str, str]:
+    def _invoke_once(prompt_text: str, model_name: str) -> tuple[str, str]:
+        endpoint = (
+            "https://generativelanguage.googleapis.com/v1beta/models/"
+            f"{urllib.parse.quote(model_name, safe='')}:generateContent"
+        )
+        request_url = f"{endpoint}?key={urllib.parse.quote(key, safe='')}"
         body = {
             "contents": [{"parts": [{"text": prompt_text}]}],
             "generationConfig": {
@@ -2480,159 +2486,173 @@ def _call_gemini_daily_preview(
         return (current.rstrip() + "\n\n" + addon).strip()
 
     last_error = "unknown"
-    for attempt in range(max_attempts):
-        try:
-            generated_text, finish_reason = _invoke_once(prompt)
-            preview_text = generated_text or fallback_text
-            char_count = len(preview_text)
-            if generated_text and char_count < min_chars and rewrite_attempts > 0:
-                for rewrite_idx in range(rewrite_attempts):
-                    strict_prompt = (
-                        prompt
-                        + "\n\n"
-                        + f"你上一版只写了约 {char_count} 字，未达到 1500-2000 字要求。"
-                        + "请重新完整输出一版，不要省略以下一级标题："
-                        + "一、热点要闻；二、市场复盘；三、深度个股解读；四、加密货币项目动态；五、今日市场日历；免责声明。"
-                        + "不要只写提纲，必须给出细节。"
-                    )
-                    try:
-                        rewrite_text, rewrite_finish = _invoke_once(strict_prompt)
-                    except Exception:
-                        break
-                    if len(rewrite_text) > len(generated_text):
-                        generated_text = rewrite_text
-                        finish_reason = rewrite_finish or finish_reason
-                        preview_text = generated_text
-                        char_count = len(preview_text)
-                    if char_count >= min_chars:
-                        break
-                    if rewrite_idx < rewrite_attempts - 1:
-                        time.sleep(1.0)
-
-            if generated_text and len(generated_text) < min_chars and continue_rounds > 0:
-                for cont_idx in range(continue_rounds):
-                    remaining_chars = max(220, min_chars - len(generated_text))
-                    continuation_prompt = textwrap.dedent(
-                        f"""
-                        你上一条输出尚未完成。请在不重复前文的前提下继续写同一篇日报正文。
-                        要求：
-                        - 只输出“续写内容”，不要重复已经写过的句子和标题；
-                        - 优先补全还没写完的一级章节（热点要闻/市场复盘/深度个股解读/加密货币项目动态/今日市场日历/免责声明）；
-                        - 本次至少补写 {remaining_chars} 字；
-                        - 保持同样的专业风格。
-
-                        === 已有正文（末段）开始 ===
-                        {generated_text[-4500:]}
-                        === 已有正文（末段）结束 ===
-                        """
-                    ).strip()
-                    try:
-                        continuation_text, continuation_finish = _invoke_once(continuation_prompt)
-                    except Exception:
-                        break
-                    merged_text = _append_continuation(generated_text, continuation_text)
-                    if len(merged_text) <= len(generated_text):
-                        break
-                    generated_text = merged_text
-                    finish_reason = continuation_finish or finish_reason
-                    if len(generated_text) >= min_chars:
-                        break
-                    if cont_idx < continue_rounds - 1:
-                        time.sleep(0.8)
-
-            used_fallback = not bool(generated_text)
-            too_short = bool(generated_text) and len(generated_text) < min_chars
-            result = {
-                "status": "ok",
-                "provider": "gemini",
-                "model": model,
-                "reasoningMode": mode,
-                "previewText": preview_text,
-                "usedFallback": used_fallback,
-                "rateLimited": False,
-                "retryAfterSec": None,
-                "cached": False,
-                "charCount": len(preview_text),
-                "minCharTarget": min_chars,
-                "tooShort": too_short,
-                "finishReason": finish_reason or ("FALLBACK_EMPTY" if used_fallback else "UNKNOWN"),
-                "detail": (
-                    f"Gemini preview generated ({len(preview_text)} chars, finishReason={finish_reason or 'unknown'})."
-                    + (" Output shorter than target length." if too_short else "")
-                ),
-                "latencyMs": int((time.time() - started) * 1000),
-                "promptDigest": prompt[:600],
-            }
-            _cache_result(result)
-            return result
-        except urllib.error.HTTPError as exc:
-            status_code = int(getattr(exc, "code", 0) or 0)
-            retry_after = _parse_retry_after_seconds(
-                exc.headers.get("Retry-After") if getattr(exc, "headers", None) is not None else None
-            )
-            error_body = ""
+    for model_idx, active_model in enumerate(model_candidates):
+        model_switched = active_model != requested_model
+        for attempt in range(max_attempts):
             try:
-                error_body = exc.read().decode("utf-8", errors="ignore")[:320]
-            except Exception:
+                generated_text, finish_reason = _invoke_once(prompt, active_model)
+                preview_text = generated_text or fallback_text
+                char_count = len(preview_text)
+                if generated_text and char_count < min_chars and rewrite_attempts > 0:
+                    for rewrite_idx in range(rewrite_attempts):
+                        strict_prompt = (
+                            prompt
+                            + "\n\n"
+                            + f"你上一版只写了约 {char_count} 字，未达到 1500-2000 字要求。"
+                            + "请重新完整输出一版，不要省略以下一级标题："
+                            + "一、热点要闻；二、市场复盘；三、深度个股解读；四、加密货币项目动态；五、今日市场日历；免责声明。"
+                            + "不要只写提纲，必须给出细节。"
+                        )
+                        try:
+                            rewrite_text, rewrite_finish = _invoke_once(strict_prompt, active_model)
+                        except Exception:
+                            break
+                        if len(rewrite_text) > len(generated_text):
+                            generated_text = rewrite_text
+                            finish_reason = rewrite_finish or finish_reason
+                            preview_text = generated_text
+                            char_count = len(preview_text)
+                        if char_count >= min_chars:
+                            break
+                        if rewrite_idx < rewrite_attempts - 1:
+                            time.sleep(1.0)
+
+                if generated_text and len(generated_text) < min_chars and continue_rounds > 0:
+                    for cont_idx in range(continue_rounds):
+                        remaining_chars = max(220, min_chars - len(generated_text))
+                        continuation_prompt = textwrap.dedent(
+                            f"""
+                            你上一条输出尚未完成。请在不重复前文的前提下继续写同一篇日报正文。
+                            要求：
+                            - 只输出“续写内容”，不要重复已经写过的句子和标题；
+                            - 优先补全还没写完的一级章节（热点要闻/市场复盘/深度个股解读/加密货币项目动态/今日市场日历/免责声明）；
+                            - 本次至少补写 {remaining_chars} 字；
+                            - 保持同样的专业风格。
+
+                            === 已有正文（末段）开始 ===
+                            {generated_text[-4500:]}
+                            === 已有正文（末段）结束 ===
+                            """
+                        ).strip()
+                        try:
+                            continuation_text, continuation_finish = _invoke_once(continuation_prompt, active_model)
+                        except Exception:
+                            break
+                        merged_text = _append_continuation(generated_text, continuation_text)
+                        if len(merged_text) <= len(generated_text):
+                            break
+                        generated_text = merged_text
+                        finish_reason = continuation_finish or finish_reason
+                        if len(generated_text) >= min_chars:
+                            break
+                        if cont_idx < continue_rounds - 1:
+                            time.sleep(0.8)
+
+                used_fallback = not bool(generated_text)
+                too_short = bool(generated_text) and len(generated_text) < min_chars
+                result = {
+                    "status": "ok",
+                    "provider": "gemini",
+                    "model": active_model,
+                    "requestedModel": requested_model,
+                    "usedModelFallback": model_switched,
+                    "reasoningMode": mode,
+                    "previewText": preview_text,
+                    "usedFallback": used_fallback,
+                    "rateLimited": False,
+                    "retryAfterSec": None,
+                    "cached": False,
+                    "charCount": len(preview_text),
+                    "minCharTarget": min_chars,
+                    "tooShort": too_short,
+                    "finishReason": finish_reason or ("FALLBACK_EMPTY" if used_fallback else "UNKNOWN"),
+                    "detail": (
+                        f"Gemini preview generated ({len(preview_text)} chars, finishReason={finish_reason or 'unknown'})."
+                        + (" Output shorter than target length." if too_short else "")
+                    ),
+                    "latencyMs": int((time.time() - started) * 1000),
+                    "promptDigest": prompt[:600],
+                }
+                _cache_result(result)
+                return result
+            except urllib.error.HTTPError as exc:
+                status_code = int(getattr(exc, "code", 0) or 0)
+                retry_after = _parse_retry_after_seconds(
+                    exc.headers.get("Retry-After") if getattr(exc, "headers", None) is not None else None
+                )
                 error_body = ""
-            last_error = f"HTTP {status_code}: {exc.reason}"
-            if status_code == 429 and attempt < max_attempts - 1:
-                wait_seconds = retry_after or min(2 ** attempt, 8)
-                time.sleep(wait_seconds)
-                continue
-            if status_code >= 500 and attempt < max_attempts - 1:
-                time.sleep(min(2 ** attempt, 4))
-                continue
-            result = {
-                "status": "degraded",
-                "provider": "gemini",
-                "model": model,
-                "reasoningMode": mode,
-                "previewText": fallback_text,
-                "usedFallback": True,
-                "rateLimited": status_code == 429,
-                "retryAfterSec": retry_after,
-                "cached": False,
-                "charCount": len(fallback_text),
-                "minCharTarget": min_chars,
-                "tooShort": len(fallback_text) < min_chars,
-                "finishReason": f"HTTP_{status_code}",
-                "detail": f"Gemini preview failed: HTTP {status_code} {exc.reason}. {error_body}".strip(),
-                "latencyMs": int((time.time() - started) * 1000),
-                "promptDigest": prompt[:600],
-            }
-            _cache_result(result)
-            return result
-        except Exception as exc:
-            last_error = str(exc)
-            if attempt < max_attempts - 1:
-                time.sleep(min(2 ** attempt, 4))
-                continue
-            result = {
-                "status": "degraded",
-                "provider": "gemini",
-                "model": model,
-                "reasoningMode": mode,
-                "previewText": fallback_text,
-                "usedFallback": True,
-                "rateLimited": False,
-                "retryAfterSec": None,
-                "cached": False,
-                "charCount": len(fallback_text),
-                "minCharTarget": min_chars,
-                "tooShort": len(fallback_text) < min_chars,
-                "finishReason": "EXCEPTION",
-                "detail": f"Gemini preview failed: {exc}",
-                "latencyMs": int((time.time() - started) * 1000),
-                "promptDigest": prompt[:600],
-            }
-            _cache_result(result)
-            return result
+                try:
+                    error_body = exc.read().decode("utf-8", errors="ignore")[:320]
+                except Exception:
+                    error_body = ""
+                last_error = f"HTTP {status_code}: {exc.reason} (model={active_model})"
+                if status_code == 429 and attempt < max_attempts - 1:
+                    wait_seconds = retry_after or min(2 ** attempt, 8)
+                    time.sleep(wait_seconds)
+                    continue
+                if status_code >= 500 and attempt < max_attempts - 1:
+                    time.sleep(min(2 ** attempt, 4))
+                    continue
+                if status_code == 429 and model_idx < len(model_candidates) - 1:
+                    break
+                result = {
+                    "status": "degraded",
+                    "provider": "gemini",
+                    "model": active_model,
+                    "requestedModel": requested_model,
+                    "usedModelFallback": model_switched,
+                    "reasoningMode": mode,
+                    "previewText": fallback_text,
+                    "usedFallback": True,
+                    "rateLimited": status_code == 429,
+                    "retryAfterSec": retry_after,
+                    "cached": False,
+                    "charCount": len(fallback_text),
+                    "minCharTarget": min_chars,
+                    "tooShort": len(fallback_text) < min_chars,
+                    "finishReason": f"HTTP_{status_code}",
+                    "detail": f"Gemini preview failed: HTTP {status_code} {exc.reason}. {error_body}".strip(),
+                    "latencyMs": int((time.time() - started) * 1000),
+                    "promptDigest": prompt[:600],
+                }
+                _cache_result(result)
+                return result
+            except Exception as exc:
+                last_error = f"{exc} (model={active_model})"
+                if attempt < max_attempts - 1:
+                    time.sleep(min(2 ** attempt, 4))
+                    continue
+                if model_idx < len(model_candidates) - 1:
+                    break
+                result = {
+                    "status": "degraded",
+                    "provider": "gemini",
+                    "model": active_model,
+                    "requestedModel": requested_model,
+                    "usedModelFallback": model_switched,
+                    "reasoningMode": mode,
+                    "previewText": fallback_text,
+                    "usedFallback": True,
+                    "rateLimited": False,
+                    "retryAfterSec": None,
+                    "cached": False,
+                    "charCount": len(fallback_text),
+                    "minCharTarget": min_chars,
+                    "tooShort": len(fallback_text) < min_chars,
+                    "finishReason": "EXCEPTION",
+                    "detail": f"Gemini preview failed: {exc}",
+                    "latencyMs": int((time.time() - started) * 1000),
+                    "promptDigest": prompt[:600],
+                }
+                _cache_result(result)
+                return result
 
     result = {
         "status": "degraded",
         "provider": "gemini",
-        "model": model,
+        "model": requested_model,
+        "requestedModel": requested_model,
+        "usedModelFallback": False,
         "reasoningMode": mode,
         "previewText": fallback_text,
         "usedFallback": True,
