@@ -1,24 +1,58 @@
 "use client";
 
+import { useEffect, useState } from "react";
+
+import { DocumentCollectionView } from "@/components/market-analysis/document-collection-view";
 import { AppShell } from "@/components/layout/app-shell";
-import { SectionTitle } from "@/components/ui/section-title";
-import { SurfaceCard } from "@/components/ui/surface-card";
+import {
+  MARKET_ANALYSIS_LIBRARY_PATH,
+  type MarketAnalysisLibrary,
+} from "@/lib/market-analysis-library";
 import { useMacroData } from "@/lib/use-macro-data";
 
 export default function MacroReportPage() {
   const dataState = useMacroData();
+  const [library, setLibrary] = useState<MarketAnalysisLibrary | null>(null);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      try {
+        const response = await fetch(
+          `${MARKET_ANALYSIS_LIBRARY_PATH}?t=${Date.now()}`,
+          { cache: "no-store" }
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP ${response.status}`);
+        }
+        const payload = (await response.json()) as MarketAnalysisLibrary;
+        if (alive) {
+          setLibrary(payload);
+          setError(null);
+        }
+      } catch (err) {
+        if (alive) {
+          setLibrary(null);
+          setError(err instanceof Error ? err.message : "读取文档库失败");
+        }
+      }
+    };
+    void load();
+    return () => {
+      alive = false;
+    };
+  }, [dataState.payload.generatedAt]);
 
   return (
     <AppShell dataState={dataState}>
-      <div className="space-y-[16px]">
-        <SurfaceCard>
-          <SectionTitle title="宏观报告" />
-          <div className="mt-[12px] space-y-[10px] text-[14px] leading-relaxed text-app-muted">
-            <p>这里预留给日常/周度宏观摘要、事件解读和策略备注。</p>
-            <p>当前先完成栏目结构，后续可以把固定模板、自动摘要或人工研判内容接进来。</p>
-          </div>
-        </SurfaceCard>
-      </div>
+      <DocumentCollectionView
+        title="宏观报告"
+        description="已接入本地研报文档，支持方框式目录预览和正文阅读。包含两份原始报告和一份合并执行版。"
+        documents={library?.macroReports ?? []}
+        loading={!library && !error}
+        error={error}
+      />
     </AppShell>
   );
 }
