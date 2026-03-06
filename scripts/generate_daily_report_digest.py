@@ -208,6 +208,16 @@ def main() -> int:
         if ai_text:
             rendered_markdown = ai_text.rstrip() + "\n"
             markdown_source = "gemini"
+            ai_decision = daily.get("aiDecision")
+            if not isinstance(ai_decision, dict):
+                ai_decision = {}
+            ai_decision["status"] = "generated"
+            if ai_meta and ai_meta.get("model"):
+                ai_decision["model"] = ai_meta.get("model")
+            if ai_meta and ai_meta.get("reasoningMode"):
+                ai_decision["reasoningMode"] = ai_meta.get("reasoningMode")
+            daily["aiDecision"] = ai_decision
+            daily["claudeDecision"] = dict(ai_decision)
 
     if not rendered_markdown:
         rendered_markdown = _render_markdown(daily)

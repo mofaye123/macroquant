@@ -9,6 +9,10 @@ on:
         description: "Manual backfill days (0=today/latest, 1=yesterday)"
         required: false
         default: "0"
+      require_gemini:
+        description: "Fail workflow if published report is not Gemini-generated"
+        required: false
+        default: "true"
 
 permissions:
   contents: write
@@ -78,6 +82,10 @@ jobs:
         if: steps.publish_window.outputs.should_run == 'true'
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
+          MARKET_DAILY_AI_MODEL: ${{ vars.MARKET_DAILY_AI_MODEL }}
+          MARKET_DAILY_AI_REASONING_MODE: deep_think
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
             DAYS_AGO="${{ github.event.inputs.days_ago || '0' }}"
@@ -111,6 +119,28 @@ jobs:
             --max-output-tokens 12288 \
             --continuation-rounds 10 \
             --publish-output web/public/data/market-daily-latest.json
+
+      - name: Validate Gemini generation result
+        if: steps.publish_window.outputs.should_run == 'true'
+        env:
+          REQUIRE_GEMINI_INPUT: ${{ github.event.inputs.require_gemini || 'true' }}
+        run: |
+          SOURCE="$(jq -r '.markdownSource // "unknown"' web/public/data/market-daily-latest.json)"
+          AI_STATUS="$(jq -r '.daily.aiDecision.status // "unknown"' web/public/data/market-daily-latest.json)"
+          AI_RENDER="$(jq -c '.aiRender // {}' web/public/data/market-daily-latest.json)"
+          echo "Daily markdownSource=${SOURCE}"
+          echo "Daily aiDecision.status=${AI_STATUS}"
+          echo "Daily aiRender=${AI_RENDER}"
+
+          REQUIRE_GEMINI="${REQUIRE_GEMINI_INPUT}"
+          if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
+            REQUIRE_GEMINI="true"
+          fi
+
+          if [ "${REQUIRE_GEMINI}" = "true" ] && [ "${SOURCE}" != "gemini" ]; then
+            echo "::error::Daily report is not Gemini-generated (markdownSource=${SOURCE})."
+            exit 1
+          fi
 
       - name: Publish workflow summary
         if: steps.publish_window.outputs.should_run == 'true'
