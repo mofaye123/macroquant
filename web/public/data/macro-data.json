@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-06T11:39:13Z",
+  "generatedAt": "2026-03-06T14:07:40Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -82,8 +82,8 @@
   },
   "dashboard": {
     "overallScore": {
-      "value": 50.5,
-      "wow": 1.5,
+      "value": 49.3,
+      "wow": 0.3,
       "statusTags": [
         {
           "label": "TGA 抽水",
@@ -120,8 +120,8 @@
         "title": "资金价格与摩擦",
         "subtitle": "Funding",
         "weight": "20%",
-        "score": 51.6,
-        "change": -1.1,
+        "score": 48.7,
+        "change": -4.0,
         "description": "SOFR高于IORB，资金摩擦仍有抬升迹象。"
       },
       {
@@ -150,9 +150,9 @@
         "title": "外部冲击与汇率",
         "subtitle": "External",
         "weight": "15%",
-        "score": 37.3,
-        "change": -2.3,
-        "description": "美元指数 99.25，外部冲击处于中性偏缓状态。"
+        "score": 33.3,
+        "change": -6.3,
+        "description": "美元指数 99.34，外部冲击处于中性偏缓状态。"
       },
       {
         "id": "F",
@@ -170,8 +170,8 @@
         "title": "风险偏好",
         "subtitle": "Risk",
         "weight": "7.5%",
-        "score": 5.2,
-        "change": -11.9,
+        "score": 4.4,
+        "change": -12.6,
         "description": "风险偏好由波动率与动量共同驱动，需关注趋势持续性。"
       }
     ],
@@ -7370,11 +7370,11 @@
       },
       {
         "date": "2026-03-05",
-        "value": 49.76
+        "value": 49.2
       },
       {
         "date": "2026-03-06",
-        "value": 50.49
+        "value": 49.26
       }
     ],
     "contributors": [
@@ -7389,24 +7389,24 @@
         "bucket": "Flow"
       },
       {
+        "name": "外部冲击与汇率",
+        "delta": -0.95,
+        "bucket": "Flow"
+      },
+      {
+        "name": "风险偏好",
+        "delta": -0.95,
+        "bucket": "Flow"
+      },
+      {
         "name": "信用压力",
         "delta": 0.89,
         "bucket": "Level"
       },
       {
-        "name": "风险偏好",
-        "delta": -0.89,
-        "bucket": "Flow"
-      },
-      {
-        "name": "国债期限结构",
-        "delta": -0.65,
-        "bucket": "Flow"
-      },
-      {
-        "name": "外部冲击与汇率",
-        "delta": -0.35,
-        "bucket": "Flow"
+        "name": "资金价格与摩擦",
+        "delta": -0.8,
+        "bucket": "Penalty"
       }
     ],
     "realtimeSnapshots": [
@@ -7418,14 +7418,14 @@
       },
       {
         "label": "DXY",
-        "value": "99.25",
-        "delta": "-0.07%",
-        "state": "positive"
+        "value": "99.34",
+        "delta": "+0.02%",
+        "state": "negative"
       },
       {
         "label": "VIX",
-        "value": "24.4",
-        "delta": "+0.67 · +2.82%",
+        "value": "27.4",
+        "delta": "+3.66 · +15.41%",
         "state": "negative"
       },
       {
@@ -7438,11 +7438,6 @@
     "liftDrag": {
       "lifts": [
         {
-          "name": "Funding Friction",
-          "delta": 0.46,
-          "bucket": "Flow"
-        },
-        {
           "name": "HY Credit",
           "delta": 0.44,
           "bucket": "Level"
@@ -7450,6 +7445,11 @@
         {
           "name": "3m10s Curve",
           "delta": 0.29,
+          "bucket": "Flow"
+        },
+        {
+          "name": "HY Trend",
+          "delta": 0.16,
           "bucket": "Flow"
         }
       ],
@@ -7465,16 +7465,16 @@
           "bucket": "Penalty"
         },
         {
-          "name": "SOFR Policy",
+          "name": "VIX/VXV",
           "delta": -0.69,
           "bucket": "Level"
         }
       ],
       "summary": {
-        "level": -2.14,
-        "flow": -0.33,
+        "level": -2.15,
+        "flow": -1.52,
         "penalty": -0.69,
-        "structural": -2.83,
+        "structural": -2.84,
         "driver": "结构性变化主导"
       }
     },
@@ -11007,7 +11007,7 @@
             },
             {
               "week": "W10",
-              "score": 51.6,
+              "score": 48.7,
               "bucket": "warning"
             }
           ]
@@ -15822,7 +15822,7 @@
             },
             {
               "week": "W10",
-              "score": 37.3,
+              "score": 33.3,
               "bucket": "warning"
             }
           ]
@@ -19032,7 +19032,7 @@
             },
             {
               "week": "W10",
-              "score": 5.2,
+              "score": 4.4,
               "bucket": "critical"
             }
           ]
@@ -19421,7 +19421,7 @@
         },
         {
           "title": "权益表现",
-          "headline": "SPX 6831 / VIX 24.4",
+          "headline": "SPX 6831 / VIX 27.4",
           "detail": "风格切换/补跌监测",
           "changes": [
             {
@@ -19431,20 +19431,20 @@
             },
             {
               "label": "VIX",
-              "value": "+0.67 · +2.82%",
+              "value": "+3.66 · +15.41%",
               "tone": "positive"
             }
           ]
         },
         {
           "title": "信用与美元",
-          "headline": "DXY 99.25 / HY 2.97",
-          "detail": "WTI 84.41",
+          "headline": "DXY 99.34 / HY 2.97",
+          "detail": "WTI 87.53",
           "changes": [
             {
               "label": "DXY",
-              "value": "-0.07%",
-              "tone": "negative"
+              "value": "+0.02%",
+              "tone": "positive"
             },
             {
               "label": "HY",
@@ -19453,7 +19453,7 @@
             },
             {
               "label": "WTI",
-              "value": "+4.20%",
+              "value": "+8.05%",
               "tone": "positive"
             }
           ]
@@ -19491,8 +19491,8 @@
         },
         {
           "asset": "DXY",
-          "value": 99.25,
-          "delta": "-0.07%"
+          "value": 99.34,
+          "delta": "+0.02%"
         },
         {
           "asset": "SP500",
@@ -19506,13 +19506,13 @@
         },
         {
           "asset": "VIX",
-          "value": 24.42,
-          "delta": "+0.67 · +2.82%"
+          "value": 27.41,
+          "delta": "+3.66 · +15.41%"
         },
         {
           "asset": "WTI",
-          "value": 84.41,
-          "delta": "+4.20%"
+          "value": 87.53,
+          "delta": "+8.05%"
         }
       ]
     },
@@ -28809,11 +28809,11 @@
             },
             {
               "date": "2026-03-05",
-              "value": 3.67
+              "value": 3.66
             },
             {
               "date": "2026-03-06",
-              "value": 3.67
+              "value": 3.66
             }
           ],
           "srf": [
@@ -37785,11 +37785,11 @@
             },
             {
               "date": "2026-03-05",
-              "value": 49.76
+              "value": 49.2
             },
             {
               "date": "2026-03-06",
-              "value": 50.49
+              "value": 49.26
             }
           ],
           "spx": [
@@ -46458,7 +46458,7 @@
         {
           "level": "orange",
           "title": "B模块 (资金面): 资金价格偏贵",
-          "trigger": "SOFR 3.67% 高于 IORB 3.65%。",
+          "trigger": "SOFR 3.66% 高于 IORB 3.65%。",
           "off": "SOFR 回落至 IORB 下方并持续 2-3 天。"
         },
         {
@@ -46476,7 +46476,7 @@
         {
           "level": "red",
           "title": "G模块 (风险偏好): 风险厌恶升温",
-          "trigger": "VIX=24.4 / VIX/VXV=1.10。",
+          "trigger": "VIX=27.4 / VIX/VXV=1.23。",
           "off": "VIX 回落至 20 以下且 VIX/VXV 低于 0.95。"
         }
       ],
@@ -64129,14 +64129,14 @@
       "factors": [
         {
           "name": "SOFR Policy",
-          "score": 18.7,
-          "change": -8.7,
+          "score": 18.8,
+          "change": -8.5,
           "contribution": "40%"
         },
         {
           "name": "Friction Composite",
-          "score": 73.5,
-          "change": 3.9,
+          "score": 68.6,
+          "change": -1.0,
           "contribution": "60%"
         },
         {
@@ -64147,14 +64147,14 @@
         },
         {
           "name": "F1 Corridor",
-          "score": 92.4,
-          "change": 7.0,
+          "score": 97.5,
+          "change": 12.1,
           "contribution": "Flow"
         },
         {
           "name": "F2 Corridor",
-          "score": 46.0,
-          "change": 5.2,
+          "score": 51.0,
+          "change": 10.2,
           "contribution": "Flow"
         },
         {
@@ -64167,26 +64167,26 @@
       "snapshots": [
         {
           "label": "B 模块当前分数",
-          "value": "51.6",
-          "delta": "-1.1",
+          "value": "48.7",
+          "delta": "-4.0",
           "state": "negative"
         },
         {
           "label": "近四周均值",
-          "value": "51.3",
+          "value": "51.0",
           "delta": "稳定",
           "state": "neutral"
         },
         {
           "label": "13周波动(σ)",
-          "value": "7.57",
+          "value": "7.58",
           "delta": "score pt",
           "state": "neutral"
         },
         {
           "label": "分数状态",
           "value": "中性",
-          "delta": "51.6 / 100",
+          "delta": "48.7 / 100",
           "state": "neutral"
         }
       ],
@@ -70901,11 +70901,11 @@
         },
         {
           "date": "2026-03-05",
-          "value": 51.68
+          "value": 48.87
         },
         {
           "date": "2026-03-06",
-          "value": 51.55
+          "value": 48.68
         }
       ],
       "auxiliarySeries": [
@@ -84344,11 +84344,11 @@
             },
             {
               "date": "2026-03-05",
-              "value": 18.98
+              "value": 19.32
             },
             {
               "date": "2026-03-06",
-              "value": 18.65
+              "value": 18.84
             }
           ],
           "color": "#2563eb"
@@ -91066,11 +91066,11 @@
             },
             {
               "date": "2026-03-05",
-              "value": 73.48
+              "value": 68.57
             },
             {
               "date": "2026-03-06",
-              "value": 73.48
+              "value": 68.57
             }
           ],
           "color": "#8b5cf6"
@@ -97806,11 +97806,11 @@
           },
           {
             "date": "2026-03-05",
-            "value": 51.68
+            "value": 48.87
           },
           {
             "date": "2026-03-06",
-            "value": 51.55
+            "value": 48.68
           }
         ],
         "corridor": [
@@ -117984,11 +117984,11 @@
           },
           {
             "date": "2026-03-05",
-            "value": 3.67
+            "value": 3.66
           },
           {
             "date": "2026-03-06",
-            "value": 3.67
+            "value": 3.66
           }
         ],
         "iorb": [
@@ -144904,11 +144904,11 @@
           },
           {
             "date": "2026-03-05",
-            "value": 2.0
+            "value": 1.0
           },
           {
             "date": "2026-03-06",
-            "value": 2.0
+            "value": 1.0
           }
         ],
         "srf": [
@@ -151723,10 +151723,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -151757,36 +151757,36 @@
             22.29,
             2.97,
             1.74,
-            84.41,
-            99.247,
-            24.42,
+            87.53,
+            99.343,
+            27.41,
             null,
-            3.6682,
-            3.6724,
-            0.0184,
-            0.0295,
-            33.6508,
+            3.6678,
+            3.6716,
+            0.0176,
+            0.0281,
+            33.8413,
             -15.0,
             1.0,
-            18.6508,
-            18.6508,
+            18.8413,
+            18.8413,
             0.15,
-            0.1333,
-            1.1333,
-            0.1333,
+            0.0667,
+            1.0667,
+            0.2,
             0.6667,
             1.6667,
             0.2667,
-            92.3854,
-            46.0472,
-            67.0123,
+            97.4881,
+            51.0348,
+            36.89,
             4.7453,
             0.0,
             4.7453,
             95.2547,
             0.1071,
-            73.4838,
-            51.5506
+            68.5736,
+            48.6807
           ],
           [
             "2026-03-05",
@@ -151795,10 +151795,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -151833,32 +151833,32 @@
             99.32,
             23.75,
             null,
-            3.6712,
-            3.6708,
-            0.0172,
-            0.0276,
-            33.9841,
+            3.6711,
+            3.6704,
+            0.0168,
+            0.0268,
+            34.3175,
             -15.0,
             1.0,
-            18.9841,
-            18.9841,
+            19.3175,
+            19.3175,
             0.15,
-            0.1333,
-            1.1333,
-            0.1333,
+            0.0667,
+            1.0667,
+            0.2,
             0.6667,
             1.6667,
             0.2667,
-            92.3854,
-            46.0472,
-            67.0123,
+            97.4881,
+            51.0348,
+            36.89,
             4.7453,
             0.0,
             4.7453,
             95.2547,
             0.1071,
-            73.4838,
-            51.6839
+            68.5736,
+            48.8711
           ],
           [
             "2026-03-04",
@@ -301804,10 +301804,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -301838,9 +301838,9 @@
             22.29,
             2.97,
             1.74,
-            84.41,
-            99.247,
-            24.42,
+            87.53,
+            99.343,
+            27.41,
             null,
             66.1746,
             77.3095,
@@ -301866,10 +301866,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -442379,10 +442379,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -442413,9 +442413,9 @@
             22.29,
             2.97,
             1.74,
-            84.41,
-            99.247,
-            24.42,
+            87.53,
+            99.343,
+            27.41,
             null,
             64.254,
             92.0,
@@ -442439,10 +442439,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -550379,7 +550379,7 @@
       "moduleId": "E",
       "title": "E 模块 · 外部冲击与汇率",
       "subtitle": "External",
-      "overview": "美元指数 99.25，外部冲击处于中性偏缓状态。",
+      "overview": "美元指数 99.34，外部冲击处于中性偏缓状态。",
       "factors": [
         {
           "name": "Broad USD",
@@ -550389,8 +550389,8 @@
         },
         {
           "name": "DXY",
-          "score": 29.0,
-          "change": -21.6,
+          "score": 28.5,
+          "change": -22.1,
           "contribution": "20%"
         },
         {
@@ -550401,23 +550401,23 @@
         },
         {
           "name": "Energy",
-          "score": 38.4,
-          "change": 4.7,
+          "score": 25.4,
+          "change": -8.3,
           "contribution": "30%"
         }
       ],
       "snapshots": [
         {
           "label": "E 模块当前分数",
-          "value": "37.3",
-          "delta": "-2.3",
+          "value": "33.3",
+          "delta": "-6.3",
           "state": "negative"
         },
         {
           "label": "DXY",
-          "value": "99.25",
-          "delta": "-0.07%",
-          "state": "positive"
+          "value": "99.34",
+          "delta": "+0.02%",
+          "state": "negative"
         },
         {
           "label": "Broad USD",
@@ -550427,20 +550427,20 @@
         },
         {
           "label": "WTI",
-          "value": "84.41",
-          "delta": "+4.20%",
+          "value": "87.53",
+          "delta": "+8.05%",
           "state": "negative"
         },
         {
           "label": "Oil Shock",
-          "value": "短期升温",
-          "delta": "-5分 · +4.20%",
+          "value": "通胀冲击",
+          "delta": "-18分 · +8.05%",
           "state": "negative"
         },
         {
           "label": "分数状态",
           "value": "偏紧",
-          "delta": "37.3 / 100",
+          "delta": "33.3 / 100",
           "state": "negative"
         }
       ],
@@ -557643,7 +557643,7 @@
         },
         {
           "date": "2026-03-06",
-          "value": 37.34
+          "value": 33.34
         }
       ],
       "auxiliarySeries": [
@@ -572054,7 +572054,7 @@
             },
             {
               "date": "2026-03-06",
-              "value": 29.03
+              "value": 28.54
             }
           ],
           "color": "#10b981"
@@ -579260,7 +579260,7 @@
             },
             {
               "date": "2026-03-06",
-              "value": 38.42
+              "value": 25.42
             }
           ],
           "color": "#f97316"
@@ -586484,7 +586484,7 @@
           },
           {
             "date": "2026-03-06",
-            "value": 37.34
+            "value": 33.34
           }
         ],
         "energyBase": [
@@ -600888,7 +600888,7 @@
           },
           {
             "date": "2026-03-06",
-            "value": 38.42
+            "value": 25.42
           }
         ],
         "oilShock": [
@@ -608090,7 +608090,7 @@
           },
           {
             "date": "2026-03-06",
-            "value": -5.0
+            "value": -18.0
           }
         ],
         "wti": [
@@ -615292,7 +615292,7 @@
           },
           {
             "date": "2026-03-06",
-            "value": 84.41
+            "value": 87.53
           }
         ],
         "dxy": [
@@ -622494,7 +622494,7 @@
           },
           {
             "date": "2026-03-06",
-            "value": 99.25
+            "value": 99.34
           }
         ]
       },
@@ -622578,10 +622578,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -622612,14 +622612,14 @@
             22.29,
             2.97,
             1.74,
-            84.41,
-            99.247,
-            24.42,
+            87.53,
+            99.343,
+            27.41,
             null,
             -0.0149,
             71.6508,
-            0.0084,
-            29.0317,
+            0.0094,
+            28.5397,
             0.0043,
             24.1905,
             6.6032,
@@ -622630,17 +622630,17 @@
             -0.2525,
             86.7937,
             43.4206,
-            84.41,
-            99.247,
+            87.53,
+            99.343,
             6830.71,
-            24.42,
+            27.41,
             2.97,
-            -5.0,
-            "短期升温",
-            "WTI 单日上涨 >= 3%",
-            4.197,
-            38.4206,
-            37.337
+            -18.0,
+            "通胀冲击",
+            "WTI 单日暴涨 >= 8%",
+            8.0484,
+            25.4206,
+            33.3386
           ],
           [
             "2026-03-05",
@@ -622649,10 +622649,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -779332,10 +779332,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -779366,9 +779366,9 @@
             22.29,
             2.97,
             1.74,
-            84.41,
-            99.247,
-            24.42,
+            87.53,
+            99.343,
+            27.41,
             null,
             2.97,
             41.8254,
@@ -779383,10 +779383,10 @@
             2.793,
             3015531.0,
             3.64,
-            3.67,
+            3.66,
             3.65,
             3.5,
-            3.65,
+            3.63,
             0.001,
             3.75,
             3.71,
@@ -871136,14 +871136,14 @@
       "factors": [
         {
           "name": "VIX/VXV Term",
-          "score": 1.0,
-          "change": -22.5,
+          "score": 0.4,
+          "change": -23.1,
           "contribution": "40%"
         },
         {
           "name": "VIX Level",
-          "score": 3.7,
-          "change": -14.0,
+          "score": 2.1,
+          "change": -15.6,
           "contribution": "30%"
         },
         {
@@ -871156,20 +871156,20 @@
       "snapshots": [
         {
           "label": "G 模块当前分数",
-          "value": "5.2",
-          "delta": "-11.9",
+          "value": "4.4",
+          "delta": "-12.6",
           "state": "negative"
         },
         {
           "label": "VIX",
-          "value": "24.42",
-          "delta": "+0.67",
+          "value": "27.41",
+          "delta": "+3.66",
           "state": "negative"
         },
         {
           "label": "VIX/VXV",
-          "value": "1.10",
-          "delta": "+0.03",
+          "value": "1.23",
+          "delta": "+0.16",
           "state": "negative"
         },
         {
@@ -871181,7 +871181,7 @@
         {
           "label": "分数状态",
           "value": "极紧",
-          "delta": "5.2 / 100",
+          "delta": "4.4 / 100",
           "state": "negative"
         }
       ],
@@ -878384,7 +878384,7 @@
         },
         {
           "date": "2026-03-06",
-          "value": 5.15
+          "value": 4.42
         }
       ],
       "auxiliarySeries": [
@@ -892795,7 +892795,7 @@
             },
             {
               "date": "2026-03-06",
-              "value": 1.03
+              "value": 0.4
             }
           ],
           "color": "#0ea5e9"
@@ -900001,7 +900001,7 @@
             },
             {
               "date": "2026-03-06",
-              "value": 3.65
+              "value": 2.06
             }
           ],
           "color": "#38bdf8"
@@ -900042,13 +900042,13 @@
           [
             "2026-03-06",
             6830.71,
-            24.42,
+            27.41,
             22.29,
-            1.0956,
-            3.6508,
-            1.0317,
+            1.2297,
+            2.0635,
+            0.3968,
             12.1429,
-            5.1508
+            4.4206
           ],
           [
             "2026-03-05",
@@ -919853,15 +919853,15 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 51.07,
-        "sharpe": 0.74,
+        "cagr": 50.59,
+        "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -53.99,
-        "strategyReturn": 270.74,
-        "benchmarkReturn": 324.73,
-        "endingCapital": 370736.43,
+        "alpha": -49.17,
+        "strategyReturn": 267.01,
+        "benchmarkReturn": 316.18,
+        "endingCapital": 367010.86,
         "currentPosition": 0.8,
-        "currentScore": 56.8,
+        "currentScore": 56.2,
         "currentSignal": "🛡️ 防守",
         "navSeries": [
           {
@@ -921062,7 +921062,7 @@
           },
           {
             "date": "2026-03-06",
-            "value": 370736.43
+            "value": 367010.86
           }
         ],
         "positionSeries": [
@@ -922273,8 +922273,8 @@
             "previousPosition": 0.5,
             "position": 0.8,
             "signal": "🛡️ 防守",
-            "score": 56.8,
-            "price": 70611.71
+            "score": 56.2,
+            "price": 69190.12
           },
           {
             "date": "2026-01-16",
@@ -922373,8 +922373,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 70611.71,
-            "pnlPct": 148.49,
+            "exitPrice": 69190.12,
+            "pnlPct": 143.49,
             "result": "Floating"
           },
           {
@@ -922426,15 +922426,15 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 10.6,
+        "cagr": 10.24,
         "sharpe": 0.4,
         "mdd": -74.43,
-        "alpha": -34.23,
-        "strategyReturn": 37.73,
-        "benchmarkReturn": 71.95,
-        "endingCapital": 137725.03,
-        "currentPosition": 0.8,
-        "currentScore": 56.8,
+        "alpha": -32.07,
+        "strategyReturn": 36.29,
+        "benchmarkReturn": 68.35,
+        "endingCapital": 136285.77,
+        "currentPosition": 0.5,
+        "currentScore": 56.2,
         "currentSignal": "🛡️ 防守",
         "navSeries": [
           {
@@ -923635,7 +923635,7 @@
           },
           {
             "date": "2026-03-06",
-            "value": 137725.03
+            "value": 136285.77
           }
         ],
         "positionSeries": [
@@ -924837,18 +924837,10 @@
           },
           {
             "date": "2026-03-06",
-            "value": 0.8
+            "value": 0.5
           }
         ],
         "rebalanceLog": [
-          {
-            "date": "2026-03-06",
-            "previousPosition": 0.5,
-            "position": 0.8,
-            "signal": "🛡️ 防守",
-            "score": 56.8,
-            "price": 2065.09
-          },
           {
             "date": "2026-02-20",
             "previousPosition": -0.2,
@@ -924936,6 +924928,14 @@
             "signal": "🚀 进攻",
             "score": 55.0,
             "price": 4360.15
+          },
+          {
+            "date": "2025-08-15",
+            "previousPosition": 1.3,
+            "position": 2.0,
+            "signal": "🔥 杠杆进攻",
+            "score": 56.6,
+            "price": 4439.99
           }
         ],
         "tradeLog": [
@@ -924946,8 +924946,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 2065.09,
-            "pnlPct": 4.63,
+            "exitPrice": 2021.85,
+            "pnlPct": 2.44,
             "result": "Floating"
           },
           {
@@ -932630,15 +932630,15 @@
       {
         "ticker": "EURUSD",
         "name": "EUR/USD",
-        "cagr": -0.94,
+        "cagr": -0.96,
         "sharpe": -0.63,
         "mdd": -13.13,
-        "alpha": -11.05,
-        "strategyReturn": -2.97,
-        "benchmarkReturn": 8.08,
-        "endingCapital": 97034.13,
+        "alpha": -10.9,
+        "strategyReturn": -3.02,
+        "benchmarkReturn": 7.88,
+        "endingCapital": 96980.52,
         "currentPosition": 0.3,
-        "currentScore": 56.8,
+        "currentScore": 56.2,
         "currentSignal": "🌤️ 试探",
         "navSeries": [
           {
@@ -933839,7 +933839,7 @@
           },
           {
             "date": "2026-03-06",
-            "value": 97034.13
+            "value": 96980.52
           }
         ],
         "positionSeries": [
@@ -935151,7 +935151,7 @@
             "entryScore": 44.6,
             "entryPrice": 1.07,
             "exitPrice": 1.16,
-            "pnlPct": 8.28,
+            "pnlPct": 8.08,
             "result": "Floating"
           },
           {
@@ -935233,11 +935233,11 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-06",
-    "generatedAt": "2026-03-06T11:39:13Z",
+    "generatedAt": "2026-03-06T14:07:40Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
-      "overallScore": 50.49,
-      "riskLevel": "中",
+      "overallScore": 49.26,
+      "riskLevel": "中高",
       "quoteSourceMode": "live",
       "newsSourceMode": "live",
       "deepDiveSourceMode": "live",
@@ -935248,30 +935248,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 70611.71,
-        "change24hPct": -0.32,
-        "change7dPct": 7.18,
-        "realizedVol14dPct": 62.51,
+        "spot": 69190.12,
+        "change24hPct": -2.33,
+        "change7dPct": 5.02,
+        "realizedVol14dPct": 63.91,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 2065.09,
-        "change24hPct": -0.31,
-        "change7dPct": 6.96,
-        "realizedVol14dPct": 85.09,
+        "spot": 2021.85,
+        "change24hPct": -2.4,
+        "change7dPct": 4.72,
+        "realizedVol14dPct": 86.27,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 87.78,
-        "change24hPct": -1.02,
-        "change7dPct": 7.12,
-        "realizedVol14dPct": 83.48,
+        "spot": 85.65,
+        "change24hPct": -3.43,
+        "change7dPct": 4.52,
+        "realizedVol14dPct": 85.46,
         "source": "yfinance"
       },
       {
@@ -935297,16 +935297,40 @@
     ],
     "hotNews": [
       {
-        "title": "Bitcoin extends decline from $74,000, derivatives data point to cautious positioning",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/06/bitcoin-extends-decline-from-usd74-000-derivatives-data-point-to-cautious-positioning",
-        "publishedAt": "2026-03-06T11:29:35Z"
+        "title": "Tokenized RWAs buck the slump as 1inch-Ondo volumes top $2.5B",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/tokenized-rwas-buck-the-slump-1inch-ondo?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-06T14:00:00Z"
       },
       {
-        "title": "Bank of Canada, country’s largest banks complete first tokenized bond trial",
+        "title": "U.S. unexpectedly lost 92,000 jobs in February, unemployment rate rose to 4.4%",
         "source": "CoinDesk",
-        "url": "https://www.coindesk.com/business/2026/03/06/bank-of-canada-country-s-largest-banks-complete-first-tokenized-bond-trial",
-        "publishedAt": "2026-03-06T11:06:31Z"
+        "url": "https://www.coindesk.com/markets/2026/03/06/u-s-lost-92-000-jobs-in-february-unemployment-rate-rose-to-4-2",
+        "publishedAt": "2026-03-06T13:33:54Z"
+      },
+      {
+        "title": "Kazakhstan central bank to invest $350 million worth of gold, forex reserves into digital assets",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/03/06/kazakhstan-central-bank-to-invest-usd350-million-worth-of-gold-forex-reserves-into-digital-assets",
+        "publishedAt": "2026-03-06T13:08:55Z"
+      },
+      {
+        "title": "Bitcoin hit by short-termism as rally fades ahead of U.S. jobs data",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/daybook-us/2026/03/06/bitcoin-hit-by-short-termism-as-rally-fades-ahead-of-u-s-jobs-data",
+        "publishedAt": "2026-03-06T12:20:32Z"
+      },
+      {
+        "title": "Strike secures New York BitLicense, opening bitcoin financial services to state residents",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/03/06/strike-secures-new-york-bitlicense-opening-bitcoin-financial-services-to-state-residents",
+        "publishedAt": "2026-03-06T12:05:38Z"
+      },
+      {
+        "title": "Was $74K a bull trap? Bitcoin traders diverge on 2022 crash repeating",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/was-74k-a-bull-trap-bitcoin-traders-diverge-on-2022-crash-repeating?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-06T12:00:59Z"
       },
       {
         "title": "Bitcoin relief rally hits wall as spot ETFs log $228M in outflows",
@@ -935319,37 +935343,13 @@
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/bitcoin-anomalous-exchange-outflow-32k-btc-leave-bitfinex?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-06T10:40:30Z"
-      },
-      {
-        "title": "Bitcoin drops toward $70,000 ahead of U.S. jobs data; oil price rises on Iran war",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/06/bitcoin-drops-toward-usd70-000-ahead-of-u-s-jobs-data-oil-price-rises-on-iran-war",
-        "publishedAt": "2026-03-06T10:29:11Z"
-      },
-      {
-        "title": "Jack Mallers’ Strike secures New York crypto and money licenses",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/strike-bitlicense-money-transmitter-license-new-york-nydfs?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-06T10:18:36Z"
-      },
-      {
-        "title": "Judge freezes 71 Bitcoin in BlockFills case over customer fund claims",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/blockfills-bitcoin-freeze-order-dominion-capital-customer-fund-dispute?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-06T10:01:00Z"
-      },
-      {
-        "title": "Dubai crypto regulator says KuCoin exchange is operating without proper license and must stop",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/policy/2026/03/06/dubai-crypto-regulator-says-kucoin-exchange-is-operating-without-proper-license-and-must-stop",
-        "publishedAt": "2026-03-06T09:32:08Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 信用压力，边际变化 +11.9。",
-      "主要拖累来自 风险偏好，边际变化 -11.9。",
-      "BTC 24H -0.32%，7D +7.18%，执行上优先看关键位是否放量确认。"
+      "主要拖累来自 风险偏好，边际变化 -12.6。",
+      "BTC 24H -2.33%，7D +5.02%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
@@ -935432,7 +935432,7 @@
       "status": "pending_config",
       "model": "gemini-2.5-pro",
       "reasoningMode": "deep_think",
-      "riskLevel": "中",
+      "riskLevel": "中高",
       "summary": "建议防守执行，等待趋势与宏观重新共振后再扩仓。",
       "recommendedActions": [
         "优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。",
@@ -935454,7 +935454,7 @@
       "status": "pending_config",
       "model": "gemini-2.5-pro",
       "reasoningMode": "deep_think",
-      "riskLevel": "中",
+      "riskLevel": "中高",
       "summary": "建议防守执行，等待趋势与宏观重新共振后再扩仓。",
       "recommendedActions": [
         "优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。",
