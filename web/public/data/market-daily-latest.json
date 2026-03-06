@@ -1,21 +1,32 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-03-06T08:57:36Z",
+  "reportGeneratedAt": "2026-03-06T09:49:39Z",
   "asOfDate": "2026-03-06",
   "headline": "宏观中性，建议事件驱动下的结构化交易。",
-  "markdownSource": "template",
-  "markdownCharCount": 2309,
+  "markdownSource": "gemini",
+  "markdownCharCount": 7094,
   "aiRender": {
     "enabled": true,
-    "reason": "import_error:No module named 'api_server'"
+    "status": "ok",
+    "usedFallback": false,
+    "requestedModel": "gemini-2.5-pro",
+    "usedModelFallback": true,
+    "charCount": 7093,
+    "minCharTarget": 1500,
+    "finishReason": "STOP",
+    "detail": "Gemini preview generated (7093 chars, finishReason=STOP).",
+    "model": "gemini-2.5-flash",
+    "reasoningMode": "deep_think",
+    "qualified": true,
+    "qualifiedReason": "ok"
   },
-  "markdown": "# MacroQuant 市场研究日报（2026-03-06）\n\n**Headline**: 宏观中性，建议事件驱动下的结构化交易。\n\n## 快速视图\n- 宏观总分: 50.95\n- 风险等级: 中\n- 行情源: live\n- 新闻源: live\n\n## 热点要闻\n- [Vancouver Bitcoin reserve effort hits resistance from city government](https://cointelegraph.com/news/vancouver-staff-bitcoin-reserve-not-allowed-city-charter?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Vancouver mayor's bitcoin investment proposal blocked by city, provincial law](https://www.coindesk.com/markets/2026/03/06/vancouver-mayor-s-bitcoin-investment-proposal-blocked-by-city-provincial-law) (CoinDesk)\n- [Dubai regulator orders KuCoin entities to stop unlicensed operations](https://cointelegraph.com/news/dubai-vara-kucoin-unlicensed-crypto-activity-warning?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Pudgy Penguins accused of infringing Original Penguin trademark](https://cointelegraph.com/news/pei-licensing-files-trademark-infringement-lawsuit-against-pudgy-penguins?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Altcoin seasons are over, expect ‘non-traditional’ cycles ahead: Bitwise exec](https://cointelegraph.com/news/altcoin-seasons-are-over-expect-non-traditional-cycles-ahead-bitwise-cio?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound) (Cointelegraph)\n- [Bitcoin and stocks stabilize after early week slide. The bond market isn’t convinced.](https://www.coindesk.com/markets/2026/03/06/bitcoin-and-stocks-stabilize-after-early-week-slide-the-bond-market-isn-t-convinced) (CoinDesk)\n- [Almost nobody is talking about altseason anymore. That may be bullish](https://www.coindesk.com/markets/2026/03/06/almost-nobody-is-talking-about-altseason-anymore-that-may-be-bullish) (CoinDesk)\n- [XRP drops 3% after failing to break $1.45 resistance](https://www.coindesk.com/markets/2026/03/06/xrp-drops-3-after-failing-to-break-usd1-45-resistance) (CoinDesk)\n\n## 市场复盘\n- 总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。\n- 本周主驱动来自 信用压力，边际变化 +11.9。\n- 主要拖累来自 风险偏好，边际变化 -10.9。\n- BTC 24H -0.02%，7D +7.51%，执行上优先看关键位是否放量确认。\n\n## AI 决策摘要\n- 提供方: gemini\n- 状态: pending_config\n- 模型: gemini-2.5-pro\n- 结论: 建议防守执行，等待趋势与宏观重新共振后再扩仓。\n- 建议动作:\n  - 优先观察 BTC 与 ETH 的关键位确认，再决定是否扩张 SOL 风险预算。\n  - 事件窗口前将杠杆下调到策略上限的 50%-70%。\n  - 若宏观总分连续两周下行，降低趋势策略开仓频率。\n",
+  "markdown": "# 市场研究日报（2026-03-06）\n\n## 一、热点要闻\n\n**1. 宏观市场：比特币与美股企稳，债市仍存疑虑**\n*   **事件概述**: 在经历本周初的下跌后，比特币和美国股市显示出企稳迹象。然而，债券市场对此并未完全信服，其表现仍反映出对未来经济走势和通胀压力的担忧。\n*   **要点**: 股市和加密货币市场在短期内出现技术性反弹或盘整，但债券市场的谨慎态度表明，市场对宏观经济前景的长期看法仍存在分歧。这可能与对美联储未来政策路径的不确定性以及潜在的信用压力有关。\n*   **市场影响**: 这种分歧可能导致跨资产类别的交易机会。股市和加密货币的企稳可能吸引短期投机资金，但债券市场的谨慎则提示投资者需警惕潜在的宏观风险。对于交易者而言，这意味着在当前宏观中性的环境下，事件驱动下的结构化交易策略可能更为有效，需密切关注关键技术位和宏观数据发布。\n\n**2. 国际监管：迪拜加密货币监管机构勒令KuCoin停止无牌照运营**\n*   **事件概述**: 迪拜的加密货币监管机构（VARAR）发布指令，要求加密货币交易所KuCoin停止在该地区未经适当牌照的运营活动。\n*   **要点**: 这一事件凸显了全球范围内加密货币监管趋严的趋势。主要金融中心对数字资产平台的合规性要求日益提高，旨在保护投资者并维护金融稳定。KuCoin作为一家大型交易所，其在迪拜的运营受阻，将对其全球业务布局和用户信任度产生影响。\n*   **市场影响**: 监管收紧通常会对加密货币市场情绪造成短期压力，尤其对于涉及合规风险的平台。投资者可能会重新评估其在非合规平台上的资产风险。长期来看，严格的监管有助于行业走向成熟和主流化，但短期内可能导致市场波动和部分资金流出。对于交易者而言，应关注交易所的合规动态，并优先选择受监管的平台进行交易。\n\n**3. 宏观政策：温哥华市比特币储备提案遭遇阻力**\n*   **事件概述**: 温哥华市市长提出的将比特币纳入城市储备的提案，在市议会和省级法律层面均遭遇了阻力并被阻止。\n*   **要点**: 这一事件反映了地方政府在将加密货币纳入传统金融体系时所面临的政策和法律挑战。尽管一些城市和机构对数字资产表现出兴趣，但其合法性、波动性以及与现有法规的兼容性仍是主要障碍。这表明加密货币在主流机构采纳方面仍需克服显著的制度性障碍。\n*   **市场影响**: 地方政府对加密货币采纳的谨慎态度，可能会在短期内抑制市场对机构资金流入的乐观预期。这提示市场，加密货币的广泛采纳并非一帆风顺，政策和法律框架的完善是其走向主流的关键。对于交易者而言，应认识到宏观政策和监管环境对加密货币市场长期发展的重要性，并关注相关政策进展。\n\n## 二、市场复盘\n\n**1. 大宗商品与外汇**\n*   **数据不足**: 今日输入数据中未提供大宗商品与外汇的具体收盘价及涨跌幅。\n*   **驱动因素与交易含义**: 鉴于宏观中性的市场环境，大宗商品和外汇市场可能受到全球经济数据、地缘政治事件以及主要央行货币政策预期的影响。在缺乏具体数据的情况下，建议投资者密切关注美元指数、原油价格及黄金等避险资产的走势，这些通常是衡量市场风险偏好和通胀预期的重要指标。\n\n**2. 加密货币（BTC/ETH/SOL）**\n*   **BTC**: 现货价格 70466.88 美元，24小时下跌 -0.53%，7日上涨 +6.96%。\n    *   **驱动因素**: 比特币在经历本周初的上涨后，短期内出现小幅回调，但周度涨幅依然显著，显示出市场对长期趋势的信心。宏观层面，比特币与美股的企稳迹象为其提供了支撑，但监管收紧（如KuCoin事件）和政策阻力（如温哥华提案）可能带来短期压力。\n    *   **交易含义**: BTC短期回调可能提供逢低买入机会，但需关注关键支撑位是否放量确认。鉴于周度表现强劲，中期趋势仍偏多，但需警惕监管风险和宏观不确定性带来的波动。\n*   **ETH**: 现货价格 2053.51 美元，24小时下跌 -0.87%，7日上涨 +6.36%。\n    *   **驱动因素**: 以太坊走势与比特币高度相关，同样在短期内小幅回调，但周度表现积极。其生态系统发展和潜在的升级利好是长期驱动因素，但短期内也受到宏观情绪和监管新闻的影响。\n    *   **交易含义**: ETH短期回调幅度略大于BTC，可能反映市场对山寨币风险偏好的谨慎。投资者可关注其关键技术支撑位，并结合以太坊生态的进展进行判断。\n*   **SOL**: 现货价格 87.37 美元，24小时下跌 -1.49%，7日上涨 +6.61%。\n    *   **驱动因素**: Solana作为高性能公链，其价格波动性通常高于BTC和ETH。短期回调幅度最大，可能反映了市场在风险偏好下降时对高风险资产的抛售。周度涨幅仍可观，显示其生态活跃度仍受关注。\n    *   **交易含义**: SOL的较高波动性意味着潜在的更高风险和回报。在市场情绪谨慎时，其回调可能更为剧烈。交易者应关注其生态系统发展和链上数据，并设置严格的止损。\n*   **总市值、清算与资金流**: 数据不足。\n\n**3. 美股指数**\n*   **SPY (标普500 ETF)**: 现货价格 681.31 美元，24小时涨跌 0.0%，7日下跌 -0.68%。\n    *   **驱动因素**: 标普500指数在过去24小时内持平，显示出短期企稳迹象，但周度仍录得小幅下跌。这与“比特币和股票稳定”的宏观线索一致，表明市场在经历初期下跌后进入盘整。主要驱动可能来自对美联储政策路径的重新评估以及企业盈利预期的调整。\n    *   **交易含义**: 标普500的盘整可能预示着方向选择。投资者应关注即将发布的宏观经济数据（如非农就业）和美联储官员讲话，这些将是打破当前平衡的关键催化剂。\n*   **QQQ (纳斯达克100 ETF)**: 现货价格 608.91 美元，24小时涨跌 0.0%，7日上涨 +0.27%。\n    *   **驱动因素**: 纳斯达克100指数同样在过去24小时内持平，但周度表现优于标普500，录得小幅上涨。这可能反映了市场对科技巨头未来增长的韧性仍抱有一定信心，尽管整体风险偏好有所下降。\n    *   **交易含义**: 科技股的相对韧性可能吸引部分资金，但其高估值也使其对利率敏感。交易者应关注科技巨头的财报和行业趋势，以及宏观利率环境的变化。\n*   **道琼斯指数**: 数据不足。\n\n**4. 科技巨头动态**\n*   **NVIDIA (NVDA)**: 信号=震荡，20日回报率 +5.25%。\n    *   **驱动因素**: NVIDIA近期表现出震荡态势，但20日回报率仍为正，显示其在人工智能领域的领先地位和强劲需求仍是支撑。市场可能在等待新的催化剂或对未来业绩的进一步确认。\n    *   **交易含义**: 震荡区间内，投资者可采取高抛低吸策略，但需关注突破或跌破关键区间后的确认信号。一旦放量突破，可能开启新一轮趋势；若跌破，则需警惕回调风险。\n*   **Apple (AAPL)**: 信号=震荡，20日回报率 -5.86%。\n    *   **驱动因素**: 苹果近期同样处于震荡区间，但20日回报率为负，表明其面临一定的下行压力。这可能与市场对其创新能力、全球销售前景以及潜在反垄断调查的担忧有关。\n    *   **交易含义**: 苹果的震荡且偏弱的态势提示投资者谨慎。在方向未明朗前，观望或小仓位试探更为稳妥。关注其新品发布、服务业务增长以及宏观消费环境的变化。\n*   **Tesla (TSLA)**: 信号=趋势走弱，20日回报率 -0.11%。\n    *   **驱动因素**: 特斯拉近期趋势走弱，20日回报率接近持平但结构偏弱。这可能与电动汽车市场竞争加剧、交付数据不及预期以及宏观经济逆风对消费者支出的影响有关。\n    *   **交易含义**: 趋势走弱信号提示优先防守，避免逆势操作。投资者应等待放量企稳信号出现，或关注其新车型发布、成本控制以及自动驾驶技术进展等潜在利好。\n\n**5. 板块异动观察**\n*   **市场总分处于中低位**: 整体市场情绪偏谨慎，技术触发信号需要搭配更严格的仓位与止损规则。这表明市场缺乏明确的方向性，投资者倾向于规避风险。\n*   **本周主驱动来自信用压力，边际变化 +11.9**: 信用压力的上升是本周市场的主要驱动因素，这可能反映了市场对企业债务、融资成本或潜在违约风险的担忧。这通常会导致资金流向避险资产或高质量资产。\n*   **主要拖累来自风险偏好，边际变化 -11.9**: 风险偏好的显著下降是市场的主要拖累，与信用压力的上升相互印证。投资者对高风险资产的兴趣减弱，导致市场整体承压。\n*   **交易含义**: 综合来看，当前市场环境偏向防守。在信用压力上升和风险偏好下降的背景下，投资者应优先考虑防御性板块（如公用事业、必需消费品）或具有稳定现金流的优质资产。对于成长股和高风险资产，应采取更为谨慎的态度，严格控制仓位和止损，等待市场情绪的明确好转。\n\n## 三、深度个股解读\n\n**1. NVIDIA (NVDA)**\n*   **事件概述**: NVIDIA近期股价表现为震荡态势，过去20日回报率为+5.25%。尽管短期内方向不明，但其在人工智能（AI）芯片领域的领导地位和强劲需求持续支撑其估值。\n*   **市场解读**: NVIDIA的震荡反映了市场对其高估值与未来增长预期的权衡。一方面，AI算力需求的爆发式增长为NVIDIA提供了坚实的基本面支撑；另一方面，市场也在消化前期涨幅，并关注竞争格局的变化以及宏观经济对企业资本开支的影响。当前市场可能在等待新的业绩指引或技术突破来打破现有平衡。\n*   **投资启示**: 对于NVIDIA，投资者应关注其在AI芯片市场份额的维持情况、新产品发布以及云服务提供商的资本支出计划。在震荡区间内，激进投资者可尝试区间交易，但更稳健的策略是等待股价明确突破或跌破关键技术区间（如重要均线或前期高低点）并伴随放量确认，再进行方向性操作。\n\n**2. Apple (AAPL)**\n*   **事件概述**: Apple股价近期同样处于震荡区间，但过去20日回报率为-5.86%，显示出一定的下行压力。\n*   **市场解读**: 苹果的震荡且偏弱表现可能源于多重因素。市场对其iPhone销售增长放缓的担忧、在中国市场的竞争加剧、以及潜在的反垄断调查都对其股价构成压力。尽管服务业务持续增长，但其能否完全抵消硬件销售的潜在疲软仍是市场关注焦点。此外，宏观经济逆风可能影响消费者支出，对苹果产品需求造成冲击。\n*   **投资启示**: 苹果作为全球市值最大的公司之一，其股价波动往往反映了宏观经济和消费趋势。在当前震荡偏弱的态势下，投资者应保持谨慎。关注苹果即将发布的新品（如Vision Pro的全球推广）、服务业务的增长数据以及其在全球主要市场的销售表现。在方向未明朗前，可考虑观望或等待股价在关键支撑位企稳并出现放量反弹信号。\n\n**3. Tesla (TSLA)**\n*   **事件概述**: Tesla股价近期呈现趋势走弱的态势，过去20日回报率为-0.11%，中短期结构偏弱。\n*   **市场解读**: 特斯拉股价的走弱反映了市场对其增长前景的担忧。电动汽车市场竞争日益激烈，传统车企和新兴势力都在加大投入，对特斯拉的市场份额和利润率构成挑战。此外，全球经济放缓可能影响消费者对高价电动汽车的需求。马斯克的个人言论和公司治理问题也可能对投资者情绪产生影响。\n*   **投资启示**: 对于特斯拉，当前趋势走弱的信号提示投资者应优先采取防守策略。避免在下跌趋势中盲目抄底。投资者应密切关注其交付数据、新车型（如Cybertruck的量产爬坡）的进展、成本控制措施以及自动驾驶技术（FSD）的商业化前景。等待股价出现明确的放量企稳信号，或基本面出现显著改善的催化剂，再考虑介入。\n\n## 四、加密货币项目动态\n\n**1. KuCoin交易所面临迪拜监管挑战**\n*   **事件概述**: 迪拜加密货币监管机构勒令KuCoin停止在该地区未经许可的运营。\n*   **要点**: 这一事件是全球加密货币监管趋严的又一例证，表明主要金融中心对数字资产平台的合规性要求日益提高。\n*   **市场影响**: 短期内可能对KuCoin的用户信心和资金流出造成压力，并可能引发市场对其他未完全合规交易所的担忧。长期来看，有助于推动行业合规化进程。\n\n**2. 温哥华市比特币储备提案受阻**\n*   **事件概述**: 温哥华市长提出的将比特币纳入城市储备的提案被市议会和省级法律阻止。\n*   **要点**: 凸显了加密货币在主流机构采纳过程中面临的政策和法律障碍，表明政府机构对数字资产的接受度仍需时间。\n*   **市场影响**: 短期内可能抑制市场对机构资金流入的乐观预期，提示投资者加密货币的广泛采纳并非一帆风顺。\n\n**3. Altcoin季节结束论调盛行**\n*   **事件概述**: Bitwise高管及CoinDesk文章均指出，传统的“山寨币季节”可能已经结束，未来将是“非传统”周期。\n*   **要点**: 市场情绪正在从普涨的山寨币行情转向更具选择性的投资策略，可能意味着资金将更集中于少数具有强大基本面或创新叙事的项目。\n*   **市场影响**: 投资者应重新评估其山寨币投资组合，避免盲目追涨，转而关注特定赛道或具有独特价值主张的项目。这可能导致市场分化加剧。\n\n**4. Pudgy Penguins面临商标侵权指控**\n*   **事件概述**: NFT项目Pudgy Penguins被指控侵犯了Original Penguin的商标权。\n*   **要点**: 这一事件凸显了NFT领域在知识产权保护和品牌建设方面面临的法律风险。随着NFT市场的发展，相关的法律纠纷将日益增多。\n*   **市场影响**: 可能对Pudgy Penguins项目的品牌形象和市场价值造成负面影响，并引发市场对其他NFT项目潜在法律风险的关注。\n\n**5. 比特币生态系统动态**\n*   **事件概述**: 比特币生态暂无重大突发事件。\n*   **要点**: 尽管缺乏突发新闻，但比特币作为加密货币市场的基石，其链上活跃度、矿工行为和资金流向仍是关键指标。\n*   **市场影响**: 维持跟踪链上活跃度与资金流向，以判断市场情绪和潜在趋势变化。在缺乏重大催化剂的情况下，比特币价格可能更多受到宏观经济和整体市场情绪的影响。\n\n**6. 以太坊生态系统动态**\n*   **事件概述**: 以太坊生态暂无重大突发事件。\n*   **要点**: 以太坊作为智能合约平台的领导者，其Layer2解决方案、DeFi和NFT生态的发展是核心关注点。\n*   **市场影响**: 维持跟踪链上活跃度与资金流向，以及EIP升级进展。在缺乏重大催化剂的情况下，以太坊价格可能更多受到比特币走势和整体加密市场风险偏好的影响。\n\n**7. Solana生态系统动态**\n*   **事件概述**: Solana生态暂无重大突发事件。\n*   **要点**: Solana以其高性能和低交易费用吸引了大量开发者和用户，其生态系统增长速度较快。\n*   **市场影响**: 维持跟踪链上活跃度与资金流向，以及其生态项目的发展。在缺乏重大催化剂的情况下，Solana价格可能更多受到整体加密市场风险偏好和其自身生态项目表现的影响。\n\n## 五、今日市场日历\n\n**数据发布时刻表：**\n*   2026-03-06 13:30 UTC | 宏观 | 美国初请失业金人数 | 重要性=高\n*   2026-03-07 12:30 UTC | 宏观 | 美国非农就业数据 | 重要性=高\n*   2026-03-07 14:00 UTC | 宏观 | FOMC 官员讲话 | 重要性=中\n*   2026-03-08 00:00 UTC | 加密 | 主要交易所周度持仓与资金费率复盘 | 重要性=中\n\n**重要事件预告/机构观点：**\n今日市场将迎来美国初请失业金人数这一重要宏观数据，其结果将对市场对劳动力市场的健康状况和美联储未来政策路径的预期产生影响。明日，更具影响力的美国非农就业数据将发布，这通常是市场关注的焦点，可能引发剧烈波动。此外，FOMC官员的讲话将提供美联储对当前经济形势和货币政策的最新看法。\n\n根据宏观分析，当前市场整体处于中性状态（overallScore=50.49, riskLevel=中），建议投资者采取事件驱动下的结构化交易策略。这意味着在关键数据发布和重要事件发生时，市场可能出现明确的方向性选择，投资者应提前做好准备，并结合技术分析和严格的仓位管理进行交易。在缺乏明确趋势的背景下，避免过度暴露风险，并关注市场对信用压力和风险偏好变化的反应。\n\n## 免责声明\n\n以上内容为研究与信息整理，不构成投资建议。\n",
   "daily": {
     "asOfDate": "2026-03-06",
-    "generatedAt": "2026-03-06T08:57:34Z",
+    "generatedAt": "2026-03-06T09:48:58Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
-      "overallScore": 50.95,
+      "overallScore": 50.49,
       "riskLevel": "中",
       "quoteSourceMode": "live",
       "newsSourceMode": "live",
@@ -27,30 +38,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 70829.86,
-        "change24hPct": -0.02,
-        "change7dPct": 7.51,
-        "realizedVol14dPct": 62.44,
+        "spot": 70466.88,
+        "change24hPct": -0.53,
+        "change7dPct": 6.96,
+        "realizedVol14dPct": 62.58,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 2078.48,
-        "change24hPct": 0.33,
-        "change7dPct": 7.65,
-        "realizedVol14dPct": 85.0,
+        "spot": 2053.51,
+        "change24hPct": -0.87,
+        "change7dPct": 6.36,
+        "realizedVol14dPct": 85.28,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 88.35,
-        "change24hPct": -0.38,
-        "change7dPct": 7.81,
-        "realizedVol14dPct": 83.24,
+        "spot": 87.37,
+        "change24hPct": -1.49,
+        "change7dPct": 6.61,
+        "realizedVol14dPct": 83.72,
         "source": "yfinance"
       },
       {
@@ -76,7 +87,13 @@
     ],
     "hotNews": [
       {
-        "title": "Vancouver Bitcoin reserve effort hits resistance from city government",
+        "title": "Dubai crypto regulator says KuCoin exchange is operating without proper license and must stop",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/policy/2026/03/06/dubai-crypto-regulator-says-kucoin-exchange-is-operating-without-proper-license-and-must-stop",
+        "publishedAt": "2026-03-06T09:32:08Z"
+      },
+      {
+        "title": "Vancouver Bitcoin reserve effort hits resistance from city officials",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/vancouver-staff-bitcoin-reserve-not-allowed-city-charter?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-06T08:39:43Z"
@@ -116,19 +133,13 @@
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/06/almost-nobody-is-talking-about-altseason-anymore-that-may-be-bullish",
         "publishedAt": "2026-03-06T05:09:27Z"
-      },
-      {
-        "title": "XRP drops 3% after failing to break $1.45 resistance",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/06/xrp-drops-3-after-failing-to-break-usd1-45-resistance",
-        "publishedAt": "2026-03-06T04:55:03Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 信用压力，边际变化 +11.9。",
-      "主要拖累来自 风险偏好，边际变化 -10.9。",
-      "BTC 24H -0.02%，7D +7.51%，执行上优先看关键位是否放量确认。"
+      "主要拖累来自 风险偏好，边际变化 -11.9。",
+      "BTC 24H -0.53%，7D +6.96%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
@@ -208,8 +219,8 @@
     ],
     "aiDecision": {
       "provider": "gemini",
-      "status": "pending_config",
-      "model": "gemini-2.5-pro",
+      "status": "generated",
+      "model": "gemini-2.5-flash",
       "reasoningMode": "deep_think",
       "riskLevel": "中",
       "summary": "建议防守执行，等待趋势与宏观重新共振后再扩仓。",
@@ -226,12 +237,12 @@
         "G",
         "F"
       ],
-      "nextStep": "配置 GEMINI_API_KEY 后可调用 Gemini Deep Think 生成完整日报正文与交易建议。"
+      "nextStep": "已具备调用条件，可在日报任务中接入自动总结与执行建议生成。"
     },
     "claudeDecision": {
       "provider": "gemini",
-      "status": "pending_config",
-      "model": "gemini-2.5-pro",
+      "status": "generated",
+      "model": "gemini-2.5-flash",
       "reasoningMode": "deep_think",
       "riskLevel": "中",
       "summary": "建议防守执行，等待趋势与宏观重新共振后再扩仓。",
@@ -248,7 +259,7 @@
         "G",
         "F"
       ],
-      "nextStep": "配置 GEMINI_API_KEY 后可调用 Gemini Deep Think 生成完整日报正文与交易建议。"
+      "nextStep": "已具备调用条件，可在日报任务中接入自动总结与执行建议生成。"
     },
     "pushChannels": [
       {
@@ -296,7 +307,7 @@
       },
       "decisionEngine": {
         "provider": "gemini",
-        "mode": "pending_config"
+        "mode": "ready"
       },
       "delivery": {
         "provider": "multi-channel",
