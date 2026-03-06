@@ -102,6 +102,7 @@ jobs:
       - name: Generate daily report digest
         if: steps.publish_window.outputs.should_run == 'true'
         env:
+          PYTHONPATH: ${{ github.workspace }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           MARKET_DAILY_AI_PROVIDER: gemini
           MARKET_DAILY_AI_REASONING_MODE: deep_think
