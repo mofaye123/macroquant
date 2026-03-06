@@ -62,12 +62,11 @@ def _fallback_curve_regime_score(
     curve = pd.Series(curve_series, copy=False)
     deviation = (curve - target_mid).abs()
     level_score = (100.0 - (deviation / max(tol, 1e-6) * 100.0)).clip(0, 100).fillna(50.0)
-    momentum_raw = curve.diff(21).fillna(0.0)
-    momentum_score = _fallback_blended_rank_score(momentum_raw, higher_is_better=True)
     deep_mask = (curve < deep_inversion).fillna(False)
-    sustained = deep_mask.rolling(sustained_window, min_periods=1).sum() >= sustained_window
+    deep_streak = deep_mask.astype(int).groupby((~deep_mask).cumsum()).cumsum().astype(float)
+    sustained = deep_streak >= sustained_window
     cap = pd.Series(np.where(sustained, structural_cap, 100.0), index=curve.index).astype(float)
-    return level_score, momentum_score, cap
+    return level_score, cap, deep_streak
 
 
 def _fallback_policy_regime_bonus(sofr: float, sofr_trend_21d: float = 0.0) -> float:
@@ -1113,7 +1112,8 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
             _policy_hike_cycle_penalty(sofr, trend)
             for sofr, trend in zip(df_b["SOFR"], df_b["SOFR_Trend"])
         ]
-        df_b["Score_Policy"] = (df_b["Score_Trend"] + df_b["Regime_Bonus"] - df_b["Hike_Cycle_Penalty"]).clip(0, 100)
+        df_b["Score_Policy_Base"] = (df_b["Score_Trend"] + df_b["Regime_Bonus"]).clip(0, 100)
+        df_b["Score_Policy"] = (df_b["Score_Policy_Base"] * df_b["Hike_Cycle_Penalty"]).clip(0, 100)
         df_b["Corridor_Width"] = (df_b["IORB"] - df_b["RRPONTSYAWARD"]).abs().clip(lower=0.05)
         df_b["F1_Ratio"] = (df_b["SOFR"] - df_b["IORB"]).clip(lower=0) / df_b["Corridor_Width"]
         df_b["F2_Ratio"] = (df_b["SOFR"] - df_b["RRPONTSYAWARD"]).abs() / df_b["Corridor_Width"]
@@ -1390,7 +1390,7 @@ def _build_module_factors(module_id: str, frame: pd.DataFrame, weight_text: str)
         return [
             _factor_from_col(frame, "Score_Policy", "SOFR Policy", "40%"),
             _factor_from_col(frame, "Score_Friction", "Friction Composite", "60%"),
-            _factor_from_col(frame, "Hike_Cycle_Penalty", "Hike Cycle Penalty", "Penalty"),
+            _factor_from_col(frame, "Hike_Cycle_Penalty", "Hike Cycle Penalty", "Penalty", scale=100.0),
             _factor_from_col(frame, "Score_F1", "F1 Corridor", "Flow"),
             _factor_from_col(frame, "Score_F2", "F2 Corridor", "Flow"),
             _factor_from_col(frame, "Score_SRF", "SRF", "Penalty"),
