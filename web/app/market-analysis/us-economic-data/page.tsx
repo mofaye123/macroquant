@@ -48,7 +48,7 @@ export default function USEconomicDataPage() {
     <AppShell dataState={dataState}>
       <DocumentCollectionView
         title="美国经济数据"
-        description="已接入 USeco 目录内容，合并展示 requirements 与主脚本结构，并保留原始代码节选用于对照。"
+        description="已接入 USeco 指标口径与依赖清单，并整理为可直接用于当前 Next.js + API 部署体系的专题文档。"
         documents={library?.usEconomicDocs ?? []}
         loading={!library && !error}
         error={error}

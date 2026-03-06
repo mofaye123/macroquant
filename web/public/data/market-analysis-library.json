@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-06T14:16:40.636630Z",
+  "generatedAt": "2026-03-06T14:43:55.133260Z",
   "macroReports": [
     {
       "id": "macro-merged-2026-01-02",
@@ -96,47 +96,29 @@
   "usEconomicDocs": [
     {
       "id": "useco-merged",
-      "title": "USeco 美国经济数据项目（合并版）",
+      "title": "USeco 美国经济数据方案（Next.js 部署版）",
       "date": "2026-03-06",
       "tags": [
         "USeco",
         "合并版",
         "requirements",
-        "FRED API"
+        "FRED API",
+        "Next.js"
       ],
       "sourceFiles": [
         "USeco/us_economics.py",
         "USeco/requirements.txt"
       ],
-      "preview": "已合并 requirements 与主脚本结构，便于在「美国经济数据」页面直接阅读项目说明和数据口径。",
+      "preview": "已合并 requirements 与指标映射，仅保留可部署到当前 Next.js 体系的口径说明。",
       "toc": [
-        "一、依赖与运行环境",
-        "二、核心指标映射（FRED）",
-        "三、数据处理与量化函数",
-        "四、Streamlit 页面结构",
-        "五、可迁移到 Next.js 的模块建议"
+        "一、部署口径说明",
+        "二、依赖与运行环境",
+        "三、核心指标映射（FRED）",
+        "四、数据处理逻辑（后端）",
+        "五、前端展示模块（美国经济数据页）"
       ],
-      "content": "一、依赖与运行环境\n\nrequirements.txt：\n- streamlit\n- pandas\n- fredapi\n- plotly\n\n二、核心指标映射（FRED）\n\n- 非农就业人数 (Non-Farm Payrolls) (PAYEMS)\n- 失业率 (Unemployment Rate) (UNRATE)\n- 初请失业金 (Initial Claims) (ICSA)\n- 零售销售 (Retail Sales) (RSAFS)\n- 个人消费支出 (PCE) (PCE)\n- 实际GDP (Real GDP) (GDPC1)\n- 工业产出 (Industrial Production) (INDPRO)\n- CPI (All Urban) (CPIAUCSL)\n- 核心 PCE (Core PCE) (PCEPILFE)\n- PPI (Producer Price Index) (PPIFIS)\n\n三、数据处理与量化函数\n\n- fetch_and_process_data：按类别批量从 FRED 拉取数据并月频重采样。\n- calculate_quant_metrics：统一生成 Market/Momentum/ZScore 三个视角。\n- generate_smart_report：基于最新数据生成板块解读文本。\n\n四、Streamlit 页面结构\n\n- 侧边栏：lookback 年限、z-score 窗口与数据发布日历。\n- 主体：就业/消费/增长/通胀四大板块图表与解释。\n- 缓存：st.cache_data(ttl=3600)。\n\n五、可迁移到 Next.js 的模块建议\n\n1) 拆分为 API 层（数据抓取）+ 计算层（指标）+ 展示层（图表和解读）。\n2) 把指标字典和解释文案独立成 JSON，前端按模块渲染。\n3) 把 requirements 依赖映射为后端服务依赖清单，前端只做可视化。",
-      "lineCount": 32
-    },
-    {
-      "id": "useco-script-excerpt",
-      "title": "USeco 原始脚本节选（us_economics.py）",
-      "date": "2026-03-06",
-      "tags": [
-        "代码节选",
-        "Streamlit",
-        "量化函数"
-      ],
-      "sourceFiles": [
-        "USeco/us_economics.py"
-      ],
-      "preview": "保留原始脚本关键片段（前 240 行），用于对照迁移时的指标定义与函数逻辑。",
-      "toc": [
-        "脚本节选（前 240 行）"
-      ],
-      "content": "import streamlit as st\nimport pandas as pd\nimport numpy as np\nfrom fredapi import Fred\nimport plotly.graph_objects as go\nfrom plotly.subplots import make_subplots\nimport plotly.express as px\nfrom datetime import datetime, timedelta\n\n# ==========================================\n# 1. 配置与初始化\n# ==========================================\nst.set_page_config(page_title=\"US 美国经济数据监测\", layout=\"wide\")\nst.title(\"🇺🇸 美国经济数据监测系统\")\n\n# API Key 配置\nAPI_KEY = \"7b5f4a9521fb6f976fa127a07393e8d4\"\n\n# 侧边栏：配置优化\nwith st.sidebar:\n    st.header(\"系统设置\")\n    with st.expander(\"⚙️ 高级参数设置 (Advanced)\", expanded=False):\n        lookback_years = st.slider(\"数据获取长度 (Years)\", 5, 30, 15, help=\"从 FRED 拉取多少年的历史数据，建议设大一点以备分析\")\n        z_score_window = st.slider(\"宏观周期图-滚动窗口 (Months)\", 12, 120, 60, help=\"仅影响【宏观周期定位】图的平滑程度\")\n    \n    st.info(\"\"\"\n    **核心数据发布日历**：\n    - **非农/失业率**：每月第一个周五\n    - **初请失业金**：每周四发布上月数据\n    - **CPI / 零售销售**：每月中旬发布上月数据\n    - **PCE (核心通胀)**：每月月末\n    - **GDP (初值)**：1, 4, 7, 10月 下旬\n    - **美联储议息**：约每 6 周一次\n    \"\"\")\n\n# ==========================================\n# 2. 核心指标定义 & 深度解读文案 (全面升级)\n# ==========================================\nINDICATORS = {\n    \"就业 (Employment)\": {\n        \"非农就业人数 (Non-Farm Payrolls)\": \"PAYEMS\",\n        \"失业率 (Unemployment Rate)\": \"UNRATE\", \n        \"初请失业金 (Initial Claims)\": \"ICSA\"\n    },\n    \"消费 (Consumption)\": {\n        \"零售销售 (Retail Sales)\": \"RSAFS\",\n        \"个人消费支出 (PCE)\": \"PCE\",\n        \"消费者信心 (UMich Sentiment)\": \"UMCSENT\"\n    },\n    \"增长 (Growth)\": {\n        \"实际GDP (Real GDP)\": \"GDPC1\",\n        \"工业产出 (Industrial Production)\": \"INDPRO\",\n        \"耐用品订单 (Durable Goods)\": \"DGORDER\"\n    },\n    \"通胀 (Inflation)\": {\n        \"CPI (All Urban)\": \"CPIAUCSL\",\n        \"核心 PCE (Core PCE)\": \"PCEPILFE\",\n        \"PPI (Producer Price Index)\": \"PPIFIS\"\n    }\n}\n\nINVERSE_CODES = [\"UNRATE\", \"ICSA\"]\n\nNAME_TO_CODE = {}\nfor cat, items in INDICATORS.items():\n    for name, code in items.items():\n        NAME_TO_CODE[name] = code\n\n# === 升级：全指标深度解读百科 ===\nINDICATOR_EXPLANATIONS = {\n    \"就业 (Employment)\": \"\"\"\n    #### 📘 就业指标详解\n    \n    **1. 非农就业人数 (Non-Farm Payrolls)**\n    * **图表数值含义**：**月度新增人数 (MoM Change)，即本月比上月增加了多少人（单位：千人）。**\n    * **定义**：除了农业部门以外，美国所有企业创造的新增就业岗位数量。\n    * **重要性**：⭐⭐⭐⭐⭐ 它是美联储制定货币政策的核心依据，也是市场波动最大的来源。\n    * **怎么看**：\n        * **强劲 (>20万人)**：经济火热，美联储可能维持高利率。\n        * **温和 (10-20万人)**：经济“软着陆”的理想区间。\n        * **疲软 (<10万人)**：经济衰退风险上升。\n    \n    **2. 失业率 (Unemployment Rate)**\n    * **图表数值含义**：**百分比 (%)，当前失业人口占劳动力总人口的比例（绝对值）。**\n    * **定义**：劳动力中正在积极寻找工作但找不到工作的人口比例\n    * **重要性**：⭐⭐⭐⭐。滞后指标，通常在经济衰退开始后才会大幅上升。\n    * **阈值**：4.0% 是心理关口。若突破并持续上升（触发“萨姆规则”），通常意味着衰退已至。\n    \n    **3. 初请失业金人数 (Initial Claims)**\n    * **图表数值含义**：**当周申请人数，上周首次去申请失业救济的绝对人数**。\n    * **定义**：上周首次去政府申请失业救济金的人数。\n    * **重要性**：⭐⭐⭐⭐。最高频的指标（周更），是就业市场的先行指标。\n    * **阈值**：20万以下为极好；30万以上为危险信号。\n    \"\"\",\n    \n    \"消费 (Consumption)\": \"\"\"\n    #### 📘 消费指标详解\n    \n    **1. 零售销售 (Retail Sales) 同比增速 (YoY %)**\n    * **定义**：零售商店与食品服务的销售总额 (RSAFS) 销售额总计。因为波动大且影响力大。\n    * **重要性**：⭐⭐⭐⭐⭐。美国经济约70%由消费驱动，这是衡量内需（含商品与餐饮）最硬核的指标。\n    * **怎么看**：若同比增速跑输通胀（例如低于3%），说明实际消费在萎缩。\n    \n    **2. 个人消费支出 (PCE) 同比增速 (YoY %)**\n    * **定义**：家庭在商品和服务上的支出。比零售销售覆盖面更广（包含医疗等服务消费）。\n    * **重要性**：⭐⭐⭐⭐。是GDP计算的直接输入变量。\n    \n    **3. 密歇根大学消费者信心指数 (Sentiment) (Index Value)**\n    * **定义**：通过电话调查问卷得出的消费者乐观程度。数值越高，消费者越乐观。\n    * **重要性**：⭐⭐⭐。属于“软数据”或先行指标。信心崩塌往往发生在支出减少之前。\n    \"\"\",\n    \n    \"增长 (Growth)\": \"\"\"\n    #### 📘 经济增长指标详解\n    \n    **1. 实际 GDP (Real GDP) 同比增速 (YoY %)**\n    * **定义**：剔除通胀影响后的国内生产总值。\n    * **重要性**：⭐⭐⭐⭐⭐。经济的最终成绩单。\n    * **注意**：这是**季度数据**。通常连续两个季度负增长被定义为“技术性衰退”。\n    \n    **2. 工业产出 (Industrial Production) 同比增速 (YoY %)**\n    * **定义**：工厂、矿山和公用事业的实际产出量。\n    * **重要性**：⭐⭐⭐⭐。虽然美国是服务业大国，但制造业对周期最敏感。产出下降往往是衰退的先导。\n    \n    **3. 耐用品订单 (Durable Goods) 同比增速 (YoY %)**\n    * **定义**：寿命超过3年的商品（如飞机、机械、汽车）的订单。\n    * **重要性**：⭐⭐⭐。代表企业的长期投资信心。如果企业不敢买设备，说明看空未来。\n    \"\"\",\n    \n    \"通胀 (Inflation)\": \"\"\"\n    #### 📘 通胀指标详解\n    \n    **1. CPI (消费者物价指数) 同比增速 (YoY %)**\n    * **定义**：一篮子商品和服务的价格变化。民众感知最强。\n    * **重要性**：⭐⭐⭐⭐⭐。决定了你的钱是否贬值，以及工资是否需要上涨（工资-通胀螺旋）。\n    \n    **2. 核心 PCE (Core PCE) 同比增速 (YoY %)**\n    * **定义**：剔除波动较大的食品和能源后的个人消费支出价格指数。\n    * **重要性**：⭐⭐⭐⭐⭐。**美联储最爱**。联储说的“2%通胀目标”指的就是这个指标，而不是CPI。\n    \n    **3. PPI (生产者价格指数) 同比增速 (YoY %)**\n    * **定义**：工厂出厂价格。\n    * **重要性**：⭐⭐⭐。CPI的先行指标。如果工厂成本涨了，最终会传导给消费者。\n    \"\"\"\n}\n# ==========================================\n# 3. 核心功能：数据获取与处理\n# ==========================================\n@st.cache_data(ttl=3600)\ndef fetch_and_process_data(api_key, indicators, years):\n    if not api_key:\n        return None\n    fred = Fred(api_key=api_key)\n    start_date = datetime.now() - timedelta(days=years*365)\n    all_data = pd.DataFrame()\n    flat_indicators = {}\n    for category, items in indicators.items():\n        for name, code in items.items():\n            flat_indicators[name] = code\n    progress_bar = st.progress(0)\n    for i, (name, code) in enumerate(flat_indicators.items()):\n        try:\n            series = fred.get_series(code, observation_start=start_date)\n            series.name = name\n            series = series.resample('M').last()\n            all_data = pd.concat([all_data, series], axis=1)\n        except Exception as e:\n            st.warning(f\"无法获取 {name} ({code}): {e}\")\n        progress_bar.progress((i + 1) / len(flat_indicators))\n    progress_bar.empty()\n    if not all_data.empty:\n        all_data.sort_index(inplace=True)\n        all_data.index = pd.to_datetime(all_data.index)\n    return all_data\n\ndef calculate_quant_metrics(df, z_window):\n    metrics_df = pd.DataFrame(index=df.index)\n    for col in df.columns:\n        code = NAME_TO_CODE.get(col)\n        # 1. 市场视角 (Market View)\n        if code == \"PAYEMS\": \n            metrics_df[f\"{col}_Market\"] = df[col].diff(1) \n        elif code in [\"UNRATE\", \"ICSA\", \"UMCSENT\"]: \n            metrics_df[f\"{col}_Market\"] = df[col]\n        else:\n            metrics_df[f\"{col}_Market\"] = df[col].pct_change(12) * 100\n        # 2. 动量视角 (Momentum for Heatmap) & 原始值 (for Radar)\n        series_filled = df[col].ffill()\n        if code in [\"UNRATE\", \"ICSA\", \"UMCSENT\"]:\n            # 对于雷达图，我们需要一个“越大越好”的排名\n            # 虽然这里计算的是yoy，但我们也保存一个用于排名的 raw_val\n            # 简单起见，我们直接保存填充后的原始值作为 _Raw，在雷达图逻辑中处理反向逻辑\n            metrics_df[f\"{col}_Raw\"] = series_filled\n            yoy = series_filled.diff(12)\n        else:\n            metrics_df[f\"{col}_Raw\"] = series_filled.pct_change(12) * 100\n            yoy = series_filled.pct_change(12) * 100\n            \n        if code in INVERSE_CODES:\n             yoy = -yoy \n        metrics_df[f\"{col}_Momentum\"] = yoy\n        # 3. Z-Score\n        rolling_mean = yoy.rolling(window=z_window).mean()\n        rolling_std = yoy.rolling(window=z_window).std()\n        if rolling_std.iloc[-1] == 0:\n            metrics_df[f\"{col}_Z\"] = 0\n        else:\n            metrics_df[f\"{col}_Z\"] = (yoy - rolling_mean) / rolling_std\n    return metrics_df\n\n# ==========================================\n# 4. 新增功能：智能研报生成器 (专业增强版)\n# ==========================================\ndef generate_smart_report(category, df):\n    \"\"\"\n    根据最新数据生成专业级宏观研报\n    \"\"\"\n    report_text = f\"### 📝 {category} · 总结\\n\\n\"\n    \n    # 获取该板块下指标的最新有效值\n    latest_vals = {}\n    indicators = INDICATORS[category]\n    \n    for name, code in indicators.items():\n        col_name = f\"{name}_Market\"\n        if col_name in df.columns:\n            valid = df[col_name].dropna()\n            if not valid.empty:\n                # 获取最新值和前值\n                latest_vals[code] = (valid.iloc[-1], valid.iloc[-2] if len(valid)>1 else 0)\n\n    # 辅助函数：计算环比/同比变动方向\n    def get_trend_str(now, prev):\n        diff = now - prev\n        return \"回升\" if diff > 0 else \"回落\"\n\n    # --- 1. 就业板块分析逻辑 (Employment) ---\n    if category == \"就业 (Employment)\":\n        nfp_now, nfp_prev = latest_vals.get('PAYEMS', (0,0))\n        unrate_now, unrate_prev = latest_vals.get('UNRATE', (0,0))",
-      "lineCount": 240
+      "content": "一、部署口径说明\n\n当前项目统一以 Next.js 前端 + Python API 的形态部署，USeco 仅作为指标定义与数据口径来源。\n\n二、依赖与运行环境\n\nrequirements.txt：\n- pandas\n- fredapi\n- plotly\n\n三、核心指标映射（FRED）\n\n- 非农就业人数 (Non-Farm Payrolls) (PAYEMS)\n- 失业率 (Unemployment Rate) (UNRATE)\n- 初请失业金 (Initial Claims) (ICSA)\n- 零售销售 (Retail Sales) (RSAFS)\n- 个人消费支出 (PCE) (PCE)\n- 实际GDP (Real GDP) (GDPC1)\n- 工业产出 (Industrial Production) (INDPRO)\n- CPI (All Urban) (CPIAUCSL)\n- 核心 PCE (Core PCE) (PCEPILFE)\n- PPI (Producer Price Index) (PPIFIS)\n\n四、数据处理逻辑（后端）\n\n- 批量抓取：按类别从 FRED 拉取时间序列并统一时间轴。\n- 指标加工：计算同比、动量、ZScore 三类视角。\n- 事件输出：生成可供日报与专题页消费的结构化字段。\n\n五、前端展示模块（美国经济数据页）\n\n1) 概览卡：就业/消费/增长/通胀四象限。\n2) 指标面板：非农、CPI、PCE、零售销售、失业率等。\n3) 研判区：结合宏观总分输出风险提示与交易观察点。",
+      "lineCount": 29
     }
   ]
 }

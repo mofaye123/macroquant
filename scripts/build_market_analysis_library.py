@@ -146,7 +146,11 @@ def build_payload(
         },
     )
 
-    req_lines = [line.strip() for line in useco_requirements.read_text(encoding="utf-8").splitlines() if line.strip()]
+    req_lines = [
+        line.strip()
+        for line in useco_requirements.read_text(encoding="utf-8").splitlines()
+        if line.strip() and line.strip().lower() != "streamlit"
+    ]
     script_text = useco_script.read_text(encoding="utf-8")
     script_lines = script_text.splitlines()
 
@@ -174,51 +178,38 @@ def build_payload(
     useco_docs = [
         {
             "id": "useco-merged",
-            "title": "USeco 美国经济数据项目（合并版）",
+            "title": "USeco 美国经济数据方案（Next.js 部署版）",
             "date": datetime.now(timezone.utc).date().isoformat(),
-            "tags": ["USeco", "合并版", "requirements", "FRED API"],
+            "tags": ["USeco", "合并版", "requirements", "FRED API", "Next.js"],
             "sourceFiles": [safe_source_label(useco_script), safe_source_label(useco_requirements)],
-            "preview": "已合并 requirements 与主脚本结构，便于在「美国经济数据」页面直接阅读项目说明和数据口径。",
+            "preview": "已合并 requirements 与指标映射，仅保留可部署到当前 Next.js 体系的口径说明。",
             "toc": [
-                "一、依赖与运行环境",
-                "二、核心指标映射（FRED）",
-                "三、数据处理与量化函数",
-                "四、Streamlit 页面结构",
-                "五、可迁移到 Next.js 的模块建议",
+                "一、部署口径说明",
+                "二、依赖与运行环境",
+                "三、核心指标映射（FRED）",
+                "四、数据处理逻辑（后端）",
+                "五、前端展示模块（美国经济数据页）",
             ],
             "content": "\n\n".join(
                 [
-                    "一、依赖与运行环境",
+                    "一、部署口径说明",
+                    "当前项目统一以 Next.js 前端 + Python API 的形态部署，USeco 仅作为指标定义与数据口径来源。",
+                    "二、依赖与运行环境",
                     "requirements.txt：\n" + "\n".join(f"- {line}" for line in req_lines),
-                    "二、核心指标映射（FRED）",
+                    "三、核心指标映射（FRED）",
                     "\n".join(indicator_items) if indicator_items else "未解析出指标映射。",
-                    "三、数据处理与量化函数",
-                    "- fetch_and_process_data：按类别批量从 FRED 拉取数据并月频重采样。\n"
-                    "- calculate_quant_metrics：统一生成 Market/Momentum/ZScore 三个视角。\n"
-                    "- generate_smart_report：基于最新数据生成板块解读文本。",
-                    "四、Streamlit 页面结构",
-                    "- 侧边栏：lookback 年限、z-score 窗口与数据发布日历。\n"
-                    "- 主体：就业/消费/增长/通胀四大板块图表与解释。\n"
-                    "- 缓存：st.cache_data(ttl=3600)。",
-                    "五、可迁移到 Next.js 的模块建议",
-                    "1) 拆分为 API 层（数据抓取）+ 计算层（指标）+ 展示层（图表和解读）。\n"
-                    "2) 把指标字典和解释文案独立成 JSON，前端按模块渲染。\n"
-                    "3) 把 requirements 依赖映射为后端服务依赖清单，前端只做可视化。",
+                    "四、数据处理逻辑（后端）",
+                    "- 批量抓取：按类别从 FRED 拉取时间序列并统一时间轴。\n"
+                    "- 指标加工：计算同比、动量、ZScore 三类视角。\n"
+                    "- 事件输出：生成可供日报与专题页消费的结构化字段。",
+                    "五、前端展示模块（美国经济数据页）",
+                    "1) 概览卡：就业/消费/增长/通胀四象限。\n"
+                    "2) 指标面板：非农、CPI、PCE、零售销售、失业率等。\n"
+                    "3) 研判区：结合宏观总分输出风险提示与交易观察点。",
                 ]
             ),
-            "lineCount": len(req_lines) + len(indicator_items) + 18,
-        },
-        {
-            "id": "useco-script-excerpt",
-            "title": "USeco 原始脚本节选（us_economics.py）",
-            "date": datetime.now(timezone.utc).date().isoformat(),
-            "tags": ["代码节选", "Streamlit", "量化函数"],
-            "sourceFiles": [safe_source_label(useco_script)],
-            "preview": "保留原始脚本关键片段（前 240 行），用于对照迁移时的指标定义与函数逻辑。",
-            "toc": ["脚本节选（前 240 行）"],
-            "content": "\n".join(script_lines[:240]),
-            "lineCount": min(240, len(script_lines)),
-        },
+            "lineCount": len(req_lines) + len(indicator_items) + 16,
+        }
     ]
 
     return {
