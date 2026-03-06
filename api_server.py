@@ -1357,6 +1357,26 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     return frames
 
 
+def _compose_total_score_from_module_frames(module_frames: Dict[str, pd.DataFrame], index: pd.Index) -> pd.Series:
+    if index is None or len(index) == 0:
+        return pd.Series(dtype=float)
+
+    total = pd.Series(0.0, index=index, dtype=float)
+    has_any_module = False
+    for item in MODULE_META:
+        frame = module_frames.get(item["slug"], pd.DataFrame())
+        if frame is not None and not frame.empty and "Total_Score" in frame.columns:
+            module_series = frame["Total_Score"].reindex(index, method="ffill").astype(float)
+            has_any_module = True
+        else:
+            module_series = pd.Series(50.0, index=index, dtype=float)
+        total = total + module_series.fillna(50.0) * float(item["weight"])
+
+    if not has_any_module:
+        return pd.Series(dtype=float)
+    return total.clip(0, 100)
+
+
 def _factor_from_col(
     frame: pd.DataFrame,
     col: str,
@@ -1670,7 +1690,9 @@ def build_macro_payload(as_of_date: Optional[pd.Timestamp] = None) -> Dict[str, 
             if fred_failure_details:
                 warnings.append(f"FRED sample failures: {' | '.join([str(x) for x in fred_failure_details[:3]])}")
 
-    total_series = score_frame["Total_Score"].dropna()
+    total_series = _compose_total_score_from_module_frames(module_frames, df_all.index).dropna()
+    if total_series.empty:
+        total_series = score_frame["Total_Score"].dropna()
     if total_series.empty:
         warnings.append("total score series empty, fallback to baseline")
         total_series = pd.Series([50.0], index=pd.DatetimeIndex([df_all.index[-1]]))
