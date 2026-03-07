@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T07:38:14Z",
+  "generatedAt": "2026-03-07T08:44:15Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 50.05,
+        "cagr": 50.11,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -44.22,
-        "strategyReturn": 263.2,
-        "benchmarkReturn": 307.42,
-        "endingCapital": 363200.32,
+        "alpha": -44.82,
+        "strategyReturn": 263.68,
+        "benchmarkReturn": 308.49,
+        "endingCapital": 363677.34,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 363200.32
+            "value": 363677.34
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67733.72,
-            "pnlPct": 138.37,
+            "exitPrice": 67912.18,
+            "pnlPct": 138.99,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.85,
+        "cagr": 9.91,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -29.81,
-        "strategyReturn": 34.79,
-        "benchmarkReturn": 64.6,
-        "endingCapital": 134793.7,
+        "alpha": -30.13,
+        "strategyReturn": 35.02,
+        "benchmarkReturn": 65.15,
+        "endingCapital": 135020.07,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 134793.7
+            "value": 135020.07
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1976.78,
-            "pnlPct": 0.15,
+            "exitPrice": 1983.42,
+            "pnlPct": 0.49,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-07T07:38:14Z",
+    "generatedAt": "2026-03-07T08:44:15Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.49,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67733.72,
-        "change24hPct": -0.59,
-        "change7dPct": 1.1,
-        "realizedVol14dPct": 66.06,
+        "spot": 67912.18,
+        "change24hPct": -0.33,
+        "change7dPct": 1.37,
+        "realizedVol14dPct": 66.0,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1976.78,
-        "change24hPct": -0.1,
-        "change7dPct": 0.6,
-        "realizedVol14dPct": 88.71,
+        "spot": 1983.42,
+        "change24hPct": 0.24,
+        "change7dPct": 0.93,
+        "realizedVol14dPct": 88.7,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 84.15,
-        "change24hPct": -0.62,
-        "change7dPct": -0.25,
-        "realizedVol14dPct": 86.94,
+        "spot": 84.49,
+        "change24hPct": -0.22,
+        "change7dPct": 0.15,
+        "realizedVol14dPct": 86.88,
         "source": "yfinance"
       },
       {
@@ -935704,6 +935704,12 @@
       }
     ],
     "hotNews": [
+      {
+        "title": "Florida Senate passes state-level stablecoin bill, awaits DeSantis’ signature",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/florida-senate-passes-stablecoin-bill-desantis-signature?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-07T07:58:00Z"
+      },
       {
         "title": "Bitcoin slips below $68,000 heading into the weekend as dollar posts steepest weekly gain in a year",
         "source": "CoinDesk",
@@ -935735,12 +935741,6 @@
         "publishedAt": "2026-03-07T02:53:16Z"
       },
       {
-        "title": "When buying Bitcoin, don’t expect profit for at least 3 years: Data",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/when-buying-bitcoin-don-t-expect-profit-for-at-least-3-years-data?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-06T23:00:00Z"
-      },
-      {
         "title": "Why bitcoin couldn't hold $70,000 despite its best week of Wall Street news in months",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/06/why-bitcoin-suffered-a-usd110-billion-wipeout-despite-its-best-week-of-wall-street-news-in-months",
@@ -935757,7 +935757,7 @@
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -0.59%，7D +1.10%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -0.33%，7D +1.37%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
