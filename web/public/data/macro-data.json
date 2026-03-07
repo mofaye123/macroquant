@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T20:37:07Z",
+  "generatedAt": "2026-03-07T21:32:10Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.88,
+        "cagr": 49.96,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -42.67,
-        "strategyReturn": 261.96,
-        "benchmarkReturn": 304.64,
-        "endingCapital": 361964.99,
+        "alpha": -43.36,
+        "strategyReturn": 262.51,
+        "benchmarkReturn": 305.87,
+        "endingCapital": 362513.4,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 361964.99
+            "value": 362513.4
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67271.55,
-            "pnlPct": 136.74,
+            "exitPrice": 67476.73,
+            "pnlPct": 137.46,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.74,
+        "cagr": 9.79,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -29.18,
-        "strategyReturn": 34.36,
-        "benchmarkReturn": 63.54,
-        "endingCapital": 134360.46,
+        "alpha": -29.47,
+        "strategyReturn": 34.56,
+        "benchmarkReturn": 64.03,
+        "endingCapital": 134561.1,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 134360.46
+            "value": 134561.1
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1964.07,
-            "pnlPct": -0.49,
+            "exitPrice": 1969.95,
+            "pnlPct": -0.19,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-07T20:37:07Z",
+    "generatedAt": "2026-03-07T21:32:10Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.49,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67271.55,
-        "change24hPct": -1.27,
-        "change7dPct": 0.41,
-        "realizedVol14dPct": 66.32,
+        "spot": 67476.73,
+        "change24hPct": -0.97,
+        "change7dPct": 0.72,
+        "realizedVol14dPct": 66.18,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1964.07,
-        "change24hPct": -0.74,
-        "change7dPct": -0.05,
-        "realizedVol14dPct": 88.81,
+        "spot": 1969.95,
+        "change24hPct": -0.44,
+        "change7dPct": 0.25,
+        "realizedVol14dPct": 88.75,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 82.9,
-        "change24hPct": -2.11,
-        "change7dPct": -1.74,
-        "realizedVol14dPct": 87.57,
+        "spot": 83.12,
+        "change24hPct": -1.84,
+        "change7dPct": -1.48,
+        "realizedVol14dPct": 87.41,
         "source": "yfinance"
       },
       {
@@ -935705,6 +935705,12 @@
     ],
     "hotNews": [
       {
+        "title": "Coinbase says new U.S. tax-reporting rules for crypto are cluttered, confusing",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/policy/2026/03/07/coinbase-says-new-u-s-tax-reporting-rules-for-crypto-are-wasteful-onerous",
+        "publishedAt": "2026-03-07T21:00:00Z"
+      },
+      {
         "title": "Trump's cyber strategy vows to 'support the security' of cryptocurrencies and blockchain",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/policy/2026/03/07/trump-s-cyber-strategy-vows-to-support-the-security-of-cryptocurrencies-and-blockchain",
@@ -935729,12 +935735,6 @@
         "publishedAt": "2026-03-07T18:00:00Z"
       },
       {
-        "title": "Bitcoin purist Jack Dorsey says that his firm is reluctantly giving in to stablecoin craze",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/business/2026/03/07/bitcoin-purist-jack-dorsey-s-firm-is-reluctantly-giving-in-to-stablecoin-craze",
-        "publishedAt": "2026-03-07T17:24:25Z"
-      },
-      {
         "title": "Strategy's STRC stock trading surge: How much Bitcoin can Saylor buy?",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/strategy-strc-stock-trading-surge-dollars-how-much-bitcoin-can-saylor-buy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
@@ -935757,7 +935757,7 @@
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -1.27%，7D +0.41%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -0.97%，7D +0.72%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
