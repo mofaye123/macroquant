@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T11:30:54Z",
+  "generatedAt": "2026-03-07T13:07:04Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 50.18,
+        "cagr": 50.15,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -45.49,
-        "strategyReturn": 264.22,
-        "benchmarkReturn": 309.71,
-        "endingCapital": 364218.08,
+        "alpha": -45.21,
+        "strategyReturn": 264.0,
+        "benchmarkReturn": 309.21,
+        "endingCapital": 363995.42,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 364218.08
+            "value": 363995.42
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 68114.48,
-            "pnlPct": 139.71,
+            "exitPrice": 68031.18,
+            "pnlPct": 139.41,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.96,
-        "sharpe": 0.4,
+        "cagr": 9.9,
+        "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -30.42,
-        "strategyReturn": 35.22,
-        "benchmarkReturn": 65.65,
-        "endingCapital": 135222.58,
+        "alpha": -30.12,
+        "strategyReturn": 35.01,
+        "benchmarkReturn": 65.13,
+        "endingCapital": 135009.56,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 135222.58
+            "value": 135009.56
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1989.37,
-            "pnlPct": 0.79,
+            "exitPrice": 1983.11,
+            "pnlPct": 0.48,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-07T11:30:54Z",
+    "generatedAt": "2026-03-07T13:07:04Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.49,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 68114.48,
-        "change24hPct": -0.03,
-        "change7dPct": 1.67,
-        "realizedVol14dPct": 65.97,
+        "spot": 68031.18,
+        "change24hPct": -0.15,
+        "change7dPct": 1.55,
+        "realizedVol14dPct": 65.98,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1989.37,
-        "change24hPct": 0.54,
-        "change7dPct": 1.24,
-        "realizedVol14dPct": 88.72,
+        "spot": 1983.11,
+        "change24hPct": 0.22,
+        "change7dPct": 0.92,
+        "realizedVol14dPct": 88.7,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 84.75,
-        "change24hPct": 0.08,
-        "change7dPct": 0.46,
-        "realizedVol14dPct": 86.87,
+        "spot": 84.42,
+        "change24hPct": -0.31,
+        "change7dPct": 0.07,
+        "realizedVol14dPct": 86.89,
         "source": "yfinance"
       },
       {
@@ -935705,6 +935705,12 @@
     ],
     "hotNews": [
       {
+        "title": "Kalshi, Polymarket eye $20B valuations in potential fundraising: WSJ",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/kalshi-polymarket-20b-valuation-fundraising-wsj?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-07T12:01:04Z"
+      },
+      {
         "title": "USDC beats Tether as stablecoin transfer volume hits $1.8T all-time high",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/usdc-beats-tether-stablecoin-transfer-volume-1-8-trillion-all-time-high?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
@@ -935729,12 +935735,6 @@
         "publishedAt": "2026-03-07T06:15:48Z"
       },
       {
-        "title": "Bitcoin dip may not be over as retail ramps up buying below $70K: Santiment",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/bitcoin-price-decline-downside-retail-whales-pattern-santiment?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-07T06:02:01Z"
-      },
-      {
         "title": "Bitcoin could crash by another 30% as four-year cycle gains strength, investment firm says",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/07/bitcoin-could-crash-another-30-as-four-year-cycle-gains-strength-investment-firm-says",
@@ -935757,7 +935757,7 @@
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -0.03%，7D +1.67%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -0.15%，7D +1.55%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
