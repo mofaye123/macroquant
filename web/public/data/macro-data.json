@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T10:35:46Z",
+  "generatedAt": "2026-03-07T11:30:54Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 50.12,
+        "cagr": 50.18,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -44.93,
-        "strategyReturn": 263.77,
-        "benchmarkReturn": 308.7,
-        "endingCapital": 363771.01,
+        "alpha": -45.49,
+        "strategyReturn": 264.22,
+        "benchmarkReturn": 309.71,
+        "endingCapital": 364218.08,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 363771.01
+            "value": 364218.08
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67947.23,
-            "pnlPct": 139.12,
+            "exitPrice": 68114.48,
+            "pnlPct": 139.71,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.91,
-        "sharpe": 0.39,
+        "cagr": 9.96,
+        "sharpe": 0.4,
         "mdd": -74.43,
-        "alpha": -30.16,
-        "strategyReturn": 35.04,
-        "benchmarkReturn": 65.2,
-        "endingCapital": 135040.73,
+        "alpha": -30.42,
+        "strategyReturn": 35.22,
+        "benchmarkReturn": 65.65,
+        "endingCapital": 135222.58,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 135040.73
+            "value": 135222.58
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1984.03,
-            "pnlPct": 0.52,
+            "exitPrice": 1989.37,
+            "pnlPct": 0.79,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-07T10:35:46Z",
+    "generatedAt": "2026-03-07T11:30:54Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.49,
@@ -935656,29 +935656,29 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67924.26,
-        "change24hPct": -0.31,
-        "change7dPct": 1.39,
-        "realizedVol14dPct": 66.0,
+        "spot": 68114.48,
+        "change24hPct": -0.03,
+        "change7dPct": 1.67,
+        "realizedVol14dPct": 65.97,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1984.03,
-        "change24hPct": 0.27,
-        "change7dPct": 0.97,
-        "realizedVol14dPct": 88.7,
+        "spot": 1989.37,
+        "change24hPct": 0.54,
+        "change7dPct": 1.24,
+        "realizedVol14dPct": 88.72,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 84.61,
-        "change24hPct": -0.09,
-        "change7dPct": 0.29,
+        "spot": 84.75,
+        "change24hPct": 0.08,
+        "change7dPct": 0.46,
         "realizedVol14dPct": 86.87,
         "source": "yfinance"
       },
@@ -935704,6 +935704,12 @@
       }
     ],
     "hotNews": [
+      {
+        "title": "USDC beats Tether as stablecoin transfer volume hits $1.8T all-time high",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/usdc-beats-tether-stablecoin-transfer-volume-1-8-trillion-all-time-high?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-07T10:47:13Z"
+      },
       {
         "title": "Grok delivers viral vulgar roasts of Musk, Netanyahu and Starmer",
         "source": "Cointelegraph",
@@ -935735,12 +935741,6 @@
         "publishedAt": "2026-03-07T05:44:21Z"
       },
       {
-        "title": "Trump’s National Cyber Strategy pledges to support crypto and blockchain",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/crypto-blockchain-priority-national-cyber-strategy-us-donald-trump?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-07T05:06:17Z"
-      },
-      {
         "title": "Why bitcoin couldn't hold $70,000 despite its best week of Wall Street news in months",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/06/why-bitcoin-suffered-a-usd110-billion-wipeout-despite-its-best-week-of-wall-street-news-in-months",
@@ -935757,7 +935757,7 @@
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -0.31%，7D +1.39%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -0.03%，7D +1.67%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
@@ -935794,9 +935794,9 @@
       },
       {
         "project": "以太坊生态",
-        "headline": "以太坊生态暂无重大突发，维持跟踪链上活跃度与资金流向。",
-        "source": "MacroQuant Engine",
-        "url": ""
+        "headline": "USDC beats Tether as stablecoin transfer volume hits $1.8T all-time high",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/usdc-beats-tether-stablecoin-transfer-volume-1-8-trillion-all-time-high?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
       },
       {
         "project": "Solana 生态",
