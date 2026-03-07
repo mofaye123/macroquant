@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T13:07:04Z",
+  "generatedAt": "2026-03-07T15:34:08Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 50.15,
+        "cagr": 50.1,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -45.21,
-        "strategyReturn": 264.0,
-        "benchmarkReturn": 309.21,
-        "endingCapital": 363995.42,
+        "alpha": -44.79,
+        "strategyReturn": 263.66,
+        "benchmarkReturn": 308.45,
+        "endingCapital": 363657.69,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 363995.42
+            "value": 363657.69
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 68031.18,
-            "pnlPct": 139.41,
+            "exitPrice": 67904.83,
+            "pnlPct": 138.97,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.9,
+        "cagr": 9.88,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -30.12,
-        "strategyReturn": 35.01,
-        "benchmarkReturn": 65.13,
-        "endingCapital": 135009.56,
+        "alpha": -29.96,
+        "strategyReturn": 34.9,
+        "benchmarkReturn": 64.86,
+        "endingCapital": 134899.03,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 135009.56
+            "value": 134899.03
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1983.11,
-            "pnlPct": 0.48,
+            "exitPrice": 1979.87,
+            "pnlPct": 0.31,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-07T13:07:04Z",
+    "generatedAt": "2026-03-07T15:34:08Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.49,
@@ -935656,19 +935656,19 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 68031.18,
-        "change24hPct": -0.15,
-        "change7dPct": 1.55,
-        "realizedVol14dPct": 65.98,
+        "spot": 67904.83,
+        "change24hPct": -0.34,
+        "change7dPct": 1.36,
+        "realizedVol14dPct": 66.0,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1983.11,
-        "change24hPct": 0.22,
-        "change7dPct": 0.92,
+        "spot": 1979.87,
+        "change24hPct": 0.06,
+        "change7dPct": 0.75,
         "realizedVol14dPct": 88.7,
         "source": "yfinance"
       },
@@ -935676,10 +935676,10 @@
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 84.42,
-        "change24hPct": -0.31,
-        "change7dPct": 0.07,
-        "realizedVol14dPct": 86.89,
+        "spot": 84.03,
+        "change24hPct": -0.77,
+        "change7dPct": -0.4,
+        "realizedVol14dPct": 86.97,
         "source": "yfinance"
       },
       {
@@ -935705,6 +935705,18 @@
     ],
     "hotNews": [
       {
+        "title": "Circle moves $68 million in just 30 minutes by using its own stablecoin for internal payments",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/03/07/circle-starts-using-usdc-stablecoin-for-internal-treasury-moves-settling-usd68-million",
+        "publishedAt": "2026-03-07T15:03:26Z"
+      },
+      {
+        "title": "Those who cheered U.S. Bitcoin reserve have spent year watching Trump's order languish",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/news-analysis/2026/03/06/those-who-cheered-u-s-bitcoin-reserve-have-spent-year-watching-trump-order-languish",
+        "publishedAt": "2026-03-07T15:00:00Z"
+      },
+      {
         "title": "Kalshi, Polymarket eye $20B valuations in potential fundraising: WSJ",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/kalshi-polymarket-20b-valuation-fundraising-wsj?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
@@ -935729,7 +935741,7 @@
         "publishedAt": "2026-03-07T07:58:00Z"
       },
       {
-        "title": "Bitcoin slips below $68,000 heading into the weekend as dollar posts steepest weekly gain in a year",
+        "title": "Bitcoin slips below $68,000 as dollar posts steepest weekly gain in a year",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/07/bitcoin-slips-below-usd68-000-heading-into-the-weekend-as-dollar-posts-steepest-weekly-gain-in-a-year",
         "publishedAt": "2026-03-07T06:15:48Z"
@@ -935739,25 +935751,13 @@
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/07/bitcoin-could-crash-another-30-as-four-year-cycle-gains-strength-investment-firm-says",
         "publishedAt": "2026-03-07T05:44:21Z"
-      },
-      {
-        "title": "Why bitcoin couldn't hold $70,000 despite its best week of Wall Street news in months",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/06/why-bitcoin-suffered-a-usd110-billion-wipeout-despite-its-best-week-of-wall-street-news-in-months",
-        "publishedAt": "2026-03-06T20:17:14Z"
-      },
-      {
-        "title": "Managing financial AI agents is the only skill you’ll need to survive the AI layoffs",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/opinion/2026/03/06/managing-financial-ai-agents-is-the-only-skill-you-ll-need-to-survive-the-ai-layoffs",
-        "publishedAt": "2026-03-06T19:00:00Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -0.15%，7D +1.55%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -0.34%，7D +1.36%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
