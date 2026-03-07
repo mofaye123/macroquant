@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T16:40:16Z",
+  "generatedAt": "2026-03-07T17:32:20Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 50.07,
+        "cagr": 50.09,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -44.43,
-        "strategyReturn": 263.37,
-        "benchmarkReturn": 307.79,
-        "endingCapital": 363365.61,
+        "alpha": -44.7,
+        "strategyReturn": 263.58,
+        "benchmarkReturn": 308.28,
+        "endingCapital": 363582.01,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 363365.61
+            "value": 363582.01
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67795.55,
-            "pnlPct": 138.58,
+            "exitPrice": 67876.52,
+            "pnlPct": 138.87,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.85,
+        "cagr": 9.89,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -29.83,
-        "strategyReturn": 34.81,
-        "benchmarkReturn": 64.65,
-        "endingCapital": 134812.97,
+        "alpha": -30.04,
+        "strategyReturn": 34.95,
+        "benchmarkReturn": 64.99,
+        "endingCapital": 134954.18,
         "currentPosition": 0.5,
         "currentScore": 55.3,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 134812.97
+            "value": 134954.18
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1977.35,
-            "pnlPct": 0.18,
+            "exitPrice": 1981.49,
+            "pnlPct": 0.39,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-07T16:40:16Z",
+    "generatedAt": "2026-03-07T17:32:20Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.49,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67795.55,
-        "change24hPct": -0.5,
-        "change7dPct": 1.19,
-        "realizedVol14dPct": 66.03,
+        "spot": 67876.52,
+        "change24hPct": -0.38,
+        "change7dPct": 1.31,
+        "realizedVol14dPct": 66.01,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1977.35,
-        "change24hPct": -0.07,
-        "change7dPct": 0.63,
-        "realizedVol14dPct": 88.71,
+        "spot": 1981.49,
+        "change24hPct": 0.14,
+        "change7dPct": 0.84,
+        "realizedVol14dPct": 88.7,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 83.63,
-        "change24hPct": -1.24,
-        "change7dPct": -0.87,
-        "realizedVol14dPct": 87.12,
+        "spot": 83.99,
+        "change24hPct": -0.81,
+        "change7dPct": -0.44,
+        "realizedVol14dPct": 86.98,
         "source": "yfinance"
       },
       {
@@ -935705,22 +935705,34 @@
     ],
     "hotNews": [
       {
+        "title": "Bitcoin purist Jack Dorsey says that his firm is reluctantly giving in to stablecoin craze",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/03/07/bitcoin-purist-jack-dorsey-s-firm-is-reluctantly-giving-in-to-stablecoin-craze",
+        "publishedAt": "2026-03-07T17:24:25Z"
+      },
+      {
+        "title": "Top Wall Street minds see AI rotation ahead as bitcoin seeks role in new cycle",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/07/top-wall-street-minds-see-ai-rotation-ahead-as-bitcoin-seeks-role-in-new-cycle",
+        "publishedAt": "2026-03-07T17:00:00Z"
+      },
+      {
         "title": "Kalshi, Polymarket seeking $20 billion valuations in fundraising talks: WSJ",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/business/2026/03/07/kalshi-polymarket-seeking-usd20-billion-valuations-in-fundraising-talks-wsj",
         "publishedAt": "2026-03-07T16:30:00Z"
       },
       {
+        "title": "Strategy's STRC stock trading surge: How much Bitcoin can Saylor buy?",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/strategy-strc-stock-trading-surge-dollars-how-much-bitcoin-can-saylor-buy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-07T15:30:40Z"
+      },
+      {
         "title": "Circle moves $68 million in just 30 minutes by using its own stablecoin for internal payments",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/business/2026/03/07/circle-starts-using-usdc-stablecoin-for-internal-treasury-moves-settling-usd68-million",
         "publishedAt": "2026-03-07T15:03:26Z"
-      },
-      {
-        "title": "Those who cheered U.S. Bitcoin reserve have spent year watching Trump's order languish",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/news-analysis/2026/03/06/those-who-cheered-u-s-bitcoin-reserve-have-spent-year-watching-trump-order-languish",
-        "publishedAt": "2026-03-07T15:00:00Z"
       },
       {
         "title": "Kalshi, Polymarket eye $20B valuations in potential fundraising: WSJ",
@@ -935739,25 +935751,13 @@
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/grok-viral-roasts-musk-netanyahu-starmer?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-07T09:36:52Z"
-      },
-      {
-        "title": "Florida Senate passes state-level stablecoin bill, awaits DeSantis’ signature",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/florida-senate-passes-stablecoin-bill-desantis-signature?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-07T07:58:00Z"
-      },
-      {
-        "title": "Bitcoin slips below $68,000 as dollar posts steepest weekly gain in a year",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/07/bitcoin-slips-below-usd68-000-heading-into-the-weekend-as-dollar-posts-steepest-weekly-gain-in-a-year",
-        "publishedAt": "2026-03-07T06:15:48Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -0.50%，7D +1.19%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -0.38%，7D +1.31%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
