@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-07T02:40:53Z",
+  "generatedAt": "2026-03-07T04:39:05Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.47,
+        "cagr": 49.4,
         "sharpe": 0.72,
         "mdd": -51.33,
-        "alpha": -51.05,
-        "strategyReturn": 258.79,
-        "benchmarkReturn": 309.84,
-        "endingCapital": 358785.64,
+        "alpha": -50.84,
+        "strategyReturn": 258.3,
+        "benchmarkReturn": 309.14,
+        "endingCapital": 358296.15,
         "currentPosition": 0.8,
         "currentScore": 55.7,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 358785.64
+            "value": 358296.15
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 68135.52,
-            "pnlPct": 139.78,
+            "exitPrice": 68019.67,
+            "pnlPct": 139.37,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.17,
+        "cagr": 9.16,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -32.23,
-        "strategyReturn": 32.18,
-        "benchmarkReturn": 64.42,
-        "endingCapital": 132182.31,
+        "alpha": -32.21,
+        "strategyReturn": 32.13,
+        "benchmarkReturn": 64.34,
+        "endingCapital": 132131.99,
         "currentPosition": 0.8,
         "currentScore": 55.7,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-07",
-            "value": 132182.31
+            "value": 132131.99
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1974.59,
-            "pnlPct": 0.04,
+            "exitPrice": 1973.65,
+            "pnlPct": -0.0,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-07T02:40:53Z",
+    "generatedAt": "2026-03-07T04:39:05Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.58,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 68092.24,
-        "change24hPct": -3.88,
-        "change7dPct": 1.64,
-        "realizedVol14dPct": 66.07,
+        "spot": 68019.67,
+        "change24hPct": -3.98,
+        "change7dPct": 1.53,
+        "realizedVol14dPct": 66.25,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1974.59,
-        "change24hPct": -4.68,
-        "change7dPct": 0.49,
-        "realizedVol14dPct": 89.0,
+        "spot": 1973.65,
+        "change24hPct": -4.73,
+        "change7dPct": 0.44,
+        "realizedVol14dPct": 89.07,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 84.41,
-        "change24hPct": -4.83,
-        "change7dPct": 0.05,
-        "realizedVol14dPct": 87.33,
+        "spot": 84.29,
+        "change24hPct": -4.96,
+        "change7dPct": -0.09,
+        "realizedVol14dPct": 87.55,
         "source": "yfinance"
       },
       {
@@ -935705,6 +935705,12 @@
     ],
     "hotNews": [
       {
+        "title": "Community banks and crypto industry ‘are allies’ in CLARITY Act debate: Exec",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/crypto-industry-us-clarity-act-community-banks-stablecoin-yields?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-07T02:53:16Z"
+      },
+      {
         "title": "When buying Bitcoin, don’t expect profit for at least 3 years: Data",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/when-buying-bitcoin-don-t-expect-profit-for-at-least-3-years-data?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
@@ -935721,12 +935727,6 @@
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/price-predictions-3-6-btc-eth-bnb-xrp-sol-doge-ada-bch-hype-xmr?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-06T21:00:00Z"
-      },
-      {
-        "title": "Curve Finance accuses PancakeSwap of copying its code",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/curve-accuses-pancakeswap-copy-code?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-06T20:33:25Z"
       },
       {
         "title": "Why bitcoin couldn't hold $70,000 despite its best week of Wall Street news in months",
@@ -935757,7 +935757,7 @@
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -3.88%，7D +1.64%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -3.98%，7D +1.53%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
