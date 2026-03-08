@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-08T13:08:47Z",
+  "generatedAt": "2026-03-08T14:35:41Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.82,
+        "cagr": 49.84,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -42.5,
-        "strategyReturn": 261.88,
-        "benchmarkReturn": 304.38,
-        "endingCapital": 361876.59,
+        "alpha": -42.68,
+        "strategyReturn": 262.02,
+        "benchmarkReturn": 304.71,
+        "endingCapital": 362023.26,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 361876.59
+            "value": 362023.26
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67228.06,
-            "pnlPct": 136.59,
+            "exitPrice": 67282.58,
+            "pnlPct": 136.78,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.52,
+        "cagr": 9.56,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -28.0,
-        "strategyReturn": 33.56,
-        "benchmarkReturn": 61.56,
-        "endingCapital": 133557.79,
+        "alpha": -28.19,
+        "strategyReturn": 33.69,
+        "benchmarkReturn": 61.88,
+        "endingCapital": 133688.8,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 133557.79
+            "value": 133688.8
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1940.31,
-            "pnlPct": -1.69,
+            "exitPrice": 1944.15,
+            "pnlPct": -1.5,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-08T13:08:47Z",
+    "generatedAt": "2026-03-08T14:35:41Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.58,
@@ -935656,9 +935656,9 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67228.06,
-        "change24hPct": -0.07,
-        "change7dPct": 2.27,
+        "spot": 67282.58,
+        "change24hPct": 0.01,
+        "change7dPct": 2.35,
         "realizedVol14dPct": 66.27,
         "source": "yfinance"
       },
@@ -935666,20 +935666,20 @@
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1940.31,
-        "change24hPct": -1.48,
-        "change7dPct": 0.06,
-        "realizedVol14dPct": 89.01,
+        "spot": 1944.15,
+        "change24hPct": -1.29,
+        "change7dPct": 0.26,
+        "realizedVol14dPct": 88.92,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 82.29,
-        "change24hPct": -1.08,
-        "change7dPct": -1.55,
-        "realizedVol14dPct": 86.26,
+        "spot": 82.14,
+        "change24hPct": -1.25,
+        "change7dPct": -1.72,
+        "realizedVol14dPct": 86.32,
         "source": "yfinance"
       },
       {
@@ -935704,6 +935704,24 @@
       }
     ],
     "hotNews": [
+      {
+        "title": "Market structure state of play: State of Crypto",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/news-analysis/2026/03/01/market-structure-state-of-play-state-of-crypto",
+        "publishedAt": "2026-03-08T14:00:00Z"
+      },
+      {
+        "title": "Oil leaving Middle East trades over $100 a barrel. Here’s how it could affect bitcoin",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/08/some-middle-east-oil-is-now-over-usd100-a-barrel-here-s-how-it-could-affect-bitcoin",
+        "publishedAt": "2026-03-08T13:41:06Z"
+      },
+      {
+        "title": "Bitcoin preps fresh trend line showdown as weekly close sparks $60K target",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/bitcoin-fresh-trend-line-showdown-weekly-close-60k-target?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-08T13:20:42Z"
+      },
       {
         "title": "AI agent attempts unauthorized crypto mining during training, reseachers say",
         "source": "Cointelegraph",
@@ -935733,31 +935751,13 @@
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/cz-says-cexs-zero-motive-aid-terrorists-court-dismisses-binance-case?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-08T07:13:51Z"
-      },
-      {
-        "title": "US lawmakers warn temporary CBDC ban isn’t enough, demand 'permanent' block",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/united-states-cbdc-federal-reserve-lawmakers-dispute-letter?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-08T07:08:49Z"
-      },
-      {
-        "title": "Bitcoin dip may not be over as whales sell into retail buying — a bearish signal",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/08/bitcoin-dip-may-not-be-over-as-whales-sell-into-retail-buying-a-bearish-signal",
-        "publishedAt": "2026-03-08T05:16:45Z"
-      },
-      {
-        "title": "XRP slips as traders watch $1.35 support",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/08/xrp-slips-as-traders-watch-usd1-35-support",
-        "publishedAt": "2026-03-08T05:06:07Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -0.07%，7D +2.27%，执行上优先看关键位是否放量确认。"
+      "BTC 24H +0.01%，7D +2.35%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
