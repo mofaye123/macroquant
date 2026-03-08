@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-08T15:34:51Z",
+  "generatedAt": "2026-03-08T16:41:44Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.8,
+        "cagr": 49.69,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -42.29,
-        "strategyReturn": 261.71,
-        "benchmarkReturn": 304.0,
-        "endingCapital": 361706.47,
+        "alpha": -41.27,
+        "strategyReturn": 260.88,
+        "benchmarkReturn": 302.15,
+        "endingCapital": 360881.89,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 361706.47
+            "value": 360881.89
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67164.83,
-            "pnlPct": 136.36,
+            "exitPrice": 66858.33,
+            "pnlPct": 135.29,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.52,
+        "cagr": 9.48,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -27.97,
-        "strategyReturn": 33.53,
-        "benchmarkReturn": 61.5,
-        "endingCapital": 133533.31,
+        "alpha": -27.77,
+        "strategyReturn": 33.4,
+        "benchmarkReturn": 61.17,
+        "endingCapital": 133396.18,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 133533.31
+            "value": 133396.18
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1939.59,
-            "pnlPct": -1.73,
+            "exitPrice": 1935.58,
+            "pnlPct": -1.93,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-08T15:34:51Z",
+    "generatedAt": "2026-03-08T16:41:44Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.58,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67164.83,
-        "change24hPct": -0.16,
-        "change7dPct": 2.17,
-        "realizedVol14dPct": 66.28,
+        "spot": 66858.33,
+        "change24hPct": -0.62,
+        "change7dPct": 1.7,
+        "realizedVol14dPct": 66.35,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1939.59,
-        "change24hPct": -1.52,
-        "change7dPct": 0.03,
-        "realizedVol14dPct": 89.02,
+        "spot": 1935.58,
+        "change24hPct": -1.72,
+        "change7dPct": -0.18,
+        "realizedVol14dPct": 89.13,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 82.05,
-        "change24hPct": -1.36,
-        "change7dPct": -1.83,
-        "realizedVol14dPct": 86.38,
+        "spot": 81.6,
+        "change24hPct": -1.89,
+        "change7dPct": -2.36,
+        "realizedVol14dPct": 86.66,
         "source": "yfinance"
       },
       {
@@ -935704,6 +935704,12 @@
       }
     ],
     "hotNews": [
+      {
+        "title": "Bitcoin is still a great way to diversify portfolio even if it trades like a tech stock, analyst says",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/08/bitcoin-is-still-a-great-way-to-diversify-portfolio-even-if-it-trades-like-a-tech-stock-analyst-says",
+        "publishedAt": "2026-03-08T16:00:00Z"
+      },
       {
         "title": "Market structure state of play: State of Crypto",
         "source": "CoinDesk",
@@ -935735,12 +935741,6 @@
         "publishedAt": "2026-03-08T11:04:48Z"
       },
       {
-        "title": "Canton’s Yuval Rooz says smart contract blockchains face a reckoning over value gap",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/business/2026/03/08/canton-s-yuval-rooz-says-smart-contract-blockchains-face-a-reckoning-over-value-gap",
-        "publishedAt": "2026-03-08T11:00:00Z"
-      },
-      {
         "title": "Spot Bitcoin ETFs post second straight weekly inflows for first time in 5 months",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/spot-bitcoin-etfs-second-weekly-inflows-five-months-ether-etfs-rebound?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
@@ -935757,7 +935757,7 @@
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -0.16%，7D +2.17%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -0.62%，7D +1.70%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
