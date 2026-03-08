@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-08T19:33:09Z",
+  "generatedAt": "2026-03-08T20:38:26Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.81,
+        "cagr": 49.87,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -42.42,
-        "strategyReturn": 261.81,
-        "benchmarkReturn": 304.22,
-        "endingCapital": 361807.51,
+        "alpha": -42.94,
+        "strategyReturn": 262.23,
+        "benchmarkReturn": 305.17,
+        "endingCapital": 362230.37,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 361807.51
+            "value": 362230.37
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67202.38,
-            "pnlPct": 136.5,
+            "exitPrice": 67359.56,
+            "pnlPct": 137.05,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.69,
+        "cagr": 9.73,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -28.94,
-        "strategyReturn": 34.21,
-        "benchmarkReturn": 63.15,
-        "endingCapital": 134210.92,
+        "alpha": -29.16,
+        "strategyReturn": 34.36,
+        "benchmarkReturn": 63.52,
+        "endingCapital": 134361.95,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 134210.92
+            "value": 134361.95
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1959.43,
-            "pnlPct": -0.72,
+            "exitPrice": 1963.85,
+            "pnlPct": -0.5,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-08T19:33:09Z",
+    "generatedAt": "2026-03-08T20:38:26Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.58,
@@ -935656,9 +935656,9 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67202.38,
-        "change24hPct": -0.1,
-        "change7dPct": 2.23,
+        "spot": 67359.56,
+        "change24hPct": 0.13,
+        "change7dPct": 2.47,
         "realizedVol14dPct": 66.27,
         "source": "yfinance"
       },
@@ -935666,20 +935666,20 @@
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1959.43,
-        "change24hPct": -0.51,
-        "change7dPct": 1.05,
-        "realizedVol14dPct": 88.68,
+        "spot": 1963.85,
+        "change24hPct": -0.28,
+        "change7dPct": 1.28,
+        "realizedVol14dPct": 88.64,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 82.27,
-        "change24hPct": -1.09,
-        "change7dPct": -1.56,
-        "realizedVol14dPct": 86.26,
+        "spot": 82.38,
+        "change24hPct": -0.96,
+        "change7dPct": -1.43,
+        "realizedVol14dPct": 86.22,
         "source": "yfinance"
       },
       {
@@ -935704,6 +935704,12 @@
       }
     ],
     "hotNews": [
+      {
+        "title": "Brazil's Pix instant payments system expands to Argentina",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/brazil-pix-payments-expand-argentina?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-08T19:33:51Z"
+      },
       {
         "title": "Crypto’s Rock ’n’ Roll Era Is Over",
         "source": "CoinDesk",
@@ -935745,19 +935751,13 @@
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/ai-agent-attempts-crypto-mining-during-training-researchers-say?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-08T12:01:20Z"
-      },
-      {
-        "title": "Spot Bitcoin ETFs post second straight weekly inflows for first time in 5 months",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/spot-bitcoin-etfs-second-weekly-inflows-five-months-ether-etfs-rebound?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-08T10:08:33Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -0.10%，7D +2.23%，执行上优先看关键位是否放量确认。"
+      "BTC 24H +0.13%，7D +2.47%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
