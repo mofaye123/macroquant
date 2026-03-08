@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-08T06:58:26Z",
+  "generatedAt": "2026-03-08T07:39:03Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.79,
+        "cagr": 49.85,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -42.16,
-        "strategyReturn": 261.6,
-        "benchmarkReturn": 303.77,
-        "endingCapital": 361603.97,
+        "alpha": -42.81,
+        "strategyReturn": 262.13,
+        "benchmarkReturn": 304.94,
+        "endingCapital": 362126.01,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 361603.97
+            "value": 362126.01
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67126.73,
-            "pnlPct": 136.23,
+            "exitPrice": 67320.77,
+            "pnlPct": 136.91,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.58,
+        "cagr": 9.64,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -28.32,
-        "strategyReturn": 33.78,
-        "benchmarkReturn": 62.09,
-        "endingCapital": 133775.91,
+        "alpha": -28.66,
+        "strategyReturn": 34.01,
+        "benchmarkReturn": 62.67,
+        "endingCapital": 134013.01,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 133775.91
+            "value": 134013.01
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1946.7,
-            "pnlPct": -1.37,
+            "exitPrice": 1953.64,
+            "pnlPct": -1.02,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-08T06:58:26Z",
+    "generatedAt": "2026-03-08T07:39:03Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.58,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67126.73,
-        "change24hPct": -0.22,
-        "change7dPct": 2.11,
-        "realizedVol14dPct": 66.28,
+        "spot": 67320.77,
+        "change24hPct": 0.07,
+        "change7dPct": 2.41,
+        "realizedVol14dPct": 66.27,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1946.7,
-        "change24hPct": -1.16,
-        "change7dPct": 0.39,
-        "realizedVol14dPct": 88.87,
+        "spot": 1953.64,
+        "change24hPct": -0.8,
+        "change7dPct": 0.75,
+        "realizedVol14dPct": 88.75,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 82.38,
-        "change24hPct": -0.96,
-        "change7dPct": -1.43,
-        "realizedVol14dPct": 86.22,
+        "spot": 82.85,
+        "change24hPct": -0.4,
+        "change7dPct": -0.87,
+        "realizedVol14dPct": 86.08,
         "source": "yfinance"
       },
       {
@@ -935704,6 +935704,12 @@
       }
     ],
     "hotNews": [
+      {
+        "title": "CZ says CEXs have ‘zero motive’ to aid terrorists as court dismisses terrorism case",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/cz-says-cexs-zero-motive-aid-terrorists-court-dismisses-binance-case?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-08T07:13:51Z"
+      },
       {
         "title": "Bitcoin dip may not be over as whales sell into retail buying — a bearish signal",
         "source": "CoinDesk",
@@ -935745,19 +935751,13 @@
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/kalshi-sued-khamenei-trade-carveout?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-07T18:04:28Z"
-      },
-      {
-        "title": "Strategy's STRC stock trading surge: How much Bitcoin can Saylor buy?",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/strategy-strc-stock-trading-surge-dollars-how-much-bitcoin-can-saylor-buy?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-07T15:30:40Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H -0.22%，7D +2.11%，执行上优先看关键位是否放量确认。"
+      "BTC 24H +0.07%，7D +2.41%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
