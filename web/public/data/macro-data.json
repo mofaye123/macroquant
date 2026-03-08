@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-08T07:39:03Z",
+  "generatedAt": "2026-03-08T08:44:26Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.85,
+        "cagr": 49.88,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -42.81,
-        "strategyReturn": 262.13,
-        "benchmarkReturn": 304.94,
-        "endingCapital": 362126.01,
+        "alpha": -43.09,
+        "strategyReturn": 262.36,
+        "benchmarkReturn": 305.45,
+        "endingCapital": 362355.3,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 362126.01
+            "value": 362355.3
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67320.77,
-            "pnlPct": 136.91,
+            "exitPrice": 67406.0,
+            "pnlPct": 137.21,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.64,
+        "cagr": 9.67,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -28.66,
-        "strategyReturn": 34.01,
-        "benchmarkReturn": 62.67,
-        "endingCapital": 134013.01,
+        "alpha": -28.82,
+        "strategyReturn": 34.12,
+        "benchmarkReturn": 62.94,
+        "endingCapital": 134121.54,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 134013.01
+            "value": 134121.54
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1953.64,
-            "pnlPct": -1.02,
+            "exitPrice": 1956.82,
+            "pnlPct": -0.86,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-08T07:39:03Z",
+    "generatedAt": "2026-03-08T08:44:26Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.58,
@@ -935656,29 +935656,29 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67320.77,
-        "change24hPct": 0.07,
-        "change7dPct": 2.41,
-        "realizedVol14dPct": 66.27,
+        "spot": 67406.0,
+        "change24hPct": 0.2,
+        "change7dPct": 2.54,
+        "realizedVol14dPct": 66.28,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1953.64,
-        "change24hPct": -0.8,
-        "change7dPct": 0.75,
-        "realizedVol14dPct": 88.75,
+        "spot": 1956.82,
+        "change24hPct": -0.64,
+        "change7dPct": 0.92,
+        "realizedVol14dPct": 88.71,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 82.85,
-        "change24hPct": -0.4,
-        "change7dPct": -0.87,
+        "spot": 82.84,
+        "change24hPct": -0.41,
+        "change7dPct": -0.89,
         "realizedVol14dPct": 86.08,
         "source": "yfinance"
       },
@@ -935711,6 +935711,12 @@
         "publishedAt": "2026-03-08T07:13:51Z"
       },
       {
+        "title": "US lawmakers warn temporary CBDC ban isn’t enough, demand 'permanent' block",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/united-states-cbdc-federal-reserve-lawmakers-dispute-letter?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-08T07:08:49Z"
+      },
+      {
         "title": "Bitcoin dip may not be over as whales sell into retail buying — a bearish signal",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/08/bitcoin-dip-may-not-be-over-as-whales-sell-into-retail-buying-a-bearish-signal",
@@ -935723,16 +935729,16 @@
         "publishedAt": "2026-03-08T05:06:07Z"
       },
       {
+        "title": "Bitcoin ‘bull trap’ forming as bear market enters middle phase: Willy Woo",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/bitcoin-bull-trap-bear-market-phase-middle-willy-woo-analyst?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-08T04:55:03Z"
+      },
+      {
         "title": "Here’s what happened in crypto today",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-07T22:32:13Z"
-      },
-      {
-        "title": "Crypto Fear and Greed Index falls back down to 'extreme fear' levels",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/crypto-fear-greed-index-extreme-fear?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-07T22:05:54Z"
       },
       {
         "title": "Coinbase says new U.S. tax-reporting rules for crypto are cluttered, confusing",
@@ -935745,19 +935751,13 @@
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/policy/2026/03/07/trump-s-cyber-strategy-vows-to-support-the-security-of-cryptocurrencies-and-blockchain",
         "publishedAt": "2026-03-07T19:46:41Z"
-      },
-      {
-        "title": "Prediction market Kalshi sued over Khamenei trade carveout",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/kalshi-sued-khamenei-trade-carveout?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-07T18:04:28Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H +0.07%，7D +2.41%，执行上优先看关键位是否放量确认。"
+      "BTC 24H +0.20%，7D +2.54%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
