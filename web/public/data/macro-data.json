@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-08T11:31:14Z",
+  "generatedAt": "2026-03-08T13:08:47Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.98,
+        "cagr": 49.82,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -44.01,
-        "strategyReturn": 263.1,
-        "benchmarkReturn": 307.1,
-        "endingCapital": 363095.89,
+        "alpha": -42.5,
+        "strategyReturn": 261.88,
+        "benchmarkReturn": 304.38,
+        "endingCapital": 361876.59,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 363095.89
+            "value": 361876.59
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67681.28,
-            "pnlPct": 138.18,
+            "exitPrice": 67228.06,
+            "pnlPct": 136.59,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.69,
+        "cagr": 9.52,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -28.95,
-        "strategyReturn": 34.22,
-        "benchmarkReturn": 63.17,
-        "endingCapital": 134215.39,
+        "alpha": -28.0,
+        "strategyReturn": 33.56,
+        "benchmarkReturn": 61.56,
+        "endingCapital": 133557.79,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 134215.39
+            "value": 133557.79
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1959.56,
-            "pnlPct": -0.72,
+            "exitPrice": 1940.31,
+            "pnlPct": -1.69,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-08T11:31:14Z",
+    "generatedAt": "2026-03-08T13:08:47Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.58,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67681.28,
-        "change24hPct": 0.61,
-        "change7dPct": 2.96,
-        "realizedVol14dPct": 66.34,
+        "spot": 67228.06,
+        "change24hPct": -0.07,
+        "change7dPct": 2.27,
+        "realizedVol14dPct": 66.27,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1959.56,
-        "change24hPct": -0.5,
-        "change7dPct": 1.06,
-        "realizedVol14dPct": 88.68,
+        "spot": 1940.31,
+        "change24hPct": -1.48,
+        "change7dPct": 0.06,
+        "realizedVol14dPct": 89.01,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 83.05,
-        "change24hPct": -0.15,
-        "change7dPct": -0.63,
-        "realizedVol14dPct": 86.05,
+        "spot": 82.29,
+        "change24hPct": -1.08,
+        "change7dPct": -1.55,
+        "realizedVol14dPct": 86.26,
         "source": "yfinance"
       },
       {
@@ -935704,6 +935704,12 @@
       }
     ],
     "hotNews": [
+      {
+        "title": "AI agent attempts unauthorized crypto mining during training, reseachers say",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/ai-agent-attempts-crypto-mining-during-training-researchers-say?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-08T12:01:20Z"
+      },
       {
         "title": "Tokenized assets exceed $25 billion after nearly quadrupling in a year",
         "source": "CoinDesk",
@@ -935745,19 +935751,13 @@
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/08/xrp-slips-as-traders-watch-usd1-35-support",
         "publishedAt": "2026-03-08T05:06:07Z"
-      },
-      {
-        "title": "Bitcoin ‘bull trap’ forming as bear market enters middle phase: Willy Woo",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/bitcoin-bull-trap-bear-market-phase-middle-willy-woo-analyst?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-08T04:55:03Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H +0.61%，7D +2.96%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -0.07%，7D +2.27%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
