@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-08T08:44:26Z",
+  "generatedAt": "2026-03-08T09:40:03Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -920261,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.88,
+        "cagr": 50.0,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -43.09,
-        "strategyReturn": 262.36,
-        "benchmarkReturn": 305.45,
-        "endingCapital": 362355.3,
+        "alpha": -44.19,
+        "strategyReturn": 263.24,
+        "benchmarkReturn": 307.43,
+        "endingCapital": 363240.98,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 362355.3
+            "value": 363240.98
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67406.0,
-            "pnlPct": 137.21,
+            "exitPrice": 67735.21,
+            "pnlPct": 138.37,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.67,
+        "cagr": 9.75,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -28.82,
-        "strategyReturn": 34.12,
-        "benchmarkReturn": 62.94,
-        "endingCapital": 134121.54,
+        "alpha": -29.28,
+        "strategyReturn": 34.45,
+        "benchmarkReturn": 63.73,
+        "endingCapital": 134446.01,
         "currentPosition": 0.5,
         "currentScore": 55.6,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 134121.54
+            "value": 134446.01
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1956.82,
-            "pnlPct": -0.86,
+            "exitPrice": 1966.32,
+            "pnlPct": -0.38,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-08T08:44:26Z",
+    "generatedAt": "2026-03-08T09:40:03Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.58,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67406.0,
-        "change24hPct": 0.2,
-        "change7dPct": 2.54,
-        "realizedVol14dPct": 66.28,
+        "spot": 67735.21,
+        "change24hPct": 0.69,
+        "change7dPct": 3.04,
+        "realizedVol14dPct": 66.36,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1956.82,
-        "change24hPct": -0.64,
-        "change7dPct": 0.92,
-        "realizedVol14dPct": 88.71,
+        "spot": 1966.32,
+        "change24hPct": -0.16,
+        "change7dPct": 1.41,
+        "realizedVol14dPct": 88.63,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 82.84,
-        "change24hPct": -0.41,
-        "change7dPct": -0.89,
-        "realizedVol14dPct": 86.08,
+        "spot": 83.23,
+        "change24hPct": 0.05,
+        "change7dPct": -0.42,
+        "realizedVol14dPct": 86.04,
         "source": "yfinance"
       },
       {
@@ -935757,7 +935757,7 @@
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H +0.20%，7D +2.54%，执行上优先看关键位是否放量确认。"
+      "BTC 24H +0.69%，7D +3.04%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
