@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-08T20:38:26Z",
+  "generatedAt": "2026-03-08T21:34:01Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -7362,15 +7362,15 @@
       },
       {
         "date": "2026-03-06",
-        "value": 48.16
+        "value": 48.1
       },
       {
         "date": "2026-03-07",
-        "value": 48.99
+        "value": 48.93
       },
       {
         "date": "2026-03-08",
-        "value": 49.42
+        "value": 49.43
       },
       {
         "date": "2026-03-09",
@@ -15817,7 +15817,7 @@
             },
             {
               "week": "W10",
-              "score": 34.9,
+              "score": 34.5,
               "bucket": "warning"
             },
             {
@@ -37813,15 +37813,15 @@
             },
             {
               "date": "2026-03-06",
-              "value": 48.16
+              "value": 48.1
             },
             {
               "date": "2026-03-07",
-              "value": 48.99
+              "value": 48.93
             },
             {
               "date": "2026-03-08",
-              "value": 49.42
+              "value": 49.43
             },
             {
               "date": "2026-03-09",
@@ -152094,7 +152094,7 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             3.6646,
@@ -152166,7 +152166,7 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             3.6678,
@@ -302371,7 +302371,7 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             59.1984,
@@ -302433,7 +302433,7 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             59.254,
@@ -442942,7 +442942,7 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             58.8571,
@@ -443002,7 +443002,7 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             58.9127,
@@ -558039,15 +558039,15 @@
         },
         {
           "date": "2026-03-06",
-          "value": 34.92
+          "value": 34.54
         },
         {
           "date": "2026-03-07",
-          "value": 40.38
+          "value": 39.99
         },
         {
           "date": "2026-03-08",
-          "value": 40.43
+          "value": 40.47
         },
         {
           "date": "2026-03-09",
@@ -572450,15 +572450,15 @@
             },
             {
               "date": "2026-03-06",
-              "value": 36.46
+              "value": 34.56
             },
             {
               "date": "2026-03-07",
-              "value": 36.52
+              "value": 34.61
             },
             {
               "date": "2026-03-08",
-              "value": 36.57
+              "value": 36.78
             },
             {
               "date": "2026-03-09",
@@ -586880,15 +586880,15 @@
           },
           {
             "date": "2026-03-06",
-            "value": 34.92
+            "value": 34.54
           },
           {
             "date": "2026-03-07",
-            "value": 40.38
+            "value": 39.99
           },
           {
             "date": "2026-03-08",
-            "value": 40.43
+            "value": 40.47
           },
           {
             "date": "2026-03-09",
@@ -622890,11 +622890,11 @@
           },
           {
             "date": "2026-03-06",
-            "value": 98.86
+            "value": 98.99
           },
           {
             "date": "2026-03-07",
-            "value": 98.86
+            "value": 98.99
           },
           {
             "date": "2026-03-08",
@@ -623098,7 +623098,7 @@
             -0.0149,
             71.7619,
             0.0044,
-            36.5714,
+            36.7778,
             0.0043,
             24.3968,
             6.8095,
@@ -623119,7 +623119,7 @@
             "日度波动仍处于正常区间",
             0.0,
             43.4206,
-            40.429
+            40.4703
           ],
           [
             "2026-03-07",
@@ -623163,13 +623163,13 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             -0.0149,
             71.7063,
-            0.0044,
-            36.5159,
+            0.0058,
+            34.6111,
             0.0043,
             24.2937,
             6.7063,
@@ -623181,7 +623181,7 @@
             86.6905,
             43.4206,
             90.9,
-            98.855,
+            98.99,
             6740.02,
             29.49,
             3.0,
@@ -623190,7 +623190,7 @@
             "日度波动仍处于正常区间",
             0.0,
             43.4206,
-            40.3759
+            39.9949
           ],
           [
             "2026-03-06",
@@ -623234,13 +623234,13 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             -0.0149,
             71.6508,
-            0.0044,
-            36.4603,
+            0.0058,
+            34.5556,
             0.0043,
             24.1905,
             6.6032,
@@ -623252,7 +623252,7 @@
             86.7937,
             43.4206,
             90.9,
-            98.855,
+            98.99,
             6740.02,
             29.49,
             3.0,
@@ -623261,7 +623261,7 @@
             "WTI 单日暴涨 >= 8%",
             12.2084,
             25.4206,
-            34.9227
+            34.5417
           ],
           [
             "2026-03-05",
@@ -779877,7 +779877,7 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             3.0,
@@ -779928,7 +779928,7 @@
             3.0,
             1.76,
             90.9,
-            98.855,
+            98.99,
             29.49,
             null,
             3.0,
@@ -920261,15 +920261,15 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.87,
+        "cagr": 49.72,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -42.94,
-        "strategyReturn": 262.23,
-        "benchmarkReturn": 305.17,
-        "endingCapital": 362230.37,
+        "alpha": -41.5,
+        "strategyReturn": 261.07,
+        "benchmarkReturn": 302.57,
+        "endingCapital": 361067.0,
         "currentPosition": 0.5,
-        "currentScore": 55.6,
+        "currentScore": 55.5,
         "currentSignal": "🛡️ 防守",
         "navSeries": [
           {
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 362230.37
+            "value": 361067.0
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67359.56,
-            "pnlPct": 137.05,
+            "exitPrice": 66927.13,
+            "pnlPct": 135.53,
             "result": "Floating"
           },
           {
@@ -922834,15 +922834,15 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.73,
+        "cagr": 9.62,
         "sharpe": 0.39,
         "mdd": -74.43,
-        "alpha": -29.16,
-        "strategyReturn": 34.36,
-        "benchmarkReturn": 63.52,
-        "endingCapital": 134361.95,
+        "alpha": -28.55,
+        "strategyReturn": 33.94,
+        "benchmarkReturn": 62.49,
+        "endingCapital": 133937.59,
         "currentPosition": 0.5,
-        "currentScore": 55.6,
+        "currentScore": 55.5,
         "currentSignal": "🛡️ 防守",
         "navSeries": [
           {
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 134361.95
+            "value": 133937.59
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1963.85,
-            "pnlPct": -0.5,
+            "exitPrice": 1951.43,
+            "pnlPct": -1.13,
             "result": "Floating"
           },
           {
@@ -933038,15 +933038,15 @@
       {
         "ticker": "EURUSD",
         "name": "EUR/USD",
-        "cagr": -0.91,
+        "cagr": -0.95,
         "sharpe": -0.63,
         "mdd": -13.13,
-        "alpha": -11.29,
-        "strategyReturn": -2.86,
-        "benchmarkReturn": 8.42,
-        "endingCapital": 97135.88,
+        "alpha": -10.93,
+        "strategyReturn": -3.0,
+        "benchmarkReturn": 7.93,
+        "endingCapital": 97004.49,
         "currentPosition": 0.3,
-        "currentScore": 55.4,
+        "currentScore": 55.3,
         "currentSignal": "🌤️ 试探",
         "navSeries": [
           {
@@ -934247,7 +934247,7 @@
           },
           {
             "date": "2026-03-08",
-            "value": 97135.88
+            "value": 97004.49
           }
         ],
         "positionSeries": [
@@ -935559,7 +935559,7 @@
             "entryScore": 44.6,
             "entryPrice": 1.07,
             "exitPrice": 1.16,
-            "pnlPct": 8.62,
+            "pnlPct": 8.13,
             "result": "Floating"
           },
           {
@@ -935641,7 +935641,7 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-08T20:38:26Z",
+    "generatedAt": "2026-03-08T21:34:01Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
       "overallScore": 48.58,
@@ -935656,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67359.56,
-        "change24hPct": 0.13,
-        "change7dPct": 2.47,
-        "realizedVol14dPct": 66.27,
+        "spot": 66927.13,
+        "change24hPct": -0.51,
+        "change7dPct": 1.81,
+        "realizedVol14dPct": 66.32,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1963.85,
-        "change24hPct": -0.28,
-        "change7dPct": 1.28,
-        "realizedVol14dPct": 88.64,
+        "spot": 1951.43,
+        "change24hPct": -0.92,
+        "change7dPct": 0.64,
+        "realizedVol14dPct": 88.78,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 82.38,
-        "change24hPct": -0.96,
-        "change7dPct": -1.43,
-        "realizedVol14dPct": 86.22,
+        "spot": 82.03,
+        "change24hPct": -1.38,
+        "change7dPct": -1.85,
+        "realizedVol14dPct": 86.38,
         "source": "yfinance"
       },
       {
@@ -935704,6 +935704,12 @@
       }
     ],
     "hotNews": [
+      {
+        "title": "Saylor signals another Bitcoin buy as BTC hovers near $66K",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/saylor-signals-bitcoin-buy-btc-near-66k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-08T21:31:23Z"
+      },
       {
         "title": "Brazil's Pix instant payments system expands to Argentina",
         "source": "Cointelegraph",
@@ -935745,19 +935751,13 @@
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/bitcoin-fresh-trend-line-showdown-weekly-close-60k-target?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-08T13:20:42Z"
-      },
-      {
-        "title": "AI agent attempts unauthorized crypto mining during training, reseachers say",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/ai-agent-attempts-crypto-mining-during-training-researchers-say?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-08T12:01:20Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
       "主要拖累来自 实际利率与通胀，边际变化 -8.4。",
-      "BTC 24H +0.13%，7D +2.47%，执行上优先看关键位是否放量确认。"
+      "BTC 24H -0.51%，7D +1.81%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
@@ -935788,9 +935788,9 @@
     "cryptoProjectUpdates": [
       {
         "project": "比特币生态",
-        "headline": "比特币生态暂无重大突发，维持跟踪链上活跃度与资金流向。",
-        "source": "MacroQuant Engine",
-        "url": ""
+        "headline": "Saylor signals another Bitcoin buy as BTC hovers near $66K",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/saylor-signals-bitcoin-buy-btc-near-66k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
       },
       {
         "project": "以太坊生态",
