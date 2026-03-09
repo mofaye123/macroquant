@@ -1190,6 +1190,404 @@ def _format_backtest_date(value):
     return str(value)
 
 
+DEFAULT_BACKTEST_DIAGNOSTIC_HEDGE = {
+    "cta_capital_weight": 0.95,
+    "hedge_capital_weight": 0.05,
+    "hedge_leverage": 5.0,
+    "hedge_funding_annual": 0.10,
+    "hedge_oneway_bps": 8.0,
+    "vix_vxv_threshold": 1.02,
+    "macro_drop_threshold": 8.0,
+    "hy_spike_threshold": 0.40,
+    "btc_dd_threshold": 0.12,
+    "hold_days": 5,
+    "size_profile": "early_guard",
+}
+
+BACKTEST_DIAGNOSTIC_SIZE_PROFILES = {
+    "early_guard": {0: 0.0, 1: 0.25, 2: 0.50, 3: 0.75, 4: 1.00},
+    "balanced": {0: 0.0, 1: 0.15, 2: 0.45, 3: 0.75, 4: 1.00},
+    "conservative": {0: 0.0, 1: 0.00, 2: 0.40, 3: 0.70, 4: 1.00},
+    "crash_only": {0: 0.0, 1: 0.00, 2: 0.25, 3: 0.60, 4: 1.00},
+}
+
+
+def _diagnostic_overlay_notional(cfg):
+    return float(cfg["hedge_capital_weight"]) * float(cfg["hedge_leverage"])
+
+
+def _diagnostic_perf_metrics(ret_series, nav_series, risk_free_rate=0.04):
+    ret = ret_series.dropna()
+    nav = nav_series.dropna()
+    if ret.empty or nav.empty:
+        return {
+            "cagr": np.nan,
+            "mdd": np.nan,
+            "sharpe": np.nan,
+            "ending_nav": np.nan,
+        }
+
+    total_days = max((nav.index[-1] - nav.index[0]).days, 1)
+    years = total_days / 365.25
+    cagr = nav.iloc[-1] ** (1 / years) - 1 if years > 0 else np.nan
+    dd = nav / nav.cummax() - 1
+    monthly_ret = (1 + ret).resample("ME").prod() - 1
+    rf_monthly = (1 + float(risk_free_rate)) ** (1 / 12) - 1
+    excess = monthly_ret - rf_monthly
+    sharpe = np.nan
+    if excess.std(ddof=0) > 0:
+        sharpe = (excess.mean() / excess.std(ddof=0)) * np.sqrt(12)
+
+    return {
+        "cagr": float(cagr),
+        "mdd": float(dd.min()),
+        "sharpe": float(sharpe) if pd.notna(sharpe) else np.nan,
+        "ending_nav": float(nav.iloc[-1]),
+    }
+
+
+def _compute_backtest_overlay_signals(cta_df, df_all, overlay_cfg=None):
+    cfg = DEFAULT_BACKTEST_DIAGNOSTIC_HEDGE.copy()
+    if overlay_cfg:
+        cfg.update(overlay_cfg)
+
+    max_notional = _diagnostic_overlay_notional(cfg)
+    score_col = "Score_Regime" if "Score_Regime" in cta_df.columns else "Total_Score"
+
+    df = pd.DataFrame(index=cta_df.index)
+    df["Price"] = cta_df["Price"].astype(float)
+    df["EMA20"] = cta_df["EMA20"].astype(float) if "EMA20" in cta_df.columns else df["Price"].ewm(span=20, adjust=False).mean()
+    df["EMA60"] = cta_df["EMA60"].astype(float) if "EMA60" in cta_df.columns else df["Price"].ewm(span=60, adjust=False).mean()
+    df["EMA120"] = cta_df["EMA120"].astype(float) if "EMA120" in cta_df.columns else df["Price"].ewm(span=120, adjust=False).mean()
+    df["Total_Score"] = cta_df[score_col].astype(float)
+    df["VIX"] = df_all.get("VIXCLS", pd.Series(index=df.index, dtype=float)).reindex(df.index).ffill().fillna(20.0)
+    df["VXV"] = df_all.get("VXVCLS", pd.Series(index=df.index, dtype=float)).reindex(df.index).ffill().fillna(22.0)
+    df["HY_Spread"] = df_all.get("BAMLH0A0HYM2", pd.Series(index=df.index, dtype=float)).reindex(df.index).ffill().fillna(4.0)
+
+    sig1 = (
+        (df["Price"] < df["EMA120"])
+        & (df["EMA20"] < df["EMA60"])
+        & (df["EMA60"] < df["EMA120"])
+        & (df["EMA120"].diff(3) < 0)
+    ).fillna(False).astype(int)
+
+    df["VIX_VXV_Ratio"] = (df["VIX"] / df["VXV"].replace(0, np.nan)).fillna(1.0).clip(0.5, 2.0)
+    sig2 = (df["VIX_VXV_Ratio"] > float(cfg["vix_vxv_threshold"])).astype(int)
+
+    df["Macro_Drop_10d"] = (df["Total_Score"] - df["Total_Score"].shift(10)).fillna(0.0)
+    sig3 = (df["Macro_Drop_10d"] < -float(cfg["macro_drop_threshold"])).astype(int)
+
+    df["HY_Change_10d"] = df["HY_Spread"].diff(10).fillna(0.0)
+    sig4 = (df["HY_Change_10d"] > float(cfg["hy_spike_threshold"])).astype(int)
+
+    rolling_high_20 = df["Price"].rolling(20, min_periods=10).max()
+    df["DD_20d"] = (df["Price"] / rolling_high_20 - 1.0).fillna(0.0)
+    sig5 = (df["DD_20d"] < -float(cfg["btc_dd_threshold"])).astype(int)
+
+    df["Sig_Tech_Break"] = sig1
+    df["Sig_VIX_Invert"] = sig2
+    df["Sig_Macro_Drop"] = sig3
+    df["Sig_HY_Spike"] = sig4
+    df["Sig_BTC_Momentum"] = sig5
+    df["Risk_Score"] = sig1 + sig2 + sig3 + sig4 + sig5
+
+    profile_key = str(cfg.get("size_profile", "early_guard"))
+    size_profile = BACKTEST_DIAGNOSTIC_SIZE_PROFILES.get(profile_key, BACKTEST_DIAGNOSTIC_SIZE_PROFILES["early_guard"])
+    hedge_target = df["Risk_Score"].apply(lambda value: max_notional * float(size_profile.get(min(int(value), 4), 0.0)))
+
+    hold_days = max(int(cfg.get("hold_days", 5)), 1)
+    hedge_exec = pd.Series(0.0, index=df.index, dtype=float)
+    last_hedge = 0.0
+    last_change_i = -999
+    for i, target in enumerate(hedge_target):
+        hold_ok = (i - last_change_i) >= hold_days
+        if abs(float(target) - float(last_hedge)) >= 0.05 and hold_ok:
+            last_hedge = float(target)
+            last_change_i = i
+        hedge_exec.iat[i] = last_hedge
+
+    df["Hedge_Notional_Target"] = hedge_target.astype(float)
+    df["Hedge_Position"] = hedge_exec.shift(1).fillna(0.0)
+    hedge_turnover = df["Hedge_Position"].diff().abs().fillna(df["Hedge_Position"].abs())
+    hedge_tx_rate = float(cfg["hedge_oneway_bps"]) / 10000.0
+    df["Hedge_Tx_Cost"] = hedge_turnover * hedge_tx_rate
+    df["Hedge_Fund_Cost"] = df["Hedge_Position"] * (float(cfg["hedge_funding_annual"]) / 252.0)
+    df["Hedge_Total_Cost"] = df["Hedge_Tx_Cost"] + df["Hedge_Fund_Cost"]
+    return df
+
+
+def _build_backtest_overlay_portfolio(cta_df, hedge_df, risk_free_rate=0.04, starting_capital=DEFAULT_BACKTEST_INITIAL_CAPITAL, overlay_cfg=None):
+    cfg = DEFAULT_BACKTEST_DIAGNOSTIC_HEDGE.copy()
+    if overlay_cfg:
+        cfg.update(overlay_cfg)
+
+    max_notional = _diagnostic_overlay_notional(cfg)
+    rf_daily = float(risk_free_rate) / 252.0
+    cta_weight = float(cfg["cta_capital_weight"])
+    hedge_capital_weight = float(cfg["hedge_capital_weight"])
+
+    price_ret = cta_df["Pct_Change"].fillna(0.0)
+    cta_ret = cta_df["Strategy_Ret"].fillna(0.0)
+    hedge_pos = hedge_df["Hedge_Position"].reindex(cta_df.index).fillna(0.0)
+    hedge_cost = hedge_df["Hedge_Total_Cost"].reindex(cta_df.index).fillna(0.0)
+    hedge_active_frac = (hedge_pos / max_notional).clip(0.0, 1.0) if max_notional > 0 else hedge_pos * 0.0
+
+    hedge_short_pnl = -hedge_pos * price_ret
+    hedge_idle_rf = hedge_capital_weight * (1.0 - hedge_active_frac) * rf_daily
+    hedge_net_ret = hedge_short_pnl + hedge_idle_rf - hedge_cost
+    combined_ret = cta_weight * cta_ret + hedge_net_ret
+
+    out = pd.DataFrame(index=cta_df.index)
+    out["Price"] = cta_df["Price"]
+    out["Pct_Change"] = price_ret
+    out["CTA_Only_Ret"] = cta_ret
+    out["Combined_Ret"] = combined_ret
+    out["Hedge_Contrib"] = hedge_net_ret
+    out["Hedge_Position"] = hedge_pos
+    out["Risk_Score"] = hedge_df["Risk_Score"].reindex(cta_df.index).fillna(0.0)
+    out["CTA_Position"] = cta_df["Position"].reindex(cta_df.index).fillna(0.0)
+    out["CTA_Target_Position"] = cta_df["Target_Position"].reindex(cta_df.index).fillna(0.0)
+    score_col = "Score_Regime" if "Score_Regime" in cta_df.columns else "Total_Score"
+    out["Total_Score"] = cta_df[score_col].reindex(cta_df.index).fillna(method="ffill").fillna(50.0)
+    out["Score_10D_Change"] = out["Total_Score"].diff(10).fillna(0.0)
+
+    out["BH_Nav"] = (1.0 + out["Pct_Change"]).cumprod()
+    out["CTA_Nav"] = (1.0 + out["CTA_Only_Ret"]).cumprod()
+    out["Combined_Nav"] = (1.0 + out["Combined_Ret"]).cumprod()
+    out["BH_Capital"] = out["BH_Nav"] * float(starting_capital)
+    out["CTA_Capital"] = out["CTA_Nav"] * float(starting_capital)
+    out["Combined_Capital"] = out["Combined_Nav"] * float(starting_capital)
+
+    for nav_col, dd_col in [
+        ("BH_Nav", "BH_DD"),
+        ("CTA_Nav", "CTA_DD"),
+        ("Combined_Nav", "Combined_DD"),
+    ]:
+        out[dd_col] = out[nav_col] / out[nav_col].cummax() - 1.0
+    return out
+
+
+def _pick_backtest_drawdown_dates(df, year="2024", n=5, min_gap_days=14):
+    view = df.loc[f"{year}-01-01":f"{year}-12-31"].copy()
+    if view.empty:
+        return []
+    rolling_high = view["Price"].rolling(20, min_periods=10).max()
+    dd20 = view["Price"] / rolling_high - 1.0
+    candidates = dd20.nsmallest(20)
+    picked = []
+    for ts in candidates.index:
+        if all(abs((ts - prev).days) >= min_gap_days for prev in picked):
+            picked.append(ts)
+        if len(picked) >= n:
+            break
+    return sorted(picked)
+
+
+def _build_backtest_candidate_row(label, cfg, metrics, cta_metrics, hedge_df):
+    active_rate = float((hedge_df["Hedge_Position"] > 0).mean()) if not hedge_df.empty else 0.0
+    avg_notional = float(hedge_df.loc[hedge_df["Hedge_Position"] > 0, "Hedge_Position"].mean()) if (hedge_df["Hedge_Position"] > 0).any() else 0.0
+    cagr_drag_pp = (float(cta_metrics["cagr"]) - float(metrics["cagr"])) * 100.0
+    mdd_improvement_pp = (abs(float(cta_metrics["mdd"])) - abs(float(metrics["mdd"]))) * 100.0
+    objective = mdd_improvement_pp - max(cagr_drag_pp, 0.0) * 0.75 - active_rate * 100.0 * 0.04
+    return {
+        "label": label,
+        "sizeProfile": str(cfg["size_profile"]),
+        "holdDays": int(cfg["hold_days"]),
+        "vixVxvThreshold": round(float(cfg["vix_vxv_threshold"]), 3),
+        "macroDropThreshold": round(float(cfg["macro_drop_threshold"]), 1),
+        "hySpikeThreshold": round(float(cfg["hy_spike_threshold"]), 2),
+        "btcDrawdownThreshold": round(float(cfg["btc_dd_threshold"]), 2),
+        "cagr": round(float(metrics["cagr"]) * 100.0, 2),
+        "mdd": round(float(metrics["mdd"]) * 100.0, 2),
+        "sharpe": round(float(metrics["sharpe"]), 2) if pd.notna(metrics["sharpe"]) else None,
+        "endingNav": round(float(metrics["ending_nav"]), 3),
+        "cagrDragPctPoints": round(cagr_drag_pp, 2),
+        "mddImprovementPctPoints": round(mdd_improvement_pp, 2),
+        "hedgeActiveRatePct": round(active_rate * 100.0, 2),
+        "avgHedgeNotionalPct": round(avg_notional * 100.0, 2),
+        "objectiveScore": round(objective, 3),
+    }
+
+
+def _sweep_backtest_hedge_candidates(cta_df, df_all, risk_free_rate=0.04, starting_capital=DEFAULT_BACKTEST_INITIAL_CAPITAL):
+    cta_metrics = _diagnostic_perf_metrics(cta_df["Strategy_Ret"], cta_df["Strategy_Nav"], risk_free_rate=risk_free_rate)
+    baseline_cfg = DEFAULT_BACKTEST_DIAGNOSTIC_HEDGE.copy()
+    baseline_hedge = _compute_backtest_overlay_signals(cta_df, df_all, baseline_cfg)
+    baseline_port = _build_backtest_overlay_portfolio(
+        cta_df,
+        baseline_hedge,
+        risk_free_rate=risk_free_rate,
+        starting_capital=starting_capital,
+        overlay_cfg=baseline_cfg,
+    )
+    baseline_metrics = _diagnostic_perf_metrics(baseline_port["Combined_Ret"], baseline_port["Combined_Nav"], risk_free_rate=risk_free_rate)
+    baseline_row = _build_backtest_candidate_row("当前默认", baseline_cfg, baseline_metrics, cta_metrics, baseline_hedge)
+
+    size_profiles = ["early_guard", "balanced", "conservative", "crash_only"]
+    hold_days_grid = [3, 5, 7]
+    vix_grid = [1.01, 1.03]
+    macro_drop_grid = [6.0, 8.0]
+    hy_grid = [0.30, 0.40]
+    btc_dd_grid = [0.10, 0.12]
+
+    candidates = []
+    best = {
+        "row": baseline_row,
+        "cfg": baseline_cfg,
+        "hedge": baseline_hedge,
+        "portfolio": baseline_port,
+    }
+    best_score = baseline_row["objectiveScore"]
+
+    for profile in size_profiles:
+        for hold_days in hold_days_grid:
+            for vix_threshold in vix_grid:
+                for macro_drop in macro_drop_grid:
+                    for hy_spike in hy_grid:
+                        for btc_dd in btc_dd_grid:
+                            cfg = DEFAULT_BACKTEST_DIAGNOSTIC_HEDGE.copy()
+                            cfg.update({
+                                "size_profile": profile,
+                                "hold_days": hold_days,
+                                "vix_vxv_threshold": vix_threshold,
+                                "macro_drop_threshold": macro_drop,
+                                "hy_spike_threshold": hy_spike,
+                                "btc_dd_threshold": btc_dd,
+                            })
+                            hedge = _compute_backtest_overlay_signals(cta_df, df_all, cfg)
+                            port = _build_backtest_overlay_portfolio(
+                                cta_df,
+                                hedge,
+                                risk_free_rate=risk_free_rate,
+                                starting_capital=starting_capital,
+                                overlay_cfg=cfg,
+                            )
+                            metrics = _diagnostic_perf_metrics(port["Combined_Ret"], port["Combined_Nav"], risk_free_rate=risk_free_rate)
+                            row = _build_backtest_candidate_row("候选", cfg, metrics, cta_metrics, hedge)
+                            candidates.append(row)
+                            if row["objectiveScore"] > best_score:
+                                best_score = row["objectiveScore"]
+                                best = {
+                                    "row": row,
+                                    "cfg": cfg,
+                                    "hedge": hedge,
+                                    "portfolio": port,
+                                }
+
+    top_candidates = sorted(candidates, key=lambda item: item["objectiveScore"], reverse=True)[:6]
+    note = (
+        f"建议改用 {best['row']['sizeProfile']} 档位、持有 {best['row']['holdDays']} 天，"
+        f"MDD 相比纯 CTA 改善 {best['row']['mddImprovementPctPoints']:.2f}pct，"
+        f"CAGR 仅拖累 {best['row']['cagrDragPctPoints']:.2f}pct。"
+    )
+
+    recommended_row = best["row"].copy()
+    recommended_row["note"] = note
+    return {
+        "ctaMetrics": cta_metrics,
+        "baseline": {
+            "config": baseline_cfg,
+            "metrics": baseline_row,
+            "portfolio": baseline_port,
+            "hedge": baseline_hedge,
+        },
+        "recommended": {
+            "config": best["cfg"],
+            "metrics": recommended_row,
+            "portfolio": best["portfolio"],
+            "hedge": best["hedge"],
+        },
+        "topCandidates": top_candidates,
+    }
+
+
+def build_backtest_diagnostics_payload(cta_df, df_all, risk_free_rate=0.04, starting_capital=DEFAULT_BACKTEST_INITIAL_CAPITAL):
+    sweep = _sweep_backtest_hedge_candidates(
+        cta_df,
+        df_all,
+        risk_free_rate=risk_free_rate,
+        starting_capital=starting_capital,
+    )
+    portfolio = sweep["recommended"]["portfolio"]
+    hedge = sweep["recommended"]["hedge"]
+    markers = _pick_backtest_drawdown_dates(portfolio, year="2024")
+
+    buy_hold_metrics = _diagnostic_perf_metrics(portfolio["Pct_Change"], portfolio["BH_Nav"], risk_free_rate=risk_free_rate)
+    diagnostics = {
+        "status": "ok",
+        "assetTicker": "BTC",
+        "assetName": "Bitcoin",
+        "buyHoldMetrics": {
+            "cagr": round(float(buy_hold_metrics["cagr"]) * 100.0, 2),
+            "mdd": round(float(buy_hold_metrics["mdd"]) * 100.0, 2),
+            "sharpe": round(float(buy_hold_metrics["sharpe"]), 2) if pd.notna(buy_hold_metrics["sharpe"]) else None,
+            "endingNav": round(float(buy_hold_metrics["ending_nav"]), 3),
+        },
+        "ctaMetrics": {
+            "cagr": round(float(sweep["ctaMetrics"]["cagr"]) * 100.0, 2),
+            "mdd": round(float(sweep["ctaMetrics"]["mdd"]) * 100.0, 2),
+            "sharpe": round(float(sweep["ctaMetrics"]["sharpe"]), 2) if pd.notna(sweep["ctaMetrics"]["sharpe"]) else None,
+            "endingNav": round(float(sweep["ctaMetrics"]["ending_nav"]), 3),
+        },
+        "baselineConfig": sweep["baseline"]["metrics"],
+        "recommendedConfig": sweep["recommended"]["metrics"],
+        "topCandidates": sweep["topCandidates"],
+        "thresholds": {
+            "scoreRiskOff": 35.0,
+            "scoreRiskOn": 65.0,
+            "vixVxv": round(float(sweep["recommended"]["config"]["vix_vxv_threshold"]), 3),
+            "macroDrop10d": -round(float(sweep["recommended"]["config"]["macro_drop_threshold"]), 1),
+            "hySpike10d": round(float(sweep["recommended"]["config"]["hy_spike_threshold"]), 2),
+        },
+        "drawdownMarkers": [ts.strftime("%Y-%m-%d") for ts in markers],
+        "drawdownDiagnosis": {
+            "priceSeries": _series_to_points(portfolio.loc["2024-01-01":"2024-12-31", "Price"], digits=2, limit=None),
+            "ema20Series": _series_to_points(cta_df.loc["2024-01-01":"2024-12-31", "EMA20"], digits=2, limit=None),
+            "ema60Series": _series_to_points(cta_df.loc["2024-01-01":"2024-12-31", "EMA60"], digits=2, limit=None),
+            "ema120Series": _series_to_points(cta_df.loc["2024-01-01":"2024-12-31", "EMA120"], digits=2, limit=None),
+            "ctaTargetSeries": _series_to_points(portfolio.loc["2024-01-01":"2024-12-31", "CTA_Target_Position"], digits=2, limit=None),
+            "bullConfirmSeries": _series_to_points(
+                (
+                    (portfolio.loc["2024-01-01":"2024-12-31", "Price"] > cta_df.loc["2024-01-01":"2024-12-31", "EMA20"])
+                    & (cta_df.loc["2024-01-01":"2024-12-31", "EMA20"] > cta_df.loc["2024-01-01":"2024-12-31", "EMA60"])
+                    & (cta_df.loc["2024-01-01":"2024-12-31", "EMA60"] > cta_df.loc["2024-01-01":"2024-12-31", "EMA120"])
+                ).astype(float),
+                digits=2,
+                limit=None,
+            ),
+            "scoreSeries": _series_to_points(portfolio.loc["2024-01-01":"2024-12-31", "Total_Score"], digits=2, limit=None),
+            "scoreChangeSeries": _series_to_points(portfolio.loc["2024-01-01":"2024-12-31", "Score_10D_Change"], digits=2, limit=None),
+            "vixVxvSeries": _series_to_points(hedge.loc["2024-01-01":"2024-12-31", "VIX_VXV_Ratio"], digits=3, limit=None),
+            "hyChangeSeries": _series_to_points(hedge.loc["2024-01-01":"2024-12-31", "HY_Change_10d"], digits=3, limit=None),
+        },
+        "navOverlay": {
+            "buyHoldNavSeries": _series_to_points(portfolio["BH_Capital"], digits=2, limit=None),
+            "ctaNavSeries": _series_to_points(portfolio["CTA_Capital"], digits=2, limit=None),
+            "hedgedNavSeries": _series_to_points(portfolio["Combined_Capital"], digits=2, limit=None),
+            "buyHoldDrawdownSeries": _series_to_points(portfolio["BH_DD"] * 100.0, digits=2, limit=None),
+            "ctaDrawdownSeries": _series_to_points(portfolio["CTA_DD"] * 100.0, digits=2, limit=None),
+            "hedgedDrawdownSeries": _series_to_points(portfolio["Combined_DD"] * 100.0, digits=2, limit=None),
+            "hedgePositionSeries": _series_to_points(portfolio["Hedge_Position"] * 100.0, digits=2, limit=None),
+            "riskScoreSeries": _series_to_points(portfolio["Risk_Score"], digits=2, limit=None),
+            "totalScoreSeries": _series_to_points(portfolio["Total_Score"], digits=2, limit=None),
+        },
+        "signalBreakdown": {
+            "priceSeries": _series_to_points(cta_df["Price"], digits=2, limit=None),
+            "ema20Series": _series_to_points(cta_df["EMA20"], digits=2, limit=None),
+            "ema60Series": _series_to_points(cta_df["EMA60"], digits=2, limit=None),
+            "ema120Series": _series_to_points(cta_df["EMA120"], digits=2, limit=None),
+            "sigTechBreakSeries": _series_to_points(hedge["Sig_Tech_Break"], digits=0, limit=None),
+            "vixVxvSeries": _series_to_points(hedge["VIX_VXV_Ratio"], digits=3, limit=None),
+            "macroDropSeries": _series_to_points(hedge["Macro_Drop_10d"], digits=2, limit=None),
+            "hyChangeSeries": _series_to_points(hedge["HY_Change_10d"], digits=3, limit=None),
+            "sigBtcMomentumSeries": _series_to_points(hedge["Sig_BTC_Momentum"], digits=0, limit=None),
+            "hedgePositionSeries": _series_to_points(hedge["Hedge_Position"] * 100.0, digits=2, limit=None),
+            "riskScoreSeries": _series_to_points(hedge["Risk_Score"], digits=2, limit=None),
+        },
+    }
+    return diagnostics
+
+
 def _normalize_backtest_overrides(overrides=None):
     src = overrides or {}
     cfg = DEFAULT_BACKTEST_PRESET["cfg"].copy()
@@ -1286,6 +1684,7 @@ def build_backtest_payload(df_all, overrides=None):
         "endDate": None,
         "startingCapital": DEFAULT_BACKTEST_INITIAL_CAPITAL,
         "assets": [],
+        "diagnostics": None,
         "sop": DEFAULT_BACKTEST_SOP,
         "strategyOverview": {
             "title": "宏观分驱动 CTA 执行框架",
@@ -1324,6 +1723,7 @@ def build_backtest_payload(df_all, overrides=None):
         return payload
 
     assets = []
+    btc_diagnostic_df = None
     for item in DEFAULT_BACKTEST_ASSETS:
         price_s = _extract_price_series(y_data, item["symbol"])
         if price_s.empty:
@@ -1419,6 +1819,8 @@ def build_backtest_payload(df_all, overrides=None):
             "rebalanceLog": rebalance_rows,
             "tradeLog": trade_rows,
         })
+        if item["ticker"] == "BTC":
+            btc_diagnostic_df = df.copy()
 
     if not assets:
         payload["reason"] = "回测失败：没有可用标的生成结果。"
@@ -1428,6 +1830,19 @@ def build_backtest_payload(df_all, overrides=None):
     payload["startDate"] = score_frame.index.min().strftime("%Y-%m-%d")
     payload["endDate"] = score_frame.index.max().strftime("%Y-%m-%d")
     payload["assets"] = assets
+    if btc_diagnostic_df is not None:
+        try:
+            payload["diagnostics"] = build_backtest_diagnostics_payload(
+                btc_diagnostic_df,
+                df_all,
+                risk_free_rate=float(resolved["risk_free_rate"]),
+                starting_capital=float(payload["startingCapital"]),
+            )
+        except Exception as exc:
+            payload["diagnostics"] = {
+                "status": "degraded",
+                "reason": f"诊断数据生成失败: {exc}",
+            }
     return payload
 
 # ==========================================

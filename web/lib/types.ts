@@ -163,6 +163,81 @@ export type BacktestAsset = {
   }[];
 };
 
+export type BacktestDiagnosticMetrics = {
+  cagr: number;
+  mdd: number;
+  sharpe: number | null;
+  endingNav: number;
+};
+
+export type BacktestDiagnosticCandidate = {
+  label: string;
+  sizeProfile: string;
+  holdDays: number;
+  vixVxvThreshold: number;
+  macroDropThreshold: number;
+  hySpikeThreshold: number;
+  btcDrawdownThreshold: number;
+  cagr: number;
+  mdd: number;
+  sharpe: number | null;
+  endingNav: number;
+  cagrDragPctPoints: number;
+  mddImprovementPctPoints: number;
+  hedgeActiveRatePct: number;
+  avgHedgeNotionalPct: number;
+  objectiveScore: number;
+  note?: string;
+};
+
+export type BacktestDiagnosticSeriesGroup = {
+  priceSeries?: TrendPoint[];
+  ema20Series?: TrendPoint[];
+  ema60Series?: TrendPoint[];
+  ema120Series?: TrendPoint[];
+  ctaTargetSeries?: TrendPoint[];
+  bullConfirmSeries?: TrendPoint[];
+  scoreSeries?: TrendPoint[];
+  scoreChangeSeries?: TrendPoint[];
+  vixVxvSeries?: TrendPoint[];
+  hyChangeSeries?: TrendPoint[];
+  buyHoldNavSeries?: TrendPoint[];
+  ctaNavSeries?: TrendPoint[];
+  hedgedNavSeries?: TrendPoint[];
+  buyHoldDrawdownSeries?: TrendPoint[];
+  ctaDrawdownSeries?: TrendPoint[];
+  hedgedDrawdownSeries?: TrendPoint[];
+  hedgePositionSeries?: TrendPoint[];
+  riskScoreSeries?: TrendPoint[];
+  totalScoreSeries?: TrendPoint[];
+  sigTechBreakSeries?: TrendPoint[];
+  macroDropSeries?: TrendPoint[];
+  sigBtcMomentumSeries?: TrendPoint[];
+};
+
+export type BacktestDiagnostics = {
+  status: "ok" | "degraded";
+  reason?: string;
+  assetTicker?: string;
+  assetName?: string;
+  buyHoldMetrics?: BacktestDiagnosticMetrics;
+  ctaMetrics?: BacktestDiagnosticMetrics;
+  baselineConfig?: BacktestDiagnosticCandidate;
+  recommendedConfig?: BacktestDiagnosticCandidate;
+  topCandidates?: BacktestDiagnosticCandidate[];
+  thresholds?: {
+    scoreRiskOff: number;
+    scoreRiskOn: number;
+    vixVxv: number;
+    macroDrop10d: number;
+    hySpike10d: number;
+  };
+  drawdownMarkers?: string[];
+  drawdownDiagnosis?: BacktestDiagnosticSeriesGroup;
+  navOverlay?: BacktestDiagnosticSeriesGroup;
+  signalBreakdown?: BacktestDiagnosticSeriesGroup;
+};
+
 export type BacktestPayload = {
   status: "ok" | "degraded";
   reason?: string | null;
@@ -170,6 +245,7 @@ export type BacktestPayload = {
   endDate?: string | null;
   startingCapital?: number;
   assets: BacktestAsset[];
+  diagnostics?: BacktestDiagnostics | null;
   sop: {
     crypto: string[];
     traditional: string[];
@@ -230,10 +306,13 @@ export type MarketDailyProjectUpdate = {
 
 export type MarketDailyCalendarEvent = {
   date: string;
+  timeEt?: string;
   timeUtc: string;
+  country?: string;
   category: string;
   event: string;
   importance: string;
+  note?: string;
 };
 
 export type MarketDailyPushChannel = {
