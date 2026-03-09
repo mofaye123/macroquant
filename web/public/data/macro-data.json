@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-09T11:00:07Z",
+  "generatedAt": "2026-03-09T11:42:16Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -150,9 +150,9 @@
         "title": "外部冲击与汇率",
         "subtitle": "External",
         "weight": "15%",
-        "score": 26.6,
-        "change": -12.1,
-        "description": "美元指数 99.32，外部冲击处于中性偏缓状态。"
+        "score": 26.8,
+        "change": -11.9,
+        "description": "美元指数 99.31，外部冲击处于中性偏缓状态。"
       },
       {
         "id": "F",
@@ -7374,13 +7374,13 @@
       },
       {
         "date": "2026-03-09",
-        "value": 47.47
+        "value": 47.49
       }
     ],
     "contributors": [
       {
         "name": "外部冲击与汇率",
-        "delta": -1.81,
+        "delta": -1.79,
         "bucket": "Flow"
       },
       {
@@ -7418,14 +7418,14 @@
       },
       {
         "label": "DXY",
-        "value": "99.32",
-        "delta": "+0.33%",
+        "value": "99.31",
+        "delta": "+0.32%",
         "state": "negative"
       },
       {
         "label": "VIX",
         "value": "32.2",
-        "delta": "+2.68 · +9.09%",
+        "delta": "+2.69 · +9.12%",
         "state": "negative"
       },
       {
@@ -7472,7 +7472,7 @@
       ],
       "summary": {
         "level": -1.61,
-        "flow": -0.42,
+        "flow": -0.4,
         "penalty": -0.69,
         "structural": -2.3,
         "driver": "结构性变化主导"
@@ -15822,7 +15822,7 @@
             },
             {
               "week": "W11",
-              "score": 26.6,
+              "score": 26.8,
               "bucket": "critical"
             }
           ]
@@ -19431,19 +19431,19 @@
             },
             {
               "label": "VIX",
-              "value": "+2.68 · +9.09%",
+              "value": "+2.69 · +9.12%",
               "tone": "positive"
             }
           ]
         },
         {
           "title": "信用与美元",
-          "headline": "DXY 99.32 / HY 3.00",
-          "detail": "WTI 103.45",
+          "headline": "DXY 99.31 / HY 3.00",
+          "detail": "WTI 103.60",
           "changes": [
             {
               "label": "DXY",
-              "value": "+0.33%",
+              "value": "+0.32%",
               "tone": "positive"
             },
             {
@@ -19453,7 +19453,7 @@
             },
             {
               "label": "WTI",
-              "value": "+13.81%",
+              "value": "+13.97%",
               "tone": "positive"
             }
           ]
@@ -19491,8 +19491,8 @@
         },
         {
           "asset": "DXY",
-          "value": 99.32,
-          "delta": "+0.33%"
+          "value": 99.31,
+          "delta": "+0.32%"
         },
         {
           "asset": "SP500",
@@ -19506,13 +19506,13 @@
         },
         {
           "asset": "VIX",
-          "value": 32.17,
-          "delta": "+2.68 · +9.09%"
+          "value": 32.18,
+          "delta": "+2.69 · +9.12%"
         },
         {
           "asset": "WTI",
-          "value": 103.45,
-          "delta": "+13.81%"
+          "value": 103.6,
+          "delta": "+13.97%"
         }
       ]
     },
@@ -37825,7 +37825,7 @@
             },
             {
               "date": "2026-03-09",
-              "value": 47.47
+              "value": 47.49
             }
           ],
           "spx": [
@@ -151949,9 +151949,9 @@
             23.86,
             3.0,
             1.76,
-            103.45,
-            99.315,
-            32.17,
+            103.6,
+            99.306,
+            32.18,
             null,
             3.6618,
             3.6728,
@@ -302246,9 +302246,9 @@
             23.86,
             3.0,
             1.76,
-            103.45,
-            99.315,
-            32.17,
+            103.6,
+            99.306,
+            32.18,
             null,
             59.0873,
             71.1032,
@@ -442821,9 +442821,9 @@
             23.86,
             3.0,
             1.76,
-            103.45,
-            99.315,
-            32.17,
+            103.6,
+            99.306,
+            32.18,
             null,
             58.746,
             91.6905,
@@ -550787,7 +550787,7 @@
       "moduleId": "E",
       "title": "E 模块 · 外部冲击与汇率",
       "subtitle": "External",
-      "overview": "美元指数 99.32，外部冲击处于中性偏缓状态。",
+      "overview": "美元指数 99.31，外部冲击处于中性偏缓状态。",
       "factors": [
         {
           "name": "Broad USD",
@@ -550797,8 +550797,8 @@
         },
         {
           "name": "DXY",
-          "score": 25.1,
-          "change": -12.7,
+          "score": 25.8,
+          "change": -12.0,
           "contribution": "20%"
         },
         {
@@ -550817,14 +550817,14 @@
       "snapshots": [
         {
           "label": "E 模块当前分数",
-          "value": "26.6",
-          "delta": "-12.1",
+          "value": "26.8",
+          "delta": "-11.9",
           "state": "negative"
         },
         {
           "label": "DXY",
-          "value": "99.32",
-          "delta": "+0.33%",
+          "value": "99.31",
+          "delta": "+0.32%",
           "state": "negative"
         },
         {
@@ -550835,20 +550835,20 @@
         },
         {
           "label": "WTI",
-          "value": "103.45",
-          "delta": "+13.81%",
+          "value": "103.60",
+          "delta": "+13.97%",
           "state": "negative"
         },
         {
           "label": "Oil Shock",
           "value": "通胀冲击",
-          "delta": "-18分 · +13.81%",
+          "delta": "-18分 · +13.97%",
           "state": "negative"
         },
         {
           "label": "分数状态",
           "value": "极紧",
-          "delta": "26.6 / 100",
+          "delta": "26.8 / 100",
           "state": "negative"
         }
       ],
@@ -558051,7 +558051,7 @@
         },
         {
           "date": "2026-03-09",
-          "value": 26.63
+          "value": 26.77
         }
       ],
       "auxiliarySeries": [
@@ -572462,7 +572462,7 @@
             },
             {
               "date": "2026-03-09",
-              "value": 25.08
+              "value": 25.76
             }
           ],
           "color": "#10b981"
@@ -586892,7 +586892,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 26.63
+            "value": 26.77
           }
         ],
         "energyBase": [
@@ -615700,7 +615700,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 103.45
+            "value": 103.6
           }
         ],
         "dxy": [
@@ -622902,7 +622902,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 99.32
+            "value": 99.31
           }
         ]
       },
@@ -623020,14 +623020,14 @@
             23.86,
             3.0,
             1.76,
-            103.45,
-            99.315,
-            32.17,
+            103.6,
+            99.306,
+            32.18,
             null,
             -0.015,
             72.127,
-            0.0106,
-            25.0794,
+            0.0105,
+            25.7619,
             0.0017,
             27.0,
             6.9127,
@@ -623038,17 +623038,17 @@
             0.0603,
             40.3016,
             20.9921,
-            103.45,
-            99.315,
+            103.6,
+            99.306,
             6740.02,
-            32.17,
+            32.18,
             3.0,
             -18.0,
             "通胀冲击",
             "WTI 单日暴涨 >= 8%",
-            13.8064,
+            13.9714,
             2.9921,
-            26.631
+            26.7675
           ],
           [
             "2026-03-08",
@@ -779774,9 +779774,9 @@
             23.86,
             3.0,
             1.76,
-            103.45,
-            99.315,
-            32.17,
+            103.6,
+            99.306,
+            32.18,
             null,
             3.0,
             38.2937,
@@ -871570,8 +871570,8 @@
         },
         {
           "label": "VIX",
-          "value": "32.17",
-          "delta": "+2.68",
+          "value": "32.18",
+          "delta": "+2.69",
           "state": "negative"
         },
         {
@@ -900450,9 +900450,9 @@
           [
             "2026-03-09",
             6740.02,
-            32.17,
+            32.18,
             23.86,
-            1.3483,
+            1.3487,
             1.0317,
             0.0,
             6.0714,
@@ -920264,10 +920264,10 @@
         "cagr": 49.91,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -43.67,
-        "strategyReturn": 262.96,
-        "benchmarkReturn": 306.63,
-        "endingCapital": 362957.0,
+        "alpha": -43.7,
+        "strategyReturn": 262.97,
+        "benchmarkReturn": 306.67,
+        "endingCapital": 362974.79,
         "currentPosition": 0.5,
         "currentScore": 55.9,
         "currentSignal": "🛡️ 防守",
@@ -921470,7 +921470,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 362957.0
+            "value": 362974.79
           }
         ],
         "positionSeries": [
@@ -922781,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67602.86,
-            "pnlPct": 137.91,
+            "exitPrice": 67609.41,
+            "pnlPct": 137.93,
             "result": "Floating"
           },
           {
@@ -922834,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.99,
+        "cagr": 9.96,
         "sharpe": 0.4,
         "mdd": -74.43,
-        "alpha": -30.62,
-        "strategyReturn": 35.42,
-        "benchmarkReturn": 66.04,
-        "endingCapital": 135418.32,
+        "alpha": -30.46,
+        "strategyReturn": 35.31,
+        "benchmarkReturn": 65.76,
+        "endingCapital": 135305.96,
         "currentPosition": 0.5,
         "currentScore": 55.9,
         "currentSignal": "🛡️ 防守",
@@ -924043,7 +924043,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 135418.32
+            "value": 135305.96
           }
         ],
         "positionSeries": [
@@ -925354,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1994.02,
-            "pnlPct": 1.03,
+            "exitPrice": 1990.76,
+            "pnlPct": 0.86,
             "result": "Floating"
           },
           {
@@ -933041,10 +933041,10 @@
         "cagr": -0.95,
         "sharpe": -0.63,
         "mdd": -13.13,
-        "alpha": -10.97,
-        "strategyReturn": -2.98,
-        "benchmarkReturn": 7.98,
-        "endingCapital": 97017.91,
+        "alpha": -10.96,
+        "strategyReturn": -2.99,
+        "benchmarkReturn": 7.97,
+        "endingCapital": 97014.56,
         "currentPosition": 0.3,
         "currentScore": 55.3,
         "currentSignal": "🌤️ 试探",
@@ -934247,7 +934247,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 97017.91
+            "value": 97014.56
           }
         ],
         "positionSeries": [
@@ -935559,7 +935559,7 @@
             "entryScore": 44.6,
             "entryPrice": 1.07,
             "exitPrice": 1.16,
-            "pnlPct": 8.18,
+            "pnlPct": 8.17,
             "result": "Floating"
           },
           {
@@ -935641,10 +935641,10 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-09T11:00:07Z",
+    "generatedAt": "2026-03-09T11:42:16Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
-      "overallScore": 47.47,
+      "overallScore": 47.49,
       "riskLevel": "中高",
       "quoteSourceMode": "live",
       "newsSourceMode": "hybrid",
@@ -935657,80 +935657,80 @@
         "ticker": "BTC",
         "name": "Bitcoin",
         "bucket": "crypto",
-        "spot": 67602.86,
-        "change24hPct": 2.48,
-        "change7dPct": -1.71,
-        "realizedVol14dPct": 63.61,
+        "spot": 67609.41,
+        "change24hPct": 2.49,
+        "change7dPct": -1.7,
+        "realizedVol14dPct": 63.62,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "Ethereum",
         "bucket": "crypto",
-        "spot": 1994.02,
-        "change24hPct": 2.96,
-        "change7dPct": -1.64,
-        "realizedVol14dPct": 85.3,
+        "spot": 1990.76,
+        "change24hPct": 2.8,
+        "change7dPct": -1.8,
+        "realizedVol14dPct": 85.17,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "Solana",
         "bucket": "crypto",
-        "spot": 83.7,
-        "change24hPct": 2.55,
-        "change7dPct": -3.38,
-        "realizedVol14dPct": 80.65,
+        "spot": 83.57,
+        "change24hPct": 2.39,
+        "change7dPct": -3.54,
+        "realizedVol14dPct": 80.54,
         "source": "yfinance"
       },
       {
         "ticker": "GOLD",
         "name": "COMEX Gold",
         "bucket": "commodity",
-        "spot": 5098.7,
-        "change24hPct": -0.92,
-        "change7dPct": -3.7,
-        "realizedVol14dPct": 24.61,
+        "spot": 5093.3,
+        "change24hPct": -1.03,
+        "change7dPct": -3.8,
+        "realizedVol14dPct": 24.71,
         "source": "yfinance"
       },
       {
         "ticker": "SILVER",
         "name": "COMEX Silver",
         "bucket": "commodity",
-        "spot": 83.8,
-        "change24hPct": -0.02,
-        "change7dPct": -5.08,
-        "realizedVol14dPct": 63.95,
+        "spot": 83.4,
+        "change24hPct": -0.5,
+        "change7dPct": -5.53,
+        "realizedVol14dPct": 63.97,
         "source": "yfinance"
       },
       {
         "ticker": "WTI",
         "name": "WTI Crude",
         "bucket": "commodity",
-        "spot": 103.14,
-        "change24hPct": 13.47,
-        "change7dPct": 44.8,
-        "realizedVol14dPct": 94.69,
+        "spot": 103.31,
+        "change24hPct": 13.65,
+        "change7dPct": 45.04,
+        "realizedVol14dPct": 95.26,
         "source": "yfinance"
       },
       {
         "ticker": "BRENT",
         "name": "Brent Crude",
         "bucket": "commodity",
-        "spot": 105.91,
-        "change24hPct": 14.26,
-        "change7dPct": 36.24,
-        "realizedVol14dPct": 85.7,
+        "spot": 105.02,
+        "change24hPct": 13.3,
+        "change7dPct": 35.09,
+        "realizedVol14dPct": 82.21,
         "source": "yfinance"
       },
       {
         "ticker": "DXY",
         "name": "US Dollar Index",
         "bucket": "fx",
-        "spot": 99.32,
-        "change24hPct": 0.33,
-        "change7dPct": 0.95,
-        "realizedVol14dPct": 6.72,
+        "spot": 99.3,
+        "change24hPct": 0.32,
+        "change7dPct": 0.94,
+        "realizedVol14dPct": 6.71,
         "source": "yfinance"
       },
       {
@@ -935747,10 +935747,10 @@
         "ticker": "VIX",
         "name": "CBOE VIX",
         "bucket": "rate",
-        "spot": 32.18,
-        "change24hPct": 9.12,
-        "change7dPct": 50.09,
-        "realizedVol14dPct": 175.24,
+        "spot": 32.17,
+        "change24hPct": 9.09,
+        "change7dPct": 50.05,
+        "realizedVol14dPct": 175.21,
         "source": "yfinance"
       },
       {
@@ -935866,13 +935866,13 @@
     ],
     "hotNews": [
       {
-        "title": "Wall Street's immunity to Mideast oil shock will now be tested - Reuters",
-        "summary": "ORLANDO, Florida, March 9 (Reuters) - Oil prices surged 30% last week and swathes of global stocks sold off as war in the Middle East escalated, yet an air of complacency hung over Wall Street. Get a look at the day ahead in U.S. and global markets with the Morning Bid U.S. newsl",
+        "title": "Reform UK's Nigel Farage invests in bitcoin-buying company - Reuters",
+        "summary": "LONDON, March 9 (Reuters) - Nigel Farage, leader of the populist Reform UK party, has invested in Stack BTC (STAK.ASE), opens new tab, a London-based company aimed at acquiring small British companies and investing surplus capital ​into bitcoin, a statement said on Monday. Farage",
         "source": "reuters.com",
-        "url": "https://www.reuters.com/markets/us/wall-streets-immunity-mideast-oil-shock-will-now-be-tested-2026-03-09/",
-        "publishedAt": "2026-03-09T08:13:56Z",
-        "bucket": "commodities",
-        "editorScore": 21.8076
+        "url": "https://www.reuters.com/business/finance/reform-uks-nigel-farage-invests-bitcoin-buying-company-2026-03-09/",
+        "publishedAt": "2026-03-09T10:46:49Z",
+        "bucket": "crypto",
+        "editorScore": 21.769
       },
       {
         "title": "Small investors become dip buyers as energy shock sinks stocks - Reuters",
@@ -935881,7 +935881,7 @@
         "url": "https://www.reuters.com/business/retail-consumer/small-investors-become-dip-buyers-energy-shock-sinks-stocks-2026-03-09/",
         "publishedAt": "2026-03-09T10:16:59Z",
         "bucket": "equity",
-        "editorScore": 20.6203
+        "editorScore": 20.4446
       },
       {
         "title": "Bitcoin could face deeper downside as odds of U.S. market meltdown rise to 35% - CoinDesk",
@@ -935890,7 +935890,24 @@
         "url": "https://www.coindesk.com/markets/2026/03/09/bitcoin-could-face-deeper-downside-as-odds-of-u-s-market-meltdown-rise-to-35",
         "publishedAt": "2026-03-09T05:13:30Z",
         "bucket": "equity",
-        "editorScore": 20.4558
+        "editorScore": 20.2801
+      },
+      {
+        "title": "Oak HC/FT Raises Nearly $2 Billion for Latest Healthcare, Fintech Fund - WSJ",
+        "summary": "Oak HC/FT Raises Nearly $2 Billion for Latest Healthcare, Fintech Fund - WSJ. S&P 500 Futures 6671.75 -1.07%. https://www.wsj.com/articles/oak-hc-ft-raises-nearly-2-billion-for-latest-healthcare-fintech-fund-26edd242. Oak HC/FT Raises Nearly $2 Billion for Latest Healthcare, Fint",
+        "source": "wsj.com",
+        "url": "https://www.wsj.com/articles/oak-hc-ft-raises-nearly-2-billion-for-latest-healthcare-fintech-fund-26edd242?gaa_at=eafs&gaa_n=AWEtsqfo0Nr_e-FWPhfb11y-wjTRo1fEKpZdlBdODNi5ozyjaGA3U2wsiOuY&gaa_ts=69aea1ff&gaa_sig=2LYjaqIEheCvdCrTmfDac-vpR7zjFj1-v2JQTkscH9WKknKESEdPjCaLVsm15ZPuXl76Du_UqJWSRX88jJW7gA%3D%3D",
+        "publishedAt": "2026-03-09T10:00:00Z",
+        "bucket": "equity",
+        "editorScore": 20.1739
+      },
+      {
+        "title": "Bitcoin is beating stocks and gold as the Middle East conflict rattles global markets",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/09/bitcoin-is-beating-stocks-and-gold-as-the-middle-east-conflict-rattles-global-markets",
+        "publishedAt": "2026-03-09T11:38:11Z",
+        "bucket": "commodities",
+        "editorScore": 20.083
       },
       {
         "title": "U.S. inflation, Polkadot upgrade, Solstice-Kamino announcement: Crypto Week Ahead",
@@ -935898,23 +935915,7 @@
         "url": "https://www.coindesk.com/markets/2026/03/09/u-s-inflation-polkadot-upgrade-solstice-kamino-announcement-crypto-week-ahead",
         "publishedAt": "2026-03-09T10:48:40Z",
         "bucket": "crypto",
-        "editorScore": 19.9523
-      },
-      {
-        "title": "Nigel Farage takes 6% stake in UK bitcoin treasury firm Stack BTC",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/business/2026/03/09/nigel-farage-takes-6-stake-in-uk-bitcoin-treasury-firm-stack-btc",
-        "publishedAt": "2026-03-09T09:31:07Z",
-        "bucket": "crypto",
-        "editorScore": 19.6292
-      },
-      {
-        "title": "Bitcoin rises as oil spikes, equities drop",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/09/bitcoin-rises-as-oil-spikes-equities-drop",
-        "publishedAt": "2026-03-09T10:37:29Z",
-        "bucket": "commodities",
-        "editorScore": 19.6057
+        "editorScore": 19.7767
       },
       {
         "title": "Crypto funds gain $619M as markets hold up despite oil and war fears",
@@ -935922,24 +935923,23 @@
         "url": "https://cointelegraph.com/news/crypto-etp-619-million-inflows-resilience-iran-crisis?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-03-09T10:28:52Z",
         "bucket": "commodities",
-        "editorScore": 18.9698
+        "editorScore": 18.7942
       },
       {
-        "title": "Clarity Act will benefit banks more than crypto, former CFTC chair says",
+        "title": "Bitcoin at $67K despite oil shock is 'strongest indicator' bottom may be in",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/bitcoin-67k-oil-shock-strongest-indicator-bottom-may-be-in?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-09T11:20:01Z",
+        "bucket": "commodities",
+        "editorScore": 18.6073
+      },
+      {
+        "title": "Bitcoin stays calm while other markets panic: key levels to watch",
         "source": "CoinDesk",
-        "url": "https://www.coindesk.com/policy/2026/03/09/clarity-act-will-benefit-banks-more-than-crypto-former-cftc-chair-says",
-        "publishedAt": "2026-03-09T08:44:01Z",
+        "url": "https://www.coindesk.com/daybook-us/2026/03/09/bitcoin-stays-calm-while-other-markets-panic-key-levels-to-watch",
+        "publishedAt": "2026-03-09T11:24:16Z",
         "bucket": "crypto",
-        "editorScore": 17.9329
-      },
-      {
-        "title": "Stock and Bond Traders Eye Another Volatile Open - Bloomberg",
-        "summary": "# Stock and Bond Traders Eye Another Volatile Open. Provide news feedback or report an error. ### **Takeaways** by Bloomberg AISubscribe. Stock and bond futures open at 6 p.m. New York time. Before it's here, it's on the Bloomberg Terminal. ### More From Bloomberg. Iran Hits Key ",
-        "source": "bloomberg.com",
-        "url": "https://www.bloomberg.com/news/articles/2026-03-08/stock-and-bond-traders-eye-another-volatile-open-markets-wrap",
-        "publishedAt": "2026-03-08T21:22:29Z",
-        "bucket": "equity",
-        "editorScore": 17.3932
+        "editorScore": 18.225
       },
       {
         "title": "Trump’s World Liberty Financial Project Puts Investors in a Bind - Bloomberg",
@@ -935948,40 +935948,39 @@
         "url": "https://www.bloomberg.com/news/articles/2026-03-08/trump-s-world-liberty-financial-project-puts-investors-in-a-bind",
         "publishedAt": "2026-03-08T15:00:00Z",
         "bucket": "geopolitics",
-        "editorScore": 13.4995
+        "editorScore": 13.3239
       },
       {
-        "title": "Coinbase launches perpetual futures in a European regulatory minefield",
+        "title": "Nasdaq and Kraken are teaming up to let you trade tokenized stocks",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/03/09/nasdaq-and-kraken-are-teaming-up-to-let-you-trade-tokenized-stocks",
+        "publishedAt": "2026-03-09T11:17:12Z",
+        "bucket": "equity",
+        "editorScore": 18.6955
+      },
+      {
+        "title": "Biggest oil supply shock ever: Five things to know in Bitcoin this week",
         "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/coinbase-perpetual-futures-contracts-europe-esma?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-09T10:45:23Z",
-        "bucket": "general",
-        "editorScore": 12.1386
-      },
-      {
-        "title": "US, Japan eye $13 billion Japan Display plant as part of investment package, Nikkei Asia reports - Reuters",
-        "summary": "# US, Japan eye $13 billion Japan Display plant as part of investment package, Nikkei Asia reports. March 7 (Reuters) - The Japanese ​government has approached ‌Japan Display (6740.T), opens new tab about ​operating ​a cutting-edge factory ⁠in ​the U.S. ​as part of its $550 billi",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/autos-transportation/us-japan-eye-13-billion-japan-display-plant-part-investment-package-nikkei-asia-2026-03-07/",
-        "publishedAt": "2026-03-07T17:41:42Z",
-        "bucket": "general",
-        "editorScore": 6.2
+        "url": "https://cointelegraph.com/news/biggest-oil-supply-shock-ever-five-things-bitcoin-this-week?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-09T10:22:37Z",
+        "bucket": "commodities",
+        "editorScore": 18.3681
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
-      "主要拖累来自 外部冲击与汇率，边际变化 -12.1。",
-      "BTC 24H +2.48%，7D -1.71%，执行上优先看关键位是否放量确认。",
+      "主要拖累来自 外部冲击与汇率，边际变化 -11.9。",
+      "BTC 24H +2.49%，7D -1.70%，执行上优先看关键位是否放量确认。",
       "板块层面，XLE 近7日 -0.82% 领跑，XLI 近7日 -5.01% 偏弱。",
-      "波动与利率环境方面，VIX 现报 32.18，10Y 收益率现报 4.13。"
+      "波动与利率环境方面，VIX 现报 32.17，10Y 收益率现报 4.13。"
     ],
     "deskViews": [
       "当前宏观总分仍处中性区间，市场更适合结构化交易而非单边押注，仓位与节奏管理优先于方向激进表达。",
       "边际变化上，资金价格与摩擦 是当前主要支撑项，而 外部冲击与汇率 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
       "权益资产方面，标普口径近7日 -2.06%，纳指口径近7日 -1.59%，说明成长资产仍在消化宏观与估值的双重约束。",
       "行业层面，Energy 近7日表现相对占优，Industrials 相对承压，说明市场内部轮动并不均衡。",
-      "加密资产方面，BTC 近7日 -1.71%，ETH 近7日 -1.64%，短线更适合结合关键价位和成交确认判断延续性。"
+      "加密资产方面，BTC 近7日 -1.70%，ETH 近7日 -1.80%，短线更适合结合关键价位和成交确认判断延续性。"
     ],
     "deepStockDives": [
       {
@@ -936042,10 +936041,10 @@
     ],
     "cryptoProjectUpdates": [
       {
-        "project": "Solana 生态",
-        "headline": "Wall Street's immunity to Mideast oil shock will now be tested - Reuters",
+        "project": "比特币生态",
+        "headline": "Reform UK's Nigel Farage invests in bitcoin-buying company - Reuters",
         "source": "reuters.com",
-        "url": "https://www.reuters.com/markets/us/wall-streets-immunity-mideast-oil-shock-will-now-be-tested-2026-03-09/"
+        "url": "https://www.reuters.com/business/finance/reform-uks-nigel-farage-invests-bitcoin-buying-company-2026-03-09/"
       },
       {
         "project": "比特币生态",
@@ -936054,22 +936053,16 @@
         "url": "https://www.coindesk.com/markets/2026/03/09/bitcoin-could-face-deeper-downside-as-odds-of-u-s-market-meltdown-rise-to-35"
       },
       {
+        "project": "比特币生态",
+        "headline": "Bitcoin is beating stocks and gold as the Middle East conflict rattles global markets",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/09/bitcoin-is-beating-stocks-and-gold-as-the-middle-east-conflict-rattles-global-markets"
+      },
+      {
         "project": "Solana 生态",
         "headline": "U.S. inflation, Polkadot upgrade, Solstice-Kamino announcement: Crypto Week Ahead",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/09/u-s-inflation-polkadot-upgrade-solstice-kamino-announcement-crypto-week-ahead"
-      },
-      {
-        "project": "比特币生态",
-        "headline": "Nigel Farage takes 6% stake in UK bitcoin treasury firm Stack BTC",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/business/2026/03/09/nigel-farage-takes-6-stake-in-uk-bitcoin-treasury-firm-stack-btc"
-      },
-      {
-        "project": "比特币生态",
-        "headline": "Bitcoin rises as oil spikes, equities drop",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/09/bitcoin-rises-as-oil-spikes-equities-drop"
       },
       {
         "project": "行业观察",
@@ -936078,10 +936071,16 @@
         "url": "https://cointelegraph.com/news/crypto-etp-619-million-inflows-resilience-iran-crisis?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
       },
       {
-        "project": "行业观察",
-        "headline": "Clarity Act will benefit banks more than crypto, former CFTC chair says",
+        "project": "比特币生态",
+        "headline": "Bitcoin at $67K despite oil shock is 'strongest indicator' bottom may be in",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/bitcoin-67k-oil-shock-strongest-indicator-bottom-may-be-in?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      },
+      {
+        "project": "比特币生态",
+        "headline": "Bitcoin stays calm while other markets panic: key levels to watch",
         "source": "CoinDesk",
-        "url": "https://www.coindesk.com/policy/2026/03/09/clarity-act-will-benefit-banks-more-than-crypto-former-cftc-chair-says"
+        "url": "https://www.coindesk.com/daybook-us/2026/03/09/bitcoin-stays-calm-while-other-markets-panic-key-levels-to-watch"
       },
       {
         "project": "行业观察",
