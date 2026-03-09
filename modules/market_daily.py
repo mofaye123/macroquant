@@ -32,17 +32,37 @@ _DEFAULT_TAVILY_QUERIES: Tuple[str, ...] = (
     "latest US stock market news AI semiconductor earnings Nasdaq S&P 500",
 )
 
-_QUOTE_SYMBOLS: Tuple[Tuple[str, str, str], ...] = (
-    ("BTC", "BTC-USD", "crypto"),
-    ("ETH", "ETH-USD", "crypto"),
-    ("SOL", "SOL-USD", "crypto"),
-    ("SPY", "SPY", "equity"),
-    ("QQQ", "QQQ", "equity"),
+_QUOTE_SYMBOLS: Tuple[Tuple[str, str, str, str], ...] = (
+    ("BTC", "BTC-USD", "crypto", "Bitcoin"),
+    ("ETH", "ETH-USD", "crypto", "Ethereum"),
+    ("SOL", "SOL-USD", "crypto", "Solana"),
+    ("GOLD", "GC=F", "commodity", "COMEX Gold"),
+    ("SILVER", "SI=F", "commodity", "COMEX Silver"),
+    ("WTI", "CL=F", "commodity", "WTI Crude"),
+    ("BRENT", "BZ=F", "commodity", "Brent Crude"),
+    ("DXY", "DX-Y.NYB", "fx", "US Dollar Index"),
+    ("US10Y", "^TNX", "rate", "US 10Y Yield"),
+    ("VIX", "^VIX", "rate", "CBOE VIX"),
+    ("DJI", "^DJI", "equity_index", "Dow Jones"),
+    ("SPX", "^GSPC", "equity_index", "S&P 500"),
+    ("IXIC", "^IXIC", "equity_index", "Nasdaq Composite"),
+    ("RUT", "^RUT", "equity_index", "Russell 2000"),
+    ("SPY", "SPY", "equity_index", "SPDR S&P 500 ETF"),
+    ("QQQ", "QQQ", "equity_index", "Invesco QQQ"),
+    ("XLK", "XLK", "equity_sector", "Technology"),
+    ("XLF", "XLF", "equity_sector", "Financials"),
+    ("XLE", "XLE", "equity_sector", "Energy"),
+    ("XLV", "XLV", "equity_sector", "Health Care"),
+    ("XLI", "XLI", "equity_sector", "Industrials"),
 )
 
 _DEEP_DIVE_SYMBOLS: Tuple[Tuple[str, str], ...] = (
     ("NVIDIA", "NVDA"),
+    ("Microsoft", "MSFT"),
     ("Apple", "AAPL"),
+    ("Amazon", "AMZN"),
+    ("Meta", "META"),
+    ("Broadcom", "AVGO"),
     ("Tesla", "TSLA"),
 )
 
@@ -326,7 +346,7 @@ def _build_market_snapshots(as_of_dt: Optional[datetime] = None) -> Tuple[List[D
     if as_of_ts is None and _QUOTE_CACHE["items"] and now < _QUOTE_CACHE["expires_at"]:
         return list(_QUOTE_CACHE["items"]), str(_QUOTE_CACHE["source_mode"])
 
-    symbols = [symbol for _, symbol, _ in _QUOTE_SYMBOLS]
+    symbols = [symbol for _, symbol, _, _ in _QUOTE_SYMBOLS]
     close_frame = _download_close_series(symbols, period="3mo")
     if as_of_ts is not None and not close_frame.empty:
         close_frame = close_frame[close_frame.index <= as_of_ts]
@@ -368,7 +388,7 @@ def _build_market_snapshots(as_of_dt: Optional[datetime] = None) -> Tuple[List[D
             },
         ]
     else:
-        for ticker, symbol, bucket in _QUOTE_SYMBOLS:
+        for ticker, symbol, bucket, display_name in _QUOTE_SYMBOLS:
             if symbol not in close_frame.columns:
                 continue
             series = close_frame[symbol].dropna()
@@ -383,7 +403,7 @@ def _build_market_snapshots(as_of_dt: Optional[datetime] = None) -> Tuple[List[D
             rows.append(
                 {
                     "ticker": ticker,
-                    "name": symbol.replace("-USD", ""),
+                    "name": display_name,
                     "bucket": bucket,
                     "spot": round(latest or 0.0, 2),
                     "change24hPct": round(chg1 or 0.0, 2),
@@ -536,6 +556,9 @@ def _build_deep_dives(as_of_dt: Optional[datetime] = None) -> Tuple[List[Dict[st
         ma60 = _safe_float(series.rolling(60).mean().iloc[-1], None)
         rsi14 = _rsi(series, window=14)
         ret20 = _return_pct(series, 20)
+        ret1 = _return_pct(series, 1)
+        ret7 = _return_pct(series, 7)
+        vol14 = _safe_float(series.pct_change().tail(14).std() * math.sqrt(365.0) * 100.0, None)
         trend_signal = "震荡"
         if ma20 is not None and ma60 is not None:
             if ma20 > ma60 * 1.01:
@@ -543,12 +566,15 @@ def _build_deep_dives(as_of_dt: Optional[datetime] = None) -> Tuple[List[Dict[st
             elif ma20 < ma60 * 0.99:
                 trend_signal = "趋势走弱"
         summary = (
-            "均线结构偏多，优先顺势持有，回调分批处理。"
-            if trend_signal == "趋势多头"
-            else "中短期结构偏弱，优先防守，等待放量企稳信号。"
-            if trend_signal == "趋势走弱"
-            else "方向未明，关注突破/跌破关键区间后的确认信号。"
+            f"近1日{(ret1 or 0.0):+.2f}%，近7日{(ret7 or 0.0):+.2f}%，近20日{(ret20 or 0.0):+.2f}%，"
+            f"14日年化波动{(vol14 or 0.0):.1f}%。"
         )
+        if trend_signal == "趋势多头":
+            summary += " 均线结构偏多，优先顺势持有，回调分批处理。"
+        elif trend_signal == "趋势走弱":
+            summary += " 中短期结构偏弱，优先防守，等待放量企稳信号。"
+        else:
+            summary += " 方向未明，关注突破/跌破关键区间后的确认信号。"
         rows.append(
             {
                 "name": name,
@@ -556,41 +582,78 @@ def _build_deep_dives(as_of_dt: Optional[datetime] = None) -> Tuple[List[Dict[st
                 "signal": trend_signal,
                 "summary": summary,
                 "rsi14": round(rsi14 or 50.0, 2),
+                "change1dPct": round(ret1 or 0.0, 2),
+                "change7dPct": round(ret7 or 0.0, 2),
                 "ret20dPct": round(ret20 or 0.0, 2),
+                "vol14dPct": round(vol14 or 0.0, 2),
             }
         )
 
-    return rows[:3], "live"
+    rows = sorted(rows, key=lambda item: abs(float(item.get("ret20dPct", 0.0))), reverse=True)
+    return rows[:5], "live"
 
 
 def _build_crypto_project_updates(hot_news: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
-    keywords = (
-        ("BTC", "比特币生态"),
-        ("ETH", "以太坊生态"),
-        ("SOL", "Solana 生态"),
+    tags = (
+        ("bitcoin", "比特币生态"),
+        ("btc", "比特币生态"),
+        ("ethereum", "以太坊生态"),
+        ("eth", "以太坊生态"),
+        ("solana", "Solana 生态"),
+        ("sol", "Solana 生态"),
+        ("stablecoin", "稳定币"),
+        ("etf", "ETF / 机构资金"),
+        ("exchange", "交易所 / 市场结构"),
+        ("crypto", "行业观察"),
+        ("token", "行业观察"),
+        ("blockchain", "行业观察"),
     )
     updates: List[Dict[str, Any]] = []
-    for key, bucket in keywords:
-        matched = next((item for item in hot_news if key.lower() in item.get("title", "").lower()), None)
-        if matched:
-            updates.append(
-                {
-                    "project": bucket,
-                    "headline": matched.get("title", ""),
-                    "source": matched.get("source", "News"),
-                    "url": matched.get("url", ""),
-                }
-            )
-        else:
-            updates.append(
-                {
-                    "project": bucket,
-                    "headline": f"{bucket}暂无重大突发，维持跟踪链上活跃度与资金流向。",
-                    "source": "MacroQuant Engine",
-                    "url": "",
-                }
-            )
-    return updates
+    seen_titles: set[str] = set()
+    for item in hot_news:
+        title = str(item.get("title", "") or "").strip()
+        summary = str(item.get("summary", "") or "").strip()
+        text = f"{title} {summary}".lower()
+        if not title or title in seen_titles:
+            continue
+        bucket = next((label for needle, label in tags if needle in text), "")
+        if not bucket:
+            continue
+        seen_titles.add(title)
+        updates.append(
+            {
+                "project": bucket,
+                "headline": title,
+                "source": item.get("source", "News"),
+                "url": item.get("url", ""),
+            }
+        )
+        if len(updates) >= 8:
+            break
+
+    if updates:
+        return updates
+
+    return [
+        {
+            "project": "比特币生态",
+            "headline": "暂无重大突发，维持跟踪 ETF 资金流、链上活跃度与交易所净流向。",
+            "source": "MacroQuant Engine",
+            "url": "",
+        },
+        {
+            "project": "以太坊生态",
+            "headline": "暂无重大突发，关注 ETF 资金流、L2 活跃度与链上费用变化。",
+            "source": "MacroQuant Engine",
+            "url": "",
+        },
+        {
+            "project": "行业观察",
+            "headline": "暂无重大突发，继续跟踪稳定币净增发、交易所持仓与监管动态。",
+            "source": "MacroQuant Engine",
+            "url": "",
+        },
+    ]
 
 
 def _build_market_calendar(as_of: datetime) -> List[Dict[str, Any]]:
@@ -679,7 +742,26 @@ def _build_replay_lines(overall_score: float, modules: List[Dict[str, Any]], sna
             f"BTC 24H {_format_pct(_safe_float(btc_row.get('change24hPct'), 0.0))}，7D {_format_pct(_safe_float(btc_row.get('change7dPct'), 0.0))}，"
             "执行上优先看关键位是否放量确认。"
         )
-    return lines[:4]
+    sectors = [row for row in snapshots if row.get("bucket") == "equity_sector"]
+    if sectors:
+        best_sector = max(sectors, key=lambda row: float(row.get("change7dPct", 0.0)))
+        weak_sector = min(sectors, key=lambda row: float(row.get("change7dPct", 0.0)))
+        lines.append(
+            f"板块层面，{best_sector.get('ticker')} 近7日 {_format_pct(_safe_float(best_sector.get('change7dPct'), 0.0))} 领跑，"
+            f"{weak_sector.get('ticker')} 近7日 {_format_pct(_safe_float(weak_sector.get('change7dPct'), 0.0))} 偏弱。"
+        )
+    rates = [row for row in snapshots if row.get("bucket") == "rate"]
+    if rates:
+        vix_row = next((row for row in rates if row.get("ticker") == "VIX"), None)
+        tnx_row = next((row for row in rates if row.get("ticker") == "US10Y"), None)
+        if vix_row or tnx_row:
+            pieces = []
+            if vix_row:
+                pieces.append(f"VIX 现报 {vix_row.get('spot', '-')}")
+            if tnx_row:
+                pieces.append(f"10Y 收益率现报 {tnx_row.get('spot', '-')}")
+            lines.append("波动与利率环境方面，" + "，".join(pieces) + "。")
+    return lines[:6]
 
 
 def _risk_level(overall_score: float) -> str:

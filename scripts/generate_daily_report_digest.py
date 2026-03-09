@@ -112,7 +112,9 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
         ai = daily.get("claudeDecision", {})
 
     crypto_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "crypto"]
-    equity_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "equity"]
+    commod_fx_snapshots = [row for row in snapshots if str(row.get("bucket", "")) in {"commodity", "fx", "rate"}]
+    equity_snapshots = [row for row in snapshots if str(row.get("bucket", "")) in {"equity_index", "equity"}]
+    sector_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "equity_sector"]
 
     lines: List[str] = []
     lines.append(f"# 市场研究日报（{as_of}）")
@@ -157,7 +159,13 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     lines.append("")
     lines.append("## 二、市场复盘")
     lines.append("### 大宗商品&外汇表现")
-    lines.append("数据不足：当前输入未提供黄金/白银/WTI/Brent/DXY 全量实时报价。")
+    if commod_fx_snapshots:
+        for row in commod_fx_snapshots[:6]:
+            lines.append(
+                f"- {row.get('ticker', '-')}: 现价 {row.get('spot', '-') }，24H {row.get('change24hPct', '-') }%，7D {row.get('change7dPct', '-') }%，14D 年化波动 {row.get('realizedVol14dPct', '-') }%。"
+            )
+    else:
+        lines.append("数据不足：当前输入未提供黄金/白银/WTI/Brent/DXY/VIX/10Y 全量实时报价。")
     lines.append("")
     lines.append("### 加密货币表现")
     if crypto_snapshots:
@@ -170,7 +178,7 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     lines.append("")
     lines.append("### 美股指数表现")
     if equity_snapshots:
-        for row in equity_snapshots[:3]:
+        for row in equity_snapshots[:6]:
             lines.append(
                 f"- {row.get('ticker', '-')}: 24H {row.get('change24hPct', '-') }%，7D {row.get('change7dPct', '-') }%，现价 {row.get('spot', '-') }。"
             )
@@ -178,10 +186,21 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
         lines.append("数据不足：暂无美股指数快照。")
     lines.append("")
     lines.append("### 科技巨头动态")
-    lines.append("数据不足：请优先使用 AI 正式稿补全个股新闻与财报动态。")
+    if deep_dives:
+        for item in deep_dives[:5]:
+            lines.append(
+                f"- {item.get('name', '-')} ({item.get('ticker', '-')}): 1D {item.get('change1dPct', '-') }%，7D {item.get('change7dPct', '-') }%，20D {item.get('ret20dPct', '-') }%，信号 {item.get('signal', '-') }。"
+            )
+    else:
+        lines.append("数据不足：请优先使用 AI 正式稿补全个股新闻与财报动态。")
     lines.append("")
     lines.append("### 板块异动观察")
-    if replay:
+    if sector_snapshots:
+        for row in sector_snapshots[:5]:
+            lines.append(
+                f"- {row.get('ticker', '-')}: 24H {row.get('change24hPct', '-') }%，7D {row.get('change7dPct', '-') }%，现价 {row.get('spot', '-') }。"
+            )
+    elif replay:
         for item in replay[:4]:
             lines.append(f"- {item}")
     else:

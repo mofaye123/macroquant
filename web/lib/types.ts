@@ -214,7 +214,10 @@ export type MarketDailyDeepDive = {
   signal: string;
   summary: string;
   rsi14: number;
+  change1dPct?: number;
+  change7dPct?: number;
   ret20dPct: number;
+  vol14dPct?: number;
 };
 
 export type MarketDailyProjectUpdate = {

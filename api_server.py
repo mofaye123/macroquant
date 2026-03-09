@@ -2325,7 +2325,13 @@ def _build_daily_prompt_sections(
     policy_news = (news_groups["geopolitics"] + news_groups["general"])[:4]
 
     crypto_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "crypto"]
-    equity_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "equity"]
+    commodity_fx_snapshots = [
+        row for row in snapshots if str(row.get("bucket", "")) in {"commodity", "fx", "rate"}
+    ]
+    equity_snapshots = [
+        row for row in snapshots if str(row.get("bucket", "")) in {"equity_index", "equity"}
+    ]
+    sector_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "equity_sector"]
 
     def _fmt_snapshot(rows: List[Dict[str, Any]], fallback: str) -> List[str]:
         if not rows:
@@ -2333,14 +2339,26 @@ def _build_daily_prompt_sections(
         lines: List[str] = []
         for row in rows[:8]:
             lines.append(
-                f"- {row.get('ticker', '-')}: 现价={row.get('spot', '-')}, 24H={row.get('change24hPct', '-') }%, 7D={row.get('change7dPct', '-') }%, 波动率14D={row.get('realizedVol14dPct', '-') }%"
+                f"- {row.get('ticker', '-')}: 名称={row.get('name', '-')}, 现价={row.get('spot', '-')}, 24H={row.get('change24hPct', '-') }%, 7D={row.get('change7dPct', '-') }%, 波动率14D={row.get('realizedVol14dPct', '-') }%"
             )
         return lines
+
+    tech_lines = []
+    for item in deep_dives[:6]:
+        tech_lines.append(
+            f"- {item.get('name', '-') } ({item.get('ticker', '-') }): 1D={item.get('change1dPct', '-') }%, 7D={item.get('change7dPct', '-') }%, "
+            f"20D={item.get('ret20dPct', '-') }%, RSI14={item.get('rsi14', '-') }, signal={item.get('signal', '-') }"
+        )
+    if not tech_lines:
+        tech_lines = ["- 数据不足：暂无科技巨头行情与结构信号输入"]
+
+    sector_lines = _fmt_snapshot(sector_snapshots, "- 数据不足：暂无行业板块快照")
 
     deep_lines = []
     for item in deep_dives[:5]:
         deep_lines.append(
-            f"- {item.get('name', '-') } ({item.get('ticker', '-') }): signal={item.get('signal', '-')}, ret20d={item.get('ret20dPct', '-') }%, summary={item.get('summary', '-')}"
+            f"- {item.get('name', '-') } ({item.get('ticker', '-') }): signal={item.get('signal', '-')}, 1D={item.get('change1dPct', '-') }%, "
+            f"7D={item.get('change7dPct', '-') }%, ret20d={item.get('ret20dPct', '-') }%, summary={item.get('summary', '-')}"
         )
     if not deep_lines:
         deep_lines = ["- 数据不足：暂无深度个股输入"]
@@ -2365,9 +2383,11 @@ def _build_daily_prompt_sections(
         "macro_news": "\n".join(_format_news_entry(item) for item in macro_news) if macro_news else "- 数据不足：暂无美联储/宏观政策相关新闻",
         "commodity_news": "\n".join(_format_news_entry(item) for item in commodity_news) if commodity_news else "- 数据不足：暂无国际大宗商品/地缘供给冲击相关新闻",
         "policy_news": "\n".join(_format_news_entry(item) for item in policy_news) if policy_news else "- 数据不足：暂无宏观经济政策/政治事件相关新闻",
-        "commod_fx_snapshots": "\n".join(_fmt_snapshot([], "- 数据不足：当前输入未提供黄金/白银/WTI/Brent/DXY 实时报价")),
+        "commod_fx_snapshots": "\n".join(_fmt_snapshot(commodity_fx_snapshots, "- 数据不足：当前输入未提供黄金/白银/WTI/Brent/DXY/VIX/10Y 实时报价")),
         "crypto_snapshots": "\n".join(_fmt_snapshot(crypto_snapshots, "- 数据不足：暂无加密行情快照")),
         "equity_snapshots": "\n".join(_fmt_snapshot(equity_snapshots, "- 数据不足：暂无美股指数快照")),
+        "tech_lines": "\n".join(tech_lines),
+        "sector_lines": "\n".join(sector_lines),
         "replay_lines": "\n".join(replay_lines),
         "deep_lines": "\n".join(deep_lines),
         "crypto_lines": "\n".join(crypto_lines),
@@ -2406,38 +2426,31 @@ def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
 
         栏目格式必须按下面细则执行：
         - “一、热点要闻”
-          固定包含 3 个小栏目，且顺序固定：
-          1. 美联储动态
-          2. 国际大宗商品
-          3. 宏观经济政策
-          每个小栏目下至少写 1-2 条新闻。
-          每条新闻严格采用：
+          保持编辑部风格，不要拆成太细的树状提纲。
+          可以自然地覆盖“美联储动态 / 国际大宗商品 / 宏观经济政策”这几类，但不要把层级写得过多。
+          重点是像新闻晨报一样，直接给出：
           标题
-          事件概述：
-          要点：
-          市场影响：
+          事件概述
+          要点
+          市场影响
+          每条之间自然衔接，整体看起来像成稿，不像模板。
         - “二、市场复盘”
-          固定包含：
-          1. 大宗商品&外汇表现
-          2. 加密货币表现
-          3. 美股指数表现
-          4. 科技巨头动态
-          5. 板块异动观察
-          每个栏目都要写成成稿，尽量采用“涨跌/现价/驱动因素/交易影响”。
+          只保留这些自然小标题：
+          大宗商品&外汇表现
+          加密货币表现
+          美股指数表现
+          科技巨头动态
+          板块异动观察
+          不要再额外编号分层。
         - “三、深度个股解读”
-          至少 3 个标的。
-          每个标的固定格式：
-          1. 公司名 - 主题标题
-          事件概述：
-          市场解读：
-          投资启示：
+          至少 3 个标的，保持“事件概述 / 市场解读 / 投资启示”的简洁结构即可。
         - “四、加密货币项目动态”
-          至少 6 条，按新闻短条目写。
+          直接写短条目，不要人为再拆子栏目。
         - “五、今日市场日历”
-          必须包含：
-          1. 数据发布时刻表
-          2. 重要事件预告
-          3. 机构观点
+          只保留：
+          数据发布时刻表
+          重要事件预告
+          机构观点
         - “免责声明”
           固定一句：以上内容由 AI 搜索与研究整理，不构成任何投资建议。
 
@@ -2465,6 +2478,12 @@ def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
 
         [二、市场复盘-美股指数表现]
         {sections["equity_snapshots"]}
+
+        [二、市场复盘-科技巨头动态]
+        {sections["tech_lines"]}
+
+        [二、市场复盘-板块异动观察]
+        {sections["sector_lines"]}
 
         [二、市场复盘-复盘线索]
         {sections["replay_lines"]}
