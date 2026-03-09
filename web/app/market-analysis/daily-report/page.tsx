@@ -36,7 +36,7 @@ const chipTone = (mode: string) =>
     ? "border-emerald-200 bg-emerald-50 text-emerald-700"
     : "border-amber-200 bg-amber-50 text-amber-700";
 
-const SOURCE_CONFIG_STORAGE_KEY = "macroquant:daily-source-config:v1";
+const SOURCE_CONFIG_STORAGE_KEY = "macroquant:daily-source-config:v2";
 const PUBLISHED_DAILY_CACHE_PATH = "/data/market-daily-latest.json";
 
 type SourceCheckItem = {
@@ -59,6 +59,8 @@ type SourceCheckResponse = {
   };
   appliedConfig?: {
     newsRssUrls?: string;
+    tavilyQuery?: string;
+    tavilyApiKeyMasked?: string;
     geminiModel?: string;
     geminiApiKeyMasked?: string;
     deliveryWebhookMasked?: string;
@@ -101,12 +103,14 @@ type PublishedDailyCache = {
 type SourceConfig = {
   apiBase: string;
   newsRssUrls: string;
+  tavilyApiKey: string;
+  tavilyQuery: string;
   geminiApiKey: string;
   geminiModel: string;
   deliveryWebhookUrl: string;
 };
 
-type StoredSourceConfig = Omit<SourceConfig, "geminiApiKey">;
+type StoredSourceConfig = Omit<SourceConfig, "geminiApiKey" | "tavilyApiKey">;
 
 const getApiBaseFromMacroUrl = (apiUrl: string): string =>
   apiUrl.replace(/\/api\/v1\/macro-data(?:\?.*)?$/, "");
@@ -224,6 +228,8 @@ export default function MarketDailyReportPage() {
   const [sourceConfig, setSourceConfig] = useState<SourceConfig>({
     apiBase: defaultApiBase,
     newsRssUrls: "",
+    tavilyApiKey: "",
+    tavilyQuery: "",
     geminiApiKey: "",
     geminiModel: "gemini-2.5-pro",
     deliveryWebhookUrl: "",
@@ -319,6 +325,7 @@ export default function MarketDailyReportPage() {
     const persisted: StoredSourceConfig = {
       apiBase: sourceConfig.apiBase,
       newsRssUrls: sourceConfig.newsRssUrls,
+      tavilyQuery: sourceConfig.tavilyQuery,
       geminiModel: sourceConfig.geminiModel,
       deliveryWebhookUrl: sourceConfig.deliveryWebhookUrl,
     };
@@ -343,6 +350,8 @@ export default function MarketDailyReportPage() {
         },
         body: JSON.stringify({
           newsRssUrls: sourceConfig.newsRssUrls,
+          tavilyApiKey: sourceConfig.tavilyApiKey,
+          tavilyQuery: sourceConfig.tavilyQuery,
           geminiApiKey: sourceConfig.geminiApiKey,
           geminiModel: sourceConfig.geminiModel,
           deliveryWebhookUrl: sourceConfig.deliveryWebhookUrl,
@@ -492,14 +501,33 @@ export default function MarketDailyReportPage() {
                   {checkResult?.checks?.newsData?.ok === true ? "已连通" : checkResult?.checks?.newsData?.ok === false ? "未连通" : "未检测"}
                 </span>
               </div>
-              <p className="text-[11px] text-app-muted">RSS 列表（逗号分隔，支持 `名称|URL`）</p>
+              <div className="grid gap-[6px] md:grid-cols-2">
+                <input
+                  type="password"
+                  value={sourceConfig.tavilyApiKey}
+                  onChange={(e) => setSourceConfig((prev) => ({ ...prev, tavilyApiKey: e.target.value }))}
+                  className="rounded-[8px] border border-slate-200 px-[8px] py-[6px] text-[12px] text-app-text outline-none focus:border-blue-300"
+                  placeholder="TAVILY_API_KEY"
+                />
+                <input
+                  value={sourceConfig.tavilyQuery}
+                  onChange={(e) => setSourceConfig((prev) => ({ ...prev, tavilyQuery: e.target.value }))}
+                  className="rounded-[8px] border border-slate-200 px-[8px] py-[6px] text-[12px] text-app-text outline-none focus:border-blue-300"
+                  placeholder="latest macro crypto US stock market news"
+                />
+              </div>
+              <p className="mt-[6px] text-[11px] text-app-muted">RSS 列表（兜底源，逗号分隔，支持 `名称|URL`）</p>
               <textarea
                 value={sourceConfig.newsRssUrls}
                 onChange={(e) => setSourceConfig((prev) => ({ ...prev, newsRssUrls: e.target.value }))}
                 className="mt-[4px] h-[60px] w-full rounded-[8px] border border-slate-200 px-[8px] py-[6px] text-[12px] text-app-text outline-none focus:border-blue-300"
                 placeholder="CoinDesk|https://www.coindesk.com/arc/outboundfeeds/rss/, Cointelegraph|https://cointelegraph.com/rss"
               />
-              <p className="mt-[6px] text-[11px] text-app-muted">{checkResult?.checks?.newsData?.detail ?? "未配置时使用默认 RSS 源。"}</p>
+              <p className="mt-[6px] text-[11px] text-app-muted">{checkResult?.checks?.newsData?.detail ?? "优先使用 Tavily 搜索新闻，未配置或失败时回退默认 RSS 源。"}</p>
+              <p className="mt-[2px] text-[11px] text-app-muted">
+                Tavily Key 仅当前会话使用，不会写入本地存储。
+                {checkResult?.appliedConfig?.tavilyApiKeyMasked ? ` 当前检测 key: ${checkResult.appliedConfig.tavilyApiKeyMasked}` : ""}
+              </p>
             </div>
 
             <div className="rounded-[12px] border border-app-border bg-white p-[10px]">

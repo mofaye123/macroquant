@@ -3,7 +3,9 @@ from __future__ import annotations
 import math
 import os
 import time
+import json
 import urllib.request
+import urllib.parse
 import xml.etree.ElementTree as ET
 from datetime import datetime, timedelta, timezone
 from email.utils import parsedate_to_datetime
@@ -22,6 +24,12 @@ _DEFAULT_NEWS_FEEDS: Tuple[Tuple[str, str], ...] = (
     ("CoinDesk", "https://www.coindesk.com/arc/outboundfeeds/rss/"),
     ("Cointelegraph", "https://cointelegraph.com/rss"),
     ("Yahoo Finance Crypto", "https://finance.yahoo.com/topic/crypto/rssindex"),
+)
+
+_DEFAULT_TAVILY_QUERIES: Tuple[str, ...] = (
+    "latest macro policy market news Federal Reserve Treasury inflation jobs stocks",
+    "latest crypto market news Bitcoin Ethereum Solana ETF regulation exchange stablecoin",
+    "latest US stock market news AI semiconductor earnings Nasdaq S&P 500",
 )
 
 _QUOTE_SYMBOLS: Tuple[Tuple[str, str, str], ...] = (
@@ -178,6 +186,122 @@ def _fetch_rss_entries(url: str, source: str, limit: int = 6) -> List[Dict[str, 
     return entries
 
 
+def _tavily_api_key() -> str:
+    return (os.getenv("TAVILY_API_KEY") or "").strip()
+
+
+def _tavily_queries_from_env() -> List[str]:
+    raw = (os.getenv("MARKET_NEWS_TAVILY_QUERY") or os.getenv("MARKET_NEWS_TAVILY_QUERIES") or "").strip()
+    if not raw:
+        return list(_DEFAULT_TAVILY_QUERIES)
+    queries = [chunk.strip() for chunk in raw.split("||") if chunk.strip()]
+    return queries or list(_DEFAULT_TAVILY_QUERIES)
+
+
+def _tavily_domains_from_env() -> List[str]:
+    raw = (os.getenv("MARKET_NEWS_TAVILY_DOMAINS") or "").strip()
+    if not raw:
+        return [
+            "reuters.com",
+            "bloomberg.com",
+            "wsj.com",
+            "ft.com",
+            "coindesk.com",
+            "cointelegraph.com",
+            "theblock.co",
+            "federalreserve.gov",
+            "treasury.gov",
+            "sec.gov",
+        ]
+    return [chunk.strip() for chunk in raw.split(",") if chunk.strip()]
+
+
+def _parse_tavily_timestamp(value: Any) -> str:
+    if isinstance(value, str) and value.strip():
+        text = value.strip()
+        for candidate in (text, text.replace("Z", "+00:00")):
+            try:
+                parsed = datetime.fromisoformat(candidate)
+                if parsed.tzinfo is None:
+                    parsed = parsed.replace(tzinfo=timezone.utc)
+                return _to_iso_utc(parsed)
+            except Exception:
+                continue
+        return _parse_feed_timestamp(text)
+    return _to_iso_utc(datetime.now(timezone.utc))
+
+
+def _fetch_tavily_entries(
+    api_key: str,
+    *,
+    queries: List[str],
+    limit: int = 10,
+    days: int = 3,
+) -> List[Dict[str, Any]]:
+    if not api_key or not queries:
+        return []
+
+    request_url = "https://api.tavily.com/search"
+    include_domains = _tavily_domains_from_env()
+    all_items: List[Dict[str, Any]] = []
+    seen_urls: set[str] = set()
+
+    for query in queries[:3]:
+        body = {
+            "api_key": api_key,
+            "query": query,
+            "topic": "news",
+            "days": max(1, min(7, int(days))),
+            "max_results": max(3, min(10, int(limit))),
+            "search_depth": "basic",
+            "include_answer": False,
+            "include_raw_content": False,
+            "include_domains": include_domains,
+        }
+        request = urllib.request.Request(
+            request_url,
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "User-Agent": "MacroQuant MarketDaily/1.0",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(request, timeout=12) as response:
+            payload = json.loads(response.read().decode("utf-8"))
+
+        results = payload.get("results", []) if isinstance(payload, dict) else []
+        for item in results:
+            if not isinstance(item, dict):
+                continue
+            url = str(item.get("url", "") or "").strip()
+            title = str(item.get("title", "") or "").strip()
+            if not url or not title or url in seen_urls:
+                continue
+            seen_urls.add(url)
+            content = str(item.get("content", "") or "").strip()
+            source = (
+                str(item.get("source", "") or "").strip()
+                or urllib.parse.urlparse(url).netloc.replace("www.", "")
+                or "Tavily"
+            )
+            all_items.append(
+                {
+                    "title": title,
+                    "summary": content[:280] if content else "",
+                    "source": source,
+                    "url": url,
+                    "publishedAt": _parse_tavily_timestamp(
+                        item.get("published_date") or item.get("publishedAt") or item.get("published")
+                    ),
+                }
+            )
+
+    all_items = sorted(all_items, key=lambda x: x.get("publishedAt", ""), reverse=True)
+    return all_items[:limit]
+
+
 def _news_feeds_from_env() -> List[Tuple[str, str]]:
     raw = (os.getenv("MARKET_NEWS_RSS_URLS") or "").strip()
     if not raw:
@@ -276,22 +400,61 @@ def _build_market_snapshots(as_of_dt: Optional[datetime] = None) -> Tuple[List[D
     return rows, source_mode
 
 
-def _build_hot_news(module_cards: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], str]:
+def _build_hot_news(module_cards: List[Dict[str, Any]]) -> Tuple[List[Dict[str, Any]], str, str]:
     now = time.time()
     if _NEWS_CACHE["items"] and now < _NEWS_CACHE["expires_at"]:
-        return list(_NEWS_CACHE["items"]), str(_NEWS_CACHE["source_mode"])
+        return list(_NEWS_CACHE["items"]), str(_NEWS_CACHE["source_mode"]), str(_NEWS_CACHE.get("provider", "rss"))
 
     feeds = _news_feeds_from_env()
     news_items: List[Dict[str, Any]] = []
-    source_mode = "live"
+    source_mode = "fallback"
+    provider = "rss"
+
+    tavily_key = _tavily_api_key()
+    tavily_items: List[Dict[str, Any]] = []
+    if tavily_key:
+        try:
+            tavily_items = _fetch_tavily_entries(
+                tavily_key,
+                queries=_tavily_queries_from_env(),
+                limit=10,
+                days=3,
+            )
+        except Exception:
+            tavily_items = []
+
+    rss_items: List[Dict[str, Any]] = []
     for source, url in feeds:
         try:
-            news_items.extend(_fetch_rss_entries(url, source, limit=4))
+            rss_items.extend(_fetch_rss_entries(url, source, limit=4))
         except Exception:
             continue
 
+    if tavily_items:
+        provider = "tavily"
+        source_mode = "live"
+        news_items.extend(tavily_items)
+        if rss_items:
+            source_mode = "hybrid"
+            provider = "tavily+rss"
+            existing_urls = {str(item.get("url", "") or "").strip() for item in news_items}
+            existing_titles = {str(item.get("title", "") or "").strip() for item in news_items}
+            for item in rss_items:
+                url = str(item.get("url", "") or "").strip()
+                title = str(item.get("title", "") or "").strip()
+                if (url and url in existing_urls) or (title and title in existing_titles):
+                    continue
+                news_items.append(item)
+                existing_urls.add(url)
+                existing_titles.add(title)
+    elif rss_items:
+        provider = "rss"
+        source_mode = "live"
+        news_items.extend(rss_items)
+
     if not news_items:
         source_mode = "fallback"
+        provider = "fallback"
         sorted_modules = sorted(module_cards, key=lambda x: x.get("change", 0), reverse=True)
         best = sorted_modules[0] if sorted_modules else {"title": "流动性"}
         weak = sorted_modules[-1] if sorted_modules else {"title": "风险偏好"}
@@ -320,8 +483,9 @@ def _build_hot_news(module_cards: List[Dict[str, Any]]) -> Tuple[List[Dict[str, 
 
     _NEWS_CACHE["items"] = list(news_items)
     _NEWS_CACHE["source_mode"] = source_mode
+    _NEWS_CACHE["provider"] = provider
     _NEWS_CACHE["expires_at"] = now + _NEWS_TTL
-    return news_items, source_mode
+    return news_items, source_mode, provider
 
 
 def _build_deep_dives(as_of_dt: Optional[datetime] = None) -> Tuple[List[Dict[str, Any]], str]:
@@ -579,7 +743,7 @@ def build_market_daily_payload(
             resolved_as_of_dt = datetime.now(timezone.utc)
 
     snapshots, quote_mode = _build_market_snapshots(as_of_dt=resolved_as_of_dt)
-    hot_news, news_mode = _build_hot_news(module_cards)
+    hot_news, news_mode, news_provider = _build_hot_news(module_cards)
     deep_dives, deep_dive_mode = _build_deep_dives(as_of_dt=resolved_as_of_dt)
     crypto_updates = _build_crypto_project_updates(hot_news)
     calendar = _build_market_calendar(resolved_as_of_dt)
@@ -602,6 +766,7 @@ def build_market_daily_payload(
             "riskLevel": _risk_level(float(overall_score)),
             "quoteSourceMode": quote_mode,
             "newsSourceMode": news_mode,
+            "newsSourceProvider": news_provider,
             "deepDiveSourceMode": deep_dive_mode,
             "configuredPushChannels": int(sum(1 for item in push_channels if item.get("configured"))),
         },
@@ -616,7 +781,11 @@ def build_market_daily_payload(
         "pushChannels": push_channels,
         "sourceStatus": {
             "marketData": {"provider": "yfinance", "mode": quote_mode},
-            "newsData": {"provider": "rss", "mode": news_mode, "feeds": [label for label, _ in _news_feeds_from_env()]},
+            "newsData": {
+                "provider": news_provider,
+                "mode": news_mode,
+                "feeds": [label for label, _ in _news_feeds_from_env()],
+            },
             "decisionEngine": {
                 "provider": ai_decision.get("provider", "gemini"),
                 "mode": ai_decision.get("status", "pending_config"),

@@ -37,6 +37,8 @@ jobs:
         id: generate
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          MARKET_NEWS_TAVILY_QUERY: ${{ vars.MARKET_NEWS_TAVILY_QUERY }}
         run: |
           chmod +x scripts/refresh_static_snapshot_ci.sh
           STATUS_FILE="$RUNNER_TEMP/macro_snapshot_status.json"

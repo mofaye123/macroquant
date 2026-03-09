@@ -82,6 +82,8 @@ jobs:
         if: steps.publish_window.outputs.should_run == 'true'
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          MARKET_NEWS_TAVILY_QUERY: ${{ vars.MARKET_NEWS_TAVILY_QUERY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GEMINI_MODEL: ${{ vars.GEMINI_MODEL }}
           MARKET_DAILY_AI_MODEL: ${{ vars.MARKET_DAILY_AI_MODEL }}
@@ -104,6 +106,8 @@ jobs:
         env:
           PYTHONPATH: ${{ github.workspace }}
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
+          TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
+          MARKET_NEWS_TAVILY_QUERY: ${{ vars.MARKET_NEWS_TAVILY_QUERY }}
           MARKET_DAILY_AI_PROVIDER: gemini
           MARKET_DAILY_AI_REASONING_MODE: deep_think
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}

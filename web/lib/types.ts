@@ -263,6 +263,7 @@ export type MarketDailyPayload = {
     riskLevel: string;
     quoteSourceMode: string;
     newsSourceMode: string;
+    newsSourceProvider?: string;
     deepDiveSourceMode: string;
     configuredPushChannels: number;
   };

@@ -2077,8 +2077,87 @@ def _parse_news_feed_urls(raw_value: Optional[str]) -> List[str]:
     return urls[:8]
 
 
-def _check_news_data_source(news_rss_urls: Optional[str]) -> Dict[str, Any]:
+def _check_tavily_news_source(
+    tavily_api_key: Optional[str],
+    tavily_query: Optional[str],
+) -> Optional[Dict[str, Any]]:
     started = time.time()
+    key = (tavily_api_key or os.getenv("TAVILY_API_KEY") or "").strip()
+    if not key:
+        return None
+
+    query = (
+        (tavily_query or "").strip()
+        or (os.getenv("MARKET_NEWS_TAVILY_QUERY") or "").strip()
+        or "latest macro crypto US stock market news"
+    )
+
+    body = {
+        "api_key": key,
+        "query": query,
+        "topic": "news",
+        "days": 3,
+        "max_results": 5,
+        "search_depth": "basic",
+        "include_answer": False,
+        "include_raw_content": False,
+    }
+    try:
+        req = urllib.request.Request(
+            "https://api.tavily.com/search",
+            data=json.dumps(body).encode("utf-8"),
+            headers={
+                "Content-Type": "application/json",
+                "Accept": "application/json",
+                "User-Agent": "MacroQuant/1.0",
+            },
+            method="POST",
+        )
+        with urllib.request.urlopen(req, timeout=12) as resp:
+            payload = json.loads(resp.read().decode("utf-8"))
+        results = payload.get("results", []) if isinstance(payload, dict) else []
+        count = len(results) if isinstance(results, list) else 0
+        top_title = ""
+        if count and isinstance(results[0], dict):
+            top_title = str(results[0].get("title", "") or "").strip()
+        return {
+            "ok": count > 0,
+            "provider": "tavily",
+            "detail": f"Tavily reachable, results={count}{'; top hit: ' + top_title if top_title else ''}.",
+            "query": query,
+            "resultCount": count,
+            "latencyMs": int((time.time() - started) * 1000),
+        }
+    except Exception as exc:
+        return {
+            "ok": False,
+            "provider": "tavily",
+            "detail": f"Tavily check failed: {exc}",
+            "query": query,
+            "latencyMs": int((time.time() - started) * 1000),
+        }
+
+
+def _check_news_data_source(
+    news_rss_urls: Optional[str],
+    tavily_api_key: Optional[str] = None,
+    tavily_query: Optional[str] = None,
+) -> Dict[str, Any]:
+    started = time.time()
+    tavily_check = _check_tavily_news_source(tavily_api_key, tavily_query)
+    if tavily_check and tavily_check.get("ok"):
+        urls = _parse_news_feed_urls(news_rss_urls)
+        detail = str(tavily_check.get("detail", "Tavily reachable."))
+        if urls:
+            detail += f" RSS fallback configured: {min(len(urls), 8)} feed(s)."
+        return {
+            "ok": True,
+            "provider": "tavily",
+            "detail": detail,
+            "latencyMs": int((time.time() - started) * 1000),
+            "fallbackProvider": "rss",
+        }
+
     urls = _parse_news_feed_urls(news_rss_urls)
     success_count = 0
     total_items = 0
@@ -2115,12 +2194,13 @@ def _check_news_data_source(news_rss_urls: Optional[str]) -> Dict[str, Any]:
     )
     return {
         "ok": ok,
-        "provider": "rss",
+        "provider": "rss" if not tavily_check else "tavily+rss",
         "detail": detail,
         "feedCount": len(urls),
         "reachableCount": success_count,
         "sampleErrors": sample_errors[:2],
         "latencyMs": int((time.time() - started) * 1000),
+        "tavilyDetail": tavily_check.get("detail") if tavily_check else "",
     }
 
 
@@ -2830,13 +2910,15 @@ def market_daily_source_check(
 ) -> Dict[str, Any]:
     payload = payload or {}
     news_rss_urls = str(payload.get("newsRssUrls", "") or payload.get("news_rss_urls", "")).strip() or None
+    tavily_api_key = str(payload.get("tavilyApiKey", "") or payload.get("tavily_api_key", "")).strip() or None
+    tavily_query = str(payload.get("tavilyQuery", "") or payload.get("tavily_query", "")).strip() or None
     gemini_api_key = str(payload.get("geminiApiKey", "") or payload.get("gemini_api_key", "")).strip() or None
     gemini_model = str(payload.get("geminiModel", "") or payload.get("gemini_model", "")).strip() or None
     delivery_webhook_url = str(payload.get("deliveryWebhookUrl", "") or payload.get("delivery_webhook_url", "")).strip() or None
 
     checks = {
         "marketData": _check_market_data_source(),
-        "newsData": _check_news_data_source(news_rss_urls),
+        "newsData": _check_news_data_source(news_rss_urls, tavily_api_key, tavily_query),
         "aiDecision": _check_gemini_source(gemini_api_key, gemini_model),
         "delivery": _check_delivery_source(delivery_webhook_url),
     }
@@ -2849,6 +2931,8 @@ def market_daily_source_check(
         "checks": checks,
         "appliedConfig": {
             "newsRssUrls": news_rss_urls or "",
+            "tavilyQuery": tavily_query or os.getenv("MARKET_NEWS_TAVILY_QUERY") or "",
+            "tavilyApiKeyMasked": _mask_secret(tavily_api_key or os.getenv("TAVILY_API_KEY") or ""),
             "geminiModel": gemini_model or os.getenv("MARKET_DAILY_AI_MODEL") or os.getenv("GEMINI_MODEL") or "gemini-2.5-pro",
             "geminiApiKeyMasked": _mask_secret(gemini_api_key or os.getenv("GEMINI_API_KEY") or ""),
             "deliveryWebhookMasked": _mask_secret(delivery_webhook_url or os.getenv("DAILY_REPORT_WEBHOOK_URL") or ""),
