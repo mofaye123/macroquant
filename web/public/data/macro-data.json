@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-03-09T05:02:20Z",
+  "generatedAt": "2026-03-09T06:06:17Z",
   "dataQuality": {
     "mode": "ok",
     "readyModules": [
@@ -82,8 +82,8 @@
   },
   "dashboard": {
     "overallScore": {
-      "value": 47.4,
-      "wow": 2.0,
+      "value": 47.5,
+      "wow": 2.1,
       "statusTags": [
         {
           "label": "TGA 抽水",
@@ -150,9 +150,9 @@
         "title": "外部冲击与汇率",
         "subtitle": "External",
         "weight": "15%",
-        "score": 25.9,
-        "change": -12.8,
-        "description": "美元指数 99.52，外部冲击处于中性偏缓状态。"
+        "score": 26.9,
+        "change": -11.8,
+        "description": "美元指数 99.28，外部冲击处于中性偏缓状态。"
       },
       {
         "id": "F",
@@ -7374,13 +7374,13 @@
       },
       {
         "date": "2026-03-09",
-        "value": 47.4
+        "value": 47.55
       }
     ],
     "contributors": [
       {
         "name": "外部冲击与汇率",
-        "delta": -1.92,
+        "delta": -1.77,
         "bucket": "Flow"
       },
       {
@@ -7418,8 +7418,8 @@
       },
       {
         "label": "DXY",
-        "value": "99.52",
-        "delta": "+0.54%",
+        "value": "99.28",
+        "delta": "+0.29%",
         "state": "negative"
       },
       {
@@ -7472,7 +7472,7 @@
       ],
       "summary": {
         "level": -1.59,
-        "flow": -0.53,
+        "flow": -0.38,
         "penalty": -0.69,
         "structural": -2.28,
         "driver": "结构性变化主导"
@@ -15822,7 +15822,7 @@
             },
             {
               "week": "W11",
-              "score": 25.9,
+              "score": 26.9,
               "bucket": "critical"
             }
           ]
@@ -19438,12 +19438,12 @@
         },
         {
           "title": "信用与美元",
-          "headline": "DXY 99.52 / HY 3.00",
-          "detail": "WTI 116.52",
+          "headline": "DXY 99.28 / HY 3.00",
+          "detail": "WTI 105.58",
           "changes": [
             {
               "label": "DXY",
-              "value": "+0.54%",
+              "value": "+0.29%",
               "tone": "positive"
             },
             {
@@ -19453,14 +19453,15 @@
             },
             {
               "label": "WTI",
-              "value": "+28.18%",
+              "value": "+16.15%",
               "tone": "positive"
             }
           ]
         }
       ],
       "verdicts": [
-        "信用维持稳定：暂不支持系统性信用冲击。"
+        "信用维持稳定：暂不支持系统性信用冲击。",
+        "美元端平稳：暂不支持美元荒/全球挤兑交易。"
       ],
       "rawRows": [
         {
@@ -19490,8 +19491,8 @@
         },
         {
           "asset": "DXY",
-          "value": 99.52,
-          "delta": "+0.54%"
+          "value": 99.28,
+          "delta": "+0.29%"
         },
         {
           "asset": "SP500",
@@ -19510,8 +19511,8 @@
         },
         {
           "asset": "WTI",
-          "value": 116.52,
-          "delta": "+28.18%"
+          "value": 105.58,
+          "delta": "+16.15%"
         }
       ]
     },
@@ -37824,7 +37825,7 @@
             },
             {
               "date": "2026-03-09",
-              "value": 47.4
+              "value": 47.55
             }
           ],
           "spx": [
@@ -151948,8 +151949,8 @@
             23.86,
             3.0,
             1.76,
-            116.52,
-            99.52,
+            105.58,
+            99.277,
             29.49,
             null,
             3.6618,
@@ -302245,8 +302246,8 @@
             23.86,
             3.0,
             1.76,
-            116.52,
-            99.52,
+            105.58,
+            99.277,
             29.49,
             null,
             59.0873,
@@ -442820,8 +442821,8 @@
             23.86,
             3.0,
             1.76,
-            116.52,
-            99.52,
+            105.58,
+            99.277,
             29.49,
             null,
             58.746,
@@ -550786,7 +550787,7 @@
       "moduleId": "E",
       "title": "E 模块 · 外部冲击与汇率",
       "subtitle": "External",
-      "overview": "美元指数 99.52，外部冲击处于中性偏缓状态。",
+      "overview": "美元指数 99.28，外部冲击处于中性偏缓状态。",
       "factors": [
         {
           "name": "Broad USD",
@@ -550796,8 +550797,8 @@
         },
         {
           "name": "DXY",
-          "score": 21.6,
-          "change": -16.2,
+          "score": 26.4,
+          "change": -11.4,
           "contribution": "20%"
         },
         {
@@ -550816,14 +550817,14 @@
       "snapshots": [
         {
           "label": "E 模块当前分数",
-          "value": "25.9",
-          "delta": "-12.8",
+          "value": "26.9",
+          "delta": "-11.8",
           "state": "negative"
         },
         {
           "label": "DXY",
-          "value": "99.52",
-          "delta": "+0.54%",
+          "value": "99.28",
+          "delta": "+0.29%",
           "state": "negative"
         },
         {
@@ -550834,20 +550835,20 @@
         },
         {
           "label": "WTI",
-          "value": "116.52",
-          "delta": "+28.18%",
+          "value": "105.58",
+          "delta": "+16.15%",
           "state": "negative"
         },
         {
           "label": "Oil Shock",
           "value": "通胀冲击",
-          "delta": "-18分 · +28.18%",
+          "delta": "-18分 · +16.15%",
           "state": "negative"
         },
         {
           "label": "分数状态",
           "value": "极紧",
-          "delta": "25.9 / 100",
+          "delta": "26.9 / 100",
           "state": "negative"
         }
       ],
@@ -558050,7 +558051,7 @@
         },
         {
           "date": "2026-03-09",
-          "value": 25.93
+          "value": 26.89
         }
       ],
       "auxiliarySeries": [
@@ -572461,7 +572462,7 @@
             },
             {
               "date": "2026-03-09",
-              "value": 21.56
+              "value": 26.38
             }
           ],
           "color": "#10b981"
@@ -586891,7 +586892,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 25.93
+            "value": 26.89
           }
         ],
         "energyBase": [
@@ -615699,7 +615700,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 116.52
+            "value": 105.58
           }
         ],
         "dxy": [
@@ -622901,7 +622902,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 99.52
+            "value": 99.28
           }
         ]
       },
@@ -623019,14 +623020,14 @@
             23.86,
             3.0,
             1.76,
-            116.52,
-            99.52,
+            105.58,
+            99.277,
             29.49,
             null,
             -0.015,
             72.127,
-            0.0127,
-            21.5556,
+            0.0102,
+            26.381,
             0.0017,
             27.0,
             6.9127,
@@ -623037,17 +623038,17 @@
             0.0603,
             40.3016,
             20.9921,
-            116.52,
-            99.52,
+            105.58,
+            99.277,
             6740.02,
             29.49,
             3.0,
             -18.0,
             "通胀冲击",
             "WTI 单日暴涨 >= 8%",
-            28.1848,
+            16.1496,
             2.9921,
-            25.9263
+            26.8913
           ],
           [
             "2026-03-08",
@@ -779773,8 +779774,8 @@
             23.86,
             3.0,
             1.76,
-            116.52,
-            99.52,
+            105.58,
+            99.277,
             29.49,
             null,
             3.0,
@@ -920260,13 +920261,13 @@
       {
         "ticker": "BTC",
         "name": "Bitcoin",
-        "cagr": 49.74,
+        "cagr": 49.97,
         "sharpe": 0.73,
         "mdd": -51.33,
-        "alpha": -42.19,
-        "strategyReturn": 261.62,
-        "benchmarkReturn": 303.81,
-        "endingCapital": 361623.37,
+        "alpha": -44.4,
+        "strategyReturn": 263.41,
+        "benchmarkReturn": 307.81,
+        "endingCapital": 363413.45,
         "currentPosition": 0.5,
         "currentScore": 55.5,
         "currentSignal": "🛡️ 防守",
@@ -921469,7 +921470,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 361623.37
+            "value": 363413.45
           }
         ],
         "positionSeries": [
@@ -922780,8 +922781,8 @@
             "exitDate": "Running",
             "entryScore": 36.5,
             "entryPrice": 28415.75,
-            "exitPrice": 67133.94,
-            "pnlPct": 136.26,
+            "exitPrice": 67799.32,
+            "pnlPct": 138.6,
             "result": "Floating"
           },
           {
@@ -922833,13 +922834,13 @@
       {
         "ticker": "ETH",
         "name": "Ethereum",
-        "cagr": 9.84,
-        "sharpe": 0.39,
+        "cagr": 10.1,
+        "sharpe": 0.4,
         "mdd": -74.43,
-        "alpha": -29.81,
-        "strategyReturn": 34.82,
-        "benchmarkReturn": 64.63,
-        "endingCapital": 134816.24,
+        "alpha": -31.31,
+        "strategyReturn": 35.85,
+        "benchmarkReturn": 67.16,
+        "endingCapital": 135854.42,
         "currentPosition": 0.5,
         "currentScore": 55.5,
         "currentSignal": "🛡️ 防守",
@@ -924042,7 +924043,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 134816.24
+            "value": 135854.42
           }
         ],
         "positionSeries": [
@@ -925353,8 +925354,8 @@
             "exitDate": "Running",
             "entryScore": 54.8,
             "entryPrice": 1973.74,
-            "exitPrice": 1977.15,
-            "pnlPct": 0.17,
+            "exitPrice": 2007.55,
+            "pnlPct": 1.71,
             "result": "Floating"
           },
           {
@@ -933037,13 +933038,13 @@
       {
         "ticker": "EURUSD",
         "name": "EUR/USD",
-        "cagr": -0.98,
-        "sharpe": -0.64,
+        "cagr": -0.95,
+        "sharpe": -0.63,
         "mdd": -13.13,
-        "alpha": -10.72,
-        "strategyReturn": -3.07,
-        "benchmarkReturn": 7.65,
-        "endingCapital": 96927.56,
+        "alpha": -10.96,
+        "strategyReturn": -2.99,
+        "benchmarkReturn": 7.97,
+        "endingCapital": 97014.56,
         "currentPosition": 0.3,
         "currentScore": 55.3,
         "currentSignal": "🌤️ 试探",
@@ -934246,7 +934247,7 @@
           },
           {
             "date": "2026-03-09",
-            "value": 96927.56
+            "value": 97014.56
           }
         ],
         "positionSeries": [
@@ -935557,8 +935558,8 @@
             "exitDate": "Running",
             "entryScore": 44.6,
             "entryPrice": 1.07,
-            "exitPrice": 1.15,
-            "pnlPct": 7.84,
+            "exitPrice": 1.16,
+            "pnlPct": 8.17,
             "result": "Floating"
           },
           {
@@ -935640,10 +935641,10 @@
   },
   "marketDaily": {
     "asOfDate": "2026-03-09",
-    "generatedAt": "2026-03-09T05:02:20Z",
+    "generatedAt": "2026-03-09T06:06:17Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
-      "overallScore": 47.4,
+      "overallScore": 47.55,
       "riskLevel": "中高",
       "quoteSourceMode": "live",
       "newsSourceMode": "live",
@@ -935655,30 +935656,30 @@
         "ticker": "BTC",
         "name": "BTC",
         "bucket": "crypto",
-        "spot": 67133.94,
-        "change24hPct": -0.21,
-        "change7dPct": 2.12,
-        "realizedVol14dPct": 66.28,
+        "spot": 67799.32,
+        "change24hPct": 0.78,
+        "change7dPct": 3.14,
+        "realizedVol14dPct": 66.38,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "ETH",
         "bucket": "crypto",
-        "spot": 1977.15,
-        "change24hPct": 0.39,
-        "change7dPct": 1.96,
-        "realizedVol14dPct": 88.63,
+        "spot": 2007.55,
+        "change24hPct": 1.93,
+        "change7dPct": 3.53,
+        "realizedVol14dPct": 89.08,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "SOL",
         "bucket": "crypto",
-        "spot": 83.3,
-        "change24hPct": 0.15,
-        "change7dPct": -0.33,
-        "realizedVol14dPct": 86.04,
+        "spot": 84.24,
+        "change24hPct": 1.28,
+        "change7dPct": 0.8,
+        "realizedVol14dPct": 86.23,
         "source": "yfinance"
       },
       {
@@ -935704,6 +935705,30 @@
     ],
     "hotNews": [
       {
+        "title": "Bitcoin steadies as limited U.S. exposure to oil shocks calms markets",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/09/u-s-isn-t-really-exposed-to-oil-shocks-and-that-might-be-helping-bitcoin",
+        "publishedAt": "2026-03-09T06:02:27Z"
+      },
+      {
+        "title": "Finance job openings at 2012 levels, US lost 92K jobs last month",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/us-lost-92k-jobs-last-month-finance-job-openings-2012-levels?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-09T05:54:51Z"
+      },
+      {
+        "title": "BTC Markets eyes RWA trading license amid global tokenization wave",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/btc-markets-eyes-markets-license-tokenization-play-joining-peers?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-03-09T05:34:39Z"
+      },
+      {
+        "title": "Bitcoin could face deeper downside as odds of U.S. market meltdown rise to 35%",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/03/09/bitcoin-could-face-deeper-downside-as-odds-of-u-s-market-meltdown-rise-to-35",
+        "publishedAt": "2026-03-09T05:04:41Z"
+      },
+      {
         "title": "Oil shorts on Hyperliquid get wiped out as crude surges 30% on Iran escalation",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/09/oil-shorts-on-hyperliquid-get-wiped-out-as-crude-surges-30-on-iran-escalation-triggering-usd40-million-in-liquidations",
@@ -935722,41 +935747,17 @@
         "publishedAt": "2026-03-09T04:30:18Z"
       },
       {
-        "title": "Bitcoin correlation with tech stocks overblown: NYDIG",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/bitcoin-correlation-tech-stocks-overblown-nydig?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-09T03:49:59Z"
-      },
-      {
-        "title": "Crypto regulatory clarity matters more for banks, ex-CFTC chief says",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/us-banks-need-crypto-regulatory-clarity-giancarlo-cftc?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-03-09T03:28:08Z"
-      },
-      {
         "title": "Oil futures surge 20% past $110 as war fears hammer Asian stocks, bitcoin steady near $67K",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/markets/2026/03/09/oil-futures-surge-20-past-usd110-as-war-fears-hammer-asian-stocks-bitcoin-steady-near-usd67k",
         "publishedAt": "2026-03-09T03:25:40Z"
-      },
-      {
-        "title": "Bitcoin tumbles below $66,000 as oil prices explode nearly 20% higher",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/03/08/bitcoin-tumbles-below-usd66-000-as-oil-prices-explode-higher",
-        "publishedAt": "2026-03-08T22:43:36Z"
-      },
-      {
-        "title": "Crypto’s Rock ’n’ Roll Era Is Over",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/opinion/2026/03/08/crypto-s-rock-n-roll-era-is-over",
-        "publishedAt": "2026-03-08T19:05:00Z"
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 资金价格与摩擦，边际变化 +8.8。",
-      "主要拖累来自 外部冲击与汇率，边际变化 -12.8。",
-      "BTC 24H -0.21%，7D +2.12%，执行上优先看关键位是否放量确认。"
+      "主要拖累来自 外部冲击与汇率，边际变化 -11.8。",
+      "BTC 24H +0.78%，7D +3.14%，执行上优先看关键位是否放量确认。"
     ],
     "deepStockDives": [
       {
@@ -935787,9 +935788,9 @@
     "cryptoProjectUpdates": [
       {
         "project": "比特币生态",
-        "headline": "比特币生态暂无重大突发，维持跟踪链上活跃度与资金流向。",
-        "source": "MacroQuant Engine",
-        "url": ""
+        "headline": "BTC Markets eyes RWA trading license amid global tokenization wave",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/btc-markets-eyes-markets-license-tokenization-play-joining-peers?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
       },
       {
         "project": "以太坊生态",
