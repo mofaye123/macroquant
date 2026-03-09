@@ -205,6 +205,7 @@ export type MarketDailyNews = {
   source: string;
   url: string;
   publishedAt: string;
+  summary?: string;
 };
 
 export type MarketDailyDeepDive = {

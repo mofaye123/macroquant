@@ -2266,95 +2266,136 @@ def _check_delivery_source(delivery_webhook_url: Optional[str]) -> Dict[str, Any
     }
 
 
+def _news_bucket(title: str, summary: str = "") -> str:
+    text = f"{title} {summary}".lower()
+    if any(keyword in text for keyword in ["fed", "fomc", "powell", "sofr", "treasury", "cpi", "inflation", "jobs", "retail sales"]):
+        return "macro_policy"
+    if any(keyword in text for keyword in ["oil", "wti", "brent", "gas", "lng", "opec", "commodity", "gold", "silver"]):
+        return "commodities"
+    if any(keyword in text for keyword in ["iran", "israel", "trump", "china", "tariff", "sanction", "geopolit", "war", "cuba"]):
+        return "geopolitics"
+    if any(keyword in text for keyword in ["bitcoin", "btc", "ethereum", "eth", "solana", "sol", "stablecoin", "etf", "exchange", "crypto"]):
+        return "crypto"
+    if any(keyword in text for keyword in ["earnings", "stock", "nasdaq", "s&p", "dow", "semiconductor", "ai", "nvidia", "apple", "tesla", "amazon", "meta", "google", "broadcom"]):
+        return "equity"
+    return "general"
+
+
+def _format_news_entry(item: Dict[str, Any]) -> str:
+    title = str(item.get("title", "-")).strip()
+    source = str(item.get("source", "-")).strip()
+    published_at = str(item.get("publishedAt", "-")).strip()
+    summary = str(item.get("summary", "")).strip()
+    line = f"- 标题：{title} | 来源：{source} | 时间：{published_at}"
+    if summary:
+        line += f"\n  摘要：{summary}"
+    return line
+
+
+def _group_hot_news(hot_news: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+    buckets: Dict[str, List[Dict[str, Any]]] = {
+        "macro_policy": [],
+        "commodities": [],
+        "geopolitics": [],
+        "equity": [],
+        "crypto": [],
+        "general": [],
+    }
+    for item in hot_news[:16]:
+        if not isinstance(item, dict):
+            continue
+        bucket = _news_bucket(str(item.get("title", "")), str(item.get("summary", "")))
+        buckets.setdefault(bucket, []).append(item)
+    return buckets
+
+
+def _build_daily_prompt_sections(
+    daily_payload: Dict[str, Any],
+) -> Dict[str, str]:
+    snapshots = daily_payload.get("marketSnapshots", []) if isinstance(daily_payload.get("marketSnapshots"), list) else []
+    hot_news = daily_payload.get("hotNews", []) if isinstance(daily_payload.get("hotNews"), list) else []
+    deep_dives = daily_payload.get("deepStockDives", []) if isinstance(daily_payload.get("deepStockDives"), list) else []
+    crypto_updates = daily_payload.get("cryptoProjectUpdates", []) if isinstance(daily_payload.get("cryptoProjectUpdates"), list) else []
+    calendar = daily_payload.get("marketCalendar", []) if isinstance(daily_payload.get("marketCalendar"), list) else []
+    replay = daily_payload.get("marketReplay", []) if isinstance(daily_payload.get("marketReplay"), list) else []
+
+    news_groups = _group_hot_news(hot_news)
+    macro_news = news_groups["macro_policy"][:3]
+    commodity_news = (news_groups["commodities"] + news_groups["geopolitics"])[:4]
+    policy_news = (news_groups["geopolitics"] + news_groups["general"])[:4]
+
+    crypto_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "crypto"]
+    equity_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "equity"]
+
+    def _fmt_snapshot(rows: List[Dict[str, Any]], fallback: str) -> List[str]:
+        if not rows:
+            return [fallback]
+        lines: List[str] = []
+        for row in rows[:8]:
+            lines.append(
+                f"- {row.get('ticker', '-')}: 现价={row.get('spot', '-')}, 24H={row.get('change24hPct', '-') }%, 7D={row.get('change7dPct', '-') }%, 波动率14D={row.get('realizedVol14dPct', '-') }%"
+            )
+        return lines
+
+    deep_lines = []
+    for item in deep_dives[:5]:
+        deep_lines.append(
+            f"- {item.get('name', '-') } ({item.get('ticker', '-') }): signal={item.get('signal', '-')}, ret20d={item.get('ret20dPct', '-') }%, summary={item.get('summary', '-')}"
+        )
+    if not deep_lines:
+        deep_lines = ["- 数据不足：暂无深度个股输入"]
+
+    crypto_lines = []
+    for item in crypto_updates[:10]:
+        crypto_lines.append(f"- {item.get('project', '-')}: {item.get('headline', '-') } [{item.get('source', '-')}]")
+    if not crypto_lines:
+        crypto_lines = ["- 数据不足：暂无加密项目动态输入"]
+
+    calendar_lines = []
+    for event in calendar[:10]:
+        calendar_lines.append(
+            f"- {event.get('date', '-') } {event.get('timeUtc', '-') } UTC | {event.get('category', '-') } | {event.get('event', '-') } | 重要性={event.get('importance', '-') }"
+        )
+    if not calendar_lines:
+        calendar_lines = ["- 数据不足：暂无市场日历输入"]
+
+    replay_lines = [f"- {str(line)}" for line in replay[:8]] or ["- 数据不足：暂无市场复盘线索"]
+
+    return {
+        "macro_news": "\n".join(_format_news_entry(item) for item in macro_news) if macro_news else "- 数据不足：暂无美联储/宏观政策相关新闻",
+        "commodity_news": "\n".join(_format_news_entry(item) for item in commodity_news) if commodity_news else "- 数据不足：暂无国际大宗商品/地缘供给冲击相关新闻",
+        "policy_news": "\n".join(_format_news_entry(item) for item in policy_news) if policy_news else "- 数据不足：暂无宏观经济政策/政治事件相关新闻",
+        "commod_fx_snapshots": "\n".join(_fmt_snapshot([], "- 数据不足：当前输入未提供黄金/白银/WTI/Brent/DXY 实时报价")),
+        "crypto_snapshots": "\n".join(_fmt_snapshot(crypto_snapshots, "- 数据不足：暂无加密行情快照")),
+        "equity_snapshots": "\n".join(_fmt_snapshot(equity_snapshots, "- 数据不足：暂无美股指数快照")),
+        "replay_lines": "\n".join(replay_lines),
+        "deep_lines": "\n".join(deep_lines),
+        "crypto_lines": "\n".join(crypto_lines),
+        "calendar_lines": "\n".join(calendar_lines),
+    }
+
+
 def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
     as_of = str(daily_payload.get("asOfDate", "-"))
     headline = str(daily_payload.get("headline", "-"))
     quick = daily_payload.get("quickView", {}) if isinstance(daily_payload.get("quickView"), dict) else {}
-    snapshots = daily_payload.get("marketSnapshots", []) if isinstance(daily_payload.get("marketSnapshots"), list) else []
-    hot_news = daily_payload.get("hotNews", []) if isinstance(daily_payload.get("hotNews"), list) else []
-    replay = daily_payload.get("marketReplay", []) if isinstance(daily_payload.get("marketReplay"), list) else []
-    deep_dives = daily_payload.get("deepStockDives", []) if isinstance(daily_payload.get("deepStockDives"), list) else []
-    crypto_updates = (
-        daily_payload.get("cryptoProjectUpdates", [])
-        if isinstance(daily_payload.get("cryptoProjectUpdates"), list)
-        else []
-    )
-    calendar = daily_payload.get("marketCalendar", []) if isinstance(daily_payload.get("marketCalendar"), list) else []
-
-    snapshot_lines: List[str] = []
-    for row in snapshots[:8]:
-        ticker = str(row.get("ticker", "-"))
-        spot = row.get("spot", "-")
-        chg24 = row.get("change24hPct", "-")
-        chg7 = row.get("change7dPct", "-")
-        vol14 = row.get("realizedVol14dPct", "-")
-        source = str(row.get("source", "-"))
-        snapshot_lines.append(
-            f"- {ticker}: spot={spot}, 24h={chg24}%, 7d={chg7}%, vol14d={vol14}%, source={source}"
-        )
-    if not snapshot_lines:
-        snapshot_lines = ["- 无行情快照"]
-
-    news_lines: List[str] = []
-    for item in hot_news[:8]:
-        title = str(item.get("title", "-"))
-        source = str(item.get("source", "-"))
-        published_at = str(item.get("publishedAt", "-"))
-        news_lines.append(f"- [{source}] {title} ({published_at})")
-    if not news_lines:
-        news_lines = ["- 无新闻数据"]
-
-    replay_lines = [f"- {str(line)}" for line in replay[:5]] or ["- 无复盘数据"]
-
-    deep_lines: List[str] = []
-    for item in deep_dives[:5]:
-        name = str(item.get("name", "-"))
-        ticker = str(item.get("ticker", "-"))
-        signal = str(item.get("signal", "-"))
-        ret20 = item.get("ret20dPct", "-")
-        summary = str(item.get("summary", "-"))
-        deep_lines.append(f"- {name}({ticker}) signal={signal}, ret20d={ret20}%: {summary}")
-    if not deep_lines:
-        deep_lines = ["- 无深度个股数据"]
-
-    crypto_lines: List[str] = []
-    for item in crypto_updates[:6]:
-        project = str(item.get("project", "-"))
-        headline_item = str(item.get("headline", "-"))
-        source = str(item.get("source", "-"))
-        crypto_lines.append(f"- {project}: {headline_item} [{source}]")
-    if not crypto_lines:
-        crypto_lines = ["- 无项目动态"]
-
-    calendar_lines: List[str] = []
-    for event in calendar[:8]:
-        date = str(event.get("date", "-"))
-        time_utc = str(event.get("timeUtc", "-"))
-        category = str(event.get("category", "-"))
-        title = str(event.get("event", "-"))
-        importance = str(event.get("importance", "-"))
-        calendar_lines.append(f"- {date} {time_utc} UTC | {category} | {title} | 重要性={importance}")
-    if not calendar_lines:
-        calendar_lines = ["- 无日历事件"]
-
-    snapshot_block = "\n".join(snapshot_lines)
-    news_block = "\n".join(news_lines)
-    replay_block = "\n".join(replay_lines)
-    deep_block = "\n".join(deep_lines)
-    crypto_block = "\n".join(crypto_lines)
-    calendar_block = "\n".join(calendar_lines)
+    sections = _build_daily_prompt_sections(daily_payload)
 
     return textwrap.dedent(
         f"""
-        你是机构级宏观与加密多资产研究员，请基于输入数据生成“市场研究日报正式版”。
-        输出语言：中文；风格：专业、清晰、偏交易执行；尽量使用“事件 → 要点 → 市场影响”的写法。
+        你是机构级宏观、多资产、加密市场中文主编。你要把输入材料写成“编辑部正式日报”，不是摘要，不是提纲，不是聊天口吻。
+        输出语言：中文。
+        风格要求：像专业财经平台晨报/晚报，句子完整，信息密度高，按栏目组织，先事实后解读。
 
-        长度要求（硬约束）：
-        - 正文总长度目标 1500-2000 字；
-        - 低于 1400 字视为不合格，必须补写；
-        - 每个一级章节都必须有实质内容，不要空标题。
+        硬约束：
+        - 总字数目标：1500-2000 字；
+        - 低于 1400 字不合格，必须补全；
+        - 严禁输出“某价位 / 某数据 / 某公司”这种占位词；
+        - 严禁打乱栏目顺序；
+        - 严禁把新闻线索原样抄成列表，必须改写成成稿；
+        - 只能基于输入材料写，缺失就明确写“数据不足”。
 
-        输出格式（必须严格按以下顺序与标题，使用 Markdown）：
+        输出格式必须严格如下，使用 Markdown：
         # 市场研究日报（{as_of}）
         ## 一、热点要闻
         ## 二、市场复盘
@@ -2363,63 +2404,79 @@ def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
         ## 五、今日市场日历
         ## 免责声明
 
-        各章节写作要求：
-        - 一、热点要闻：
-          至少 3 条重点新闻，优先覆盖“美联储动态 / 国际大宗商品 / 宏观经济政策”。
-          每条都用 3 行小结构：
-          1) 事件概述
-          2) 要点
-          3) 市场影响
-        - 二、市场复盘：
-          必须覆盖以下分组并给出驱动解释：
-          1) 大宗商品与外汇（如有数据）
-          2) 加密货币（BTC/ETH/SOL、总市值、清算与资金流可写则写）
-          3) 美股指数（道指/标普/纳指）
-          4) 科技巨头动态
-          5) 板块异动观察
-          每个条目尽量写成“收盘/涨跌 + 驱动因素 + 交易含义”。
-        - 三、深度个股解读：
-          至少 3 个标的，优先使用输入的 deepStockDives。
-          每个标的必须包含：
-          1) 事件概述
-          2) 市场解读
-          3) 投资启示
-        - 四、加密货币项目动态：
-          至少 6 条，优先按“BTC/ETH/SOL生态 + 资金/政策/链上”组织。
-          若输入不足，可补“数据不足”并给保守判断。
-        - 五、今日市场日历：
-          先给“数据发布时刻表”（可用列表），再给“重要事件预告/机构观点”。
-        - 免责声明：
-          固定写一句：以上内容为研究与信息整理，不构成投资建议。
-
-        约束：
-        - 只能基于输入数据延展，不要编造精确数值；
-        - 缺失字段要明确标注“数据不足”；
-        - 避免泛泛而谈，尽量引用输入中的分数、涨跌幅、事件描述。
+        栏目格式必须按下面细则执行：
+        - “一、热点要闻”
+          固定包含 3 个小栏目，且顺序固定：
+          1. 美联储动态
+          2. 国际大宗商品
+          3. 宏观经济政策
+          每个小栏目下至少写 1-2 条新闻。
+          每条新闻严格采用：
+          标题
+          事件概述：
+          要点：
+          市场影响：
+        - “二、市场复盘”
+          固定包含：
+          1. 大宗商品&外汇表现
+          2. 加密货币表现
+          3. 美股指数表现
+          4. 科技巨头动态
+          5. 板块异动观察
+          每个栏目都要写成成稿，尽量采用“涨跌/现价/驱动因素/交易影响”。
+        - “三、深度个股解读”
+          至少 3 个标的。
+          每个标的固定格式：
+          1. 公司名 - 主题标题
+          事件概述：
+          市场解读：
+          投资启示：
+        - “四、加密货币项目动态”
+          至少 6 条，按新闻短条目写。
+        - “五、今日市场日历”
+          必须包含：
+          1. 数据发布时刻表
+          2. 重要事件预告
+          3. 机构观点
+        - “免责声明”
+          固定一句：以上内容由 AI 搜索与研究整理，不构成任何投资建议。
 
         === 输入数据开始 ===
         asOfDate: {as_of}
         headline: {headline}
         quickView: overallScore={quick.get("overallScore", "-")}, riskLevel={quick.get("riskLevel", "-")},
-                   quoteSourceMode={quick.get("quoteSourceMode", "-")}, newsSourceMode={quick.get("newsSourceMode", "-")}
+                   quoteSourceMode={quick.get("quoteSourceMode", "-")}, newsSourceMode={quick.get("newsSourceMode", "-")},
+                   newsSourceProvider={quick.get("newsSourceProvider", "-")}
 
-        [行情快照]
-        {snapshot_block}
+        [一、热点要闻-美联储动态候选]
+        {sections["macro_news"]}
 
-        [热点新闻]
-        {news_block}
+        [一、热点要闻-国际大宗商品候选]
+        {sections["commodity_news"]}
 
-        [市场复盘线索]
-        {replay_block}
+        [一、热点要闻-宏观经济政策候选]
+        {sections["policy_news"]}
 
-        [深度个股]
-        {deep_block}
+        [二、市场复盘-大宗商品&外汇]
+        {sections["commod_fx_snapshots"]}
 
-        [加密项目动态]
-        {crypto_block}
+        [二、市场复盘-加密货币表现]
+        {sections["crypto_snapshots"]}
 
-        [市场日历]
-        {calendar_block}
+        [二、市场复盘-美股指数表现]
+        {sections["equity_snapshots"]}
+
+        [二、市场复盘-复盘线索]
+        {sections["replay_lines"]}
+
+        [三、深度个股解读]
+        {sections["deep_lines"]}
+
+        [四、加密货币项目动态]
+        {sections["crypto_lines"]}
+
+        [五、今日市场日历]
+        {sections["calendar_lines"]}
         === 输入数据结束 ===
         """
     ).strip()

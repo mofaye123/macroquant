@@ -103,54 +103,130 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     quick = daily.get("quickView", {}) if isinstance(daily.get("quickView"), dict) else {}
     news = daily.get("hotNews", []) if isinstance(daily.get("hotNews"), list) else []
     replay = daily.get("marketReplay", []) if isinstance(daily.get("marketReplay"), list) else []
+    snapshots = daily.get("marketSnapshots", []) if isinstance(daily.get("marketSnapshots"), list) else []
+    deep_dives = daily.get("deepStockDives", []) if isinstance(daily.get("deepStockDives"), list) else []
+    crypto_updates = daily.get("cryptoProjectUpdates", []) if isinstance(daily.get("cryptoProjectUpdates"), list) else []
+    calendar = daily.get("marketCalendar", []) if isinstance(daily.get("marketCalendar"), list) else []
     ai = daily.get("aiDecision", {}) if isinstance(daily.get("aiDecision"), dict) else {}
     if not ai and isinstance(daily.get("claudeDecision"), dict):
         ai = daily.get("claudeDecision", {})
 
+    crypto_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "crypto"]
+    equity_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "equity"]
+
     lines: List[str] = []
-    lines.append(f"# MacroQuant 市场研究日报（{as_of}）")
+    lines.append(f"# 市场研究日报（{as_of}）")
     lines.append("")
     lines.append(f"**Headline**: {headline}")
     lines.append("")
-    lines.append("## 快速视图")
-    lines.append(f"- 宏观总分: {quick.get('overallScore', '-')}")
-    lines.append(f"- 风险等级: {quick.get('riskLevel', '-')}")
-    lines.append(f"- 行情源: {quick.get('quoteSourceMode', '-')}")
-    lines.append(f"- 新闻源: {quick.get('newsSourceMode', '-')}")
-    lines.append("")
-    lines.append("## 热点要闻")
+    lines.append("## 一、热点要闻")
+    lines.append("### 美联储动态")
     if news:
-        for item in news[:8]:
+        for item in news[:2]:
             title = item.get("title", "-")
             source = item.get("source", "-")
-            url = item.get("url", "")
-            if url:
-                lines.append(f"- [{title}]({url}) ({source})")
-            else:
-                lines.append(f"- {title} ({source})")
+            lines.append(f"**{title}**")
+            lines.append(f"事件概述：来自 {source} 的最新线索。")
+            lines.append("要点：当前为模板稿，建议接入 AI 正式生成以获得更完整的背景与市场影响。")
+            lines.append(f"市场影响：结合宏观总分 {quick.get('overallScore', '-')} 与新闻上下文谨慎解读。")
+            lines.append("")
     else:
-        lines.append("- 无可用新闻数据")
+        lines.append("数据不足：暂无美联储动态新闻。")
     lines.append("")
-    lines.append("## 市场复盘")
+    lines.append("### 国际大宗商品")
+    if len(news) > 2:
+        for item in news[2:4]:
+            lines.append(f"**{item.get('title', '-')}**")
+            lines.append(f"事件概述：来自 {item.get('source', '-')} 的大宗商品/地缘事件线索。")
+            lines.append("要点：请以正式 AI 稿为准，这里仅保留模板结构。")
+            lines.append("市场影响：通常会先影响能源、美元与风险偏好。")
+            lines.append("")
+    else:
+        lines.append("数据不足：暂无国际大宗商品相关新闻。")
+    lines.append("")
+    lines.append("### 宏观经济政策")
+    if len(news) > 4:
+        for item in news[4:6]:
+            lines.append(f"**{item.get('title', '-')}**")
+            lines.append(f"事件概述：来自 {item.get('source', '-')} 的政策事件线索。")
+            lines.append("要点：关注政策路径、通胀传导和风险资产定价。")
+            lines.append("市场影响：对股债汇和加密均可能形成二阶影响。")
+            lines.append("")
+    else:
+        lines.append("数据不足：暂无宏观经济政策相关新闻。")
+    lines.append("")
+    lines.append("## 二、市场复盘")
+    lines.append("### 大宗商品&外汇表现")
+    lines.append("数据不足：当前输入未提供黄金/白银/WTI/Brent/DXY 全量实时报价。")
+    lines.append("")
+    lines.append("### 加密货币表现")
+    if crypto_snapshots:
+        for row in crypto_snapshots[:3]:
+            lines.append(
+                f"- {row.get('ticker', '-')}: 24H {row.get('change24hPct', '-') }%，7D {row.get('change7dPct', '-') }%，现价 {row.get('spot', '-') }。"
+            )
+    else:
+        lines.append("数据不足：暂无加密货币快照。")
+    lines.append("")
+    lines.append("### 美股指数表现")
+    if equity_snapshots:
+        for row in equity_snapshots[:3]:
+            lines.append(
+                f"- {row.get('ticker', '-')}: 24H {row.get('change24hPct', '-') }%，7D {row.get('change7dPct', '-') }%，现价 {row.get('spot', '-') }。"
+            )
+    else:
+        lines.append("数据不足：暂无美股指数快照。")
+    lines.append("")
+    lines.append("### 科技巨头动态")
+    lines.append("数据不足：请优先使用 AI 正式稿补全个股新闻与财报动态。")
+    lines.append("")
+    lines.append("### 板块异动观察")
     if replay:
-        for item in replay[:6]:
+        for item in replay[:4]:
             lines.append(f"- {item}")
     else:
-        lines.append("- 无复盘内容")
+        lines.append("数据不足：暂无板块复盘线索。")
     lines.append("")
-    lines.append("## AI 决策摘要")
-    lines.append(f"- 提供方: {ai.get('provider', '-')}")
-    lines.append(f"- 状态: {ai.get('status', '-')}")
-    lines.append(f"- 模型: {ai.get('model', '-')}")
-    lines.append(f"- 结论: {ai.get('summary', '-')}")
+    lines.append("## 三、深度个股解读")
+    if deep_dives:
+        for item in deep_dives[:3]:
+            lines.append(f"### {item.get('name', '-')} - {item.get('signal', '-')}")
+            lines.append(f"事件概述：{item.get('summary', '-')}")
+            lines.append("市场解读：当前为模板稿，建议使用 AI 正式生成版补全催化与估值逻辑。")
+            lines.append("投资启示：结合趋势与风险预算，不宜单凭模板稿做交易决策。")
+            lines.append("")
+    else:
+        lines.append("数据不足：暂无深度个股输入。")
+        lines.append("")
+    lines.append("## 四、加密货币项目动态")
+    if crypto_updates:
+        for item in crypto_updates[:8]:
+            lines.append(f"- {item.get('project', '-')}: {item.get('headline', '-')}")
+    else:
+        lines.append("数据不足：暂无加密项目动态。")
+    lines.append("")
+    lines.append("## 五、今日市场日历")
+    lines.append("### 数据发布时刻表")
+    if calendar:
+        for event in calendar[:6]:
+            lines.append(f"- {event.get('date', '-') } {event.get('timeUtc', '-') } UTC | {event.get('event', '-') } | {event.get('importance', '-') }")
+    else:
+        lines.append("数据不足：暂无市场日历。")
+    lines.append("")
+    lines.append("### 重要事件预告")
+    lines.append(f"- 风险等级：{quick.get('riskLevel', '-')}")
+    lines.append(f"- AI 结论：{ai.get('summary', '-')}")
+    lines.append("")
+    lines.append("### 机构观点")
     actions = ai.get("recommendedActions", [])
     if isinstance(actions, list) and actions:
-        lines.append("- 建议动作:")
-        for action in actions[:4]:
-            lines.append(f"  - {action}")
+        for action in actions[:3]:
+            lines.append(f"- {action}")
     else:
-        lines.append("- 建议动作: -")
+        lines.append("- 数据不足：暂无机构观点。")
     lines.append("")
+    lines.append("## 免责声明")
+    lines.append("以上内容由 AI 搜索与研究整理，不构成任何投资建议。")
     return "\n".join(lines).strip() + "\n"
 
 
