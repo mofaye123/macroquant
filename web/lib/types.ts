@@ -206,6 +206,7 @@ export type MarketDailyNews = {
   url: string;
   publishedAt: string;
   summary?: string;
+  bucket?: string;
 };
 
 export type MarketDailyDeepDive = {
@@ -274,6 +275,7 @@ export type MarketDailyPayload = {
   marketSnapshots: MarketDailySnapshot[];
   hotNews: MarketDailyNews[];
   marketReplay: string[];
+  deskViews?: string[];
   deepStockDives: MarketDailyDeepDive[];
   cryptoProjectUpdates: MarketDailyProjectUpdate[];
   marketCalendar: MarketDailyCalendarEvent[];

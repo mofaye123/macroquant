@@ -66,6 +66,60 @@ _DEEP_DIVE_SYMBOLS: Tuple[Tuple[str, str], ...] = (
     ("Tesla", "TSLA"),
 )
 
+_NEWS_BUCKET_KEYWORDS: Dict[str, Tuple[str, ...]] = {
+    "macro_policy": (
+        "fed", "fomc", "powell", "sofr", "treasury", "cpi", "inflation", "pce", "jobs", "retail sales",
+        "employment", "non-farm", "nfp", "jobless", "yield", "rates", "consumer confidence",
+        "美联储", "鲍威尔", "联储", "通胀", "cpi", "pce", "就业", "非农", "零售销售", "初请",
+        "失业", "收益率", "利率", "降息", "加息", "财政部", "国债", "消费者信心",
+    ),
+    "commodities": (
+        "oil", "wti", "brent", "gas", "lng", "opec", "commodity", "gold", "silver", "copper",
+        "原油", "油价", "布伦特", "黄金", "白银", "天然气", "欧佩克", "大宗商品", "铜",
+        "霍尔木兹", "航运", "运价",
+    ),
+    "geopolitics": (
+        "iran", "israel", "trump", "china", "tariff", "sanction", "geopolit", "war", "cuba", "saudi",
+        "russia", "ukraine", "middle east", "伊朗", "以色列", "特朗普", "中国", "关税", "制裁",
+        "地缘", "战争", "冲突", "古巴", "沙特", "俄罗斯", "乌克兰", "中东", "哈梅内伊",
+    ),
+    "crypto": (
+        "bitcoin", "btc", "ethereum", "eth", "solana", "sol", "stablecoin", "etf", "exchange",
+        "crypto", "token", "blockchain", "比特币", "以太坊", "索拉纳", "稳定币", "交易所",
+        "加密", "代币", "区块链", "现货etf", "解锁", "链上",
+    ),
+    "equity": (
+        "earnings", "stock", "nasdaq", "s&p", "dow", "semiconductor", "ai", "nvidia", "apple",
+        "tesla", "amazon", "meta", "google", "broadcom", "microsoft", "amd", "美股", "财报",
+        "标普", "纳指", "道指", "半导体", "英伟达", "苹果", "特斯拉", "亚马逊", "谷歌",
+        "博通", "微软", "科技股", "芯片",
+    ),
+}
+
+_NEWS_BUCKET_PRIORITY: Dict[str, int] = {
+    "macro_policy": 6,
+    "commodities": 5,
+    "crypto": 4,
+    "equity": 3,
+    "geopolitics": 2,
+    "general": 1,
+}
+
+_EDITORIAL_SOURCE_BONUS: Dict[str, int] = {
+    "reuters": 4,
+    "bloomberg": 4,
+    "wsj": 4,
+    "financial times": 4,
+    "ft": 4,
+    "federalreserve": 4,
+    "treasury": 4,
+    "sec": 4,
+    "the block": 3,
+    "coindesk": 3,
+    "cointelegraph": 2,
+    "yahoo finance": 2,
+}
+
 
 def _normalize_as_of(as_of_dt: Optional[datetime]) -> Optional[pd.Timestamp]:
     if as_of_dt is None:
@@ -170,6 +224,133 @@ def _parse_feed_timestamp(value: str) -> str:
         return _to_iso_utc(parsed)
     except Exception:
         return _to_iso_utc(datetime.now(timezone.utc))
+
+
+def classify_market_daily_news_bucket(title: str, summary: str = "") -> str:
+    title_text = str(title or "").strip().lower()
+    body_text = str(summary or "").strip().lower()
+    combined = f"{title_text} {body_text}".strip()
+    if not combined:
+        return "general"
+
+    best_bucket = "general"
+    best_score = 0
+    best_priority = 0
+    for bucket, keywords in _NEWS_BUCKET_KEYWORDS.items():
+        title_hits = sum(1 for keyword in keywords if keyword in title_text)
+        body_hits = sum(1 for keyword in keywords if keyword in body_text)
+        score = title_hits * 3 + body_hits
+        priority = _NEWS_BUCKET_PRIORITY.get(bucket, 0)
+        if score > best_score or (score == best_score and score > 0 and priority > best_priority):
+            best_bucket = bucket
+            best_score = score
+            best_priority = priority
+    return best_bucket if best_score > 0 else "general"
+
+
+def _normalize_news_key(title: str) -> str:
+    text = str(title or "").strip().lower()
+    compact = "".join(ch for ch in text if ch.isalnum())
+    return compact[:160]
+
+
+def _parse_news_datetime(value: Any) -> datetime:
+    text = str(value or "").strip()
+    if not text:
+        return datetime.now(timezone.utc)
+    try:
+        parsed = datetime.fromisoformat(text.replace("Z", "+00:00"))
+        if parsed.tzinfo is None:
+            parsed = parsed.replace(tzinfo=timezone.utc)
+        return parsed.astimezone(timezone.utc)
+    except Exception:
+        return datetime.now(timezone.utc)
+
+
+def _news_editor_score(item: Dict[str, Any]) -> float:
+    title = str(item.get("title", "") or "")
+    summary = str(item.get("summary", "") or "")
+    bucket = str(item.get("bucket", "") or classify_market_daily_news_bucket(title, summary))
+    published_at = _parse_news_datetime(item.get("publishedAt"))
+    age_hours = max(0.0, (datetime.now(timezone.utc) - published_at).total_seconds() / 3600.0)
+    freshness_bonus = max(0.0, 36.0 - min(age_hours, 36.0)) / 4.0
+    bucket_bonus = _NEWS_BUCKET_PRIORITY.get(bucket, 1) * 1.2
+    source = str(item.get("source", "") or "").lower()
+    source_bonus = 1.0
+    for needle, bonus in _EDITORIAL_SOURCE_BONUS.items():
+        if needle in source:
+            source_bonus = float(bonus)
+            break
+    text = f"{title} {summary}".lower()
+    keyword_bonus = 0.0
+    for bucket_name, keywords in _NEWS_BUCKET_KEYWORDS.items():
+        hits = sum(1 for keyword in keywords if keyword in text)
+        if bucket_name == bucket:
+            keyword_bonus += min(hits, 4) * 1.5
+        elif hits:
+            keyword_bonus += min(hits, 2) * 0.2
+    summary_bonus = 1.0 if summary else 0.0
+    return round(bucket_bonus + freshness_bonus + source_bonus + keyword_bonus + summary_bonus, 4)
+
+
+def curate_market_daily_news(items: List[Dict[str, Any]], limit: int = 12) -> List[Dict[str, Any]]:
+    if not items:
+        return []
+
+    deduped: Dict[str, Dict[str, Any]] = {}
+    for item in items:
+        if not isinstance(item, dict):
+            continue
+        title = str(item.get("title", "") or "").strip()
+        if not title:
+            continue
+        bucket = str(item.get("bucket", "") or classify_market_daily_news_bucket(title, str(item.get("summary", "") or "")))
+        enriched = dict(item)
+        enriched["bucket"] = bucket
+        enriched["editorScore"] = _news_editor_score(enriched)
+        key = str(item.get("url", "") or "").strip() or _normalize_news_key(title)
+        existing = deduped.get(key)
+        if existing is None or float(enriched["editorScore"]) > float(existing.get("editorScore", 0.0)):
+            deduped[key] = enriched
+
+    ranked = sorted(
+        deduped.values(),
+        key=lambda item: (
+            float(item.get("editorScore", 0.0)),
+            str(item.get("publishedAt", "") or ""),
+        ),
+        reverse=True,
+    )
+
+    bucket_caps = {
+        "macro_policy": 3,
+        "commodities": 3,
+        "geopolitics": 2,
+        "equity": 3,
+        "crypto": 3,
+        "general": 2,
+    }
+    bucket_counts: Dict[str, int] = {}
+    selected: List[Dict[str, Any]] = []
+    overflow: List[Dict[str, Any]] = []
+    for item in ranked:
+        bucket = str(item.get("bucket", "general"))
+        cap = bucket_caps.get(bucket, 2)
+        if bucket_counts.get(bucket, 0) < cap:
+            selected.append(item)
+            bucket_counts[bucket] = bucket_counts.get(bucket, 0) + 1
+        else:
+            overflow.append(item)
+        if len(selected) >= limit:
+            break
+
+    if len(selected) < limit:
+        for item in overflow:
+            selected.append(item)
+            if len(selected) >= limit:
+                break
+
+    return selected[:limit]
 
 
 def _fetch_rss_entries(url: str, source: str, limit: int = 6) -> List[Dict[str, Any]]:
@@ -498,8 +679,8 @@ def _build_hot_news(module_cards: List[Dict[str, Any]]) -> Tuple[List[Dict[str, 
                 "publishedAt": _to_iso_utc(datetime.now(timezone.utc)),
             },
         ]
-    else:
-        news_items = sorted(news_items, key=lambda x: x.get("publishedAt", ""), reverse=True)[:10]
+
+    news_items = curate_market_daily_news(news_items, limit=12)
 
     _NEWS_CACHE["items"] = list(news_items)
     _NEWS_CACHE["source_mode"] = source_mode
@@ -764,6 +945,73 @@ def _build_replay_lines(overall_score: float, modules: List[Dict[str, Any]], sna
     return lines[:6]
 
 
+def _build_desk_views(overall_score: float, modules: List[Dict[str, Any]], snapshots: List[Dict[str, Any]]) -> List[str]:
+    views: List[str] = []
+    best = max(modules, key=lambda x: x.get("change", -999)) if modules else None
+    weak = min(modules, key=lambda x: x.get("change", 999)) if modules else None
+    equity_indexes = [row for row in snapshots if row.get("bucket") == "equity_index"]
+    sectors = [row for row in snapshots if row.get("bucket") == "equity_sector"]
+    crypto = [row for row in snapshots if row.get("bucket") == "crypto"]
+    rates = [row for row in snapshots if row.get("bucket") == "rate"]
+    fx_rows = [row for row in snapshots if row.get("bucket") == "fx"]
+
+    if overall_score >= 60:
+        views.append("公开市场定价显示风险预算偏宽松，高 beta 资产可维持顺势配置，但不宜在事件窗口前继续加杠杆。")
+    elif overall_score >= 45:
+        views.append("当前宏观总分仍处中性区间，市场更适合结构化交易而非单边押注，仓位与节奏管理优先于方向激进表达。")
+    else:
+        views.append("总分落入偏紧区域，组合更适合防守与降杠杆，优先控制回撤而非追求高胜率进攻。")
+
+    if best and weak:
+        views.append(
+            f"边际变化上，{best.get('title', best.get('id', '模块'))} 是当前主要支撑项，而 {weak.get('title', weak.get('id', '模块'))} 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。"
+        )
+
+    if equity_indexes:
+        spx = next((row for row in equity_indexes if row.get("ticker") in {"SPX", "SPY"}), None)
+        ixic = next((row for row in equity_indexes if row.get("ticker") in {"IXIC", "QQQ"}), None)
+        if spx or ixic:
+            parts: List[str] = []
+            if spx:
+                parts.append(f"标普口径近7日 {_format_pct(_safe_float(spx.get('change7dPct'), 0.0))}")
+            if ixic:
+                parts.append(f"纳指口径近7日 {_format_pct(_safe_float(ixic.get('change7dPct'), 0.0))}")
+            views.append("权益资产方面，" + "，".join(parts) + "，说明成长资产仍在消化宏观与估值的双重约束。")
+
+    if sectors:
+        best_sector = max(sectors, key=lambda row: float(row.get("change7dPct", 0.0)))
+        weak_sector = min(sectors, key=lambda row: float(row.get("change7dPct", 0.0)))
+        views.append(
+            f"行业层面，{best_sector.get('name', best_sector.get('ticker', '-'))} 近7日表现相对占优，{weak_sector.get('name', weak_sector.get('ticker', '-'))} 相对承压，说明市场内部轮动并不均衡。"
+        )
+
+    if crypto:
+        btc = next((row for row in crypto if row.get("ticker") == "BTC"), None)
+        eth = next((row for row in crypto if row.get("ticker") == "ETH"), None)
+        if btc or eth:
+            parts = []
+            if btc:
+                parts.append(f"BTC 近7日 {_format_pct(_safe_float(btc.get('change7dPct'), 0.0))}")
+            if eth:
+                parts.append(f"ETH 近7日 {_format_pct(_safe_float(eth.get('change7dPct'), 0.0))}")
+            views.append("加密资产方面，" + "，".join(parts) + "，短线更适合结合关键价位和成交确认判断延续性。")
+
+    dxy = next((row for row in fx_rows if row.get("ticker") == "DXY"), None)
+    us10y = next((row for row in rates if row.get("ticker") == "US10Y"), None)
+    vix = next((row for row in rates if row.get("ticker") == "VIX"), None)
+    macro_parts: List[str] = []
+    if dxy:
+        macro_parts.append(f"DXY 现报 {dxy.get('spot', '-')}")
+    if us10y:
+        macro_parts.append(f"美债10Y 现报 {us10y.get('spot', '-')}")
+    if vix:
+        macro_parts.append(f"VIX 现报 {vix.get('spot', '-')}")
+    if macro_parts:
+        views.append("跨市场定价方面，" + "，".join(macro_parts) + "，需同步观察美元、利率与波动率是否形成同向压力。")
+
+    return views[:5]
+
+
 def _risk_level(overall_score: float) -> str:
     if overall_score >= 66:
         return "低"
@@ -783,7 +1031,7 @@ def _build_ai_decision_panel(overall_score: float, modules: List[Dict[str, Any]]
         pending_hint = "配置 GEMINI_API_KEY 后可调用 Gemini Deep Think 生成完整日报正文与交易建议。"
     else:
         has_api = bool(os.getenv("CLAUDE_API_KEY"))
-        default_model = os.getenv("CLAUDE_MODEL", "claude-sonnet-4")
+        default_model = os.getenv("CLAUDE_MODEL", "claude-sonnet-4-5")
         pending_hint = "配置 CLAUDE_API_KEY 后可调用模型生成完整日报正文与交易建议。"
     model = (os.getenv("MARKET_DAILY_AI_MODEL") or default_model).strip()
     top_two = sorted(modules, key=lambda x: x.get("score", 50), reverse=True)[:2]
@@ -832,6 +1080,7 @@ def build_market_daily_payload(
     push_channels = _build_push_channels()
     ai_decision = _build_ai_decision_panel(overall_score, module_cards)
     replay_lines = _build_replay_lines(overall_score, module_cards, snapshots)
+    desk_views = _build_desk_views(overall_score, module_cards, snapshots)
 
     headline = "风险偏好回暖，维持顺势偏多框架。"
     if overall_score < 45:
@@ -855,6 +1104,7 @@ def build_market_daily_payload(
         "marketSnapshots": snapshots,
         "hotNews": hot_news,
         "marketReplay": replay_lines,
+        "deskViews": desk_views,
         "deepStockDives": deep_dives,
         "cryptoProjectUpdates": crypto_updates,
         "marketCalendar": calendar,

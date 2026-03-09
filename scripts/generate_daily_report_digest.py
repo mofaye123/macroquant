@@ -107,6 +107,7 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     deep_dives = daily.get("deepStockDives", []) if isinstance(daily.get("deepStockDives"), list) else []
     crypto_updates = daily.get("cryptoProjectUpdates", []) if isinstance(daily.get("cryptoProjectUpdates"), list) else []
     calendar = daily.get("marketCalendar", []) if isinstance(daily.get("marketCalendar"), list) else []
+    desk_views = daily.get("deskViews", []) if isinstance(daily.get("deskViews"), list) else []
     ai = daily.get("aiDecision", {}) if isinstance(daily.get("aiDecision"), dict) else {}
     if not ai and isinstance(daily.get("claudeDecision"), dict):
         ai = daily.get("claudeDecision", {})
@@ -116,6 +117,27 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     equity_snapshots = [row for row in snapshots if str(row.get("bucket", "")) in {"equity_index", "equity"}]
     sector_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "equity_sector"]
 
+    def _group_news(rows: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, Any]]]:
+        groups: Dict[str, List[Dict[str, Any]]] = {
+            "macro_policy": [],
+            "commodities": [],
+            "geopolitics": [],
+            "equity": [],
+            "crypto": [],
+            "general": [],
+        }
+        for item in rows:
+            if not isinstance(item, dict):
+                continue
+            bucket = str(item.get("bucket", "general") or "general")
+            groups.setdefault(bucket, []).append(item)
+        return groups
+
+    news_groups = _group_news(news)
+    macro_news = news_groups["macro_policy"][:2]
+    commodity_news = news_groups["commodities"][:2]
+    policy_news = (news_groups["geopolitics"] + news_groups["general"])[:2]
+
     lines: List[str] = []
     lines.append(f"# 市场研究日报（{as_of}）")
     lines.append("")
@@ -123,8 +145,8 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     lines.append("")
     lines.append("## 一、热点要闻")
     lines.append("### 美联储动态")
-    if news:
-        for item in news[:2]:
+    if macro_news:
+        for item in macro_news:
             title = item.get("title", "-")
             source = item.get("source", "-")
             lines.append(f"**{title}**")
@@ -136,8 +158,8 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
         lines.append("数据不足：暂无美联储动态新闻。")
     lines.append("")
     lines.append("### 国际大宗商品")
-    if len(news) > 2:
-        for item in news[2:4]:
+    if commodity_news:
+        for item in commodity_news:
             lines.append(f"**{item.get('title', '-')}**")
             lines.append(f"事件概述：来自 {item.get('source', '-')} 的大宗商品/地缘事件线索。")
             lines.append("要点：请以正式 AI 稿为准，这里仅保留模板结构。")
@@ -147,8 +169,8 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
         lines.append("数据不足：暂无国际大宗商品相关新闻。")
     lines.append("")
     lines.append("### 宏观经济政策")
-    if len(news) > 4:
-        for item in news[4:6]:
+    if policy_news:
+        for item in policy_news:
             lines.append(f"**{item.get('title', '-')}**")
             lines.append(f"事件概述：来自 {item.get('source', '-')} 的政策事件线索。")
             lines.append("要点：关注政策路径、通胀传导和风险资产定价。")
@@ -237,12 +259,16 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     lines.append(f"- AI 结论：{ai.get('summary', '-')}")
     lines.append("")
     lines.append("### 机构观点")
-    actions = ai.get("recommendedActions", [])
-    if isinstance(actions, list) and actions:
-        for action in actions[:3]:
-            lines.append(f"- {action}")
+    if desk_views:
+        for item in desk_views[:4]:
+            lines.append(f"- {item}")
     else:
-        lines.append("- 数据不足：暂无机构观点。")
+        actions = ai.get("recommendedActions", [])
+        if isinstance(actions, list) and actions:
+            for action in actions[:3]:
+                lines.append(f"- {action}")
+        else:
+            lines.append("- 数据不足：暂无市场观察。")
     lines.append("")
     lines.append("## 免责声明")
     lines.append("以上内容由 AI 搜索与研究整理，不构成任何投资建议。")

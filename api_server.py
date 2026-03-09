@@ -22,7 +22,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from config import API_KEY, SERIES_IDS
 from data_engine import get_last_fetch_meta, get_mixed_data
 from modules import backtest as backtest_module
-from modules.market_daily import build_market_daily_payload
+from modules.market_daily import (
+    build_market_daily_payload,
+    classify_market_daily_news_bucket,
+    curate_market_daily_news,
+)
 
 
 def _fallback_blended_rank_score(
@@ -1862,7 +1866,7 @@ def build_macro_payload(as_of_date: Optional[pd.Timestamp] = None) -> Dict[str, 
             ai_model = (os.getenv("MARKET_DAILY_AI_MODEL") or os.getenv("GEMINI_MODEL", "gemini-2.5-pro")).strip()
             ai_pending = "日报暂未接入 Gemini 自动决策。"
         else:
-            ai_model = (os.getenv("MARKET_DAILY_AI_MODEL") or os.getenv("CLAUDE_MODEL", "claude-sonnet-4")).strip()
+            ai_model = (os.getenv("MARKET_DAILY_AI_MODEL") or os.getenv("CLAUDE_MODEL", "claude-sonnet-4-5")).strip()
             ai_pending = "日报暂未接入 Claude 自动决策。"
         market_daily_payload = {
             "asOfDate": total_series.index[-1].strftime("%Y-%m-%d"),
@@ -2266,21 +2270,6 @@ def _check_delivery_source(delivery_webhook_url: Optional[str]) -> Dict[str, Any
     }
 
 
-def _news_bucket(title: str, summary: str = "") -> str:
-    text = f"{title} {summary}".lower()
-    if any(keyword in text for keyword in ["fed", "fomc", "powell", "sofr", "treasury", "cpi", "inflation", "jobs", "retail sales"]):
-        return "macro_policy"
-    if any(keyword in text for keyword in ["oil", "wti", "brent", "gas", "lng", "opec", "commodity", "gold", "silver"]):
-        return "commodities"
-    if any(keyword in text for keyword in ["iran", "israel", "trump", "china", "tariff", "sanction", "geopolit", "war", "cuba"]):
-        return "geopolitics"
-    if any(keyword in text for keyword in ["bitcoin", "btc", "ethereum", "eth", "solana", "sol", "stablecoin", "etf", "exchange", "crypto"]):
-        return "crypto"
-    if any(keyword in text for keyword in ["earnings", "stock", "nasdaq", "s&p", "dow", "semiconductor", "ai", "nvidia", "apple", "tesla", "amazon", "meta", "google", "broadcom"]):
-        return "equity"
-    return "general"
-
-
 def _format_news_entry(item: Dict[str, Any]) -> str:
     title = str(item.get("title", "-")).strip()
     source = str(item.get("source", "-")).strip()
@@ -2301,10 +2290,11 @@ def _group_hot_news(hot_news: List[Dict[str, Any]]) -> Dict[str, List[Dict[str, 
         "crypto": [],
         "general": [],
     }
-    for item in hot_news[:16]:
+    curated = curate_market_daily_news(hot_news, limit=18)
+    for item in curated:
         if not isinstance(item, dict):
             continue
-        bucket = _news_bucket(str(item.get("title", "")), str(item.get("summary", "")))
+        bucket = str(item.get("bucket", "") or classify_market_daily_news_bucket(str(item.get("title", "")), str(item.get("summary", ""))))
         buckets.setdefault(bucket, []).append(item)
     return buckets
 
@@ -2318,10 +2308,11 @@ def _build_daily_prompt_sections(
     crypto_updates = daily_payload.get("cryptoProjectUpdates", []) if isinstance(daily_payload.get("cryptoProjectUpdates"), list) else []
     calendar = daily_payload.get("marketCalendar", []) if isinstance(daily_payload.get("marketCalendar"), list) else []
     replay = daily_payload.get("marketReplay", []) if isinstance(daily_payload.get("marketReplay"), list) else []
+    desk_views = daily_payload.get("deskViews", []) if isinstance(daily_payload.get("deskViews"), list) else []
 
     news_groups = _group_hot_news(hot_news)
     macro_news = news_groups["macro_policy"][:3]
-    commodity_news = (news_groups["commodities"] + news_groups["geopolitics"])[:4]
+    commodity_news = news_groups["commodities"][:4]
     policy_news = (news_groups["geopolitics"] + news_groups["general"])[:4]
 
     crypto_snapshots = [row for row in snapshots if str(row.get("bucket", "")) == "crypto"]
@@ -2377,6 +2368,12 @@ def _build_daily_prompt_sections(
     if not calendar_lines:
         calendar_lines = ["- 数据不足：暂无市场日历输入"]
 
+    desk_view_lines = []
+    for view in desk_views[:6]:
+        desk_view_lines.append(f"- {view}")
+    if not desk_view_lines:
+        desk_view_lines = ["- 数据不足：暂无市场观察输入"]
+
     replay_lines = [f"- {str(line)}" for line in replay[:8]] or ["- 数据不足：暂无市场复盘线索"]
 
     return {
@@ -2392,6 +2389,7 @@ def _build_daily_prompt_sections(
         "deep_lines": "\n".join(deep_lines),
         "crypto_lines": "\n".join(crypto_lines),
         "calendar_lines": "\n".join(calendar_lines),
+        "desk_views": "\n".join(desk_view_lines),
     }
 
 
@@ -2451,6 +2449,7 @@ def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
           数据发布时刻表
           重要事件预告
           机构观点
+          若没有真实机构研报原话，不要编造机构名称；可以根据输入的市场观察候选，写成“市场观察/交易台观察”式总结。
         - “免责声明”
           固定一句：以上内容由 AI 搜索与研究整理，不构成任何投资建议。
 
@@ -2496,6 +2495,9 @@ def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
 
         [五、今日市场日历]
         {sections["calendar_lines"]}
+
+        [五、今日市场日历-机构观点候选]
+        {sections["desk_views"]}
         === 输入数据结束 ===
         """
     ).strip()
@@ -2602,7 +2604,7 @@ def _call_gemini_daily_preview(
         body = {
             "contents": [{"parts": [{"text": prompt_text}]}],
             "generationConfig": {
-                "temperature": 0.25,
+                "temperature": 0.4,
                 "topP": 0.9,
                 "maxOutputTokens": max_tokens,
             },
