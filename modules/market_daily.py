@@ -4,12 +4,15 @@ import math
 import os
 import time
 import json
+import re
+import html as html_lib
 import urllib.request
 import urllib.parse
 import xml.etree.ElementTree as ET
-from datetime import datetime, timedelta, timezone
+from datetime import date, datetime, time as dt_time, timedelta, timezone
 from email.utils import parsedate_to_datetime
 from typing import Any, Dict, List, Optional, Tuple
+from zoneinfo import ZoneInfo
 
 import numpy as np
 import pandas as pd
@@ -17,8 +20,11 @@ import yfinance as yf
 
 _QUOTE_CACHE: Dict[str, Any] = {"expires_at": 0.0, "items": [], "source_mode": "fallback"}
 _NEWS_CACHE: Dict[str, Any] = {"expires_at": 0.0, "items": [], "source_mode": "fallback"}
+_CALENDAR_CACHE: Dict[str, Any] = {"expires_at": 0.0, "items": [], "source_mode": "fallback"}
 _QUOTE_TTL = int(os.getenv("MARKET_DAILY_QUOTE_TTL", "180"))
 _NEWS_TTL = int(os.getenv("MARKET_DAILY_NEWS_TTL", "300"))
+_CALENDAR_TTL = int(os.getenv("MARKET_DAILY_CALENDAR_TTL", "900"))
+_ET_TZ = ZoneInfo("America/New_York")
 
 _DEFAULT_NEWS_FEEDS: Tuple[Tuple[str, str], ...] = (
     ("CoinDesk", "https://www.coindesk.com/arc/outboundfeeds/rss/"),
@@ -119,6 +125,27 @@ _EDITORIAL_SOURCE_BONUS: Dict[str, int] = {
     "cointelegraph": 2,
     "yahoo finance": 2,
 }
+
+_CALENDAR_COUNTRY_BONUS: Dict[str, int] = {
+    "united states": 10,
+    "euro area": 8,
+    "germany": 7,
+    "united kingdom": 7,
+    "china": 7,
+    "japan": 6,
+    "saudi arabia": 6,
+    "canada": 5,
+    "france": 5,
+    "australia": 5,
+    "new zealand": 4,
+    "switzerland": 4,
+}
+
+_CALENDAR_EVENT_KEYWORDS: Tuple[str, ...] = (
+    "inflation", "cpi", "ppi", "gdp", "retail", "employment", "jobless", "non farm", "non-farm",
+    "consumer", "confidence", "industrial", "production", "pmi", "interest rate", "rate decision",
+    "central bank", "balance of trade", "trade balance", "earnings", "fomc", "powell",
+)
 
 
 def _normalize_as_of(as_of_dt: Optional[datetime]) -> Optional[pd.Timestamp]:
@@ -837,39 +864,376 @@ def _build_crypto_project_updates(hot_news: List[Dict[str, Any]]) -> List[Dict[s
     ]
 
 
-def _build_market_calendar(as_of: datetime) -> List[Dict[str, Any]]:
-    base = as_of.astimezone(timezone.utc).date()
-    events = [
-        {
-            "date": (base + timedelta(days=0)).isoformat(),
-            "timeUtc": "13:30",
-            "category": "Macro",
-            "event": "美国初请失业金",
-            "importance": "高",
-        },
-        {
-            "date": (base + timedelta(days=1)).isoformat(),
-            "timeUtc": "12:30",
-            "category": "Macro",
-            "event": "美国非农就业数据",
-            "importance": "高",
-        },
-        {
-            "date": (base + timedelta(days=1)).isoformat(),
-            "timeUtc": "14:00",
-            "category": "Macro",
-            "event": "FOMC 官员讲话",
-            "importance": "中",
-        },
-        {
-            "date": (base + timedelta(days=2)).isoformat(),
-            "timeUtc": "00:00",
-            "category": "Crypto",
-            "event": "主要交易所周度持仓与资金费率复盘",
-            "importance": "中",
-        },
+def _next_weekday_event(base_et: datetime, weekday: int, hour: int, minute: int) -> datetime:
+    days_ahead = (weekday - base_et.weekday()) % 7
+    candidate_date = base_et.date() + timedelta(days=days_ahead)
+    candidate = datetime.combine(candidate_date, dt_time(hour, minute), tzinfo=_ET_TZ)
+    if candidate <= base_et:
+        candidate += timedelta(days=7)
+    return candidate
+
+
+def _first_weekday_of_month(year: int, month: int, weekday: int) -> date:
+    first_day = date(year, month, 1)
+    offset = (weekday - first_day.weekday()) % 7
+    return first_day + timedelta(days=offset)
+
+
+def _next_nonfarm_release(base_et: datetime) -> datetime:
+    year = base_et.year
+    month = base_et.month
+    for _ in range(24):
+        release_date = _first_weekday_of_month(year, month, 4)
+        candidate = datetime.combine(release_date, dt_time(8, 30), tzinfo=_ET_TZ)
+        if candidate > base_et:
+            return candidate
+        month += 1
+        if month > 12:
+            year += 1
+            month = 1
+    return datetime.combine(base_et.date(), dt_time(8, 30), tzinfo=_ET_TZ) + timedelta(days=28)
+
+
+def _calendar_event(dt_et: datetime, category: str, event: str, importance: str, note: str = "") -> Dict[str, Any]:
+    dt_utc = dt_et.astimezone(timezone.utc)
+    return {
+        "date": dt_et.strftime("%Y-%m-%d"),
+        "timeEt": dt_et.strftime("%H:%M"),
+        "timeUtc": dt_utc.strftime("%H:%M"),
+        "country": "美国",
+        "category": category,
+        "event": event,
+        "importance": importance,
+        "note": note,
+    }
+
+
+def _calendar_importance_label(value: Any) -> Tuple[int, str]:
+    raw = str(value or "").strip()
+    if raw in {"高", "high", "HIGH", "⭐⭐⭐", "***"}:
+        return 3, "⭐⭐⭐"
+    if raw in {"中", "medium", "MEDIUM", "⭐⭐", "**"}:
+        return 2, "⭐⭐"
+    if raw in {"低", "low", "LOW", "⭐", "*"}:
+        return 1, "⭐"
+    try:
+        level = int(float(raw))
+    except Exception:
+        level = 1
+    level = max(1, min(3, level))
+    return level, "⭐" * level
+
+
+def _calendar_event_score(item: Dict[str, Any]) -> int:
+    country = str(item.get("Country") or item.get("country") or "").strip().lower()
+    event = str(item.get("Event") or item.get("event") or "").strip().lower()
+    category = str(item.get("Category") or item.get("category") or "").strip().lower()
+    importance_level, _ = _calendar_importance_label(item.get("Importance") or item.get("importance"))
+    score = importance_level * 100
+    score += _CALENDAR_COUNTRY_BONUS.get(country, 0)
+    if any(keyword in event for keyword in _CALENDAR_EVENT_KEYWORDS):
+        score += 20
+    if any(keyword in category for keyword in ("inflation", "gdp", "labour", "labor", "rates", "central bank", "economic activity")):
+        score += 10
+    return score
+
+
+def _parse_calendar_datetime(value: Any) -> Optional[datetime]:
+    raw = str(value or "").strip()
+    if not raw:
+        return None
+    candidates = [
+        raw.replace("Z", "+00:00"),
+        raw,
     ]
+    for candidate in candidates:
+        try:
+            dt = datetime.fromisoformat(candidate)
+            if dt.tzinfo is None:
+                dt = dt.replace(tzinfo=timezone.utc)
+            return dt.astimezone(_ET_TZ)
+        except Exception:
+            continue
+    return None
+
+
+def _fetch_text(url: str) -> str:
+    request = urllib.request.Request(
+        url,
+        headers={
+            "User-Agent": "MacroQuant/1.0",
+            "Accept": "text/plain,text/html,application/xml,text/calendar,*/*;q=0.8",
+        },
+    )
+    with urllib.request.urlopen(request, timeout=15) as response:
+        return response.read().decode("utf-8", errors="ignore")
+
+
+def _strip_html_tags(text: str) -> str:
+    cleaned = re.sub(r"(?is)<(script|style).*?>.*?</\\1>", " ", text)
+    cleaned = re.sub(r"(?s)<[^>]+>", " ", cleaned)
+    cleaned = html_lib.unescape(cleaned)
+    return re.sub(r"\s+", " ", cleaned).strip()
+
+
+def _unfold_ics_lines(body: str) -> List[str]:
+    lines = body.replace("\r\n", "\n").replace("\r", "\n").split("\n")
+    unfolded: List[str] = []
+    for line in lines:
+        if line.startswith((" ", "\t")) and unfolded:
+            unfolded[-1] += line[1:]
+        else:
+            unfolded.append(line)
+    return unfolded
+
+
+def _parse_ics_datetime(field: str, value: str) -> Optional[datetime]:
+    raw = str(value or "").strip()
+    if not raw or "VALUE=DATE" in field or len(raw) == 8:
+        return None
+    try:
+        if raw.endswith("Z"):
+            dt = datetime.strptime(raw, "%Y%m%dT%H%M%SZ").replace(tzinfo=timezone.utc)
+            return dt.astimezone(_ET_TZ)
+        dt = datetime.strptime(raw, "%Y%m%dT%H%M%S")
+        return dt.replace(tzinfo=_ET_TZ)
+    except Exception:
+        return None
+
+
+def _calendar_importance_from_text(text: str) -> str:
+    normalized = str(text or "").lower()
+    high_keywords = (
+        "employment situation",
+        "nonfarm",
+        "consumer price index",
+        "cpi",
+        "fomc",
+        "interest rate",
+        "pce",
+        "gross domestic product",
+        "gdp",
+        "retail sales",
+        "jobless claims",
+    )
+    medium_keywords = (
+        "producer price",
+        "ppi",
+        "job openings",
+        "jolts",
+        "consumer confidence",
+        "ism",
+        "pmi",
+        "weekly petroleum status",
+        "eia",
+        "industrial production",
+    )
+    if any(keyword in normalized for keyword in high_keywords):
+        return "高"
+    if any(keyword in normalized for keyword in medium_keywords):
+        return "中"
+    return "低"
+
+
+def _translate_bls_summary(summary: str) -> str:
+    normalized = str(summary or "").lower()
+    mappings: Tuple[Tuple[str, str], ...] = (
+        ("employment situation", "美国非农就业数据"),
+        ("consumer price index", "美国 CPI"),
+        ("producer price index", "美国 PPI"),
+        ("job openings and labor turnover", "美国 JOLTS 职位空缺"),
+        ("import and export prices", "美国进出口价格指数"),
+        ("productivity and costs", "美国生产率与单位劳动力成本"),
+        ("producer price", "美国 PPI"),
+    )
+    for needle, label in mappings:
+        if needle in normalized:
+            return label
+    return summary.strip() or "美国宏观数据发布"
+
+
+def _fetch_bls_calendar_events(base_et: datetime, days_ahead: int = 7) -> List[Dict[str, Any]]:
+    try:
+        body = _fetch_text("https://www.bls.gov/schedule/news_release/bls.ics")
+    except Exception:
+        return []
+
+    lines = _unfold_ics_lines(body)
+    events: List[Dict[str, Any]] = []
+    current: Dict[str, str] = {}
+    within_end = base_et.date() + timedelta(days=days_ahead)
+    keywords = (
+        "employment situation",
+        "consumer price index",
+        "producer price index",
+        "job openings",
+        "import and export prices",
+        "productivity",
+    )
+
+    for line in lines:
+        if line == "BEGIN:VEVENT":
+            current = {}
+            continue
+        if line == "END:VEVENT":
+            summary = current.get("SUMMARY", "").strip()
+            dtstart_key = next((key for key in current if key.startswith("DTSTART")), "")
+            dtstart = _parse_ics_datetime(dtstart_key, current.get(dtstart_key, ""))
+            if summary and dtstart and base_et.date() <= dtstart.date() <= within_end:
+                if any(keyword in summary.lower() for keyword in keywords):
+                    label = _translate_bls_summary(summary)
+                    events.append(
+                        {
+                            **_calendar_event(
+                                dtstart,
+                                "Macro",
+                                label,
+                                _calendar_importance_from_text(summary),
+                                "BLS 官方发布日历",
+                            ),
+                            "country": "美国",
+                        }
+                    )
+            current = {}
+            continue
+        if ":" not in line:
+            continue
+        key, value = line.split(":", 1)
+        current[key] = value
+        if key == "SUMMARY":
+            current["SUMMARY"] = value
+
     return events
+
+
+def _fetch_eia_calendar_events(base_et: datetime, days_ahead: int = 7) -> List[Dict[str, Any]]:
+    try:
+        html = _fetch_text("https://www.eia.gov/petroleum/supply/weekly/")
+        text = _strip_html_tags(html)
+    except Exception:
+        return []
+
+    match = re.search(r"Next Release Date:\s*([A-Za-z]+ \d{1,2}, \d{4})", text, re.IGNORECASE)
+    if not match:
+        return []
+
+    try:
+        release_date = datetime.strptime(match.group(1), "%B %d, %Y").date()
+    except Exception:
+        return []
+
+    if not (base_et.date() <= release_date <= base_et.date() + timedelta(days=days_ahead)):
+        return []
+
+    dt_et = datetime.combine(release_date, dt_time(10, 30), tzinfo=_ET_TZ)
+    return [
+        {
+            **_calendar_event(
+                dt_et,
+                "Energy",
+                "美国 EIA 原油库存",
+                "中",
+                "EIA 官方页面；节假日周可能调整发布时间。",
+            ),
+            "country": "美国",
+        }
+    ]
+
+
+def _fetch_live_market_calendar(as_of: datetime) -> Tuple[List[Dict[str, Any]], str]:
+    now_ts = time.time()
+    cache_key = as_of.astimezone(_ET_TZ).strftime("%Y-%m-%d")
+    if _CALENDAR_CACHE.get("expires_at", 0.0) > now_ts and _CALENDAR_CACHE.get("cache_key") == cache_key:
+        return list(_CALENDAR_CACHE.get("items", [])), str(_CALENDAR_CACHE.get("source_mode", "fallback"))
+
+    base_et = as_of.astimezone(_ET_TZ)
+    items: List[Dict[str, Any]] = []
+    source_mode = "fallback"
+    official_items: List[Dict[str, Any]] = []
+    try:
+        official_items.extend(_fetch_bls_calendar_events(base_et, days_ahead=7))
+    except Exception:
+        pass
+    try:
+        official_items.extend(_fetch_eia_calendar_events(base_et, days_ahead=7))
+    except Exception:
+        pass
+
+    if official_items:
+        seen_keys = set()
+        deduped: List[Dict[str, Any]] = []
+        for item in official_items:
+            dedupe_key = (item.get("date", ""), item.get("timeEt", ""), item.get("country", ""), item.get("event", ""))
+            if dedupe_key in seen_keys:
+                continue
+            seen_keys.add(dedupe_key)
+            deduped.append(item)
+
+        today_items = [item for item in deduped if item.get("date") == base_et.strftime("%Y-%m-%d")]
+        candidate_items = today_items or deduped
+        scored = sorted(
+            candidate_items,
+            key=lambda item: (
+                -_calendar_event_score(item),
+                item.get("date", ""),
+                item.get("timeEt", ""),
+                item.get("event", ""),
+            ),
+        )
+        items = scored[:8]
+        source_mode = "official"
+
+    _CALENDAR_CACHE.update(
+        {
+            "expires_at": now_ts + _CALENDAR_TTL,
+            "items": list(items),
+            "source_mode": source_mode,
+            "cache_key": cache_key,
+        }
+    )
+    return items, source_mode
+
+
+def _build_rule_based_market_calendar(as_of: datetime) -> List[Dict[str, Any]]:
+    base_et = as_of.astimezone(_ET_TZ)
+    events = [
+        _calendar_event(
+            _next_weekday_event(base_et, 2, 10, 30),
+            "Energy",
+            "美国 EIA 原油库存",
+            "中",
+            "每周三 10:30 ET 公布，影响原油与能源板块波动。",
+        ),
+        _calendar_event(
+            _next_weekday_event(base_et, 3, 8, 30),
+            "Macro",
+            "美国初请失业金人数",
+            "高",
+            "每周四 08:30 ET 公布，是跟踪劳动力市场边际变化的高频指标。",
+        ),
+    ]
+
+    next_nonfarm = _next_nonfarm_release(base_et)
+    if (next_nonfarm.date() - base_et.date()).days <= 28:
+        events.append(
+            _calendar_event(
+                next_nonfarm,
+                "Macro",
+                "美国非农就业数据",
+                "高",
+                "按月公布，通常在每月首个周五 08:30 ET 发布。",
+            )
+        )
+
+    events.sort(key=lambda item: (item.get("date", ""), item.get("timeEt", "")))
+    return events[:6]
+
+
+def _build_market_calendar(as_of: datetime) -> List[Dict[str, Any]]:
+    live_items, source_mode = _fetch_live_market_calendar(as_of)
+    if source_mode in {"live", "official"} and live_items:
+        return live_items
+    return _build_rule_based_market_calendar(as_of)
 
 
 def _build_push_channels() -> List[Dict[str, Any]]:
