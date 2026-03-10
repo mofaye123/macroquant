@@ -653,6 +653,15 @@ export const LiveHedgeReportBacktest = () => {
         ? "回测接口已返回，但当前区间没有生成可用的 hedge 报告数据。"
         : null);
 
+  const usingApi = macroState.sourceType === "api";
+  const sourceBadgeText = usingApi ? "LIVE API" : "SNAPSHOT";
+  const sourceBadgeClass = usingApi
+    ? "border-[#3fb950] bg-[#1a3a1a] text-[#3fb950]"
+    : "border-[#58a6ff] bg-[#102548] text-[#58a6ff]";
+  const sourceDetail = usingApi
+    ? macroState.sourceUrl ?? report?.meta.dataSource ?? "MacroQuant API"
+    : report?.meta.dataSource ?? "static macro-data.json";
+
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#e6edf3]">
       <div className="border-b border-[#30363d] bg-[#161b22] px-[24px] py-[14px]">
@@ -662,8 +671,8 @@ export const LiveHedgeReportBacktest = () => {
               <h1 className="text-[15px] font-semibold tracking-[-0.02em]">
                 宏观 CTA + 尾部对冲 · 量化回测报告
               </h1>
-              <span className="rounded-full border border-[#3fb950] bg-[#1a3a1a] px-[8px] py-[2px] text-[10px] text-[#3fb950]">
-                LIVE DATA
+              <span className={`rounded-full border px-[8px] py-[2px] text-[10px] ${sourceBadgeClass}`}>
+                {sourceBadgeText}
               </span>
               {isLoading ? (
                 <span className="rounded-full border border-[#58a6ff] bg-[#102548] px-[8px] py-[2px] text-[10px] text-[#58a6ff]">
@@ -672,7 +681,7 @@ export const LiveHedgeReportBacktest = () => {
               ) : null}
             </div>
             <p className="mt-[6px] text-[11px] text-[#8b949e]">
-              数据来源: {report?.meta.dataSource ?? "MacroQuant API"} · 策略执行区间{" "}
+              数据来源: {sourceDetail} · 策略执行区间{" "}
               {report?.meta.strategyStart ?? payload.startDate ?? "-"} →{" "}
               {report?.meta.strategyEnd ?? payload.endDate ?? "-"}
             </p>

@@ -1838,7 +1838,9 @@ def build_macro_payload(as_of_date: Optional[pd.Timestamp] = None) -> Dict[str, 
     ]
 
     try:
-        backtest_payload = build_backtest_payload(df_all)
+        # Include detailed hedge report in static snapshots so Pages deployments
+        # can render the full backtest page even when runtime API is unavailable.
+        backtest_payload = build_backtest_payload(df_all, include_detailed_report=True)
     except Exception as exc:
         backtest_payload = {
             "status": "degraded",
