@@ -1236,6 +1236,263 @@ def _format_backtest_date(value):
     return str(value)
 
 
+BACKTEST_REPORT_MODULES = (
+    ("A", "Score_A", "流动性"),
+    ("B", "Score_B", "货币市场"),
+    ("C", "Score_C", "国债曲线"),
+    ("D", "Score_D", "实际利率"),
+    ("E", "Score_E", "美元"),
+    ("F", "Score_F", "信用"),
+    ("G", "Score_G", "波动率"),
+)
+
+
+def _parse_optional_backtest_date(value):
+    if value in (None, "", "null"):
+        return None
+    try:
+        ts = pd.Timestamp(value)
+    except Exception:
+        return None
+    if pd.isna(ts):
+        return None
+    if getattr(ts, "tzinfo", None) is not None:
+        ts = ts.tz_localize(None)
+    return ts.normalize()
+
+
+def _resolve_backtest_window(index, overrides=None):
+    idx = pd.Index(index)
+    idx_min = pd.Timestamp(idx.min()).normalize()
+    idx_max = pd.Timestamp(idx.max()).normalize()
+
+    default_start = max(pd.Timestamp("2020-01-01"), idx_min)
+    default_end = idx_max
+
+    src = overrides or {}
+    start = _parse_optional_backtest_date(src.get("start_date")) or default_start
+    end = _parse_optional_backtest_date(src.get("end_date")) or default_end
+
+    start = min(max(start, idx_min), idx_max)
+    end = min(max(end, idx_min), idx_max)
+    if end < start:
+        end = start
+    return start, end, idx_min, idx_max
+
+
+def _build_return_heatmap(ret_series):
+    ret = ret_series.dropna()
+    if ret.empty:
+        return {}
+
+    monthly = ((1.0 + ret).resample("ME").prod() - 1.0) * 100.0
+    payload = {}
+    for ts, value in monthly.items():
+        year = str(ts.year)
+        if year not in payload:
+            payload[year] = {}
+        payload[year][int(ts.month)] = round(float(value), 1)
+    return payload
+
+
+def _extract_drawdown_periods(nav_series, limit=5, min_drawdown=0.05):
+    nav = nav_series.dropna()
+    if nav.empty:
+        return []
+
+    periods = []
+    peak_value = float(nav.iloc[0])
+    peak_date = nav.index[0]
+    start_date = None
+    trough_date = None
+    max_drawdown = 0.0
+
+    for ts, raw_value in nav.items():
+        value = float(raw_value)
+        if value >= peak_value:
+            if start_date is not None and trough_date is not None and max_drawdown <= -abs(min_drawdown):
+                periods.append({
+                    "start": _format_backtest_date(start_date),
+                    "trough": _format_backtest_date(trough_date),
+                    "end": _format_backtest_date(ts),
+                    "mdd": round(max_drawdown * 100.0, 1),
+                    "duration": max((ts - start_date).days, 0),
+                    "ongoing": False,
+                })
+            peak_value = value
+            peak_date = ts
+            start_date = None
+            trough_date = None
+            max_drawdown = 0.0
+            continue
+
+        drawdown = value / peak_value - 1.0 if peak_value else 0.0
+        if start_date is None:
+            start_date = peak_date
+        if trough_date is None or drawdown < max_drawdown:
+            trough_date = ts
+            max_drawdown = drawdown
+
+    if start_date is not None and trough_date is not None and max_drawdown <= -abs(min_drawdown):
+        end_ts = nav.index[-1]
+        periods.append({
+            "start": _format_backtest_date(start_date),
+            "trough": _format_backtest_date(trough_date),
+            "end": _format_backtest_date(end_ts),
+            "mdd": round(max_drawdown * 100.0, 1),
+            "duration": max((end_ts - start_date).days, 0),
+            "ongoing": True,
+        })
+
+    return sorted(periods, key=lambda item: item["mdd"])[:limit]
+
+
+def _cta_order_trigger(old_pos, new_pos, signal_text):
+    delta = new_pos - old_pos
+    if old_pos <= 1e-8 and new_pos > 1e-8:
+        return "进场/建仓"
+    if new_pos <= 1e-8 and old_pos > 1e-8:
+        return "离场"
+
+    signal = str(signal_text or "")
+    if delta > 0:
+        if any(token in signal for token in ("进攻", "加仓")) or abs(delta) >= 0.25:
+            return "加仓"
+        return "再平衡"
+    if delta < 0:
+        if any(token in signal for token in ("防守", "等待")) or abs(delta) >= 0.25:
+            return "减仓"
+        return "再平衡"
+    return "再平衡"
+
+
+def _build_backtest_order_rows(portfolio_df):
+    if portfolio_df is None or portfolio_df.empty:
+        return []
+
+    orders = []
+
+    cta_target = portfolio_df["CTA_Target_Position"].fillna(0.0)
+    cta_prev = cta_target.shift(1).fillna(0.0)
+    cta_mask = (cta_target - cta_prev).abs() > 1e-8
+    for ts in cta_target.index[cta_mask]:
+        old_pos = float(cta_prev.loc[ts])
+        new_pos = float(cta_target.loc[ts])
+        delta = new_pos - old_pos
+        signal_text = str(portfolio_df["Signal_Type"].loc[ts]) if "Signal_Type" in portfolio_df.columns else ""
+        orders.append({
+            "date": _format_backtest_date(ts),
+            "oldPos": round(old_pos, 3),
+            "newPos": round(new_pos, 3),
+            "delta": round(delta, 3),
+            "direction": "BUY" if delta >= 0 else "SELL",
+            "trigger": _cta_order_trigger(old_pos, new_pos, signal_text),
+            "price": round(float(portfolio_df["Price"].loc[ts]), 2),
+            "macroScore": round(float(portfolio_df["Total_Score"].loc[ts]), 1),
+            "hedgePct": round(float(portfolio_df["Hedge_Position"].loc[ts]) * 100.0, 1),
+            "riskScore": int(round(float(portfolio_df["Risk_Score"].loc[ts]))),
+            "type": "CTA",
+        })
+
+    hedge_pos = portfolio_df["Hedge_Position"].fillna(0.0)
+    hedge_prev = hedge_pos.shift(1).fillna(0.0)
+    hedge_mask = (hedge_pos - hedge_prev).abs() > 1e-8
+    for ts in hedge_pos.index[hedge_mask]:
+        old_pos = float(hedge_prev.loc[ts])
+        new_pos = float(hedge_pos.loc[ts])
+        delta = new_pos - old_pos
+        orders.append({
+            "date": _format_backtest_date(ts),
+            "oldPos": round(old_pos, 3),
+            "newPos": round(new_pos, 3),
+            "delta": round(delta, 3),
+            "direction": "HEDGE↑" if delta >= 0 else "HEDGE↓",
+            "trigger": "对冲信号",
+            "price": round(float(portfolio_df["Price"].loc[ts]), 2),
+            "macroScore": round(float(portfolio_df["Total_Score"].loc[ts]), 1),
+            "hedgePct": round(new_pos * 100.0, 1),
+            "riskScore": int(round(float(portfolio_df["Risk_Score"].loc[ts]))),
+            "type": "HEDGE",
+        })
+
+    return sorted(orders, key=lambda item: item["date"])
+
+
+def _build_backtest_live_report(cta_df, hedge_df, portfolio_df, start_date, end_date):
+    if cta_df is None or hedge_df is None or portfolio_df is None or portfolio_df.empty:
+        return None
+
+    rows = []
+    index = portfolio_df.index
+    for ts in index:
+        signal_bits = [
+            int(round(float(hedge_df["Sig_Tech_Break"].get(ts, 0.0)))),
+            int(round(float(hedge_df["Sig_VIX_Invert"].get(ts, 0.0)))),
+            int(round(float(hedge_df["Sig_Macro_Drop"].get(ts, 0.0)))),
+            int(round(float(hedge_df["Sig_HY_Spike"].get(ts, 0.0)))),
+            int(round(float(hedge_df["Sig_BTC_Momentum"].get(ts, 0.0)))),
+        ]
+        rows.append({
+            "date": _format_backtest_date(ts),
+            "price": round(float(portfolio_df["Price"].loc[ts]), 2),
+            "buyHoldNav": round(float(portfolio_df["BH_Nav"].loc[ts]), 6),
+            "ctaNav": round(float(portfolio_df["CTA_Nav"].loc[ts]), 6),
+            "combinedNav": round(float(portfolio_df["Combined_Nav"].loc[ts]), 6),
+            "buyHoldDrawdownPct": round(float(portfolio_df["BH_DD"].loc[ts]) * 100.0, 2),
+            "ctaDrawdownPct": round(float(portfolio_df["CTA_DD"].loc[ts]) * 100.0, 2),
+            "combinedDrawdownPct": round(float(portfolio_df["Combined_DD"].loc[ts]) * 100.0, 2),
+            "ctaPosition": round(float(portfolio_df["CTA_Position"].loc[ts]), 3),
+            "hedgePositionPct": round(float(portfolio_df["Hedge_Position"].loc[ts]) * 100.0, 2),
+            "totalScore": round(float(portfolio_df["Total_Score"].loc[ts]), 2),
+            "riskScore": int(round(float(portfolio_df["Risk_Score"].loc[ts]))),
+            "signals": signal_bits,
+            "ema20": round(float(cta_df["EMA20"].loc[ts]), 2),
+            "ema60": round(float(cta_df["EMA60"].loc[ts]), 2),
+            "ema120": round(float(cta_df["EMA120"].loc[ts]), 2),
+            "vixVxv": round(float(hedge_df["VIX_VXV_Ratio"].loc[ts]), 3),
+            "hySpread": round(float(hedge_df["HY_Spread"].loc[ts]), 3),
+            "vix": round(float(hedge_df["VIX"].loc[ts]), 3),
+            "vxv": round(float(hedge_df["VXV"].loc[ts]), 3),
+            "scoreA": round(float(cta_df.get("Score_A", pd.Series(50.0, index=index)).loc[ts]), 2),
+            "scoreB": round(float(cta_df.get("Score_B", pd.Series(50.0, index=index)).loc[ts]), 2),
+            "scoreC": round(float(cta_df.get("Score_C", pd.Series(50.0, index=index)).loc[ts]), 2),
+            "scoreD": round(float(cta_df.get("Score_D", pd.Series(50.0, index=index)).loc[ts]), 2),
+            "scoreE": round(float(cta_df.get("Score_E", pd.Series(50.0, index=index)).loc[ts]), 2),
+            "scoreF": round(float(cta_df.get("Score_F", pd.Series(50.0, index=index)).loc[ts]), 2),
+            "scoreG": round(float(cta_df.get("Score_G", pd.Series(50.0, index=index)).loc[ts]), 2),
+            "buyHoldRet": round(float(portfolio_df["Pct_Change"].loc[ts]), 6),
+            "ctaRet": round(float(portfolio_df["CTA_Only_Ret"].loc[ts]), 6),
+            "combinedRet": round(float(portfolio_df["Combined_Ret"].loc[ts]), 6),
+        })
+
+    return {
+        "rows": rows,
+        "orders": _build_backtest_order_rows(portfolio_df),
+        "monthly": {
+            "BH": _build_return_heatmap(portfolio_df["Pct_Change"]),
+            "CTA": _build_return_heatmap(portfolio_df["CTA_Only_Ret"]),
+            "Comb": _build_return_heatmap(portfolio_df["Combined_Ret"]),
+        },
+        "drawdownPeriods": {
+            "bh": _extract_drawdown_periods(portfolio_df["BH_Nav"]),
+            "cta": _extract_drawdown_periods(portfolio_df["CTA_Nav"]),
+            "comb": _extract_drawdown_periods(portfolio_df["Combined_Nav"]),
+        },
+        "modules": [
+            {"key": key, "name": name, "field": field}
+            for key, field, name in BACKTEST_REPORT_MODULES
+        ],
+        "meta": {
+            "start": rows[0]["date"] if rows else _format_backtest_date(start_date),
+            "end": rows[-1]["date"] if rows else _format_backtest_date(end_date),
+            "nRows": len(rows),
+            "dataSource": "MacroQuant Live API + Yahoo Finance",
+            "strategyStart": _format_backtest_date(start_date),
+            "strategyEnd": _format_backtest_date(end_date),
+        },
+    }
+
+
 DEFAULT_BACKTEST_DIAGNOSTIC_HEDGE = {
     "cta_capital_weight": 0.95,
     "hedge_capital_weight": 0.05,
@@ -1736,7 +1993,7 @@ def _normalize_backtest_overrides(overrides=None):
     }
 
 
-def build_backtest_payload(df_all, overrides=None):
+def build_backtest_payload(df_all, overrides=None, include_detailed_report=False):
     resolved = _normalize_backtest_overrides(overrides)
     cfg = resolved["cfg"]
     th1 = float(cfg.get("th1", 20.0))
@@ -1760,6 +2017,7 @@ def build_backtest_payload(df_all, overrides=None):
         "startingCapital": DEFAULT_BACKTEST_INITIAL_CAPITAL,
         "assets": [],
         "diagnostics": None,
+        "hedgeReport": None,
         "sop": DEFAULT_BACKTEST_SOP,
         "strategyOverview": {
             "title": "宏观 Core CTA + 尾部对冲框架",
@@ -1773,23 +2031,19 @@ def build_backtest_payload(df_all, overrides=None):
         payload["reason"] = "回测失败：输入数据为空。"
         return payload
 
-    idx_min = pd.Timestamp(df_all.index.min()).date()
-    idx_max = pd.Timestamp(df_all.index.max()).date()
-    default_start = pd.Timestamp("2023-01-01").date()
-    if default_start < idx_min:
-        default_start = idx_min
-    if default_start > idx_max:
-        default_start = idx_min
-
-    backtest_start = pd.Timestamp(default_start)
+    backtest_start, backtest_end, _, _ = _resolve_backtest_window(df_all.index, overrides)
     score_frame_full = _calculate_score_internal(df_all)
     if score_frame_full.empty:
         payload["reason"] = "回测失败：宏观总分序列为空。"
         return payload
 
-    score_frame = score_frame_full[score_frame_full.index >= backtest_start].dropna(subset=['Total_Score']).copy()
+    score_mask = (score_frame_full.index >= backtest_start) & (score_frame_full.index <= backtest_end)
+    score_frame = score_frame_full.loc[score_mask].dropna(subset=['Total_Score']).copy()
     if score_frame.empty:
-        payload["reason"] = f"回测失败：{backtest_start.strftime('%Y-%m-%d')} 之后没有可用宏观分数数据。"
+        payload["reason"] = (
+            f"回测失败：{backtest_start.strftime('%Y-%m-%d')} 至 {backtest_end.strftime('%Y-%m-%d')} "
+            "区间内没有可用宏观分数数据。"
+        )
         return payload
 
     y_data = _download_yahoo_data(backtest_start.strftime('%Y-%m-%d'))
@@ -1799,6 +2053,8 @@ def build_backtest_payload(df_all, overrides=None):
 
     assets = []
     btc_core_df = None
+    btc_hedge_df = None
+    btc_portfolio_df = None
     for item in DEFAULT_BACKTEST_ASSETS:
         price_s = _extract_price_series(y_data, item["symbol"])
         if price_s.empty:
@@ -1806,7 +2062,8 @@ def build_backtest_payload(df_all, overrides=None):
         if getattr(price_s.index, "tz", None) is not None:
             price_s.index = price_s.index.tz_localize(None)
         df = score_frame.join(price_s.rename('Price'), how='inner').dropna(subset=['Total_Score', 'Price'])
-        if len(df) < 150:
+        df = df[(df.index >= backtest_start) & (df.index <= backtest_end)].copy()
+        if len(df) < 60:
             continue
 
         asset_cfg = resolved["cfg"].copy()
@@ -1845,6 +2102,8 @@ def build_backtest_payload(df_all, overrides=None):
             )
             if item["ticker"] == "BTC":
                 btc_core_df = core_df.copy()
+                btc_hedge_df = hedge_df.copy()
+                btc_portfolio_df = df.copy()
 
         trade_log = generate_trade_log(df, 'Price')
         perf = compute_perf_metrics(df, risk_free_rate=float(resolved["risk_free_rate"]))
@@ -1953,6 +2212,34 @@ def build_backtest_payload(df_all, overrides=None):
             payload["diagnostics"] = {
                 "status": "degraded",
                 "reason": f"诊断数据生成失败: {exc}",
+            }
+    if include_detailed_report and btc_core_df is not None and btc_hedge_df is not None and btc_portfolio_df is not None:
+        try:
+            payload["hedgeReport"] = _build_backtest_live_report(
+                btc_core_df,
+                btc_hedge_df,
+                btc_portfolio_df,
+                backtest_start,
+                backtest_end,
+            )
+        except Exception as exc:
+            payload["hedgeReport"] = {
+                "rows": [],
+                "orders": [],
+                "monthly": {"BH": {}, "CTA": {}, "Comb": {}},
+                "drawdownPeriods": {"bh": [], "cta": [], "comb": []},
+                "modules": [
+                    {"key": key, "name": name, "field": field}
+                    for key, field, name in BACKTEST_REPORT_MODULES
+                ],
+                "meta": {
+                    "start": _format_backtest_date(backtest_start),
+                    "end": _format_backtest_date(backtest_end),
+                    "nRows": 0,
+                    "dataSource": f"报告生成失败: {exc}",
+                    "strategyStart": _format_backtest_date(backtest_start),
+                    "strategyEnd": _format_backtest_date(backtest_end),
+                },
             }
     return payload
 

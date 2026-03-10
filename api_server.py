@@ -2362,8 +2362,12 @@ def _build_daily_prompt_sections(
 
     calendar_lines = []
     for event in calendar[:10]:
+        note = str(event.get("note", "") or "").strip()
+        country = str(event.get("country", "") or "").strip()
         calendar_lines.append(
-            f"- {event.get('date', '-') } {event.get('timeUtc', '-') } UTC | {event.get('category', '-') } | {event.get('event', '-') } | 重要性={event.get('importance', '-') }"
+            f"- {event.get('date', '-') } {event.get('timeEt', '-') } ET ({event.get('timeUtc', '-') } UTC) | "
+            f"{country or event.get('category', '-') } | {event.get('event', '-') } | 重要性={event.get('importance', '-') }"
+            + (f" | 说明={note}" if note else "")
         )
     if not calendar_lines:
         calendar_lines = ["- 数据不足：暂无市场日历输入"]
@@ -2449,6 +2453,8 @@ def _build_market_daily_ai_prompt(daily_payload: Dict[str, Any]) -> str:
           数据发布时刻表
           重要事件预告
           机构观点
+          美国市场事件统一以 ET 作为主时间口径，必要时可在括号中补充 UTC。
+          不要编造无法验证的 FOMC 官员讲话、非农、CPI 等具体日期；只能使用输入材料里明确给出的日历项。
           若没有真实机构研报原话，不要编造机构名称；可以根据输入的市场观察候选，写成“市场观察/交易台观察”式总结。
         - “免责声明”
           固定一句：以上内容由 AI 搜索与研究整理，不构成任何投资建议。
@@ -3142,6 +3148,7 @@ def backtest_data(
                 "alloc_0_20": alloc_0_20,
                 "alloc_65_80": alloc_65_80,
             },
+            include_detailed_report=True,
         )
     except Exception as exc:
         raise HTTPException(status_code=500, detail=f"Failed to compute backtest payload: {exc}") from exc

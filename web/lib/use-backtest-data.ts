@@ -6,6 +6,8 @@ import { backtestPayload as fallbackBacktestPayload } from "@/lib/mock-data";
 import { BacktestPayload } from "@/lib/types";
 
 export type BacktestControls = {
+  startDate: string;
+  endDate: string;
   macroLagDays: number;
   riskFreeRate: number;
   costScale: number;
@@ -23,6 +25,8 @@ export type BacktestControls = {
 };
 
 export const DEFAULT_BACKTEST_CONTROLS: BacktestControls = {
+  startDate: "",
+  endDate: "",
   macroLagDays: 1,
   riskFreeRate: 4.0,
   costScale: 1.0,
@@ -46,6 +50,8 @@ type UseBacktestDataArgs = {
 };
 
 const sameControls = (left: BacktestControls, right: BacktestControls) =>
+  left.startDate === right.startDate &&
+  left.endDate === right.endDate &&
   left.macroLagDays === right.macroLagDays &&
   left.riskFreeRate === right.riskFreeRate &&
   left.costScale === right.costScale &&
@@ -93,6 +99,12 @@ const fetchBacktestPayload = async (url: string, signal?: AbortSignal): Promise<
 const buildBacktestUrl = (apiUrl: string, controls: BacktestControls): string => {
   const endpoint = apiUrl.replace("/api/v1/macro-data", "/api/v1/backtest");
   const url = new URL(endpoint);
+  if (controls.startDate) {
+    url.searchParams.set("start_date", controls.startDate);
+  }
+  if (controls.endDate) {
+    url.searchParams.set("end_date", controls.endDate);
+  }
   url.searchParams.set("macro_lag_days", String(controls.macroLagDays));
   url.searchParams.set("risk_free_rate", String(controls.riskFreeRate));
   url.searchParams.set("cost_scale", String(controls.costScale));
@@ -122,8 +134,9 @@ export const useBacktestData = ({ apiUrl, sourceType, seededPayload }: UseBackte
   );
 
   useEffect(() => {
+    const needsDetailedHydration = !seededPayload?.hedgeReport?.rows?.length;
     const shouldHydrateDefault = sourceType === "static" && !isDirty;
-    const shouldRequest = isDirty || shouldHydrateDefault;
+    const shouldRequest = isDirty || shouldHydrateDefault || needsDetailedHydration;
     const suppressTransientError = shouldHydrateDefault;
 
     if (!shouldRequest) {
@@ -172,7 +185,7 @@ export const useBacktestData = ({ apiUrl, sourceType, seededPayload }: UseBackte
       controller.abort();
       window.clearTimeout(timeoutId);
     };
-  }, [apiUrl, controls, isDirty, sourceType]);
+  }, [apiUrl, controls, isDirty, seededPayload, sourceType]);
 
   const basePayload = sourceType !== "mock" && seededPayload?.status === "ok" && seededPayload.assets.length > 0
     ? seededPayload

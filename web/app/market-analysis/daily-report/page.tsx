@@ -794,9 +794,13 @@ export default function MarketDailyReportPage() {
             <div className="mt-[12px] space-y-[8px]">
               {report.marketCalendar.map((event) => (
                 <div key={`${event.date}-${event.event}`} className="rounded-[12px] border border-app-border bg-white p-[10px]">
-                  <p className="text-[12px] font-semibold text-app-text">{event.date} {event.timeUtc} UTC</p>
-                  <p className="mt-[2px] text-[12px] text-app-muted">{event.event}</p>
+                  <p className="text-[12px] font-semibold text-app-text">
+                    {event.date} {event.timeEt ?? "--:--"} ET
+                  </p>
+                  <p className="mt-[2px] text-[11px] text-app-muted">对应 UTC：{event.timeUtc} UTC</p>
+                  <p className="mt-[2px] text-[12px] text-app-muted">{event.country ? `${event.country} · ` : ""}{event.event}</p>
                   <p className="mt-[2px] text-[11px] text-app-muted">{event.category} · 影响等级 {event.importance}</p>
+                  {event.note ? <p className="mt-[4px] text-[11px] leading-relaxed text-slate-500">{event.note}</p> : null}
                 </div>
               ))}
             </div>

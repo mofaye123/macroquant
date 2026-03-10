@@ -250,7 +250,11 @@ def _render_markdown(daily: Dict[str, Any]) -> str:
     lines.append("### 数据发布时刻表")
     if calendar:
         for event in calendar[:6]:
-            lines.append(f"- {event.get('date', '-') } {event.get('timeUtc', '-') } UTC | {event.get('event', '-') } | {event.get('importance', '-') }")
+            lines.append(
+                f"- {event.get('date', '-') } {event.get('timeEt', '--:--') } ET "
+                f"({event.get('timeUtc', '-') } UTC) | {event.get('country', event.get('category', '-')) } | "
+                f"{event.get('event', '-') } | {event.get('importance', '-') }"
+            )
     else:
         lines.append("数据不足：暂无市场日历。")
     lines.append("")

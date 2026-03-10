@@ -238,6 +238,77 @@ export type BacktestDiagnostics = {
   signalBreakdown?: BacktestDiagnosticSeriesGroup;
 };
 
+export type BacktestHedgeReportRow = {
+  date: string;
+  price: number;
+  buyHoldNav: number;
+  ctaNav: number;
+  combinedNav: number;
+  buyHoldDrawdownPct: number;
+  ctaDrawdownPct: number;
+  combinedDrawdownPct: number;
+  ctaPosition: number;
+  hedgePositionPct: number;
+  totalScore: number;
+  riskScore: number;
+  signals: number[];
+  ema20: number;
+  ema60: number;
+  ema120: number;
+  vixVxv: number;
+  hySpread: number;
+  vix: number;
+  vxv: number;
+  scoreA: number;
+  scoreB: number;
+  scoreC: number;
+  scoreD: number;
+  scoreE: number;
+  scoreF: number;
+  scoreG: number;
+  buyHoldRet: number;
+  ctaRet: number;
+  combinedRet: number;
+};
+
+export type BacktestHedgeReportOrder = {
+  date: string;
+  oldPos: number;
+  newPos: number;
+  delta: number;
+  direction: string;
+  trigger: string;
+  price: number;
+  macroScore: number;
+  hedgePct: number;
+  riskScore: number;
+  type: "CTA" | "HEDGE";
+};
+
+export type BacktestHedgeReport = {
+  rows: BacktestHedgeReportRow[];
+  orders: BacktestHedgeReportOrder[];
+  monthly: {
+    BH: Record<string, Record<number, number>>;
+    CTA: Record<string, Record<number, number>>;
+    Comb: Record<string, Record<number, number>>;
+  };
+  drawdownPeriods: {
+    bh: { start: string; trough: string; end: string; mdd: number; duration: number; ongoing?: boolean }[];
+    cta: { start: string; trough: string; end: string; mdd: number; duration: number; ongoing?: boolean }[];
+    comb: { start: string; trough: string; end: string; mdd: number; duration: number; ongoing?: boolean }[];
+  };
+  modules: { key: string; name: string; field: string }[];
+  meta: {
+    start: string;
+    end: string;
+    nRows: number;
+    dataSource: string;
+    strategyStart: string;
+    strategyEnd: string;
+  };
+};
+
 export type BacktestPayload = {
   status: "ok" | "degraded";
   reason?: string | null;
@@ -246,6 +317,7 @@ export type BacktestPayload = {
   startingCapital?: number;
   assets: BacktestAsset[];
   diagnostics?: BacktestDiagnostics | null;
+  hedgeReport?: BacktestHedgeReport | null;
   sop: {
     crypto: string[];
     traditional: string[];
