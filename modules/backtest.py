@@ -590,6 +590,11 @@ def run_strategy_logic(
 
     # 趋势引擎：只看 120 长均线 + 20/60/120 排布
     is_crypto = any(k in asset_name for k in ['BTC', 'Bitcoin', 'ETH', 'Ethereum'])
+    use_binance_fee_model = bool(cfg.get('use_binance_fee_model', False)) and is_crypto
+    if use_binance_fee_model:
+        # Binance 合约成本：滑点(0.30%) + taker(0.05%) = 每边约 0.35%
+        one_way_cost_bps = float(np.clip(float(cfg.get('binance_oneway_cost_bps', 35.0)), 0.0, 300.0))
+
     if is_crypto:
         df['EMA20'] = df[price_col].ewm(span=20, adjust=False).mean()
         df['EMA60'] = df[price_col].ewm(span=60, adjust=False).mean()
@@ -891,14 +896,37 @@ def run_strategy_logic(
 
     slippage_vol_window = max(5, int(cfg.get('slippage_vol_window', 20)))
     slippage_mult = max(0.0, float(cfg.get('slippage_mult', 0.30)))
+    if use_binance_fee_model:
+        # Binance 模式下，滑点已经并入 one_way_cost_bps，避免重复计费。
+        slippage_mult = 0.0
     vol_proxy = df[price_col].pct_change().rolling(slippage_vol_window, min_periods=5).std()
     vol_proxy = vol_proxy.fillna(vol_proxy.median() if not vol_proxy.dropna().empty else 0.0).clip(lower=0.0)
     df['Slippage_Cost'] = (df['Turnover'] * vol_proxy * slippage_mult).clip(lower=0.0)
 
-    funding_bps_daily = max(0.0, float(cfg.get('funding_bps_daily', 1.0)))
-    funding_daily = funding_bps_daily / 10000.0
-    leverage_excess = (df['Position'].abs() - 1.0).clip(lower=0.0)
-    df['Funding_Cost'] = (leverage_excess * funding_daily).clip(lower=0.0)
+    if use_binance_fee_model:
+        # Binance 资金费率（多头）模拟：常态 ~0.03%/天，拥挤阶段可上行到 ~0.10%/天。
+        base_bps = float(np.clip(float(cfg.get('binance_funding_base_bps_daily', 3.0)), 0.0, 100.0))
+        mid_bps = float(np.clip(float(cfg.get('binance_funding_mid_bps_daily', 6.0)), base_bps, 100.0))
+        crowded_bps = float(np.clip(float(cfg.get('binance_funding_crowded_bps_daily', 10.0)), mid_bps, 100.0))
+
+        crowd_score = (
+            ((score_regime >= th4) & (score_slope_fast > 0)).astype(int) +
+            bull_stack_full.astype(int) +
+            (df[price_col] > fast_ma).astype(int)
+        )
+        funding_bps_series = np.where(crowd_score >= 3, crowded_bps, np.where(crowd_score >= 2, mid_bps, base_bps))
+        funding_bps_series = pd.Series(funding_bps_series, index=df.index, dtype=float)
+        df['Funding_Rate_Bps_Daily'] = funding_bps_series
+
+        # 仅对加密多头侧收取资金费；空头侧在该简化模型里按 0 处理。
+        long_notional = df['Position'].clip(lower=0.0)
+        df['Funding_Cost'] = (long_notional * (funding_bps_series / 10000.0)).clip(lower=0.0)
+    else:
+        funding_bps_daily = max(0.0, float(cfg.get('funding_bps_daily', 1.0)))
+        funding_daily = funding_bps_daily / 10000.0
+        leverage_excess = (df['Position'].abs() - 1.0).clip(lower=0.0)
+        df['Funding_Rate_Bps_Daily'] = funding_bps_daily
+        df['Funding_Cost'] = (leverage_excess * funding_daily).clip(lower=0.0)
     df['Total_Cost'] = df['Tx_Cost'] + df['Slippage_Cost'] + df['Funding_Cost']
 
     risk_free_daily = float(risk_free_rate) / 252
@@ -1166,6 +1194,11 @@ DEFAULT_BACKTEST_PRESET = {
         "trend_target_flat_other": 1.10, "trend_target_weak_other": 0.78, "trend_target_break_other": 0.45,
         "ma60_break_cut_ratio": 0.90, "weak_floor_cap_ratio": 1.00,
         "slippage_mult": 0.30, "funding_bps_daily": 1.0,
+        "use_binance_fee_model": True,
+        "binance_oneway_cost_bps": 35.0,
+        "binance_funding_base_bps_daily": 3.0,
+        "binance_funding_mid_bps_daily": 6.0,
+        "binance_funding_crowded_bps_daily": 10.0,
         "reference_max_leverage": 1.5,
         "leverage_follow_allocation": True
     },
@@ -1209,7 +1242,8 @@ def _extract_price_series(y_df, ticker):
 
 def _default_cost_bps(asset_name):
     if any(k in asset_name for k in ['BTC', 'Bitcoin', 'ETH', 'Ethereum']):
-        return 18.0
+        # Binance 合约默认每边成本：滑点 0.30% + taker 0.05% = 0.35%
+        return 35.0
     if 'EUR/USD' in asset_name or 'EURUSD' in asset_name:
         return 3.0
     return 4.0
@@ -1497,8 +1531,8 @@ DEFAULT_BACKTEST_DIAGNOSTIC_HEDGE = {
     "cta_capital_weight": 0.95,
     "hedge_capital_weight": 0.05,
     "hedge_leverage": 5.0,
-    "hedge_funding_annual": 0.10,
-    "hedge_oneway_bps": 8.0,
+    "hedge_funding_annual": 0.00,
+    "hedge_oneway_bps": 35.0,
     "vix_vxv_threshold": 1.02,
     "macro_drop_threshold": 8.0,
     "hy_spike_threshold": 0.40,
