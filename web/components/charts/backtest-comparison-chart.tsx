@@ -23,6 +23,7 @@ type BacktestComparisonChartProps = {
   markers?: ChartMarker[];
   range: ChartRangeKey;
   height?: number;
+  theme?: "light" | "dark";
 };
 
 export const BacktestComparisonChart = ({
@@ -32,6 +33,7 @@ export const BacktestComparisonChart = ({
   markers = [],
   range,
   height = 360,
+  theme = "light",
 }: BacktestComparisonChartProps) => {
   const [mounted, setMounted] = useState(false);
 
@@ -99,16 +101,38 @@ export const BacktestComparisonChart = ({
     return <div className="w-full" style={{ height }} />;
   }
 
+  const isDark = theme === "dark";
+  const gridStroke = isDark ? "rgba(148,163,184,0.18)" : "#e5e7eb";
+  const axisText = isDark ? "#94a3b8" : "#64748b";
+  const leftZero = isDark ? "rgba(148,163,184,0.45)" : "#cbd5e1";
+  const rightZero = isDark ? "rgba(148,163,184,0.25)" : "#e2e8f0";
+  const tooltipLabelColor = isDark ? "#e2e8f0" : "#0f172a";
+  const tooltipStyle = isDark
+    ? {
+        borderRadius: 12,
+        borderColor: "rgba(148,163,184,0.25)",
+        backgroundColor: "rgba(8, 15, 31, 0.96)",
+        color: "#e2e8f0",
+        boxShadow: "0 16px 40px -24px rgba(15,23,42,0.9)",
+        fontSize: 11,
+      }
+    : {
+        borderRadius: 12,
+        borderColor: "#dbe2ea",
+        boxShadow: "0 12px 30px -16px rgba(15, 23, 42, 0.25)",
+        fontSize: 11,
+      };
+
   return (
     <div className="w-full" style={{ height }}>
       <ResponsiveContainer width="100%" height="100%">
         <LineChart data={chartData} margin={{ top: 10, right: 18, left: 10, bottom: 6 }}>
-          <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
-          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} tickMargin={8} minTickGap={40} />
+          <CartesianGrid strokeDasharray="4 5" stroke={gridStroke} />
+          <XAxis dataKey="date" tick={{ fontSize: 10, fill: axisText }} tickMargin={8} minTickGap={40} />
           <YAxis
             yAxisId="left"
             domain={["dataMin", "dataMax"]}
-            tick={{ fontSize: 10, fill: "#64748b" }}
+            tick={{ fontSize: 10, fill: axisText }}
             tickMargin={8}
             width={70}
             tickFormatter={(value) => `${formatSigned(Number(value), 0)}%`}
@@ -117,7 +141,7 @@ export const BacktestComparisonChart = ({
             yAxisId="right"
             orientation="right"
             domain={[-3, 3]}
-            tick={{ fontSize: 10, fill: "#64748b" }}
+            tick={{ fontSize: 10, fill: axisText }}
             tickMargin={8}
             width={52}
             tickFormatter={(value) => `${Number(value).toFixed(1)}x`}
@@ -134,16 +158,11 @@ export const BacktestComparisonChart = ({
               const markerLabel = payload?.[0]?.payload?.markerLabel;
               return markerLabel ? `${label} · ${markerLabel}` : String(label);
             }}
-            labelStyle={{ fontSize: 11, color: "#0f172a" }}
-            contentStyle={{
-              borderRadius: 12,
-              borderColor: "#dbe2ea",
-              boxShadow: "0 12px 30px -16px rgba(15, 23, 42, 0.25)",
-              fontSize: 11,
-            }}
+            labelStyle={{ fontSize: 11, color: tooltipLabelColor }}
+            contentStyle={tooltipStyle}
           />
-          <ReferenceLine yAxisId="left" y={0} stroke="#cbd5e1" strokeDasharray="4 4" />
-          <ReferenceLine yAxisId="right" y={0} stroke="#e2e8f0" strokeDasharray="4 4" />
+          <ReferenceLine yAxisId="left" y={0} stroke={leftZero} strokeDasharray="4 4" />
+          <ReferenceLine yAxisId="right" y={0} stroke={rightZero} strokeDasharray="4 4" />
           <Line
             yAxisId="left"
             type="monotone"
