@@ -3,8 +3,9 @@
 import { useEffect, useMemo, useState } from "react";
 import { ArrowDownRight, ArrowUpRight, ChevronDown, Clock3, Filter, Radar, SlidersHorizontal, Wallet } from "lucide-react";
 
+import { BacktestComparisonChart } from "@/components/charts/backtest-comparison-chart";
 import { BacktestDiagnosticPanel } from "@/components/charts/backtest-diagnostic-panel";
-import { LineScoreChart } from "@/components/charts/line-score-chart";
+import { ChartRangeKey, ChartRangePicker } from "@/components/charts/chart-range-control";
 import { AppShell } from "@/components/layout/app-shell";
 import { SectionTitle } from "@/components/ui/section-title";
 import { SurfaceCard } from "@/components/ui/surface-card";
@@ -41,6 +42,7 @@ export const BacktestPage = () => {
   const [showRiskPanel, setShowRiskPanel] = useState(false);
   const [showStrategyPanel, setShowStrategyPanel] = useState(false);
   const [activeTab, setActiveTab] = useState<"overview" | "diagnostics">("overview");
+  const [comparisonRange, setComparisonRange] = useState<ChartRangeKey>("ALL");
 
   const updateNumeric = (
     key: keyof Omit<typeof DEFAULT_BACKTEST_CONTROLS, "rebalanceMode">,
@@ -73,6 +75,29 @@ export const BacktestPage = () => {
   const currentPosition = asset.currentPosition ?? (asset.positionSeries[asset.positionSeries.length - 1]?.value ?? 0);
   const currentScore = asset.currentScore ?? 50;
   const currentSignal = asset.currentSignal ?? "N/A";
+  const comparisonMarkers = asset.signalMarkers ?? [];
+  const strategyReturnSeries = useMemo(() => {
+    const points = asset.navSeries ?? [];
+    const first = points[0]?.value;
+    if (!first || first === 0) {
+      return [];
+    }
+    return points.map((point) => ({
+      date: point.date,
+      value: ((point.value / first) - 1) * 100,
+    }));
+  }, [asset.navSeries]);
+  const benchmarkReturnSeries = useMemo(() => {
+    const points = asset.benchmarkNavSeries ?? [];
+    const first = points[0]?.value;
+    if (!first || first === 0) {
+      return [];
+    }
+    return points.map((point) => ({
+      date: point.date,
+      value: ((point.value / first) - 1) * 100,
+    }));
+  }, [asset.benchmarkNavSeries]);
   const capitalFormatter = useMemo(
     () => new Intl.NumberFormat("zh-CN", { maximumFractionDigits: 0 }),
     []
@@ -84,7 +109,7 @@ export const BacktestPage = () => {
         <header className="rounded-[18px] border border-app-border bg-[linear-gradient(120deg,#f8faff_0%,#eff6ff_42%,#ffffff_100%)] p-[16px]">
           <h1 className="text-[28px] font-extrabold tracking-[-0.02em] text-app-text">宏观 CTA 回测分析台</h1>
           <p className="mt-[6px] max-w-[980px] text-[13px] text-app-muted">
-            用宏观总分决定风险档位，再用趋势执行做多或做空，面板直接给出资金、仓位、调仓与交易流水。
+            宏观总分先决定风险预算，趋势层执行 Core CTA；当下跌风险共振时，再叠加小资金高杠杆尾部对冲。
           </p>
           <p className="mt-[4px] text-[12px] text-app-muted">
             {isLoading
@@ -416,7 +441,7 @@ export const BacktestPage = () => {
                     <p className={cn("mt-[6px] text-[20px] font-bold", currentPosition >= 0 ? "text-app-success" : "text-app-danger")}>
                       {currentPosition.toFixed(2)}x
                     </p>
-                    <p className="mt-[4px] text-[12px] text-app-muted">可多可空 CTA 仓位</p>
+                    <p className="mt-[4px] text-[12px] text-app-muted">Core CTA {asset.currentMacroBudget?.toFixed(2) ?? "-"}x · {asset.currentTrendState ?? "CTA Core"}</p>
                   </div>
                   <div className="rounded-[12px] border border-slate-200 bg-slate-50 p-[12px]">
                     <div className="flex items-center gap-[8px] text-app-muted">
@@ -450,26 +475,21 @@ export const BacktestPage = () => {
             </div>
 
             <SurfaceCard>
-              <SectionTitle title="资金轨迹与风险暴露" />
-              <div className="mt-[12px] grid gap-[14px] xl:grid-cols-2">
-                <div className="rounded-[14px] border border-slate-200 bg-white p-[10px]">
-                  <p className="mb-[4px] text-[12px] font-semibold text-app-text">策略资金曲线 ({asset.name})</p>
-                  <LineScoreChart
-                    data={asset.navSeries}
-                    color="#0ea5e9"
-                    yDomain={["dataMin", "dataMax"]}
-                    valueFormatter={(value) => capitalFormatter.format(value)}
-                  />
-                </div>
-                <div className="rounded-[14px] border border-slate-200 bg-white p-[10px]">
-                  <p className="mb-[4px] text-[12px] font-semibold text-app-text">目标净仓位路径 ({asset.ticker})</p>
-                  <LineScoreChart
-                    data={asset.positionSeries}
-                    color="#8b5cf6"
-                    yDomain={["dataMin", "dataMax"]}
-                    valueFormatter={(value) => `${value.toFixed(2)}x`}
-                  />
-                </div>
+              <SectionTitle
+                title="策略 / Hold 累计收益率 + 净仓位"
+                rightSlot={<ChartRangePicker value={comparisonRange} onChange={setComparisonRange} />}
+              />
+              <div className="mt-[12px] rounded-[14px] border border-slate-200 bg-white p-[10px]">
+                <p className="mb-[4px] text-[12px] font-semibold text-app-text">策略 vs Hold 累计收益率 + 净仓位 ({asset.name})</p>
+                <p className="mb-[10px] text-[12px] text-app-muted">蓝线是组合收益，灰线是 Hold，橙线是执行后的净仓位。</p>
+                <BacktestComparisonChart
+                  strategySeries={strategyReturnSeries}
+                  benchmarkSeries={benchmarkReturnSeries}
+                  positionSeries={asset.positionSeries}
+                  markers={comparisonMarkers}
+                  range={comparisonRange}
+                  height={380}
+                />
               </div>
             </SurfaceCard>
 

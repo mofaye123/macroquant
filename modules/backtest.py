@@ -908,6 +908,52 @@ def run_strategy_logic(
     df['Benchmark_Nav'] = (1 + df['Pct_Change'].fillna(0)).cumprod()
     return df
 
+
+def run_core_cta_strategy(
+    df,
+    price_col,
+    asset_name,
+    macro_lag_days=0,
+    one_way_cost_bps=0.0,
+    risk_free_rate=0.04,
+    max_leverage=2.0,
+    strategy_cfg=None,
+):
+    core_cfg = dict(strategy_cfg or {})
+    if any(k in asset_name for k in ['ETH', 'Ethereum']):
+        core_cfg['eth_event_hedge_enabled'] = False
+
+    core_df = run_strategy_logic(
+        df,
+        price_col,
+        asset_name,
+        macro_lag_days=macro_lag_days,
+        one_way_cost_bps=one_way_cost_bps,
+        risk_free_rate=risk_free_rate,
+        max_leverage=max_leverage,
+        strategy_cfg=core_cfg,
+        allow_short=False,
+        short_leverage=0.0,
+        short_min_risk_count=99
+    )
+
+    target = core_df['Target_Position'].fillna(0.0)
+    pos = core_df['Position'].fillna(0.0)
+    signal_labels = np.select(
+        [
+            target >= max_leverage * 0.95,
+            target >= 1.00,
+            target >= 0.60,
+            target > 0.15,
+        ],
+        ['🔥 满杠进攻', '🚀 顺势加仓', '📈 趋势持有', '🛡️ 防守观察'],
+        default='⚪ 低仓等待'
+    )
+    core_df['Signal_Type'] = pd.Series(signal_labels, index=core_df.index)
+    core_df['Core_Target_Position'] = target
+    core_df['Core_Position'] = pos
+    return core_df
+
 # ==========================================
 # 4. 交易日志 (修复 Mode 列名问题)
 # ==========================================
@@ -1344,12 +1390,21 @@ def _build_backtest_overlay_portfolio(cta_df, hedge_df, risk_free_rate=0.04, sta
     out["Combined_Ret"] = combined_ret
     out["Hedge_Contrib"] = hedge_net_ret
     out["Hedge_Position"] = hedge_pos
+    out["Hedge_Target_Position"] = hedge_df["Hedge_Notional_Target"].reindex(cta_df.index).fillna(0.0)
     out["Risk_Score"] = hedge_df["Risk_Score"].reindex(cta_df.index).fillna(0.0)
     out["CTA_Position"] = cta_df["Position"].reindex(cta_df.index).fillna(0.0)
     out["CTA_Target_Position"] = cta_df["Target_Position"].reindex(cta_df.index).fillna(0.0)
     score_col = "Score_Regime" if "Score_Regime" in cta_df.columns else "Total_Score"
     out["Total_Score"] = cta_df[score_col].reindex(cta_df.index).fillna(method="ffill").fillna(50.0)
     out["Score_10D_Change"] = out["Total_Score"].diff(10).fillna(0.0)
+    out["Score_Exec"] = cta_df.get("Score_Exec", out["Total_Score"]).reindex(cta_df.index).ffill().fillna(50.0)
+    out["Macro_Target"] = cta_df.get("Macro_Target", out["CTA_Target_Position"]).reindex(cta_df.index).ffill().fillna(0.0)
+    out["Trend_Target"] = cta_df.get("Trend_Target", out["CTA_Target_Position"]).reindex(cta_df.index).ffill().fillna(0.0)
+    out["Trend_State"] = cta_df.get("Trend_State", pd.Series("CTA Core", index=cta_df.index)).reindex(cta_df.index).ffill().fillna("CTA Core")
+    out["Net_Position"] = out["CTA_Position"] - out["Hedge_Position"]
+    out["Net_Target_Position"] = out["CTA_Target_Position"] - out["Hedge_Target_Position"]
+    out["Position"] = out["Net_Position"]
+    out["Target_Position"] = out["Net_Target_Position"]
 
     out["BH_Nav"] = (1.0 + out["Pct_Change"]).cumprod()
     out["CTA_Nav"] = (1.0 + out["CTA_Only_Ret"]).cumprod()
@@ -1364,6 +1419,26 @@ def _build_backtest_overlay_portfolio(cta_df, hedge_df, risk_free_rate=0.04, sta
         ("Combined_Nav", "Combined_DD"),
     ]:
         out[dd_col] = out[nav_col] / out[nav_col].cummax() - 1.0
+
+    cta_turnover = cta_df.get("Turnover", pd.Series(0.0, index=cta_df.index)).reindex(cta_df.index).fillna(0.0)
+    hedge_turnover = hedge_pos.diff().abs().fillna(hedge_pos.abs())
+    out["Turnover"] = cta_weight * cta_turnover + hedge_turnover
+    out["Tx_Cost"] = (
+        cta_weight * cta_df.get("Tx_Cost", pd.Series(0.0, index=cta_df.index)).reindex(cta_df.index).fillna(0.0)
+        + hedge_df["Hedge_Tx_Cost"].reindex(cta_df.index).fillna(0.0)
+    )
+    out["Slippage_Cost"] = cta_weight * cta_df.get("Slippage_Cost", pd.Series(0.0, index=cta_df.index)).reindex(cta_df.index).fillna(0.0)
+    out["Funding_Cost"] = (
+        cta_weight * cta_df.get("Funding_Cost", pd.Series(0.0, index=cta_df.index)).reindex(cta_df.index).fillna(0.0)
+        + hedge_df["Hedge_Fund_Cost"].reindex(cta_df.index).fillna(0.0)
+    )
+    out["Total_Cost"] = out["Tx_Cost"] + out["Slippage_Cost"] + out["Funding_Cost"]
+    out["Strategy_Ret"] = out["Combined_Ret"]
+    out["Strategy_Nav"] = out["Combined_Nav"]
+    out["Benchmark_Nav"] = out["BH_Nav"]
+    base_signal = cta_df.get("Signal_Type", pd.Series("Core CTA", index=cta_df.index)).reindex(cta_df.index).fillna("Core CTA").astype(str)
+    overlay_suffix = np.where(out["Hedge_Position"] > 1e-6, " + Tail Hedge", "")
+    out["Signal_Type"] = pd.Series(base_signal + overlay_suffix, index=cta_df.index)
     return out
 
 
@@ -1670,12 +1745,12 @@ def build_backtest_payload(df_all, overrides=None):
     th4 = float(cfg.get("th4", 65.0))
     th5 = float(cfg.get("th5", 80.0))
     strategy_thresholds = [
-        {"label": f"Score < {th1:.0f}", "min": None, "max": th1, "target": -float(resolved["short_leverage"]), "bias": "short"},
-        {"label": f"{th1:.0f} - {th2:.0f}", "min": th1, "max": th2, "target": float(cfg.get("base_risk_off", 0.0)), "bias": "flat"},
-        {"label": f"{th2:.0f} - {th3:.0f}", "min": th2, "max": th3, "target": float(cfg.get("base_caution", 0.0)), "bias": "long"},
-        {"label": f"{th3:.0f} - {th4:.0f}", "min": th3, "max": th4, "target": float(cfg.get("base_neutral", 0.0)), "bias": "long"},
-        {"label": f"{th4:.0f} - {th5:.0f}", "min": th4, "max": th5, "target": float(cfg.get("base_risk_on", 0.0)), "bias": "long"},
-        {"label": f"Score >= {th5:.0f}", "min": th5, "max": None, "target": float(cfg.get("base_super", 0.0)), "bias": "long"},
+        {"label": f"Score < {th1:.0f}", "min": None, "max": th1, "target": float(cfg.get("base_risk_off", 0.0)), "bias": "flat"},
+        {"label": f"{th1:.0f} - {th2:.0f}", "min": th1, "max": th2, "target": float(cfg.get("base_caution", 0.0)), "bias": "flat"},
+        {"label": f"{th2:.0f} - {th3:.0f}", "min": th2, "max": th3, "target": float(cfg.get("base_neutral", 0.0)), "bias": "long"},
+        {"label": f"{th3:.0f} - {th4:.0f}", "min": th3, "max": th4, "target": float(cfg.get("base_risk_on", 0.0)), "bias": "long"},
+        {"label": f"{th4:.0f} - {th5:.0f}", "min": th4, "max": th5, "target": float(cfg.get("base_super", 0.0)), "bias": "long"},
+        {"label": f"Score >= {th5:.0f}", "min": th5, "max": None, "target": float(resolved["max_leverage"]), "bias": "long"},
     ]
     payload = {
         "status": "degraded",
@@ -1687,10 +1762,10 @@ def build_backtest_payload(df_all, overrides=None):
         "diagnostics": None,
         "sop": DEFAULT_BACKTEST_SOP,
         "strategyOverview": {
-            "title": "宏观分驱动 CTA 执行框架",
-            "summary": "先用宏观总分决定风险档位，再用趋势条件确认是否放大多头或切换到净空头，属于宏观过滤 + 趋势执行的 CTA。",
+            "title": "宏观 Core CTA + 尾部对冲框架",
+            "summary": "宏观总分先决定风险预算，趋势层执行 Core CTA；当波动、信用、宏观恶化与价格破位共振时，再叠加小资金高杠杆尾部对冲，而不是直接把主仓翻成净空。",
             "rebalance": f"当前使用{str(cfg.get('rebalance_mode', 'W')).upper()}频率调仓，最小持有 {int(cfg.get('min_hold_days', 10))} 天，触发阈值 {float(cfg.get('trade_buffer', 0.2)):.2f}。",
-            "shorting": f"允许做空，最大空头敞口 {float(resolved['short_leverage']):.2f}x；低宏观分且趋势走弱时可翻成净空。",
+            "shorting": "主仓默认只做 0 ~ 正杠杆的顺势 CTA；BTC / ETH 额外叠加 5% 保证金 × 高杠杆保护性空头，对冲只负责压缩尾部回撤。",
             "thresholds": strategy_thresholds,
         },
     }
@@ -1723,7 +1798,7 @@ def build_backtest_payload(df_all, overrides=None):
         return payload
 
     assets = []
-    btc_diagnostic_df = None
+    btc_core_df = None
     for item in DEFAULT_BACKTEST_ASSETS:
         price_s = _extract_price_series(y_data, item["symbol"])
         if price_s.empty:
@@ -1735,12 +1810,10 @@ def build_backtest_payload(df_all, overrides=None):
             continue
 
         asset_cfg = resolved["cfg"].copy()
-        asset_short_leverage = float(resolved["short_leverage"])
         if item["ticker"] == "ETH":
             asset_cfg.update(resolved["eth"])
-            asset_short_leverage = max(asset_short_leverage, float(resolved["eth"]["eth_hedge_leverage"]))
 
-        df = run_strategy_logic(
+        core_df = run_core_cta_strategy(
             df,
             'Price',
             item["label"],
@@ -1749,15 +1822,35 @@ def build_backtest_payload(df_all, overrides=None):
             risk_free_rate=float(resolved["risk_free_rate"]),
             max_leverage=float(resolved["max_leverage"]),
             strategy_cfg=asset_cfg,
-            allow_short=bool(resolved["allow_short"]),
-            short_leverage=asset_short_leverage,
-            short_min_risk_count=int(resolved["short_min_risk_count"])
         )
+        if core_df.empty:
+            continue
+
+        df = core_df
+        if item["ticker"] in {"BTC", "ETH"}:
+            sweep = _sweep_backtest_hedge_candidates(
+                core_df,
+                df_all,
+                risk_free_rate=float(resolved["risk_free_rate"]),
+                starting_capital=float(payload["startingCapital"]),
+            )
+            recommended_cfg = sweep["recommended"]["config"]
+            hedge_df = _compute_backtest_overlay_signals(core_df, df_all, recommended_cfg)
+            df = _build_backtest_overlay_portfolio(
+                core_df,
+                hedge_df,
+                risk_free_rate=float(resolved["risk_free_rate"]),
+                starting_capital=float(payload["startingCapital"]),
+                overlay_cfg=recommended_cfg,
+            )
+            if item["ticker"] == "BTC":
+                btc_core_df = core_df.copy()
+
         trade_log = generate_trade_log(df, 'Price')
         perf = compute_perf_metrics(df, risk_free_rate=float(resolved["risk_free_rate"]))
         nav = df['Strategy_Nav'].dropna()
         bench_nav = df['Benchmark_Nav'].dropna()
-        position = df['Target_Position'].dropna()
+        position = df['Position'].dropna() if 'Position' in df.columns else df['Target_Position'].dropna()
         if nav.empty or bench_nav.empty or position.empty:
             continue
 
@@ -1767,13 +1860,20 @@ def build_backtest_payload(df_all, overrides=None):
         sharpe = perf.get('sharpe_m', np.nan)
         mdd = perf.get('mdd', np.nan)
         equity_curve = nav * DEFAULT_BACKTEST_INITIAL_CAPITAL
+        benchmark_curve = bench_nav * DEFAULT_BACKTEST_INITIAL_CAPITAL
         current_position = float(position.iloc[-1])
         current_score = float(df[score_col].dropna().iloc[-1]) if not df[score_col].dropna().empty else 50.0
         current_signal = str(df['Signal_Type'].iloc[-1]) if 'Signal_Type' in df.columns else "N/A"
+        current_trend_state = str(df['Trend_State'].iloc[-1]) if 'Trend_State' in df.columns else "CTA Core"
+        current_macro_budget = float(df['Macro_Target'].dropna().iloc[-1]) if 'Macro_Target' in df.columns and not df['Macro_Target'].dropna().empty else current_position
 
         rebalance_mask = df['Target_Position'].diff().abs().fillna(df['Target_Position'].abs()) > 1e-8
         rebalance_frame = df.loc[rebalance_mask, ['Target_Position', 'Signal_Type', score_col, 'Price']].copy()
         rebalance_frame['Previous_Position'] = df['Target_Position'].shift(1).reindex(rebalance_frame.index).fillna(0.0)
+        if 'Trend_State' in df.columns:
+            rebalance_frame['Trend_State'] = df['Trend_State'].reindex(rebalance_frame.index).fillna("CTA Core")
+        if 'Macro_Target' in df.columns:
+            rebalance_frame['Macro_Target'] = df['Macro_Target'].reindex(rebalance_frame.index).fillna(0.0)
         rebalance_rows = []
         for idx, row in rebalance_frame.tail(12).iloc[::-1].iterrows():
             rebalance_rows.append({
@@ -1781,6 +1881,8 @@ def build_backtest_payload(df_all, overrides=None):
                 "previousPosition": round(float(row['Previous_Position']), 2),
                 "position": round(float(row['Target_Position']), 2),
                 "signal": str(row['Signal_Type']),
+                "trendState": str(row.get('Trend_State', "CTA Core")),
+                "macroBudget": round(float(row.get('Macro_Target', row['Target_Position'])), 2),
                 "score": round(float(row[score_col]), 1),
                 "price": round(float(row['Price']), 2),
             })
@@ -1814,13 +1916,22 @@ def build_backtest_payload(df_all, overrides=None):
             "currentPosition": round(current_position, 2),
             "currentScore": round(current_score, 1),
             "currentSignal": current_signal,
+            "currentTrendState": current_trend_state,
+            "currentMacroBudget": round(current_macro_budget, 2),
             "navSeries": _series_to_points(equity_curve, digits=2, limit=300),
+            "benchmarkNavSeries": _series_to_points(benchmark_curve, digits=2, limit=300),
             "positionSeries": _series_to_points(position, digits=2, limit=300),
+            "signalMarkers": [
+                {
+                    "date": row["date"],
+                    "label": row["signal"],
+                    "tone": "buy" if row["position"] >= row["previousPosition"] else "sell",
+                }
+                for row in rebalance_rows[:24]
+            ],
             "rebalanceLog": rebalance_rows,
             "tradeLog": trade_rows,
         })
-        if item["ticker"] == "BTC":
-            btc_diagnostic_df = df.copy()
 
     if not assets:
         payload["reason"] = "回测失败：没有可用标的生成结果。"
@@ -1830,10 +1941,10 @@ def build_backtest_payload(df_all, overrides=None):
     payload["startDate"] = score_frame.index.min().strftime("%Y-%m-%d")
     payload["endDate"] = score_frame.index.max().strftime("%Y-%m-%d")
     payload["assets"] = assets
-    if btc_diagnostic_df is not None:
+    if btc_core_df is not None:
         try:
             payload["diagnostics"] = build_backtest_diagnostics_payload(
-                btc_diagnostic_df,
+                btc_core_df,
                 df_all,
                 risk_free_rate=float(resolved["risk_free_rate"]),
                 starting_capital=float(payload["startingCapital"]),

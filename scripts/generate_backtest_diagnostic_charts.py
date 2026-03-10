@@ -24,7 +24,12 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from modules.backtest import DEFAULT_BACKTEST_PRESET, _calculate_score_internal, run_strategy_logic
+from modules.backtest import (
+    DEFAULT_BACKTEST_PRESET,
+    _calculate_score_internal,
+    _sweep_backtest_hedge_candidates,
+    run_core_cta_strategy,
+)
 
 
 SNAPSHOT_PATH = ROOT / "web" / "public" / "data" / "macro-data.json"
@@ -32,20 +37,6 @@ OUTPUT_DIR = ROOT / "outputs" / "backtest_diagnostics"
 OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 INITIAL_CAPITAL = 100_000.0
-OVERLAY_CFG = {
-    "cta_capital_weight": 0.95,
-    "hedge_capital_weight": 0.05,
-    "hedge_leverage": 5.0,
-    "hedge_funding_annual": 0.10,
-    "hedge_oneway_bps": 8.0,
-    "vix_vxv_threshold": 1.02,
-    "macro_drop_threshold": 8.0,
-    "hy_spike_threshold": 0.40,
-    "btc_dd_threshold": 0.12,
-}
-HEDGE_NOTIONAL_MAX = OVERLAY_CFG["hedge_capital_weight"] * OVERLAY_CFG["hedge_leverage"]
-
-
 def _load_snapshot() -> tuple[pd.DataFrame, pd.DataFrame]:
     payload = json.loads(SNAPSHOT_PATH.read_text())
     raw = payload["modules"]["e"]["rawTable"]
@@ -72,7 +63,7 @@ def _compute_cta(df_all: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         raise RuntimeError("BTC price series is empty.")
 
     df = price.join(score_frame[["Total_Score"]], how="inner").dropna()
-    cta = run_strategy_logic(
+    cta = run_core_cta_strategy(
         df,
         "Price",
         "Bitcoin",
@@ -81,128 +72,8 @@ def _compute_cta(df_all: pd.DataFrame) -> tuple[pd.DataFrame, pd.DataFrame]:
         risk_free_rate=float(DEFAULT_BACKTEST_PRESET["risk_free_rate"]),
         max_leverage=float(DEFAULT_BACKTEST_PRESET["max_leverage"]),
         strategy_cfg=DEFAULT_BACKTEST_PRESET["cfg"],
-        allow_short=bool(DEFAULT_BACKTEST_PRESET["allow_short"]),
-        short_leverage=float(DEFAULT_BACKTEST_PRESET["short_leverage"]),
-        short_min_risk_count=int(DEFAULT_BACKTEST_PRESET["short_min_risk_count"]),
     )
     return cta, score_frame
-
-
-def _compute_overlay_signals(cta: pd.DataFrame, df_all: pd.DataFrame) -> pd.DataFrame:
-    df = pd.DataFrame(index=cta.index)
-    df["Price"] = cta["Price"]
-    df["EMA20"] = cta["EMA20"]
-    df["EMA60"] = cta["EMA60"]
-    df["EMA120"] = cta["EMA120"]
-    df["Total_Score"] = cta["Score_Regime"]
-    df["VIX"] = df_all["VIXCLS"].reindex(df.index).ffill()
-    df["VXV"] = df_all["VXVCLS"].reindex(df.index).ffill()
-    df["HY_Spread"] = df_all["BAMLH0A0HYM2"].reindex(df.index).ffill()
-
-    sig1 = (
-        (df["Price"] < df["EMA120"])
-        & (df["EMA20"] < df["EMA60"])
-        & (df["EMA60"] < df["EMA120"])
-        & (df["EMA120"].diff(3) < 0)
-    ).fillna(False).astype(int)
-
-    vix_vxv_ratio = (df["VIX"] / df["VXV"].replace(0, np.nan)).fillna(1.0)
-    sig2 = (vix_vxv_ratio > OVERLAY_CFG["vix_vxv_threshold"]).astype(int)
-
-    macro_drop_10d = df["Total_Score"] - df["Total_Score"].shift(10)
-    sig3 = (macro_drop_10d < -OVERLAY_CFG["macro_drop_threshold"]).fillna(False).astype(int)
-
-    hy_change_10d = df["HY_Spread"].diff(10)
-    sig4 = (hy_change_10d > OVERLAY_CFG["hy_spike_threshold"]).fillna(False).astype(int)
-
-    rolling_high_20 = df["Price"].rolling(20, min_periods=10).max()
-    dd_20d = df["Price"] / rolling_high_20 - 1.0
-    sig5 = (dd_20d < -OVERLAY_CFG["btc_dd_threshold"]).fillna(False).astype(int)
-
-    composite = sig1 + sig2 + sig3 + sig4 + sig5
-    hedge_target = np.select(
-        [composite >= 4, composite == 3, composite == 2, composite == 1],
-        [
-            HEDGE_NOTIONAL_MAX * 1.00,
-            HEDGE_NOTIONAL_MAX * 0.75,
-            HEDGE_NOTIONAL_MAX * 0.50,
-            HEDGE_NOTIONAL_MAX * 0.25,
-        ],
-        default=0.0,
-    )
-
-    hedge_exec = pd.Series(0.0, index=df.index)
-    last_hedge = 0.0
-    last_change_i = -999
-    for i, target in enumerate(hedge_target):
-        hold_ok = (i - last_change_i) >= 5
-        if abs(float(target) - float(last_hedge)) >= 0.05 and hold_ok:
-            last_hedge = float(target)
-            last_change_i = i
-        hedge_exec.iat[i] = last_hedge
-
-    df["Sig_Tech_Break"] = sig1
-    df["Sig_VIX_Invert"] = sig2
-    df["Sig_Macro_Drop"] = sig3
-    df["Sig_HY_Spike"] = sig4
-    df["Sig_BTC_Momentum"] = sig5
-    df["Risk_Score"] = composite
-    df["VIX_VXV_Ratio"] = vix_vxv_ratio
-    df["Macro_Drop_10d"] = macro_drop_10d
-    df["HY_Change_10d"] = hy_change_10d
-    df["DD_20d"] = dd_20d
-    df["Hedge_Notional_Target"] = hedge_target
-    df["Hedge_Position"] = hedge_exec.shift(1).fillna(0.0)
-
-    hedge_tx_rate = OVERLAY_CFG["hedge_oneway_bps"] / 10000.0
-    hedge_turnover = df["Hedge_Position"].diff().abs().fillna(df["Hedge_Position"].abs())
-    df["Hedge_Tx_Cost"] = hedge_turnover * hedge_tx_rate
-    df["Hedge_Fund_Cost"] = df["Hedge_Position"] * (OVERLAY_CFG["hedge_funding_annual"] / 252.0)
-    df["Hedge_Total_Cost"] = df["Hedge_Tx_Cost"] + df["Hedge_Fund_Cost"]
-    return df
-
-
-def _build_combined_portfolio(cta: pd.DataFrame, hedge: pd.DataFrame) -> pd.DataFrame:
-    rf_daily = float(DEFAULT_BACKTEST_PRESET["risk_free_rate"]) / 252.0
-    cta_only_ret = cta["Strategy_Ret"].fillna(0.0)
-    price_ret = cta["Pct_Change"].fillna(0.0)
-    hedge_pos = hedge["Hedge_Position"].reindex(cta.index).fillna(0.0)
-    hedge_cost = hedge["Hedge_Total_Cost"].reindex(cta.index).fillna(0.0)
-    hedge_active_frac = (hedge_pos / HEDGE_NOTIONAL_MAX).clip(0.0, 1.0)
-
-    hedge_short_pnl = -hedge_pos * price_ret
-    hedge_idle_rf = OVERLAY_CFG["hedge_capital_weight"] * (1.0 - hedge_active_frac) * rf_daily
-    hedge_net_ret = hedge_short_pnl + hedge_idle_rf - hedge_cost
-
-    combined_ret = OVERLAY_CFG["cta_capital_weight"] * cta_only_ret + hedge_net_ret
-
-    out = pd.DataFrame(index=cta.index)
-    out["Price"] = cta["Price"]
-    out["Pct_Change"] = price_ret
-    out["CTA_Only_Ret"] = cta_only_ret
-    out["Combined_Ret"] = combined_ret
-    out["Hedge_Contrib"] = hedge_net_ret
-    out["Hedge_Position"] = hedge_pos
-    out["Risk_Score"] = hedge["Risk_Score"].reindex(cta.index).fillna(0.0)
-    out["CTA_Position"] = cta["Position"]
-    out["CTA_Target_Position"] = cta["Target_Position"]
-    out["Total_Score"] = cta["Score_Regime"]
-    out["Score_10D_Change"] = cta["Score_Regime"].diff(10)
-
-    out["BH_Nav"] = (1.0 + out["Pct_Change"]).cumprod()
-    out["CTA_Nav"] = (1.0 + out["CTA_Only_Ret"]).cumprod()
-    out["Combined_Nav"] = (1.0 + out["Combined_Ret"]).cumprod()
-    out["BH_Capital"] = out["BH_Nav"] * INITIAL_CAPITAL
-    out["CTA_Capital"] = out["CTA_Nav"] * INITIAL_CAPITAL
-    out["Combined_Capital"] = out["Combined_Nav"] * INITIAL_CAPITAL
-
-    for nav_col, dd_col in [
-        ("BH_Nav", "BH_DD"),
-        ("CTA_Nav", "CTA_DD"),
-        ("Combined_Nav", "Combined_DD"),
-    ]:
-        out[dd_col] = out[nav_col] / out[nav_col].cummax() - 1.0
-    return out
 
 
 def _pick_drawdown_dates(df: pd.DataFrame, n: int = 5, min_gap_days: int = 14) -> list[pd.Timestamp]:
@@ -418,8 +289,14 @@ def _perf_row(name: str, nav: pd.Series, ret: pd.Series) -> dict[str, object]:
 def main() -> None:
     df_all, _ = _load_snapshot()
     cta, _score_frame = _compute_cta(df_all)
-    hedge = _compute_overlay_signals(cta, df_all)
-    portfolio = _build_combined_portfolio(cta, hedge)
+    sweep = _sweep_backtest_hedge_candidates(
+        cta,
+        df_all,
+        risk_free_rate=float(DEFAULT_BACKTEST_PRESET["risk_free_rate"]),
+        starting_capital=INITIAL_CAPITAL,
+    )
+    hedge = sweep["recommended"]["hedge"]
+    portfolio = sweep["recommended"]["portfolio"]
 
     p1 = plot_2024_drawdown_diagnosis(portfolio, hedge)
     p2 = plot_nav_overlay_diagnostics(portfolio)
