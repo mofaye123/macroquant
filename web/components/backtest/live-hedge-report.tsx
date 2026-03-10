@@ -16,6 +16,7 @@ import {
 } from "recharts";
 
 import {
+  BacktestPayload,
   BacktestHedgeReport,
   BacktestHedgeReportRow,
 } from "@/lib/types";
@@ -268,6 +269,186 @@ const moduleCards = (report: BacktestHedgeReport | null | undefined, row: Backte
   });
 };
 
+const toSortedPoints = (points?: { date: string; value: number }[]) =>
+  [...(points ?? [])].sort((left, right) => left.date.localeCompare(right.date));
+
+const toPointMap = (points?: { date: string; value: number }[]) =>
+  new Map((points ?? []).map((point) => [point.date, point.value]));
+
+const returnsFromNav = (points?: { date: string; value: number }[]) => {
+  const sorted = toSortedPoints(points);
+  const returns = new Map<string, number>();
+  let previous: number | null = null;
+  sorted.forEach((point) => {
+    if (previous === null || previous <= 0) {
+      returns.set(point.date, 0);
+    } else {
+      returns.set(point.date, point.value / previous - 1);
+    }
+    previous = point.value;
+  });
+  return returns;
+};
+
+const buildFallbackReportFromPayload = (payload: BacktestPayload): BacktestHedgeReport | null => {
+  if (payload.hedgeReport?.rows?.length) {
+    return payload.hedgeReport;
+  }
+
+  const asset = payload.assets.find((item) => item.ticker === "BTC") ?? payload.assets[0];
+  if (!asset) {
+    return null;
+  }
+
+  const diagnostics = payload.diagnostics ?? undefined;
+  const navOverlay = diagnostics?.navOverlay;
+  const signalBreakdown = diagnostics?.signalBreakdown;
+
+  const buyHoldNavPoints =
+    navOverlay?.buyHoldNavSeries?.length
+      ? navOverlay.buyHoldNavSeries
+      : asset.benchmarkNavSeries?.length
+        ? asset.benchmarkNavSeries
+        : asset.navSeries;
+  const ctaNavPoints = navOverlay?.ctaNavSeries?.length ? navOverlay.ctaNavSeries : asset.navSeries;
+  const combinedNavPoints = navOverlay?.hedgedNavSeries?.length ? navOverlay.hedgedNavSeries : asset.navSeries;
+
+  const buyHoldRetMap = returnsFromNav(buyHoldNavPoints);
+  const ctaRetMap = returnsFromNav(ctaNavPoints);
+  const combinedRetMap = returnsFromNav(combinedNavPoints);
+
+  const buyHoldNavMap = toPointMap(buyHoldNavPoints);
+  const ctaNavMap = toPointMap(ctaNavPoints);
+  const combinedNavMap = toPointMap(combinedNavPoints);
+  const buyHoldDdMap = toPointMap(navOverlay?.buyHoldDrawdownSeries);
+  const ctaDdMap = toPointMap(navOverlay?.ctaDrawdownSeries);
+  const combinedDdMap = toPointMap(navOverlay?.hedgedDrawdownSeries);
+  const hedgePctMap = toPointMap(navOverlay?.hedgePositionSeries ?? signalBreakdown?.hedgePositionSeries);
+  const riskScoreMap = toPointMap(navOverlay?.riskScoreSeries ?? signalBreakdown?.riskScoreSeries);
+  const totalScoreMap = toPointMap(navOverlay?.totalScoreSeries);
+
+  const priceMap = toPointMap(signalBreakdown?.priceSeries);
+  const ema20Map = toPointMap(signalBreakdown?.ema20Series);
+  const ema60Map = toPointMap(signalBreakdown?.ema60Series);
+  const ema120Map = toPointMap(signalBreakdown?.ema120Series);
+  const vixVxvMap = toPointMap(signalBreakdown?.vixVxvSeries);
+  const hySpreadMap = toPointMap(signalBreakdown?.hyChangeSeries);
+  const sig1Map = toPointMap(signalBreakdown?.sigTechBreakSeries);
+  const sig5Map = toPointMap(signalBreakdown?.sigBtcMomentumSeries);
+  const sig3Map = toPointMap(signalBreakdown?.macroDropSeries);
+  const sig4Map = toPointMap(signalBreakdown?.hyChangeSeries);
+
+  const positionMap = toPointMap(asset.positionSeries);
+
+  const factorScoreMap = new Map(
+    (asset.macroFactors ?? []).map((factor) => [factor.key, factor.score])
+  );
+  const scoreOf = (key: string) => factorScoreMap.get(key) ?? 50;
+
+  const dateSet = new Set<string>();
+  [
+    buyHoldNavPoints,
+    ctaNavPoints,
+    combinedNavPoints,
+    signalBreakdown?.priceSeries,
+    asset.positionSeries,
+  ]
+    .flatMap((series) => series ?? [])
+    .forEach((point) => dateSet.add(point.date));
+  const dates = Array.from(dateSet).sort((left, right) => left.localeCompare(right));
+  if (!dates.length) {
+    return null;
+  }
+
+  let previousPrice = asset.rebalanceLog?.[asset.rebalanceLog.length - 1]?.price ?? 0;
+  const rows: BacktestHedgeReportRow[] = dates.map((date) => {
+    const price = priceMap.get(date) ?? previousPrice;
+    previousPrice = price;
+    const sig3 = sig3Map.get(date) ?? 0;
+    const sig4 = sig4Map.get(date) ?? 0;
+    return {
+      date,
+      price,
+      buyHoldNav: buyHoldNavMap.get(date) ?? 0,
+      ctaNav: ctaNavMap.get(date) ?? 0,
+      combinedNav: combinedNavMap.get(date) ?? 0,
+      buyHoldDrawdownPct: buyHoldDdMap.get(date) ?? 0,
+      ctaDrawdownPct: ctaDdMap.get(date) ?? 0,
+      combinedDrawdownPct: combinedDdMap.get(date) ?? 0,
+      ctaPosition: positionMap.get(date) ?? 0,
+      hedgePositionPct: hedgePctMap.get(date) ?? 0,
+      totalScore: totalScoreMap.get(date) ?? asset.currentScore ?? 50,
+      riskScore: Math.round(riskScoreMap.get(date) ?? 0),
+      signals: [
+        Math.round(sig1Map.get(date) ?? 0),
+        Math.round((vixVxvMap.get(date) ?? 0) > 1.02 ? 1 : 0),
+        Math.round(Math.abs(sig3) >= 8 ? 1 : 0),
+        Math.round(Math.abs(sig4) >= 0.4 ? 1 : 0),
+        Math.round(sig5Map.get(date) ?? 0),
+      ],
+      ema20: ema20Map.get(date) ?? price,
+      ema60: ema60Map.get(date) ?? price,
+      ema120: ema120Map.get(date) ?? price,
+      vixVxv: vixVxvMap.get(date) ?? 1,
+      hySpread: hySpreadMap.get(date) ?? 0,
+      vix: 0,
+      vxv: 0,
+      scoreA: scoreOf("A"),
+      scoreB: scoreOf("B"),
+      scoreC: scoreOf("C"),
+      scoreD: scoreOf("D"),
+      scoreE: scoreOf("E"),
+      scoreF: scoreOf("F"),
+      scoreG: scoreOf("G"),
+      buyHoldRet: buyHoldRetMap.get(date) ?? 0,
+      ctaRet: ctaRetMap.get(date) ?? 0,
+      combinedRet: combinedRetMap.get(date) ?? 0,
+    };
+  });
+
+  const orders = (asset.rebalanceLog ?? []).map((row) => {
+    const delta = row.position - row.previousPosition;
+    const isHedge = (row.signal ?? "").toUpperCase().includes("HEDGE");
+    return {
+      date: row.date,
+      oldPos: row.previousPosition,
+      newPos: row.position,
+      delta,
+      direction: isHedge ? (delta >= 0 ? "HEDGE↑" : "HEDGE↓") : delta >= 0 ? "BUY" : "SELL",
+      trigger: row.reason ?? row.action ?? row.signal ?? "再平衡",
+      price: row.price,
+      macroScore: row.score,
+      hedgePct: 0,
+      riskScore: 0,
+      type: isHedge ? ("HEDGE" as const) : ("CTA" as const),
+    };
+  });
+
+  return {
+    rows,
+    orders,
+    monthly: { BH: {}, CTA: {}, Comb: {} },
+    drawdownPeriods: { bh: [], cta: [], comb: [] },
+    modules: [
+      { key: "A", name: "流动性", field: "scoreA" },
+      { key: "B", name: "货币市场", field: "scoreB" },
+      { key: "C", name: "国债曲线", field: "scoreC" },
+      { key: "D", name: "实际利率", field: "scoreD" },
+      { key: "E", name: "美元", field: "scoreE" },
+      { key: "F", name: "信用", field: "scoreF" },
+      { key: "G", name: "波动率", field: "scoreG" },
+    ],
+    meta: {
+      start: rows[0].date,
+      end: rows[rows.length - 1].date,
+      nRows: rows.length,
+      dataSource: "MacroQuant payload fallback",
+      strategyStart: payload.startDate ?? rows[0].date,
+      strategyEnd: payload.endDate ?? rows[rows.length - 1].date,
+    },
+  };
+};
+
 const RiskPips = ({ value }: { value: number }) => (
   <span className="inline-flex gap-[3px]">
     {Array.from({ length: 5 }, (_, index) => (
@@ -317,7 +498,7 @@ export const LiveHedgeReportBacktest = () => {
     seededPayload: seededBacktest,
   });
 
-  const report = payload.hedgeReport;
+  const report = useMemo(() => buildFallbackReportFromPayload(payload), [payload]);
   const rows = report?.rows ?? [];
 
   const [startIdx, setStartIdx] = useState(0);
@@ -464,10 +645,13 @@ export const LiveHedgeReportBacktest = () => {
     setOrderSortAsc(false);
   };
 
-  const reportError =
-    error ||
-    payload.reason ||
-    (report && !report.rows.length ? "回测接口已返回，但当前区间没有生成可用的 hedge 报告数据。" : null);
+  const reportError = rows.length
+    ? null
+    : error ||
+      payload.reason ||
+      (report && !report.rows.length
+        ? "回测接口已返回，但当前区间没有生成可用的 hedge 报告数据。"
+        : null);
 
   return (
     <div className="min-h-screen bg-[#0d1117] text-[#e6edf3]">
