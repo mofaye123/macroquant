@@ -56,6 +56,15 @@ type OrderSortKey =
   | "hedgePct"
   | "riskScore";
 
+type ModuleScoreCard = {
+  key: string;
+  name: string;
+  value: number;
+  change: number | null;
+  color: string;
+  source: "dashboard" | "report";
+};
+
 const formatPct = (value: number | null | undefined, digits = 1) => {
   if (value === null || value === undefined || Number.isNaN(value)) {
     return "N/A";
@@ -68,6 +77,13 @@ const formatNumber = (value: number | null | undefined, digits = 2) => {
     return "N/A";
   }
   return value.toFixed(digits);
+};
+
+const formatSigned = (value: number | null | undefined, digits = 1) => {
+  if (value === null || value === undefined || Number.isNaN(value)) {
+    return null;
+  }
+  return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}`;
 };
 
 const pctToneClass = (value: number) => (value >= 0 ? "text-[#3fb950]" : "text-[#f85149]");
@@ -255,18 +271,55 @@ const moduleValue = (row: BacktestHedgeReportRow, key: string) => {
   }
 };
 
-const moduleCards = (report: BacktestHedgeReport | null | undefined, row: BacktestHedgeReportRow | undefined) => {
-  if (!report || !row) {
+type DashboardModuleLite = { id: string; title: string; score: number; change: number };
+
+const moduleCards = ({
+  dashboardModules,
+  report,
+  latestReportRow,
+}: {
+  dashboardModules: DashboardModuleLite[] | undefined;
+  report: BacktestHedgeReport | null | undefined;
+  latestReportRow: BacktestHedgeReportRow | undefined;
+}): ModuleScoreCard[] => {
+  if (dashboardModules?.length) {
+    return dashboardModules.map((module) => ({
+      key: module.id,
+      name: module.title,
+      value: module.score,
+      change: module.change,
+      color: riskColor(module.score),
+      source: "dashboard",
+    }));
+  }
+  if (!report || !latestReportRow) {
     return [];
   }
   return report.modules.map((module) => {
-    const value = moduleValue(row, module.key);
+    const value = moduleValue(latestReportRow, module.key);
     return {
-      ...module,
+      key: module.key,
+      name: module.name,
       value,
+      change: null,
       color: riskColor(value),
+      source: "report",
     };
   });
+};
+
+const moduleSourceText = (modules: ModuleScoreCard[]) => {
+  if (!modules.length) {
+    return "暂无数据";
+  }
+  return modules[0].source === "dashboard" ? "与模块页同步" : "回测报告内推导";
+};
+
+const moduleChangeToneClass = (value: number | null) => {
+  if (value === null || Number.isNaN(value)) {
+    return "text-[#8b949e]";
+  }
+  return value >= 0 ? "text-[#3fb950]" : "text-[#f85149]";
 };
 
 const toSortedPoints = (points?: { date: string; value: number }[]) =>
@@ -500,6 +553,7 @@ export const LiveHedgeReportBacktest = () => {
 
   const report = useMemo(() => buildFallbackReportFromPayload(payload), [payload]);
   const rows = report?.rows ?? [];
+  const dashboardModules = macroState.payload.dashboard?.modules;
 
   const [startIdx, setStartIdx] = useState(0);
   const [endIdx, setEndIdx] = useState(0);
@@ -541,8 +595,16 @@ export const LiveHedgeReportBacktest = () => {
   const viewEnd = viewRows[viewRows.length - 1]?.date ?? "-";
 
   const metrics = useMemo(() => buildMetrics(viewRows), [viewRows]);
-  const latestRow = viewRows[viewRows.length - 1];
-  const modules = useMemo(() => moduleCards(report, latestRow), [latestRow, report]);
+  const latestReportRow = rows[rows.length - 1];
+  const modules = useMemo(
+    () =>
+      moduleCards({
+        dashboardModules,
+        report,
+        latestReportRow,
+      }),
+    [dashboardModules, latestReportRow, report]
+  );
   const navChartData = useMemo(() => {
     if (!viewRows.length) {
       return [];
@@ -841,20 +903,31 @@ export const LiveHedgeReportBacktest = () => {
                 宏观模块评分 (最新值)
               </p>
             </div>
+            <p className="pb-[8px] text-[10px] text-[#8b949e]">口径: {moduleSourceText(modules)}</p>
             <div className="grid gap-[8px] md:grid-cols-4 xl:grid-cols-7">
               {modules.map((module) => (
                 <div key={module.key} className={`${cardClass} p-[10px]`}>
                   <p className="text-[9px] uppercase tracking-[0.03em] text-[#8b949e]">模块 {module.key}</p>
                   <p className="mt-[4px] text-[10px] text-[#8b949e]">{module.name}</p>
-                  <p className="mt-[6px] text-[18px] font-bold" style={{ color: module.color }}>
-                    {module.value.toFixed(0)}
-                  </p>
+                  <div className="mt-[6px] flex items-end gap-[6px]">
+                    <p className="text-[18px] font-bold" style={{ color: module.color }}>
+                      {module.value.toFixed(1)}
+                    </p>
+                    {module.change !== null ? (
+                      <p className={`text-[11px] font-semibold ${moduleChangeToneClass(module.change)}`}>
+                        {formatSigned(module.change, 1)}
+                      </p>
+                    ) : null}
+                  </div>
                   <div className="mt-[5px] h-[3px] rounded-[2px] bg-[#2a2a2a]">
                     <div
                       className="h-[3px] rounded-[2px]"
                       style={{ width: `${Math.max(0, Math.min(100, module.value))}%`, backgroundColor: module.color }}
                     />
                   </div>
+                  {module.change !== null ? (
+                    <p className="mt-[5px] text-[9px] text-[#8b949e]">周变化</p>
+                  ) : null}
                 </div>
               ))}
             </div>
