@@ -15,7 +15,6 @@ import {
 import { BacktestComparisonChart } from "@/components/charts/backtest-comparison-chart";
 import { BacktestDiagnosticPanel } from "@/components/charts/backtest-diagnostic-panel";
 import { ChartRangeKey, ChartRangePicker } from "@/components/charts/chart-range-control";
-import { AppShell } from "@/components/layout/app-shell";
 import { TrendPoint } from "@/lib/types";
 import { DEFAULT_BACKTEST_CONTROLS, useBacktestData } from "@/lib/use-backtest-data";
 import { useMacroData } from "@/lib/use-macro-data";
@@ -251,8 +250,8 @@ export const BacktestPage = () => {
   const moduleCards = asset.macroFactors ?? [];
 
   return (
-    <AppShell dataState={dataState}>
-      <div className="space-y-[14px]">
+    <div className="min-h-screen bg-[#020817] px-[12px] py-[14px] text-slate-100 lg:px-[20px]">
+      <div className="mx-auto max-w-[1600px] space-y-[14px]">
         <header className={cn(panelClass, "overflow-hidden border-slate-700 bg-[linear-gradient(120deg,#071022_0%,#0a1a33_55%,#11274a_100%)] p-[16px]")}>
           <div className="flex flex-wrap items-end justify-between gap-[10px]">
             <div>
@@ -806,6 +805,6 @@ export const BacktestPage = () => {
           </>
         )}
       </div>
-    </AppShell>
+    </div>
   );
 };

@@ -324,6 +324,8 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
               </div>
             <Link
               href="/backtest"
+              target="_blank"
+              rel="noopener noreferrer"
               className={cn(
                 "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
                 backtestActive
