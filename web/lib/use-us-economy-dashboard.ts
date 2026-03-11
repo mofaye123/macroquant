@@ -34,17 +34,27 @@ const toDashboardEndpoint = (apiUrl: string) =>
 export const useUSEconomyDashboard = ({
   apiUrl,
   seeded,
+  sourceType,
 }: {
   apiUrl: string;
   seeded?: USEconomyDashboardPayload;
+  sourceType?: "mock" | "static" | "api";
 }) => {
   const [data, setData] = useState<USEconomyDashboardPayload | null>(seeded ?? null);
   const [loading, setLoading] = useState<boolean>(!(seeded?.categories?.length));
   const [error, setError] = useState<string | null>(null);
 
   const endpoint = useMemo(() => toDashboardEndpoint(apiUrl), [apiUrl]);
+  const hasSeeded = !!seeded?.categories?.length;
 
   useEffect(() => {
+    if (hasSeeded && sourceType !== "api") {
+      setData(seeded ?? null);
+      setLoading(false);
+      setError(null);
+      return;
+    }
+
     let active = true;
     const controller = new AbortController();
     setLoading(true);
@@ -61,9 +71,11 @@ export const useUSEconomyDashboard = ({
         if (!active || controller.signal.aborted) {
           return;
         }
-        setError(err instanceof Error ? err.message : "US dashboard fetch failed");
-        if (!seeded) {
+        if (!hasSeeded) {
+          setError(err instanceof Error ? err.message : "US dashboard fetch failed");
           setData(null);
+        } else {
+          setError(null);
         }
       })
       .finally(() => {
@@ -76,7 +88,7 @@ export const useUSEconomyDashboard = ({
       active = false;
       controller.abort();
     };
-  }, [endpoint, seeded]);
+  }, [endpoint, hasSeeded, seeded, sourceType]);
 
   return {
     data,

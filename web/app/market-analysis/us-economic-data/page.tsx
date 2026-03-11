@@ -10,6 +10,7 @@ export default function USEconomicDataPage() {
   const dashboardState = useUSEconomyDashboard({
     apiUrl: dataState.apiUrl,
     seeded: dataState.payload.usEconomy,
+    sourceType: dataState.sourceType,
   });
 
   return (
