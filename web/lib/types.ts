@@ -442,6 +442,51 @@ export type MarketDailyPayload = {
   degradedReason?: string;
 };
 
+export type USEconomyDashboardPayload = {
+  asOfDate: string | null;
+  source: string;
+  cards: {
+    key: string;
+    title: string;
+    metricName: string;
+    value: string;
+    delta: string;
+    state: "positive" | "negative" | "warning" | "neutral";
+    asOfDate: string | null;
+  }[];
+  categories: {
+    key: string;
+    title: string;
+    summary: string;
+    indicators: {
+      name: string;
+      code: string;
+      view: "mom_diff" | "level" | "yoy";
+      unit: string;
+      latest: number;
+      previous: number;
+      delta: number;
+      latestText: string;
+      deltaText: string;
+      state: "positive" | "negative" | "warning" | "neutral";
+      series: { date: string; value: number }[];
+    }[];
+  }[];
+  cycle: {
+    currentRegime: string | null;
+    points: { date: string; growthZ: number; inflationZ: number }[];
+  };
+  heatmap: {
+    months: string[];
+    rows: { label: string; cells: (number | null)[] }[];
+  };
+  radar: {
+    labels: string[];
+    current: number[];
+    previousYear: number[];
+  };
+};
+
 export type DashboardPayload = {
   overallScore: {
     value: number;
@@ -540,4 +585,5 @@ export type MacroApiPayload = {
   modules: Record<ModuleMeta["slug"], ModulePageData>;
   backtest?: BacktestPayload;
   marketDaily?: MarketDailyPayload;
+  usEconomy?: USEconomyDashboardPayload;
 };

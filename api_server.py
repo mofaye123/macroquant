@@ -224,6 +224,57 @@ DAILY_CHART_LIMIT = 1800
 WEEKLY_CHART_LIMIT = 320
 MONTHLY_CHART_LIMIT = 84
 
+US_ECON_CATEGORY_LAYOUT: List[Dict[str, Any]] = [
+    {
+        "key": "employment",
+        "title": "就业 (Employment)",
+        "leadCode": "PAYEMS",
+        "indicators": [
+            {"name": "非农就业人数 (Non-Farm Payrolls)", "code": "PAYEMS", "view": "mom_diff", "unit": "k"},
+            {"name": "失业率 (Unemployment Rate)", "code": "UNRATE", "view": "level", "unit": "%"},
+            {"name": "初请失业金 (Initial Claims)", "code": "ICSA", "view": "level", "unit": ""},
+        ],
+    },
+    {
+        "key": "consumption",
+        "title": "消费 (Consumption)",
+        "leadCode": "RSAFS",
+        "indicators": [
+            {"name": "零售销售 (Retail Sales)", "code": "RSAFS", "view": "yoy", "unit": "%"},
+            {"name": "个人消费支出 (PCE)", "code": "PCE", "view": "yoy", "unit": "%"},
+            {"name": "消费者信心 (UMich Sentiment)", "code": "UMCSENT", "view": "level", "unit": ""},
+        ],
+    },
+    {
+        "key": "growth",
+        "title": "增长 (Growth)",
+        "leadCode": "GDPC1",
+        "indicators": [
+            {"name": "实际 GDP (Real GDP)", "code": "GDPC1", "view": "yoy", "unit": "%"},
+            {"name": "工业产出 (Industrial Production)", "code": "INDPRO", "view": "yoy", "unit": "%"},
+            {"name": "耐用品订单 (Durable Goods)", "code": "DGORDER", "view": "yoy", "unit": "%"},
+        ],
+    },
+    {
+        "key": "inflation",
+        "title": "通胀 (Inflation)",
+        "leadCode": "CPIAUCSL",
+        "indicators": [
+            {"name": "CPI (All Urban)", "code": "CPIAUCSL", "view": "yoy", "unit": "%"},
+            {"name": "核心 PCE (Core PCE)", "code": "PCEPILFE", "view": "yoy", "unit": "%"},
+            {"name": "PPI (Producer Price Index)", "code": "PPIFIS", "view": "yoy", "unit": "%"},
+        ],
+    },
+]
+US_ECON_INVERSE_CODES = {"UNRATE", "ICSA"}
+US_ECON_RADAR_INDICATORS = [
+    ("就业 (非农)", "PAYEMS", "mom_diff"),
+    ("消费 (零售)", "RSAFS", "yoy"),
+    ("增长 (工业)", "INDPRO", "yoy"),
+    ("通胀 (CPI)", "CPIAUCSL", "yoy"),
+    ("信心 (密歇根)", "UMCSENT", "level"),
+]
+
 
 def _drop_timezone_index(frame_or_series: Any) -> Any:
     if hasattr(frame_or_series, "index") and isinstance(frame_or_series.index, pd.DatetimeIndex) and frame_or_series.index.tz is not None:
@@ -328,6 +379,248 @@ def _latest_and_diff(series: pd.Series) -> Dict[str, float]:
     diff = last - prev
     pct = (diff / prev * 100.0) if prev else np.nan
     return {"last": last, "diff": diff, "pct": pct}
+
+
+def _us_econ_monthly_series(df_all: pd.DataFrame, code: str) -> pd.Series:
+    if df_all is None or df_all.empty or code not in df_all.columns:
+        return pd.Series(dtype=float)
+    series = pd.to_numeric(df_all[code], errors="coerce")
+    if series is None or series.dropna().empty:
+        return pd.Series(dtype=float)
+    series = _drop_timezone_index(series).dropna()
+    if not isinstance(series.index, pd.DatetimeIndex):
+        series.index = pd.to_datetime(series.index, errors="coerce")
+        series = series[series.index.notna()]
+    if series.empty:
+        return pd.Series(dtype=float)
+    return series.sort_index().resample("ME").last().ffill()
+
+
+def _us_econ_metric_view(series: pd.Series, code: str, view: str) -> pd.Series:
+    s = series.astype(float).copy()
+    if view == "mom_diff":
+        return s.diff(1)
+    if view == "level":
+        return s
+    return s.pct_change(12) * 100.0
+
+
+def _us_econ_momentum_view(series: pd.Series, code: str) -> pd.Series:
+    s = series.astype(float).copy()
+    if code in {"UNRATE", "ICSA", "UMCSENT"}:
+        mom = s.diff(12)
+    else:
+        mom = s.pct_change(12) * 100.0
+    if code in US_ECON_INVERSE_CODES:
+        mom = -mom
+    return mom
+
+
+def _us_econ_format_value(value: float, unit: str, view: str) -> str:
+    if pd.isna(value):
+        return "-"
+    if unit == "%":
+        return f"{value:.2f}%"
+    if view == "mom_diff":
+        return f"{value:,.0f}k"
+    if abs(value) >= 1000:
+        return f"{value:,.0f}"
+    return f"{value:.2f}"
+
+
+def _us_econ_state(latest: float, code: str) -> str:
+    if pd.isna(latest):
+        return "neutral"
+    if code == "PAYEMS":
+        return "positive" if latest >= 150 else ("warning" if latest >= 80 else "negative")
+    if code == "UNRATE":
+        return "positive" if latest <= 4.0 else ("warning" if latest <= 4.5 else "negative")
+    if code == "CPIAUCSL":
+        return "positive" if latest <= 2.6 else ("warning" if latest <= 3.5 else "negative")
+    if code == "PCEPILFE":
+        return "positive" if latest <= 2.5 else ("warning" if latest <= 3.0 else "negative")
+    return "positive" if latest >= 0 else "negative"
+
+
+def _build_us_economy_dashboard(df_all: pd.DataFrame) -> Dict[str, Any]:
+    if df_all is None or df_all.empty:
+        return {
+            "asOfDate": None,
+            "source": "FRED / MacroQuant",
+            "cards": [],
+            "categories": [],
+            "cycle": {"currentRegime": None, "points": []},
+            "heatmap": {"months": [], "rows": []},
+            "radar": {"labels": [], "current": [], "previousYear": []},
+        }
+
+    monthly_cache: Dict[str, pd.Series] = {}
+    category_payload: List[Dict[str, Any]] = []
+    cards: List[Dict[str, Any]] = []
+    momentum_book: Dict[str, pd.Series] = {}
+
+    def get_monthly(code: str) -> pd.Series:
+        cached = monthly_cache.get(code)
+        if cached is not None:
+            return cached
+        monthly_cache[code] = _us_econ_monthly_series(df_all, code)
+        return monthly_cache[code]
+
+    for category in US_ECON_CATEGORY_LAYOUT:
+        indicator_rows: List[Dict[str, Any]] = []
+        lead_row: Optional[Dict[str, Any]] = None
+        for indicator in category["indicators"]:
+            code = str(indicator["code"])
+            view = str(indicator["view"])
+            base = get_monthly(code)
+            if base.empty:
+                continue
+            metric = _us_econ_metric_view(base, code, view).dropna()
+            if metric.empty:
+                continue
+
+            momentum = _us_econ_momentum_view(base, code).dropna()
+            if not momentum.empty:
+                momentum_book[indicator["name"]] = momentum
+
+            latest = float(metric.iloc[-1])
+            prev = float(metric.iloc[-2]) if len(metric) > 1 else float(metric.iloc[-1])
+            delta = latest - prev
+            row = {
+                "name": indicator["name"],
+                "code": code,
+                "view": view,
+                "unit": indicator["unit"],
+                "latest": round(latest, 4),
+                "previous": round(prev, 4),
+                "delta": round(delta, 4),
+                "latestText": _us_econ_format_value(latest, indicator["unit"], view),
+                "deltaText": _us_econ_format_value(delta, indicator["unit"], view),
+                "state": _us_econ_state(latest, code),
+                "series": _series_points(metric, limit=120),
+            }
+            indicator_rows.append(row)
+            if lead_row is None or code == category["leadCode"]:
+                lead_row = row
+
+        if not indicator_rows:
+            continue
+
+        lead = lead_row or indicator_rows[0]
+        cards.append(
+            {
+                "key": category["key"],
+                "title": category["title"],
+                "metricName": lead["name"],
+                "value": lead["latestText"],
+                "delta": lead["deltaText"],
+                "state": lead["state"],
+                "asOfDate": lead["series"][-1]["date"] if lead["series"] else None,
+            }
+        )
+        category_payload.append(
+            {
+                "key": category["key"],
+                "title": category["title"],
+                "summary": f"{lead['name']} 最新读数 {lead['latestText']}，变动 {lead['deltaText']}。",
+                "indicators": indicator_rows,
+            }
+        )
+
+    growth_base = get_monthly("INDPRO")
+    inflation_base = get_monthly("PCEPILFE")
+    growth_yoy = growth_base.pct_change(12) * 100.0 if not growth_base.empty else pd.Series(dtype=float)
+    inflation_yoy = inflation_base.pct_change(12) * 100.0 if not inflation_base.empty else pd.Series(dtype=float)
+    growth_z = (
+        (growth_yoy - growth_yoy.rolling(60, min_periods=24).mean())
+        / growth_yoy.rolling(60, min_periods=24).std().replace(0.0, np.nan)
+    )
+    inflation_z = (
+        (inflation_yoy - inflation_yoy.rolling(60, min_periods=24).mean())
+        / inflation_yoy.rolling(60, min_periods=24).std().replace(0.0, np.nan)
+    )
+    cycle_frame = pd.concat([growth_z.rename("growthZ"), inflation_z.rename("inflationZ")], axis=1).dropna()
+    cycle_points = [
+        {
+            "date": idx.strftime("%Y-%m-%d"),
+            "growthZ": round(float(row["growthZ"]), 3),
+            "inflationZ": round(float(row["inflationZ"]), 3),
+        }
+        for idx, row in cycle_frame.tail(120).iterrows()
+    ]
+    current_regime = None
+    if cycle_points:
+        last = cycle_points[-1]
+        gz = last["growthZ"]
+        iz = last["inflationZ"]
+        if gz >= 0 and iz >= 0:
+            current_regime = "过热"
+        elif gz < 0 and iz >= 0:
+            current_regime = "滞胀"
+        elif gz < 0 and iz < 0:
+            current_regime = "衰退"
+        else:
+            current_regime = "复苏"
+
+    heatmap_rows: List[Dict[str, Any]] = []
+    heatmap_months: List[str] = []
+    if momentum_book:
+        momentum_df = pd.DataFrame(momentum_book).dropna(how="all")
+        if not momentum_df.empty:
+            window = momentum_df.tail(24)
+            if not window.empty:
+                heatmap_months = [idx.strftime("%Y-%m") for idx in window.index]
+                for label in window.columns:
+                    row = window[label]
+                    std = float(row.std(ddof=0))
+                    if std <= 0 or pd.isna(std):
+                        z = row * 0.0
+                    else:
+                        z = (row - float(row.mean())) / std
+                    cells = [None if pd.isna(v) else round(float(v), 3) for v in z.tolist()]
+                    heatmap_rows.append({"label": label, "cells": cells})
+
+    radar_labels: List[str] = []
+    radar_current: List[float] = []
+    radar_previous: List[float] = []
+    for label, code, view in US_ECON_RADAR_INDICATORS:
+        base = get_monthly(code)
+        if base.empty:
+            continue
+        metric = _us_econ_metric_view(base, code, view).dropna()
+        if len(metric) < 13:
+            continue
+        current_val = float(metric.iloc[-1])
+        prev_year_val = float(metric.iloc[-13])
+        current_rank = float((metric < current_val).mean() * 100.0)
+        prev_year_rank = float((metric < prev_year_val).mean() * 100.0)
+        radar_labels.append(label)
+        radar_current.append(round(current_rank, 2))
+        radar_previous.append(round(prev_year_rank, 2))
+
+    as_of = None
+    if isinstance(df_all.index, pd.DatetimeIndex) and len(df_all.index) > 0:
+        as_of = df_all.index.max().strftime("%Y-%m-%d")
+
+    return {
+        "asOfDate": as_of,
+        "source": "FRED / MacroQuant",
+        "cards": cards,
+        "categories": category_payload,
+        "cycle": {
+            "currentRegime": current_regime,
+            "points": cycle_points,
+        },
+        "heatmap": {
+            "months": heatmap_months,
+            "rows": heatmap_rows,
+        },
+        "radar": {
+            "labels": radar_labels,
+            "current": radar_current,
+            "previousYear": radar_previous,
+        },
+    }
 
 
 def _module_input_gaps(df_all: pd.DataFrame) -> Dict[str, List[str]]:
@@ -1919,6 +2212,7 @@ def build_macro_payload(as_of_date: Optional[pd.Timestamp] = None) -> Dict[str, 
             },
             "degradedReason": str(exc),
         }
+    us_economy_payload = _build_us_economy_dashboard(df_all)
 
     payload = {
         "generatedAt": time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime()),
@@ -1953,6 +2247,7 @@ def build_macro_payload(as_of_date: Optional[pd.Timestamp] = None) -> Dict[str, 
         "modules": module_details,
         "backtest": backtest_payload,
         "marketDaily": market_daily_payload,
+        "usEconomy": us_economy_payload,
     }
     if warnings:
         payload["dataQuality"]["reason"] = "; ".join(warnings[:3])
@@ -2950,6 +3245,31 @@ def macro_data(refresh: bool = Query(False)) -> Dict[str, Any]:
     return payload
 
 
+@app.get("/api/v1/us-economy-dashboard")
+def us_economy_dashboard(
+    refresh: bool = Query(False),
+    as_of_date: Optional[str] = Query(None),
+) -> Dict[str, Any]:
+    try:
+        if as_of_date:
+            cutoff = pd.Timestamp(as_of_date)
+            payload = build_macro_payload(as_of_date=cutoff)
+            dashboard = payload.get("usEconomy")
+            if isinstance(dashboard, dict):
+                return dashboard
+            return _build_us_economy_dashboard(_load_live_dataset(refresh=refresh)[0])
+
+        payload = macro_data(refresh=refresh)
+        dashboard = payload.get("usEconomy")
+        if isinstance(dashboard, dict):
+            return dashboard
+
+        df_all, _, _ = _load_live_dataset(refresh=refresh)
+        return _build_us_economy_dashboard(df_all)
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to compute US economy dashboard: {exc}") from exc
+
+
 @app.get("/api/v1/market-daily")
 def market_daily(
     refresh: bool = Query(False),
@@ -3117,10 +3437,6 @@ def backtest_data(
     cost_scale: float = Query(1.0, ge=0.5, le=2.0),
     max_leverage: float = Query(3.0, ge=1.0, le=3.0),
     rebalance_mode: str = Query("M"),
-    eth_shock_drop_pct: float = Query(13.5, ge=3.0, le=20.0),
-    eth_hedge_fraction: float = Query(1.0 / 3.0, ge=0.10, le=1.0),
-    eth_hedge_leverage: float = Query(2.0, ge=1.0, le=3.0),
-    eth_hedge_hold_days: int = Query(2, ge=1, le=2),
     th1: float = Query(20.0, ge=0.0, le=99.0),
     th2: float = Query(35.0, ge=0.0, le=99.0),
     th3: float = Query(50.0, ge=0.0, le=99.0),
@@ -3140,10 +3456,6 @@ def backtest_data(
                 "cost_scale": cost_scale,
                 "max_leverage": max_leverage,
                 "rebalance_mode": rebalance_mode,
-                "eth_shock_drop_pct": eth_shock_drop_pct,
-                "eth_hedge_fraction": eth_hedge_fraction,
-                "eth_hedge_leverage": eth_hedge_leverage,
-                "eth_hedge_hold_days": eth_hedge_hold_days,
                 "th1": th1,
                 "th2": th2,
                 "th3": th3,
