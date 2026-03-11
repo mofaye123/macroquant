@@ -45,7 +45,10 @@ def load_existing_payload(path):
 
 def write_payload(path, payload):
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(_json_safe(payload), ensure_ascii=False, indent=2, allow_nan=False), encoding="utf-8")
+    path.write_text(
+        json.dumps(_json_safe(payload), ensure_ascii=False, separators=(",", ":"), allow_nan=False),
+        encoding="utf-8",
+    )
 
 
 def write_status(path, status):
