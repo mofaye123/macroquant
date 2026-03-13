@@ -91,6 +91,11 @@ jobs:
           STATUS_MESSAGE: ${{ steps.status.outputs.message }}
           STATUS_REASON: ${{ steps.status.outputs.reason }}
           STATUS_READY_MODULES: ${{ steps.status.outputs.ready_modules }}
+          STATUS_MISSING_MODULES: ${{ steps.status.outputs.missing_modules }}
+          STATUS_MODULE_INPUT_GAPS: ${{ steps.status.outputs.module_input_gaps }}
+          STATUS_WARNING_COUNT: ${{ steps.status.outputs.warning_count }}
+          STATUS_WARNINGS: ${{ steps.status.outputs.warnings }}
+          STATUS_FETCH_SUMMARY: ${{ steps.status.outputs.fetch_summary }}
           GENERATE_EXIT_CODE: ${{ steps.generate.outputs.exit_code }}
         with:
           script: |
@@ -104,8 +109,13 @@ jobs:
               `- Exit code: ${process.env.GENERATE_EXIT_CODE}`,
               `- Mode: ${process.env.STATUS_MODE || "unknown"}`,
               `- Ready modules: ${process.env.STATUS_READY_MODULES}`,
+              `- Missing modules: ${process.env.STATUS_MISSING_MODULES || "n/a"}`,
               `- Message: ${process.env.STATUS_MESSAGE || "n/a"}`,
               `- Reason: ${process.env.STATUS_REASON || "n/a"}`,
+              `- Module input gaps: ${process.env.STATUS_MODULE_INPUT_GAPS || "n/a"}`,
+              `- Warning count: ${process.env.STATUS_WARNING_COUNT || "0"}`,
+              `- Warnings: ${process.env.STATUS_WARNINGS || "n/a"}`,
+              `- Fetch summary: ${process.env.STATUS_FETCH_SUMMARY || "n/a"}`,
               `- Detected at: ${new Date().toISOString()}`,
             ].join("\n");
 
