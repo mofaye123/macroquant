@@ -66,6 +66,42 @@ def load_build_macro_payload():
     return builder
 
 
+def derive_status_reason(payload):
+    data_quality = payload.get("dataQuality", {})
+    reason = data_quality.get("reason")
+    if reason:
+        return reason
+
+    missing_modules = data_quality.get("missingModules", []) or []
+    module_input_gaps = data_quality.get("moduleInputGaps", {}) or {}
+    warnings = data_quality.get("warnings", []) or []
+    fetch_meta = data_quality.get("fetchMeta", {}) or {}
+
+    parts = []
+    if missing_modules:
+        parts.append(f"missing_modules={','.join(str(item) for item in missing_modules[:6])}")
+    if module_input_gaps:
+        gap_parts = []
+        for module, columns in list(module_input_gaps.items())[:4]:
+            if not columns:
+                continue
+            gap_parts.append(f"{module}[{','.join(str(col) for col in columns[:4])}]")
+        if gap_parts:
+            parts.append(f"module_input_gaps={'; '.join(gap_parts)}")
+    if warnings:
+        parts.append(f"warnings={' | '.join(str(item) for item in warnings[:2])}")
+
+    fred_failed_series = fetch_meta.get("fred_failed_series", []) or []
+    if fred_failed_series:
+        parts.append(f"fred_failed_series={','.join(str(item) for item in fred_failed_series[:4])}")
+
+    yahoo_columns = fetch_meta.get("yahoo_columns", []) or []
+    if not yahoo_columns:
+        parts.append("yahoo_columns=none")
+
+    return "; ".join(parts) if parts else None
+
+
 def main():
     parser = argparse.ArgumentParser(description="Generate static MacroQuant payload JSON for Next.js.")
     parser.add_argument(
@@ -132,13 +168,25 @@ def main():
 
     ready_count = len(payload["dataQuality"].get("readyModules", []))
     degraded = payload["dataQuality"].get("mode") == "degraded"
+    data_quality = payload.get("dataQuality", {})
     status = {
         "result": "updated",
         "outputPath": str(output_path),
-        "mode": payload["dataQuality"].get("mode"),
+        "mode": data_quality.get("mode"),
         "readyModules": ready_count,
-        "reason": payload["dataQuality"].get("reason"),
+        "reason": derive_status_reason(payload),
         "message": "",
+        "missingModules": data_quality.get("missingModules", []),
+        "moduleInputGaps": data_quality.get("moduleInputGaps", {}),
+        "warningCount": len(data_quality.get("warnings", []) or []),
+        "warnings": data_quality.get("warnings", []),
+        "fetchSummary": {
+            "fred_success_count": (data_quality.get("fetchMeta", {}) or {}).get("fred_success_count"),
+            "fred_failed_series": (data_quality.get("fetchMeta", {}) or {}).get("fred_failed_series", []),
+            "fred_failure_details": (data_quality.get("fetchMeta", {}) or {}).get("fred_failure_details", []),
+            "yahoo_columns": (data_quality.get("fetchMeta", {}) or {}).get("yahoo_columns", []),
+            "fred_csv_skip_reason": (data_quality.get("fetchMeta", {}) or {}).get("fred_csv_skip_reason"),
+        },
     }
 
     if degraded and existing_payload is not None and not args.allow_degraded and has_ready_modules(existing_payload):
