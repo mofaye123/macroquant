@@ -628,9 +628,16 @@ def _module_input_gaps(df_all: pd.DataFrame) -> Dict[str, List[str]]:
     gaps: Dict[str, List[str]] = {}
 
     for slug, required in MODULE_REQUIRED_COLUMNS.items():
+        if slug == "e":
+            required = [col for col in required if col != "DXY"]
         missing = [col for col in required if col not in columns]
         if missing:
             gaps[slug] = missing
+
+    if "DXY" in columns:
+        dxy_series = df_all.get("DXY")
+        if dxy_series is not None and dxy_series.dropna().empty:
+            gaps.setdefault("e", []).append("DXY(all-NaN)")
 
     g_missing: List[str] = []
     if "SP500" not in columns:
@@ -750,6 +757,10 @@ def _build_module_special_series(module_id: str, frame: pd.DataFrame) -> Optiona
             payload["wti"] = _series_points(frame["WTI_Display"], limit=DAILY_CHART_LIMIT)
         if "DXY_Fast" in frame.columns:
             payload["dxy"] = _series_points(frame["DXY_Fast"], limit=DAILY_CHART_LIMIT)
+        elif "DXY_Proxy" in frame.columns:
+            payload["dxy"] = _series_points(frame["DXY_Proxy"], limit=DAILY_CHART_LIMIT)
+        elif "DXY_Input" in frame.columns:
+            payload["dxy"] = _series_points(frame["DXY_Input"], limit=DAILY_CHART_LIMIT)
         elif "DXY" in frame.columns:
             payload["dxy"] = _series_points(frame["DXY"], limit=DAILY_CHART_LIMIT)
         return payload
@@ -955,6 +966,19 @@ def _merged_series(df_all: pd.DataFrame, *columns: str) -> Optional[pd.Series]:
             continue
         merged = series if merged is None else merged.combine_first(series)
     return merged
+
+
+def _first_nonempty_series(df_all: pd.DataFrame, *columns: str) -> tuple[Optional[pd.Series], Optional[str]]:
+    for column in columns:
+        if column not in df_all.columns:
+            continue
+        series = df_all.get(column)
+        if series is None:
+            continue
+        if series.dropna().empty:
+            continue
+        return series, column
+    return None, None
 
 
 def _compute_oil_shock_signal(df_all: pd.DataFrame) -> Dict[str, Any]:
@@ -1524,11 +1548,17 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
     frames["d"] = df_d
 
     # E
-    df_e = _ensure_df(df_all, ["DTWEXBGS", "DXY", "DEXJPUS", "IRSTCI01JPM156N", "DCOILWTICO", "DHHNGSP"])
+    df_e = _ensure_df(df_all, ["DTWEXBGS", "DEXJPUS", "IRSTCI01JPM156N", "DCOILWTICO", "DHHNGSP"])
+    dxy_input, dxy_source = _first_nonempty_series(df_all, "DXY")
+    if dxy_input is None:
+        dxy_input, dxy_source = _first_nonempty_series(df_all, "DTWEXBGS")
+    if not df_e.empty and dxy_input is not None:
+        df_e["DXY_Input"] = dxy_input.reindex(df_e.index, method="ffill")
+        df_e = df_e.dropna(subset=["DXY_Input"]).copy()
     if not df_e.empty:
         df_e["Chg_USD"] = df_e["DTWEXBGS"].pct_change(63)
         df_e["Score_USD"] = _blended_rank_score(df_e["Chg_USD"], higher_is_better=False)
-        df_e["Chg_DXY"] = df_e["DXY"].pct_change(63)
+        df_e["Chg_DXY"] = df_e["DXY_Input"].pct_change(63)
         df_e["Score_DXY"] = _blended_rank_score(df_e["Chg_DXY"], higher_is_better=False)
         df_e["Yen_Appreciation"] = -1 * df_e["DEXJPUS"].pct_change(63)
         df_e["Score_Yen_FX"] = _blended_rank_score(df_e["Yen_Appreciation"], higher_is_better=False)
@@ -1545,9 +1575,11 @@ def _compute_module_frames(df_all: pd.DataFrame) -> Dict[str, pd.DataFrame]:
         if wti_display is not None:
             df_e["WTI_Display"] = wti_display.reindex(df_e.index, method="ffill").combine_first(df_e["WTI_Display"])
 
-        dxy_fast = df_all.get("DXY")
+        dxy_fast, _ = _first_nonempty_series(df_all, "DXY")
         if dxy_fast is not None:
             df_e["DXY_Fast"] = dxy_fast.reindex(df_e.index, method="ffill")
+        elif dxy_source == "DTWEXBGS":
+            df_e["DXY_Proxy"] = df_e["DXY_Input"]
         spx_fast = df_all.get("SP500")
         if spx_fast is not None:
             df_e["SP500_Fast"] = spx_fast.reindex(df_e.index, method="ffill")
@@ -3470,7 +3502,57 @@ def backtest_data(
     return payload
 
 
+@app.get("/api/v1/five-asset-backtest")
+def five_asset_backtest_data(
+    mode: str = "auto",
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+) -> Dict[str, Any]:
+    normalized_mode = (mode or "auto").strip().lower()
+    if normalized_mode not in {"auto", "live", "demo"}:
+        raise HTTPException(status_code=400, detail="mode must be one of auto, live, demo")
+
+    try:
+        from strategies.five_asset_macro_cta.src.live_cycle import resolve_strategy_payload
+
+        return resolve_strategy_payload(
+            mode=normalized_mode,
+            start_date=start_date,
+            end_date=end_date,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to compute five-asset backtest payload: {exc}") from exc
+
+
+@app.get("/api/v1/five-asset-terminal")
+def five_asset_terminal_data(
+    mode: str = "auto",
+    start_date: Optional[str] = None,
+    end_date: Optional[str] = None,
+) -> Dict[str, Any]:
+    normalized_mode = (mode or "auto").strip().lower()
+    if normalized_mode not in {"auto", "live", "demo"}:
+        raise HTTPException(status_code=400, detail="mode must be one of auto, live, demo")
+
+    try:
+        from strategies.five_asset_macro_cta.src.live_cycle import build_terminal_payload
+
+        return build_terminal_payload(
+            mode=normalized_mode,
+            start_date=start_date,
+            end_date=end_date,
+        )
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to compute five-asset terminal payload: {exc}") from exc
+
+
 if __name__ == "__main__":
+    import os
     import uvicorn
 
-    uvicorn.run("api_server:app", host="0.0.0.0", port=8000, reload=True)
+    uvicorn.run(
+        "api_server:app",
+        host="0.0.0.0",
+        port=8000,
+        reload=os.getenv("MACROQUANT_API_RELOAD", "0") == "1",
+    )

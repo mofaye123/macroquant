@@ -23,6 +23,10 @@ _LAST_FETCH_META = {
     "fred_failed_series": [],
     "fred_failure_details": [],
     "yahoo_columns": [],
+    "yahoo_source_map": {},
+    "yahoo_failed_targets": [],
+    "yahoo_empty_targets": [],
+    "yahoo_failure_details": [],
 }
 
 
@@ -130,6 +134,64 @@ def _probe_fred_csv_access(start_date):
 def get_last_fetch_meta():
     return dict(_LAST_FETCH_META)
 
+
+def _extract_close_series_from_yahoo_frame(raw, ticker):
+    if raw is None or getattr(raw, "empty", True):
+        return None
+
+    if isinstance(raw.columns, pd.MultiIndex):
+        if "Close" in raw.columns.get_level_values(0):
+            close_frame = raw["Close"].copy()
+            if isinstance(close_frame, pd.Series):
+                series = close_frame
+            elif ticker in close_frame.columns:
+                series = close_frame[ticker]
+            elif close_frame.shape[1] == 1:
+                series = close_frame.iloc[:, 0]
+            else:
+                return None
+        else:
+            return None
+    elif "Close" in raw.columns:
+        series = raw["Close"].copy()
+    else:
+        return None
+
+    series = pd.to_numeric(series, errors="coerce").dropna()
+    if series.empty:
+        return None
+    if getattr(series.index, "tz", None) is not None:
+        series.index = series.index.tz_localize(None)
+    series.index.name = None
+    return series
+
+
+def _download_yahoo_target(target_name, tickers, start_date):
+    errors = []
+    empty_candidates = []
+
+    for ticker in tickers:
+        try:
+            raw = yf.download(
+                ticker,
+                start=start_date,
+                progress=False,
+                auto_adjust=False,
+                threads=False,
+            )
+        except Exception as exc:
+            errors.append(f"{ticker}: download error: {exc}")
+            continue
+
+        series = _extract_close_series_from_yahoo_frame(raw, ticker)
+        if series is None:
+            empty_candidates.append(ticker)
+            errors.append(f"{ticker}: empty close series")
+            continue
+        return series.rename(target_name), ticker, errors, empty_candidates
+
+    return None, None, errors, empty_candidates
+
 @st.cache_data(ttl=3600)
 def get_mixed_data(api_key, series_ids, start_date='2010-01-01'): 
     """
@@ -222,32 +284,35 @@ def get_mixed_data(api_key, series_ids, start_date='2010-01-01'):
     df_fred = pd.DataFrame(data) if data else pd.DataFrame()
 
     # 2. 获取 Yahoo 数据 (DXY / VIX / VXV / WTI)
-    # DX-Y.NYB 是美元指数在 Yahoo 的代码；CL=F 为 WTI 原油期货
+    # DXY 主用 DX-Y.NYB，必要时回退到 DX=F 期货近月连续。
     df_yahoo = pd.DataFrame()
-    try:
-        # progress=False 隐藏下载进度条
-        tickers = ["DX-Y.NYB", "^VIX", "^VXV", "CL=F"]
-        yahoo_data = yf.download(tickers, start=start_date, progress=False)
+    yahoo_frames = []
+    yahoo_source_map = {}
+    yahoo_failed_targets = []
+    yahoo_empty_targets = []
+    yahoo_failure_details = []
+    yahoo_targets = {
+        "DXY": ["DX-Y.NYB", "DX=F"],
+        "VIX_YH": ["^VIX"],
+        "VXV_YH": ["^VXV"],
+        "WTI_YH": ["CL=F"],
+    }
 
-        # 只取 Close
-        if not yahoo_data.empty:
-            if isinstance(yahoo_data.columns, pd.MultiIndex) and "Close" in yahoo_data.columns.levels[0]:
-                close_df = yahoo_data["Close"].copy()
-            elif "Close" in yahoo_data.columns:
-                close_df = yahoo_data[["Close"]].copy()
-            else:
-                close_df = pd.DataFrame()
+    for target_name, tickers in yahoo_targets.items():
+        series, source_ticker, errors, empty_candidates = _download_yahoo_target(target_name, tickers, start_date)
+        if series is not None:
+            yahoo_frames.append(series.to_frame())
+            yahoo_source_map[target_name] = source_ticker
+        else:
+            yahoo_failed_targets.append(target_name)
+        if empty_candidates:
+            yahoo_empty_targets.append(target_name)
+        yahoo_failure_details.extend(errors[:4])
 
-            if not close_df.empty:
-                if close_df.index.tz is not None:
-                    close_df.index = close_df.index.tz_localize(None)
-                col_map = {"DX-Y.NYB": "DXY", "^VIX": "VIX_YH", "^VXV": "VXV_YH", "CL=F": "WTI_YH"}
-                close_df = close_df.rename(columns=col_map)
-                df_yahoo = close_df
-            else:
-                _streamlit_warning("Yahoo API 返回数据但不包含 Close 列")
-    except Exception as e:
-        _streamlit_warning(f"Yahoo Finance API (DXY) Error: {e}")
+    if yahoo_frames:
+        df_yahoo = pd.concat(yahoo_frames, axis=1).sort_index()
+    elif yahoo_failure_details:
+        _streamlit_warning(f"Yahoo Finance API fallback failed: {' | '.join(yahoo_failure_details[:3])}")
 
     _LAST_FETCH_META["fred_success_count"] = len(data)
     _LAST_FETCH_META["fred_csv_fallback_hits"] = csv_fallback_hits
@@ -259,6 +324,10 @@ def get_mixed_data(api_key, series_ids, start_date='2010-01-01'):
     _LAST_FETCH_META["fred_failed_series"] = failed_series[:20]
     _LAST_FETCH_META["fred_failure_details"] = failure_details[:40]
     _LAST_FETCH_META["yahoo_columns"] = [str(col) for col in df_yahoo.columns]
+    _LAST_FETCH_META["yahoo_source_map"] = yahoo_source_map
+    _LAST_FETCH_META["yahoo_failed_targets"] = yahoo_failed_targets[:12]
+    _LAST_FETCH_META["yahoo_empty_targets"] = yahoo_empty_targets[:12]
+    _LAST_FETCH_META["yahoo_failure_details"] = yahoo_failure_details[:20]
 
     # 3. 合并数据
     # 使用 outer join 确保即使某一侧数据缺失，另一侧也能保留
