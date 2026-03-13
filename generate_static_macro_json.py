@@ -185,6 +185,10 @@ def main():
             "fred_failed_series": (data_quality.get("fetchMeta", {}) or {}).get("fred_failed_series", []),
             "fred_failure_details": (data_quality.get("fetchMeta", {}) or {}).get("fred_failure_details", []),
             "yahoo_columns": (data_quality.get("fetchMeta", {}) or {}).get("yahoo_columns", []),
+            "yahoo_source_map": (data_quality.get("fetchMeta", {}) or {}).get("yahoo_source_map", {}),
+            "yahoo_failed_targets": (data_quality.get("fetchMeta", {}) or {}).get("yahoo_failed_targets", []),
+            "yahoo_empty_targets": (data_quality.get("fetchMeta", {}) or {}).get("yahoo_empty_targets", []),
+            "yahoo_failure_details": (data_quality.get("fetchMeta", {}) or {}).get("yahoo_failure_details", []),
             "fred_csv_skip_reason": (data_quality.get("fetchMeta", {}) or {}).get("fred_csv_skip_reason"),
         },
     }
