@@ -378,14 +378,19 @@ def _build_backtest_paper_book(strategy_payload: dict[str, Any]) -> dict[str, An
         list(strategy_payload.get("executionHistory", [])),
         key=lambda row: (str(row.get("timestamp")), str(row.get("asset"))),
     )
+    window_start_prices = {
+        asset: float(strategy_payload.get("windowStartPrices", {}).get(asset, last["prices"].get(asset, 0.0)) or 0.0)
+        for asset in strategy_payload.get("configSummary", {}).get("assets", [])
+    }
     range_state_by_asset: dict[str, dict[str, Any]] = {
-        asset: {"quantity": 0.0, "openedAt": None, "lastRebalancedAt": None}
+        asset: {"quantity": 0.0, "avgPrice": 0.0, "openedAt": None, "lastRebalancedAt": None}
         for asset in strategy_payload.get("configSummary", {}).get("assets", [])
     }
     if view_start_marker:
         for asset, quantity in carry_quantity_by_asset.items():
             if float(quantity) > 1e-12:
                 range_state_by_asset[asset]["quantity"] = float(quantity)
+                range_state_by_asset[asset]["avgPrice"] = float(window_start_prices.get(asset, 0.0))
                 range_state_by_asset[asset]["openedAt"] = view_start_marker
                 range_state_by_asset[asset]["lastRebalancedAt"] = view_start_marker
         for order in display_orders:
@@ -397,15 +402,22 @@ def _build_backtest_paper_book(strategy_payload: dict[str, Any]) -> dict[str, An
                 continue
             side = str(order.get("side", "HOLD"))
             previous_qty = float(range_state_by_asset[asset]["quantity"])
+            previous_avg = float(range_state_by_asset[asset]["avgPrice"])
             if side == "BUY":
                 next_qty = previous_qty + quantity
                 range_state_by_asset[asset]["quantity"] = next_qty
+                range_state_by_asset[asset]["avgPrice"] = (
+                    ((previous_qty * previous_avg) + (quantity * float(order.get("price", 0.0) or 0.0))) / next_qty
+                    if next_qty > 1e-12
+                    else 0.0
+                )
                 if previous_qty <= 1e-12:
                     range_state_by_asset[asset]["openedAt"] = str(order.get("timestamp"))
                 range_state_by_asset[asset]["lastRebalancedAt"] = str(order.get("timestamp"))
             elif side == "SELL":
                 next_qty = max(0.0, previous_qty - quantity)
                 range_state_by_asset[asset]["quantity"] = next_qty
+                range_state_by_asset[asset]["avgPrice"] = 0.0 if next_qty <= 1e-12 else previous_avg
                 range_state_by_asset[asset]["lastRebalancedAt"] = str(order.get("timestamp"))
                 if next_qty <= 1e-12:
                     range_state_by_asset[asset]["openedAt"] = None
@@ -416,7 +428,7 @@ def _build_backtest_paper_book(strategy_payload: dict[str, Any]) -> dict[str, An
         weight_pct = float(last["net_weights"].get(asset, last["weights"].get(asset, 0.0)))
         price = float(last["prices"][asset])
         quantity = float(state_by_asset.get(asset, {}).get("quantity", 0.0))
-        avg_price = float(state_by_asset.get(asset, {}).get("avgPrice", 0.0))
+        avg_price = float(range_state_by_asset.get(asset, {}).get("avgPrice", state_by_asset.get(asset, {}).get("avgPrice", 0.0)))
         opened_at = range_state_by_asset.get(asset, {}).get("openedAt")
         last_rebalanced_at = range_state_by_asset.get(asset, {}).get("lastRebalancedAt")
         market_value = quantity * price

@@ -365,7 +365,7 @@ async function fetchStooqHistoricalClose(symbol, endDate) {
   throw new Error(`stooq historical close unavailable for ${symbol}`);
 }
 
-function rebuildPaperBook(strategy, endPrices, generatedAt) {
+function rebuildPaperBook(strategy, endPrices, startPrices, generatedAt) {
   const cashStart = Number(strategy.startingCapital || 100000);
   const orders = (strategy.executionHistory || []).map((order) => ({ ...order }));
   const replayOrders = (strategy.positionReplayHistory || strategy.executionHistory || []).map((order) => ({ ...order }));
@@ -434,6 +434,7 @@ function rebuildPaperBook(strategy, endPrices, generatedAt) {
     const carryQty = Number(carryQuantities.get(asset) || 0);
     rangeMeta.set(asset, {
       quantity: carryQty,
+      avgPrice: carryQty > 1e-9 ? Number(startPrices?.[asset] || endPrices?.[asset] || 0) : 0,
       openedAt: carryQty > 1e-9 && viewStartMarker ? viewStartMarker : null,
       lastRebalancedAt: carryQty > 1e-9 && viewStartMarker ? viewStartMarker : null,
     });
@@ -448,13 +449,18 @@ function rebuildPaperBook(strategy, endPrices, generatedAt) {
     const side = String(order.side || "BUY").toUpperCase();
     const prev = rangeMeta.get(asset) || {
       quantity: 0,
+      avgPrice: 0,
       openedAt: null,
       lastRebalancedAt: null,
     };
     if (side === "BUY") {
       const nextQty = Number(prev.quantity || 0) + quantity;
+      const nextAvg = nextQty > 1e-9
+        ? ((Number(prev.quantity || 0) * Number(prev.avgPrice || 0)) + quantity * Number(order.price || 0)) / nextQty
+        : 0;
       rangeMeta.set(asset, {
         quantity: nextQty,
+        avgPrice: nextAvg,
         openedAt: Number(prev.quantity || 0) > 1e-9 ? prev.openedAt : order.timestamp,
         lastRebalancedAt: order.timestamp,
       });
@@ -462,6 +468,7 @@ function rebuildPaperBook(strategy, endPrices, generatedAt) {
       const nextQty = Math.max(0, Number(prev.quantity || 0) - quantity);
       rangeMeta.set(asset, {
         quantity: nextQty,
+        avgPrice: nextQty > 1e-9 ? Number(prev.avgPrice || 0) : 0,
         openedAt: nextQty > 1e-9 ? prev.openedAt : null,
         lastRebalancedAt: order.timestamp,
       });
@@ -483,7 +490,7 @@ function rebuildPaperBook(strategy, endPrices, generatedAt) {
       openedAt: null,
       lastRebalancedAt: null,
     };
-    const meta = rangeMeta.get(asset) || { openedAt: null, lastRebalancedAt: null };
+    const meta = rangeMeta.get(asset) || { avgPrice: 0, openedAt: null, lastRebalancedAt: null };
     const markPrice = Number(endPrices[asset] || strategy.lastSnapshot?.prices?.[asset] || 0);
     const marketValue = Math.abs(Number(state.quantity || 0) * markPrice);
     equity += marketValue;
@@ -496,14 +503,14 @@ function rebuildPaperBook(strategy, endPrices, generatedAt) {
       mode: state.mode,
       side: Number(state.quantity) > 0 ? "LONG" : Number(state.quantity) < 0 ? "SHORT" : "FLAT",
       quantity: round(Number(state.quantity || 0), 8),
-      avgPrice: round(Number(state.avgPrice || 0), 4),
+      avgPrice: round(Number(meta.avgPrice || state.avgPrice || 0), 4),
       markPrice: round(markPrice, 4),
       marketValue: round(marketValue, 2),
       targetWeightPct: round(Number(lastWeights[asset] || 0), 2),
       currentWeightPct: 0,
       driftWeightPct: 0,
       targetValue: 0,
-      unrealizedPnl: round((markPrice - Number(state.avgPrice || 0)) * Number(state.quantity || 0), 2),
+      unrealizedPnl: round((markPrice - Number(meta.avgPrice || state.avgPrice || 0)) * Number(state.quantity || 0), 2),
       openedAt: meta.openedAt,
       lastRebalancedAt: meta.lastRebalancedAt,
     });
@@ -849,7 +856,9 @@ async function buildTerminalPayload(url, env, ctx) {
 
   const backtest = await fetchStaticPayload(env, ctx, PAGES_BACKTEST_PATH);
   const strategy = buildRangeStrategy(backtest, startDate, endDate);
+  const startPrices = await resolveHistoricalEndPrices(strategy.startDate, strategy.windowStartPrices || strategy.lastSnapshot.prices);
   strategy.lastSnapshot.prices = await resolveHistoricalEndPrices(strategy.endDate, strategy.lastSnapshot.prices);
+  strategy.windowStartPrices = startPrices;
   const terminalPayload = {
     status: "ok",
     terminalId: terminal.terminalId || "five_asset_terminal",
@@ -858,7 +867,7 @@ async function buildTerminalPayload(url, env, ctx) {
     sourceLabel: "Cloudflare Worker backtest range API",
     warnings: [],
     strategy,
-    paperTrading: rebuildPaperBook(strategy, strategy.lastSnapshot.prices, new Date().toISOString()),
+    paperTrading: rebuildPaperBook(strategy, strategy.lastSnapshot.prices, startPrices, new Date().toISOString()),
   };
   return terminalPayload;
 }

@@ -1123,6 +1123,10 @@ def _build_payload(
         "title": "Five-Asset Macro CTA",
         "startDate": portfolio.index[0].strftime("%Y-%m-%d"),
         "endDate": portfolio.index[-1].strftime("%Y-%m-%d"),
+        "windowStartPrices": {
+            asset: round(float(portfolio.iloc[0][f"{asset}_Price"]), 4)
+            for asset in ASSETS
+        },
         "startingCapital": float(initial_capital),
         "benchmarkName": "Five-Asset Equal Weight",
         "kpis": {
