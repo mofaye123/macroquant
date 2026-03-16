@@ -305,6 +305,125 @@ function findLatestValue(seriesMap, asset, endDate, fallback = 0) {
   return fallback;
 }
 
+function findSeriesValue(series, endDate, fallback = 0) {
+  if (!Array.isArray(series)) {
+    return Number(fallback || 0);
+  }
+  for (let index = series.length - 1; index >= 0; index -= 1) {
+    if (String(series[index].date || "") <= endDate) {
+      return Number(series[index].value || 0);
+    }
+  }
+  return Number(fallback || 0);
+}
+
+function findPrevSeriesValue(series, endDate, fallback = 0) {
+  if (!Array.isArray(series)) {
+    return Number(fallback || 0);
+  }
+  for (let index = series.length - 1; index >= 0; index -= 1) {
+    const dt = String(series[index].date || "");
+    if (dt < endDate) {
+      return Number(series[index].value || 0);
+    }
+  }
+  return Number(fallback || 0);
+}
+
+function recomputeRangeTickerTape(strategy) {
+  const endDate = strategy.endDate;
+  const assets = Object.keys(strategy.lastSnapshot?.weights || {});
+  const pricesSeries = strategy.series?.prices || {};
+  const contributionSeries = strategy.series?.contributions || {};
+  return assets.map((asset) => {
+    const lastPrice = Number(strategy.lastSnapshot?.prices?.[asset] || findSeriesValue(pricesSeries[asset], endDate, 0));
+    const prevPrice = findPrevSeriesValue(pricesSeries[asset], endDate, lastPrice);
+    const dayChangePct = prevPrice > 0 ? ((lastPrice / prevPrice) - 1) * 100 : 0;
+    const contributionPct = findSeriesValue(
+      contributionSeries[asset],
+      endDate,
+      Number(strategy.lastSnapshot?.attribution?.[asset] || 0),
+    );
+    const targetWeightPct = Number(
+      strategy.lastSnapshot?.net_weights?.[asset]
+      ?? strategy.lastSnapshot?.weights?.[asset]
+      ?? 0,
+    );
+    return {
+      asset,
+      price: round(lastPrice, 4),
+      dayChangePct: round(dayChangePct, 2),
+      contributionPct: round(contributionPct, 4),
+      targetWeightPct: round(targetWeightPct, 2),
+    };
+  });
+}
+
+function recomputeRangeAssetSummary(strategy) {
+  const endDate = strategy.endDate;
+  const assets = Object.keys(strategy.lastSnapshot?.weights || {});
+  const pricesSeries = strategy.series?.prices || {};
+  const weightSeries = strategy.series?.weights || {};
+  const contributionSeries = strategy.series?.contributions || {};
+  const existing = new Map((strategy.assetSummary || []).map((item) => [item.ticker, item]));
+
+  return assets.map((asset) => {
+    const series = (pricesSeries[asset] || []).filter((point) => String(point.date || "") <= endDate);
+    const contrib = (contributionSeries[asset] || []).filter((point) => String(point.date || "") <= endDate);
+    const weights = (weightSeries[asset] || []).filter((point) => String(point.date || "") <= endDate);
+    const fallback = existing.get(asset) || {};
+
+    const first = series.length ? Number(series[0].value || 0) : 0;
+    const last = series.length ? Number(series[series.length - 1].value || 0) : 0;
+    const totalReturnPct = first > 0 ? ((last / first) - 1) * 100 : 0;
+
+    let peak = Number.NEGATIVE_INFINITY;
+    let maxDrawdownPct = 0;
+    const returns = [];
+    for (let index = 0; index < series.length; index += 1) {
+      const price = Number(series[index].value || 0);
+      if (index > 0) {
+        const prev = Number(series[index - 1].value || 0);
+        returns.push(prev > 0 ? (price / prev) - 1 : 0);
+      }
+      peak = Math.max(peak, price);
+      if (peak > 0) {
+        maxDrawdownPct = Math.min(maxDrawdownPct, ((price / peak) - 1) * 100);
+      }
+    }
+    const mean = returns.length ? returns.reduce((sum, value) => sum + value, 0) / returns.length : 0;
+    const variance = returns.length > 1
+      ? returns.reduce((sum, value) => sum + (value - mean) ** 2, 0) / (returns.length - 1)
+      : 0;
+    const annualizedVolPct = Math.sqrt(Math.max(variance, 0)) * Math.sqrt(252) * 100;
+    const avgLongWeightPct = weights.length
+      ? weights.reduce((sum, point) => sum + Math.max(Number(point.value || 0), 0), 0) / weights.length
+      : 0;
+    const netContributionPct = contrib.reduce((sum, point) => sum + Number(point.value || 0), 0);
+
+    const shortSeries = series.slice(-20).map((point) => Number(point.value || 0));
+    const longSeries = series.slice(-60).map((point) => Number(point.value || 0));
+    const shortAvg = shortSeries.length ? shortSeries.reduce((sum, value) => sum + value, 0) / shortSeries.length : 0;
+    const longAvg = longSeries.length ? longSeries.reduce((sum, value) => sum + value, 0) / longSeries.length : 0;
+    let latestTrend = "FLAT";
+    if (shortAvg > longAvg * 1.01) {
+      latestTrend = "STRONG";
+    } else if (shortAvg < longAvg * 0.99) {
+      latestTrend = "WEAK";
+    }
+
+    return {
+      ticker: asset,
+      latestTrend,
+      netContributionPct: round(Number.isFinite(netContributionPct) ? netContributionPct : Number(fallback.netContributionPct || 0), 2),
+      totalReturnPct: round(Number.isFinite(totalReturnPct) ? totalReturnPct : Number(fallback.totalReturnPct || 0), 2),
+      maxDrawdownPct: round(Number.isFinite(maxDrawdownPct) ? maxDrawdownPct : Number(fallback.maxDrawdownPct || 0), 2),
+      annualizedVolPct: round(Number.isFinite(annualizedVolPct) ? annualizedVolPct : Number(fallback.annualizedVolPct || 0), 2),
+      avgLongWeightPct: round(Number.isFinite(avgLongWeightPct) ? avgLongWeightPct : Number(fallback.avgLongWeightPct || 0), 2),
+    };
+  });
+}
+
 async function resolveHistoricalEndPrices(endDate, fallbackPrices = {}) {
   const prices = {};
   await Promise.all(
@@ -733,6 +852,8 @@ function buildRangeStrategy(basePayload, startDate, endDate) {
   base.endDate = windowed.endDate;
   base.series.portfolio = rebasedPortfolio;
   base.series.weights = sliceSeriesMap(base.series.weights, windowed.startDate, windowed.endDate);
+  base.series.prices = sliceSeriesMap(base.series.prices, windowed.startDate, windowed.endDate);
+  base.series.contributions = sliceSeriesMap(base.series.contributions, windowed.startDate, windowed.endDate);
   base.series.nominalWeights = sliceSeriesMap(base.series.nominalWeights, windowed.startDate, windowed.endDate);
   base.series.desiredWeights = sliceSeriesMap(base.series.desiredWeights, windowed.startDate, windowed.endDate);
   base.series.netWeights = sliceSeriesMap(base.series.netWeights, windowed.startDate, windowed.endDate);
@@ -768,6 +889,20 @@ function buildRangeStrategy(basePayload, startDate, endDate) {
     weights: Object.fromEntries(
       Object.keys(base.lastSnapshot.weights || {}).map((asset) => [asset, round(findLatestValue(base.series.weights, asset, windowed.endDate), 2)]),
     ),
+    prices: Object.fromEntries(
+      Object.keys(base.lastSnapshot.prices || {}).map((asset) => [
+        asset,
+        round(
+          findLatestValue(
+            base.series.prices || {},
+            asset,
+            windowed.endDate,
+            Number(base.lastSnapshot.prices?.[asset] || 0),
+          ),
+          4,
+        ),
+      ]),
+    ),
     nominal_weights: Object.fromEntries(
       Object.keys(base.lastSnapshot.nominal_weights || {}).map((asset) => [asset, round(findLatestValue(base.series.nominalWeights, asset, windowed.endDate), 2)]),
     ),
@@ -781,6 +916,20 @@ function buildRangeStrategy(basePayload, startDate, endDate) {
       Object.keys(base.lastSnapshot.hedges || {}).map((asset) => [asset, round(findLatestValue(base.series.hedges, asset, windowed.endDate), 2)]),
     ),
     mstr_short_pct: round(findLatestValue({ mstrShort: base.series.mstrShort }, "mstrShort", windowed.endDate), 2),
+    attribution: Object.fromEntries(
+      Object.keys(base.lastSnapshot.attribution || {}).map((asset) => [
+        asset,
+        round(
+          findLatestValue(
+            base.series.contributions || {},
+            asset,
+            windowed.endDate,
+            Number(base.lastSnapshot.attribution?.[asset] || 0),
+          ),
+          4,
+        ),
+      ]),
+    ),
   };
   base.monthly = monthlyFromPortfolio(rebasedPortfolio, "nav");
   base.kpis = {
@@ -823,6 +972,27 @@ function buildRangeStrategy(basePayload, startDate, endDate) {
     };
   }
 
+  if (base.terminalBoards?.tickerTape) {
+    base.terminalBoards.tickerTape = recomputeRangeTickerTape(base);
+  }
+
+  if (base.terminalBoards?.optionsBoard) {
+    const btcSeries = base.series?.prices?.BTC || [];
+    const spot = findSeriesValue(btcSeries, windowed.endDate, Number(base.terminalBoards.optionsBoard.spot || 0));
+    const prev = findPrevSeriesValue(btcSeries, windowed.endDate, spot);
+    const ivHistory = Array.isArray(base.terminalBoards.optionsBoard.ivHistory)
+      ? base.terminalBoards.optionsBoard.ivHistory.filter((row) => String(row.date || "") <= windowed.endDate)
+      : [];
+    base.terminalBoards.optionsBoard = {
+      ...base.terminalBoards.optionsBoard,
+      spot: round(spot, 2),
+      priceChange1dPct: round(prev > 0 ? ((spot / prev) - 1) * 100 : 0, 2),
+      ivHistory,
+    };
+  }
+
+  base.assetSummary = recomputeRangeAssetSummary(base);
+
   base.generatedAt = new Date().toISOString();
   base.sourceMode = "worker_static_range";
   base.sourceLabel = "Cloudflare Worker range replay";
@@ -859,6 +1029,16 @@ async function buildTerminalPayload(url, env, ctx) {
   const startPrices = await resolveHistoricalEndPrices(strategy.startDate, strategy.windowStartPrices || strategy.lastSnapshot.prices);
   strategy.lastSnapshot.prices = await resolveHistoricalEndPrices(strategy.endDate, strategy.lastSnapshot.prices);
   strategy.windowStartPrices = startPrices;
+  if (strategy.terminalBoards?.tickerTape) {
+    strategy.terminalBoards.tickerTape = recomputeRangeTickerTape(strategy);
+  }
+  if (strategy.terminalBoards?.optionsBoard) {
+    const btcSpot = Number(strategy.lastSnapshot?.prices?.BTC || strategy.terminalBoards.optionsBoard.spot || 0);
+    strategy.terminalBoards.optionsBoard = {
+      ...strategy.terminalBoards.optionsBoard,
+      spot: round(btcSpot, 2),
+    };
+  }
   const terminalPayload = {
     status: "ok",
     terminalId: terminal.terminalId || "five_asset_terminal",

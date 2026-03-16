@@ -1154,6 +1154,14 @@ def _build_payload(
         "lastSnapshot": last_snapshot,
         "series": {
             "portfolio": chart_rows,
+            "prices": {
+                asset: _series_to_points(portfolio[f"{asset}_Price"], digits=4, limit=None)
+                for asset in ASSETS
+            },
+            "contributions": {
+                asset: _series_to_points(portfolio[f"{asset}_Contrib"] * 100.0, digits=4, limit=None)
+                for asset in ASSETS
+            },
             "weights": {
                 asset: _series_to_points(portfolio[f"{asset}_Weight"] * 100.0, digits=2, limit=None)
                 for asset in ASSETS
