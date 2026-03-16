@@ -64,6 +64,23 @@ class FiveAssetLiveCycleTests(unittest.TestCase):
         self.assertIn("shadowSyncOrders", routing)
         self.assertIn("intents", routing)
 
+    def test_range_snapshot_uses_window_local_opened_at(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp_dir:
+            payload = build_terminal_payload(
+                mode="demo",
+                start_date="2025-01-02",
+                end_date="2025-12-31",
+                state_path=Path(tmp_dir) / "paper_book.json",
+            )
+
+        positions = payload["paperTrading"]["positions"]
+        self.assertTrue(positions)
+        for position in positions:
+            if position["side"] == "FLAT":
+                continue
+            self.assertIsNotNone(position["openedAt"])
+            self.assertGreaterEqual(str(position["openedAt"])[:10], "2025-01-02")
+
     def test_blocked_only_ledger_resets_ghost_positions(self) -> None:
         with tempfile.TemporaryDirectory() as tmp_dir:
             state_path = Path(tmp_dir) / "paper_book.json"

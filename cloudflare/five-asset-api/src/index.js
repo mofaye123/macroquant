@@ -369,7 +369,9 @@ function rebuildPaperBook(strategy, endPrices, generatedAt) {
   const cashStart = Number(strategy.startingCapital || 100000);
   const orders = (strategy.executionHistory || []).map((order) => ({ ...order }));
   const replayOrders = (strategy.positionReplayHistory || strategy.executionHistory || []).map((order) => ({ ...order }));
+  const viewStartMarker = strategy.startDate ? `${strategy.startDate}T00:00:00Z` : null;
   const positions = new Map();
+  const carryQuantities = new Map();
   let cash = cashStart;
 
   for (const order of replayOrders) {
@@ -416,6 +418,54 @@ function rebuildPaperBook(strategy, endPrices, generatedAt) {
       executable: Boolean(order.executable),
       mode: order.executable ? "paper" : "shadow",
     });
+
+    if (viewStartMarker && String(order.timestamp || "") < viewStartMarker) {
+      const carryPrev = Number(carryQuantities.get(asset) || 0);
+      if (side === "BUY") {
+        carryQuantities.set(asset, carryPrev + quantity);
+      } else if (side === "SELL" || side === "SHORT") {
+        carryQuantities.set(asset, Math.max(0, carryPrev - quantity));
+      }
+    }
+  }
+
+  const rangeMeta = new Map();
+  for (const asset of Object.keys(strategy.lastSnapshot?.weights || {})) {
+    const carryQty = Number(carryQuantities.get(asset) || 0);
+    rangeMeta.set(asset, {
+      quantity: carryQty,
+      openedAt: carryQty > 1e-9 && viewStartMarker ? viewStartMarker : null,
+      lastRebalancedAt: carryQty > 1e-9 && viewStartMarker ? viewStartMarker : null,
+    });
+  }
+
+  for (const order of orders) {
+    const asset = order.asset;
+    const quantity = Math.abs(Number(order.quantity || 0));
+    if (!(quantity > 0)) {
+      continue;
+    }
+    const side = String(order.side || "BUY").toUpperCase();
+    const prev = rangeMeta.get(asset) || {
+      quantity: 0,
+      openedAt: null,
+      lastRebalancedAt: null,
+    };
+    if (side === "BUY") {
+      const nextQty = Number(prev.quantity || 0) + quantity;
+      rangeMeta.set(asset, {
+        quantity: nextQty,
+        openedAt: Number(prev.quantity || 0) > 1e-9 ? prev.openedAt : order.timestamp,
+        lastRebalancedAt: order.timestamp,
+      });
+    } else if (side === "SELL" || side === "SHORT") {
+      const nextQty = Math.max(0, Number(prev.quantity || 0) - quantity);
+      rangeMeta.set(asset, {
+        quantity: nextQty,
+        openedAt: nextQty > 1e-9 ? prev.openedAt : null,
+        lastRebalancedAt: order.timestamp,
+      });
+    }
   }
 
   const lastWeights = strategy.lastSnapshot?.weights || {};
@@ -433,6 +483,7 @@ function rebuildPaperBook(strategy, endPrices, generatedAt) {
       openedAt: null,
       lastRebalancedAt: null,
     };
+    const meta = rangeMeta.get(asset) || { openedAt: null, lastRebalancedAt: null };
     const markPrice = Number(endPrices[asset] || strategy.lastSnapshot?.prices?.[asset] || 0);
     const marketValue = Math.abs(Number(state.quantity || 0) * markPrice);
     equity += marketValue;
@@ -453,8 +504,8 @@ function rebuildPaperBook(strategy, endPrices, generatedAt) {
       driftWeightPct: 0,
       targetValue: 0,
       unrealizedPnl: round((markPrice - Number(state.avgPrice || 0)) * Number(state.quantity || 0), 2),
-      openedAt: state.openedAt,
-      lastRebalancedAt: state.lastRebalancedAt,
+      openedAt: meta.openedAt,
+      lastRebalancedAt: meta.lastRebalancedAt,
     });
   }
 
