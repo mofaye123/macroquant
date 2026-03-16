@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { ReactNode, useEffect, useMemo, useState } from "react";
 import {
+  Activity,
   BarChart3,
   FileText,
   ChevronDown,
@@ -335,6 +336,18 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
             >
               <BarChart3 className="h-[14px] w-[14px]" />
               <span>量化回测</span>
+            </Link>
+            <Link
+              href="/five-asset-cta"
+              target="_blank"
+              rel="noopener noreferrer"
+              className={cn(
+                "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
+                "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+              )}
+            >
+              <Activity className="h-[14px] w-[14px]" />
+              <span>5资产组合</span>
             </Link>
 
           </nav>
