@@ -21,7 +21,7 @@ from strategies.five_asset_macro_cta.src.live_cycle import (
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the five-asset live cycle terminal pipeline.")
-    parser.add_argument("--start-date", default="2020-01-01", help="Backtest start date, e.g. 2020-01-01")
+    parser.add_argument("--start-date", default="2020-01-02", help="Backtest start date, e.g. 2020-01-02")
     parser.add_argument("--end-date", default=None, help="Optional backtest end date")
     parser.add_argument(
         "--mode",

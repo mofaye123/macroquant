@@ -2,14 +2,35 @@
 
 from __future__ import annotations
 
+from datetime import timezone
 from typing import Any, Optional
 
 import numpy as np
 import pandas as pd
 
 
-def make_demo_price_frame(periods: int = 520) -> pd.DataFrame:
-    index = pd.bdate_range("2024-01-02", periods=periods)
+DEMO_START_DATE = "2020-01-02"
+MIN_DEMO_PERIODS = 520
+
+
+def _build_demo_index(*, end_date: Optional[str] = None, min_periods: int = MIN_DEMO_PERIODS) -> pd.DatetimeIndex:
+    if end_date:
+        end_ts = pd.Timestamp(end_date).normalize()
+    else:
+        end_ts = pd.Timestamp.now(tz=timezone.utc).normalize().tz_localize(None)
+
+    if end_ts < pd.Timestamp(DEMO_START_DATE):
+        end_ts = pd.Timestamp(DEMO_START_DATE)
+
+    index = pd.bdate_range(DEMO_START_DATE, end=end_ts)
+    if len(index) < min_periods:
+        index = pd.bdate_range(DEMO_START_DATE, periods=min_periods)
+    return index
+
+
+def make_demo_price_frame(*, end_date: Optional[str] = None) -> pd.DataFrame:
+    index = _build_demo_index(end_date=end_date)
+    periods = len(index)
     base = np.linspace(0.0, 1.0, periods)
     knots = np.array([0.0, 0.16, 0.38, 0.62, 0.82, 1.0])
 
@@ -31,8 +52,9 @@ def make_demo_price_frame(periods: int = 520) -> pd.DataFrame:
     return prices.clip(lower=1e-6)
 
 
-def make_demo_score_frame(periods: int = 520) -> pd.DataFrame:
-    index = pd.bdate_range("2024-01-02", periods=periods)
+def make_demo_score_frame(*, end_date: Optional[str] = None) -> pd.DataFrame:
+    index = _build_demo_index(end_date=end_date)
+    periods = len(index)
     base = np.linspace(0.0, 1.0, periods)
     knots = np.array([0.0, 0.15, 0.38, 0.62, 0.82, 1.0])
     levels = np.array([28.0, 22.0, 49.0, 76.0, 56.0, 31.0])
@@ -53,8 +75,8 @@ def build_demo_five_asset_backtest_payload(
 
     return build_five_asset_backtest_payload(
         df_all=None,
-        price_frame=make_demo_price_frame(),
-        score_frame=make_demo_score_frame(),
+        price_frame=make_demo_price_frame(end_date=end_date),
+        score_frame=make_demo_score_frame(end_date=end_date),
         config=config,
         start_date=start_date,
         end_date=end_date,

@@ -8,6 +8,8 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from typing import Any, Optional
 
+import pandas as pd
+
 from .demo_data import build_demo_five_asset_backtest_payload
 from .engine import build_five_asset_backtest_payload
 from .paper_execution import sync_paper_book
@@ -38,6 +40,7 @@ LAST_LIVE_STRATEGY_PATH = LIVE_OUTPUT_DIR / "last_live_strategy.json"
 WEB_TERMINAL_PATH = ROOT / "web" / "public" / "data" / "five-asset-terminal.json"
 WEB_STRATEGY_PATH = ROOT / "web" / "public" / "data" / "five-asset-backtest.json"
 LOOKBACK_WARMUP_DAYS = 400
+BASELINE_START_DATE = "2020-01-02"
 
 
 def _now_iso() -> str:
@@ -64,6 +67,16 @@ def _compute_warmup_start(start_date: Optional[str]) -> Optional[str]:
     start_ts = datetime.fromisoformat(start_date)
     warmup = start_ts - timedelta(days=LOOKBACK_WARMUP_DAYS)
     return warmup.date().isoformat()
+
+
+def _covers_requested_start(payload: dict[str, Any], requested_start: str) -> bool:
+    try:
+        payload_start = str(payload.get("startDate") or "")
+        if not payload_start:
+            return False
+        return pd.Timestamp(payload_start) <= pd.Timestamp(requested_start)
+    except Exception:
+        return False
 
 
 def _build_live_strategy_payload(
@@ -211,7 +224,7 @@ def resolve_strategy_payload(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
 ) -> dict[str, Any]:
-    requested_start = start_date or "2020-01-01"
+    requested_start = start_date or BASELINE_START_DATE
     compute_start = _compute_warmup_start(requested_start) if start_date else requested_start
     warnings: list[str] = []
     source_mode = "live"
@@ -238,8 +251,17 @@ def resolve_strategy_payload(
                 source_label=source_label,
                 warnings=warnings,
             )
-            _write_json(LAST_LIVE_STRATEGY_PATH, payload)
-            return payload
+            if not _covers_requested_start(payload, requested_start):
+                msg = (
+                    f"实时构建返回区间不足（start={payload.get('startDate')}，"
+                    f"required<={requested_start}）。"
+                )
+                if mode == "live":
+                    raise ValueError(msg)
+                warnings.append(msg + " 已继续尝试缓存/回退链路。")
+            else:
+                _write_json(LAST_LIVE_STRATEGY_PATH, payload)
+                return payload
         except Exception as exc:
             if mode == "live":
                 raise
@@ -261,12 +283,17 @@ def resolve_strategy_payload(
             cache_suffix = ""
             if cache_meta and cache_meta.get("cachedAt"):
                 cache_suffix = f"（缓存时间 {cache_meta['cachedAt']}）"
-            return _enrich_strategy_payload(
+            cached_enriched = _enrich_strategy_payload(
                 cached_payload,
                 source_mode="cached_live_inputs",
                 source_label=f"最近一次成功的实时市场缓存{cache_suffix}",
                 warnings=warnings,
                 cache_meta=cache_meta,
+            )
+            if _covers_requested_start(cached_enriched, requested_start):
+                return cached_enriched
+            warnings.append(
+                f"市场缓存区间不足（start={cached_enriched.get('startDate')}，required<={requested_start}），已继续回退。"
             )
 
     cached_live = _load_json(LAST_LIVE_STRATEGY_PATH)
@@ -299,8 +326,13 @@ def resolve_strategy_payload(
             cached_live["warnings"] = cached_warnings
         cached_live["terminalFallbackAt"] = _now_iso()
         if _has_required_terminal_boards(cached_live):
-            return cached_live
-        warnings.append("最近一次实时快照缺少新版终端板块字段，已继续回退到当前可用的数据构建结果。")
+            if _covers_requested_start(cached_live, requested_start):
+                return cached_live
+            warnings.append(
+                f"最近一次实时快照区间不足（start={cached_live.get('startDate')}，required<={requested_start}），已继续回退。"
+            )
+        else:
+            warnings.append("最近一次实时快照缺少新版终端板块字段，已继续回退到当前可用的数据构建结果。")
 
     payload = build_demo_five_asset_backtest_payload(
         start_date=compute_start,

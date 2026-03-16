@@ -250,6 +250,55 @@ function monthlyFromPortfolio(points, key) {
   return Object.fromEntries(grouped.entries());
 }
 
+function buildRegimeSummaryFromPortfolio(points) {
+  if (!Array.isArray(points) || !points.length) {
+    return {
+      counts: {},
+      segments: [],
+    };
+  }
+
+  const counts = {};
+  const segments = [];
+  let currentRegime = null;
+  let segmentStart = null;
+  let previousDate = null;
+
+  for (const point of points) {
+    const regime = String(point.regime || "UNKNOWN");
+    counts[regime] = Number(counts[regime] || 0) + 1;
+    if (currentRegime === null) {
+      currentRegime = regime;
+      segmentStart = point.date;
+      previousDate = point.date;
+      continue;
+    }
+    if (regime !== currentRegime) {
+      segments.push({
+        regime: currentRegime,
+        start: segmentStart,
+        end: previousDate || point.date,
+      });
+      currentRegime = regime;
+      segmentStart = point.date;
+    }
+    previousDate = point.date;
+  }
+
+  if (currentRegime !== null) {
+    segments.push({
+      regime: currentRegime,
+      start: segmentStart,
+      end: points[points.length - 1].date,
+    });
+  }
+
+  return {
+    counts,
+    segments,
+  };
+}
+
 function computeKpis(points, navKey, drawdownKey) {
   if (points.length < 2) {
     return {
@@ -498,7 +547,6 @@ function rebuildPaperBook(strategy, endPrices, startPrices, generatedAt) {
     const quantity = Math.abs(Number(order.quantity || 0));
     const price = Number(order.price || 0);
     const side = String(order.side || "BUY").toUpperCase();
-    const signedQty = side === "SELL" || side === "SHORT" ? -quantity : quantity;
     const prev = positions.get(asset) || {
       quantity: 0,
       avgPrice: 0,
@@ -511,19 +559,28 @@ function rebuildPaperBook(strategy, endPrices, startPrices, generatedAt) {
       lastRebalancedAt: null,
     };
 
-    cash = Number(order.cashAfter ?? cash - signedQty * price);
-    const nextQty = Number(prev.quantity || 0) + signedQty;
-    let nextAvg = Number(prev.avgPrice || 0);
+    const prevQty = Number(prev.quantity || 0);
+    const prevAvg = Number(prev.avgPrice || 0);
+    let nextQty = prevQty;
+    let nextAvg = prevAvg;
 
-    if (Math.abs(nextQty) < 1e-9) {
-      nextAvg = 0;
-      prev.openedAt = prev.openedAt || order.timestamp;
-    } else if (Math.abs(prev.quantity) < 1e-9 || Math.sign(prev.quantity) !== Math.sign(nextQty)) {
-      nextAvg = price;
+    if (side === "BUY") {
+      nextQty = prevQty + quantity;
+      nextAvg = nextQty > 1e-9
+        ? ((prevQty * prevAvg) + quantity * price) / nextQty
+        : 0;
+      cash -= quantity * price;
+    } else if (side === "SELL" || side === "SHORT") {
+      nextQty = Math.max(0, prevQty - quantity);
+      nextAvg = nextQty > 1e-9 ? prevAvg : 0;
+      cash += quantity * price;
+    }
+
+    if (prevQty <= 1e-9 && nextQty > 1e-9) {
       prev.openedAt = order.timestamp;
-    } else if (Math.sign(prev.quantity) === Math.sign(signedQty)) {
-      const cost = Number(prev.avgPrice || 0) * Math.abs(Number(prev.quantity || 0)) + price * quantity;
-      nextAvg = cost / Math.abs(nextQty);
+    }
+    if (nextQty <= 1e-9) {
+      prev.openedAt = null;
     }
 
     positions.set(asset, {
@@ -611,7 +668,8 @@ function rebuildPaperBook(strategy, endPrices, startPrices, generatedAt) {
     };
     const meta = rangeMeta.get(asset) || { avgPrice: 0, openedAt: null, lastRebalancedAt: null };
     const markPrice = Number(endPrices[asset] || strategy.lastSnapshot?.prices?.[asset] || 0);
-    const marketValue = Math.abs(Number(state.quantity || 0) * markPrice);
+    const quantity = Math.max(0, Number(state.quantity || 0));
+    const marketValue = quantity * markPrice;
     equity += marketValue;
     finalPositions.push({
       asset,
@@ -620,8 +678,8 @@ function rebuildPaperBook(strategy, endPrices, startPrices, generatedAt) {
       productType: state.productType,
       executable: state.executable,
       mode: state.mode,
-      side: Number(state.quantity) > 0 ? "LONG" : Number(state.quantity) < 0 ? "SHORT" : "FLAT",
-      quantity: round(Number(state.quantity || 0), 8),
+      side: quantity > 1e-9 ? "LONG" : "FLAT",
+      quantity: round(quantity, 8),
       avgPrice: round(Number(meta.avgPrice || state.avgPrice || 0), 4),
       markPrice: round(markPrice, 4),
       marketValue: round(marketValue, 2),
@@ -629,7 +687,7 @@ function rebuildPaperBook(strategy, endPrices, startPrices, generatedAt) {
       currentWeightPct: 0,
       driftWeightPct: 0,
       targetValue: 0,
-      unrealizedPnl: round((markPrice - Number(meta.avgPrice || state.avgPrice || 0)) * Number(state.quantity || 0), 2),
+      unrealizedPnl: round((markPrice - Number(meta.avgPrice || state.avgPrice || 0)) * quantity, 2),
       openedAt: meta.openedAt,
       lastRebalancedAt: meta.lastRebalancedAt,
     });
@@ -872,6 +930,7 @@ function buildRangeStrategy(basePayload, startDate, endDate) {
   base.positionReplayHistory = fullHistory.filter((order) => String(order.timestamp || "").slice(0, 10) <= windowed.endDate);
 
   const lastPoint = rebasedPortfolio[rebasedPortfolio.length - 1];
+  const assets = Object.keys(base.lastSnapshot?.weights || {});
   base.lastSnapshot = {
     ...base.lastSnapshot,
     date: lastPoint.date,
@@ -931,7 +990,22 @@ function buildRangeStrategy(basePayload, startDate, endDate) {
       ]),
     ),
   };
+  base.windowStartPrices = Object.fromEntries(
+    assets.map((asset) => [
+      asset,
+      round(
+        findLatestValue(
+          base.series?.prices || {},
+          asset,
+          windowed.startDate,
+          Number(base.windowStartPrices?.[asset] || base.lastSnapshot?.prices?.[asset] || 0),
+        ),
+        4,
+      ),
+    ]),
+  );
   base.monthly = monthlyFromPortfolio(rebasedPortfolio, "nav");
+  base.regimeSummary = buildRegimeSummaryFromPortfolio(rebasedPortfolio);
   base.kpis = {
     strategy: {
       ...base.kpis.strategy,
