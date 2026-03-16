@@ -101,6 +101,9 @@ const resolvePayload = async (query: TerminalQuery, signal?: AbortSignal): Promi
   }
 
   if (SOURCE_MODE === "static-first") {
+    if (hasCustomRange) {
+      return fromApi();
+    }
     try {
       return await fromStatic();
     } catch {
@@ -110,7 +113,10 @@ const resolvePayload = async (query: TerminalQuery, signal?: AbortSignal): Promi
 
   try {
     return await fromApi();
-  } catch {
+  } catch (error) {
+    if (hasCustomRange) {
+      throw error;
+    }
     return fromStatic();
   }
 };

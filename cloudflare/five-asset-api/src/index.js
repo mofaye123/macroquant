@@ -16,7 +16,7 @@ export default {
     const url = new URL(request.url);
     try {
       if (request.method === "OPTIONS") {
-        return withCors(new Response(null, { status: 204 }), env);
+        return withCors(new Response(null, { status: 204 }), request, env);
       }
 
       if (url.pathname === "/health") {
@@ -26,26 +26,27 @@ export default {
             service: "macroquant-realtime-api",
             generatedAt: new Date().toISOString(),
           }),
+          request,
           env,
         );
       }
 
       if (url.pathname === "/api/v1/five-asset-live-quotes") {
         const payload = await buildLiveQuotesPayload(env);
-        return withCors(jsonResponse(payload, { cacheControl: "no-store" }), env);
+        return withCors(jsonResponse(payload, { cacheControl: "no-store" }), request, env);
       }
 
       if (url.pathname === "/api/v1/five-asset-backtest") {
         const payload = await buildBacktestPayload(url, env, ctx);
-        return withCors(jsonResponse(payload, { cacheControl: "no-store" }), env);
+        return withCors(jsonResponse(payload, { cacheControl: "no-store" }), request, env);
       }
 
       if (url.pathname === "/api/v1/five-asset-terminal") {
         const payload = await buildTerminalPayload(url, env, ctx);
-        return withCors(jsonResponse(payload, { cacheControl: "no-store" }), env);
+        return withCors(jsonResponse(payload, { cacheControl: "no-store" }), request, env);
       }
 
-      return withCors(jsonResponse({ detail: "Not found" }, { status: 404 }), env);
+      return withCors(jsonResponse({ detail: "Not found" }, { status: 404 }), request, env);
     } catch (error) {
       return withCors(
         jsonResponse(
@@ -54,6 +55,7 @@ export default {
           },
           { status: 500, cacheControl: "no-store" },
         ),
+        request,
         env,
       );
     }
@@ -71,16 +73,43 @@ function jsonResponse(payload, options = {}) {
   });
 }
 
-function withCors(response, env) {
+function withCors(response, request, env) {
+  const requestOrigin = request.headers.get("Origin");
+  const allowOrigin = resolveAllowedOrigin(requestOrigin, env);
   const headers = new Headers(response.headers);
-  headers.set("access-control-allow-origin", env.ALLOWED_ORIGIN || "*");
+  headers.set("access-control-allow-origin", allowOrigin);
   headers.set("access-control-allow-methods", "GET,OPTIONS");
   headers.set("access-control-allow-headers", "Content-Type");
+  headers.set("vary", "Origin");
   return new Response(response.body, {
     status: response.status,
     statusText: response.statusText,
     headers,
   });
+}
+
+function resolveAllowedOrigin(origin, env) {
+  if (!origin) {
+    return "*";
+  }
+
+  if (origin === (env.PAGES_BASE_URL || "").replace(/\/$/, "")) {
+    return origin;
+  }
+
+  if (/^https:\/\/[a-z0-9-]+\.macroquant\.pages\.dev$/i.test(origin)) {
+    return origin;
+  }
+
+  if (/^https:\/\/macroquant\.pages\.dev$/i.test(origin)) {
+    return origin;
+  }
+
+  if (/^http:\/\/localhost(?::\d+)?$/i.test(origin) || /^http:\/\/127\.0\.0\.1(?::\d+)?$/i.test(origin)) {
+    return origin;
+  }
+
+  return env.ALLOWED_ORIGIN || "*";
 }
 
 async function fetchJson(url, options = {}) {

@@ -974,6 +974,18 @@ const ErrorState = ({ message }: { message: string }) => (
   </PageShell>
 );
 
+const InlineErrorBanner = ({ message }: { message: string }) => (
+  <div className="mx-4 mt-4 rounded-[4px] border border-[#7f1d1d] bg-[#1f0a0d]/80 px-4 py-3 font-mono text-[11px] text-[#fecaca]">
+    <div className="flex items-start gap-3">
+      <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#f87171]" />
+      <div className="space-y-1">
+        <p className="font-semibold text-white">接口这次没取到新结果，先保留上一次成功的数据。</p>
+        <p>{message}</p>
+      </div>
+    </div>
+  </div>
+);
+
 const buildNavChartData = (strategy: FiveAssetPayload) =>
   strategy.series.portfolio.map((row) => ({
     date: row.date,
@@ -1216,7 +1228,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
     return <LoadingState />;
   }
 
-  if (error || !payload || !derived) {
+  if (!payload || !derived) {
     return <ErrorState message={error ?? "五资产终端数据为空，请先执行数据生成命令。"} />;
   }
 
@@ -1287,6 +1299,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
 
   return (
     <PageShell>
+      {error ? <InlineErrorBanner message={error} /> : null}
       <header className="border-b-2 border-[#f59e0b] bg-[#06090f] px-6 py-3">
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center gap-4 font-mono">
