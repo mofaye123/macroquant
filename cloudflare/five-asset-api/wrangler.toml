@@ -1,0 +1,8 @@
+name = "macroquant-realtime-api"
+main = "src/index.js"
+compatibility_date = "2026-03-16"
+workers_dev = true
+
+[vars]
+PAGES_BASE_URL = "https://macroquant.pages.dev"
+ALLOWED_ORIGIN = "https://macroquant.pages.dev"
