@@ -328,8 +328,11 @@ def _build_backtest_paper_book(strategy_payload: dict[str, Any]) -> dict[str, An
         asset: {"quantity": 0.0, "avgPrice": 0.0, "openedAt": None, "lastRebalancedAt": None}
         for asset in strategy_payload.get("configSummary", {}).get("assets", [])
     }
-    orders = sorted(list(strategy_payload.get("executionHistory", [])), key=lambda row: (str(row.get("timestamp")), str(row.get("asset"))))
-    for order in orders:
+    replay_orders = sorted(
+        list(strategy_payload.get("positionReplayHistory", strategy_payload.get("executionHistory", []))),
+        key=lambda row: (str(row.get("timestamp")), str(row.get("asset"))),
+    )
+    for order in replay_orders:
         asset = str(order.get("asset"))
         if asset not in state_by_asset:
             continue
@@ -400,14 +403,14 @@ def _build_backtest_paper_book(strategy_payload: dict[str, Any]) -> dict[str, An
         row["driftWeightPct"] = round(float(row["targetWeightPct"]) - current_weight_pct, 2)
         row["targetValue"] = round(equity * float(row["targetWeightPct"]) / 100.0, 2)
 
-    orders = list(strategy_payload.get("executionHistory", []))
+    display_orders = list(strategy_payload.get("executionHistory", []))
     executable_assets = [row["asset"] for row in positions if bool(row["executable"])]
     shadow_assets = [row["asset"] for row in positions if not bool(row["executable"])]
     macro_guard = evaluate_macro_signal_guard(strategy_payload)
     return {
         "status": "snapshot",
         "bookUpdatedAt": strategy_payload.get("generatedAt", _now_iso()),
-        "cycleCount": len({str(order.get("timestamp")) for order in orders}),
+        "cycleCount": len({str(order.get("timestamp")) for order in display_orders}),
         "venue": "BACKTEST",
         "baseCurrency": "USD",
         "executableAssets": executable_assets,
@@ -419,18 +422,18 @@ def _build_backtest_paper_book(strategy_payload: dict[str, Any]) -> dict[str, An
             "grossExposurePct": round(sum(abs(float(row["currentWeightPct"])) for row in positions), 2),
         },
         "positions": positions,
-        "orders": orders,
+        "orders": display_orders,
         "alerts": [],
         "routing": {
             "generatedAt": strategy_payload.get("generatedAt", _now_iso()),
-            "readyExecutableOrders": sum(1 for order in orders if bool(order.get("executable"))),
-            "shadowSyncOrders": sum(1 for order in orders if not bool(order.get("executable"))),
+            "readyExecutableOrders": sum(1 for order in display_orders if bool(order.get("executable"))),
+            "shadowSyncOrders": sum(1 for order in display_orders if not bool(order.get("executable"))),
             "blockedOrders": 0,
             "holdCount": 0,
-            "executableNotional": round(sum(float(order.get("notional", 0.0)) for order in orders if bool(order.get("executable"))), 2),
-            "shadowNotional": round(sum(float(order.get("notional", 0.0)) for order in orders if not bool(order.get("executable"))), 2),
+            "executableNotional": round(sum(float(order.get("notional", 0.0)) for order in display_orders if bool(order.get("executable"))), 2),
+            "shadowNotional": round(sum(float(order.get("notional", 0.0)) for order in display_orders if not bool(order.get("executable"))), 2),
             "blockedNotional": 0.0,
-            "intents": orders,
+            "intents": display_orders,
         },
         "macroGuard": {
             **macro_guard,

@@ -4,10 +4,33 @@ import { useEffect, useState } from "react";
 
 import { FiveAssetLiveQuotesPayload } from "@/lib/five-asset-terminal-types";
 
-const API_BASE = process.env.NEXT_PUBLIC_FIVE_ASSET_API_BASE ?? process.env.NEXT_PUBLIC_MACRO_API_BASE ?? "http://127.0.0.1:8000";
-const API_URL = `${API_BASE.replace(/\/$/, "")}/api/v1/five-asset-live-quotes`;
+const CLOUD_API_BASE = "https://macroquant-realtime-api.mofaye.workers.dev";
+const LOCAL_API_BASE = "http://127.0.0.1:8000";
 const POLL_INTERVAL_MS = 15000;
 const CACHE_KEY = "five-asset-live-quotes-cache-v1";
+
+const resolveApiBaseCandidates = (): string[] => {
+  const candidates = [
+    process.env.NEXT_PUBLIC_FIVE_ASSET_API_BASE,
+    process.env.NEXT_PUBLIC_MACRO_API_BASE,
+    CLOUD_API_BASE,
+  ];
+
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname.toLowerCase();
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      candidates.push(LOCAL_API_BASE);
+    }
+  }
+
+  return Array.from(
+    new Set(
+      candidates
+        .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+        .map((value) => value.replace(/\/$/, "")),
+    ),
+  );
+};
 
 const loadCachedQuotes = (): FiveAssetLiveQuotesPayload | null => {
   if (typeof window === "undefined") {
@@ -35,28 +58,42 @@ const storeCachedQuotes = (payload: FiveAssetLiveQuotesPayload) => {
   }
 };
 
-const fetchLiveQuotes = async (signal?: AbortSignal): Promise<FiveAssetLiveQuotesPayload> => {
-  const response = await fetch(`${API_URL}?t=${Date.now()}`, {
-    method: "GET",
-    headers: { Accept: "application/json" },
-    cache: "no-store",
-    signal,
-  });
+const fetchLiveQuotes = async (signal?: AbortSignal): Promise<{ payload: FiveAssetLiveQuotesPayload; apiUrl: string }> => {
+  const errors: string[] = [];
 
-  if (!response.ok) {
-    let detail = `HTTP ${response.status}`;
+  for (const apiBase of resolveApiBaseCandidates()) {
+    const apiUrl = `${apiBase}/api/v1/five-asset-live-quotes`;
     try {
-      const payload = (await response.json()) as { detail?: string };
-      if (payload.detail) {
-        detail = payload.detail;
+      const response = await fetch(`${apiUrl}?t=${Date.now()}`, {
+        method: "GET",
+        headers: { Accept: "application/json" },
+        cache: "no-store",
+        signal,
+      });
+
+      if (!response.ok) {
+        let detail = `HTTP ${response.status}`;
+        try {
+          const payload = (await response.json()) as { detail?: string };
+          if (payload.detail) {
+            detail = payload.detail;
+          }
+        } catch {
+          // ignore parse failure
+        }
+        throw new Error(detail);
       }
-    } catch {
-      // ignore parse failure
+
+      return {
+        payload: (await response.json()) as FiveAssetLiveQuotesPayload,
+        apiUrl,
+      };
+    } catch (error) {
+      errors.push(`${apiUrl}: ${error instanceof Error ? error.message : "Unknown API error"}`);
     }
-    throw new Error(detail);
   }
 
-  return (await response.json()) as FiveAssetLiveQuotesPayload;
+  throw new Error(errors.join(" | "));
 };
 
 export const useFiveAssetLiveQuotes = () => {
@@ -64,6 +101,7 @@ export const useFiveAssetLiveQuotes = () => {
   const [error, setError] = useState<string | null>(null);
   const [feedState, setFeedState] = useState<"live" | "cache" | "offline">(() => (loadCachedQuotes() ? "cache" : "offline"));
   const [lastLoadedAt, setLastLoadedAt] = useState<string | null>(() => loadCachedQuotes()?.generatedAt ?? null);
+  const [apiUrl, setApiUrl] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -74,11 +112,12 @@ export const useFiveAssetLiveQuotes = () => {
       controller?.abort();
       controller = new AbortController();
       try {
-        const next = await fetchLiveQuotes(controller.signal);
+        const { payload: next, apiUrl: nextApiUrl } = await fetchLiveQuotes(controller.signal);
         if (!active) {
           return;
         }
         setPayload(next);
+        setApiUrl(nextApiUrl);
         setError(null);
         setFeedState("live");
         setLastLoadedAt(next.generatedAt);
@@ -122,6 +161,6 @@ export const useFiveAssetLiveQuotes = () => {
     feedState,
     lastLoadedAt,
     pollIntervalMs: POLL_INTERVAL_MS,
-    apiUrl: API_URL,
+    apiUrl,
   };
 };

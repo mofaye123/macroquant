@@ -1016,6 +1016,8 @@ def _build_payload(
     initial_capital: float,
     treasury_source_context: Optional[dict[str, Any]] = None,
     macro_signal_context: Optional[dict[str, Any]] = None,
+    execution_history_source: Optional[pd.DataFrame] = None,
+    execution_history_view_start: Optional[str] = None,
 ) -> dict[str, Any]:
     strategy_perf = compute_perf_metrics(portfolio, risk_free_rate=float(config["risk_free_rate"]))
     benchmark_perf = compute_perf_metrics(benchmark_frame, risk_free_rate=float(config["risk_free_rate"]))
@@ -1107,6 +1109,14 @@ def _build_payload(
             }
         )
 
+    history_source = execution_history_source if execution_history_source is not None else portfolio
+    replay_history = _build_execution_history(history_source)
+    display_history = [
+        item
+        for item in replay_history
+        if not execution_history_view_start or str(item["timestamp"])[:10] >= execution_history_view_start
+    ]
+
     payload = {
         "status": "ok",
         "strategyId": "five_asset_macro_cta",
@@ -1174,7 +1184,8 @@ def _build_payload(
         "monthly": _build_monthly_map(portfolio["Strategy_Ret"]),
         "regimeSummary": _build_regime_summary(portfolio["Regime"]),
         "assetSummary": _build_asset_summary(portfolio, contrib),
-        "executionHistory": _build_execution_history(portfolio),
+        "executionHistory": display_history,
+        "positionReplayHistory": replay_history,
         "terminalBoards": terminal_boards,
         "configSummary": {
             "regimes": list(REGIMES),
@@ -1293,6 +1304,7 @@ def build_five_asset_backtest_payload(
         config=cfg,
         initial_capital=float(initial_capital),
     )
+    history_portfolio = portfolio.copy()
     portfolio, contrib, benchmark_frame = _slice_view_window(
         portfolio,
         contrib,
@@ -1313,6 +1325,8 @@ def build_five_asset_backtest_payload(
             "latestPremiumPct": round(float(treasury["premium_ratio"].iloc[-1]) * 100.0, 2) if not treasury.empty else None,
         },
         macro_signal_context=resolved_macro_context,
+        execution_history_source=history_portfolio if view_start_date else None,
+        execution_history_view_start=view_start_date,
     )
 
 

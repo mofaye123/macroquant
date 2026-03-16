@@ -5,8 +5,8 @@ import { useEffect, useState } from "react";
 import { FiveAssetTerminalPayload } from "@/lib/five-asset-terminal-types";
 
 const STATIC_URL = process.env.NEXT_PUBLIC_FIVE_ASSET_TERMINAL_DATA_URL ?? "/data/five-asset-terminal.json";
-const API_BASE = process.env.NEXT_PUBLIC_FIVE_ASSET_API_BASE ?? process.env.NEXT_PUBLIC_MACRO_API_BASE ?? "http://127.0.0.1:8000";
-const API_URL = `${API_BASE.replace(/\/$/, "")}/api/v1/five-asset-terminal`;
+const CLOUD_API_BASE = "https://macroquant-realtime-api.mofaye.workers.dev";
+const LOCAL_API_BASE = "http://127.0.0.1:8000";
 const SOURCE_MODE = (process.env.NEXT_PUBLIC_FIVE_ASSET_SOURCE_MODE ?? "api-first").trim().toLowerCase();
 const POLL_INTERVAL_MS = 15000;
 
@@ -19,6 +19,29 @@ type ResolvedSource = {
 type TerminalQuery = {
   startDate?: string;
   endDate?: string;
+};
+
+const resolveApiBaseCandidates = (): string[] => {
+  const candidates = [
+    process.env.NEXT_PUBLIC_FIVE_ASSET_API_BASE,
+    process.env.NEXT_PUBLIC_MACRO_API_BASE,
+    CLOUD_API_BASE,
+  ];
+
+  if (typeof window !== "undefined") {
+    const hostname = window.location.hostname.toLowerCase();
+    if (hostname === "localhost" || hostname === "127.0.0.1") {
+      candidates.push(LOCAL_API_BASE);
+    }
+  }
+
+  return Array.from(
+    new Set(
+      candidates
+        .filter((value): value is string => typeof value === "string" && value.trim().length > 0)
+        .map((value) => value.replace(/\/$/, "")),
+    ),
+  );
 };
 
 const parseApiError = async (resp: Response): Promise<string> => {
@@ -70,15 +93,24 @@ const isUsablePayload = (data: FiveAssetTerminalPayload | null | undefined): dat
 const resolvePayload = async (query: TerminalQuery, signal?: AbortSignal): Promise<ResolvedSource> => {
   const hasCustomRange = Boolean(query.startDate || query.endDate);
   const fromApi = async (): Promise<ResolvedSource> => {
-    const payload = await fetchTerminalPayload(API_URL, query, signal);
-    if (!isUsablePayload(payload)) {
-      throw new Error("Five-asset terminal API payload is empty");
+    const errors: string[] = [];
+    for (const apiBase of resolveApiBaseCandidates()) {
+      const apiUrl = `${apiBase}/api/v1/five-asset-terminal`;
+      try {
+        const payload = await fetchTerminalPayload(apiUrl, query, signal);
+        if (!isUsablePayload(payload)) {
+          throw new Error("Five-asset terminal API payload is empty");
+        }
+        return {
+          payload,
+          sourceType: "api",
+          sourceUrl: apiUrl,
+        };
+      } catch (error) {
+        errors.push(`${apiUrl}: ${error instanceof Error ? error.message : "Unknown API error"}`);
+      }
     }
-    return {
-      payload,
-      sourceType: "api",
-      sourceUrl: API_URL,
-    };
+    throw new Error(errors.join(" | "));
   };
 
   const fromStatic = async (): Promise<ResolvedSource> => {
@@ -224,7 +256,7 @@ export const useFiveAssetTerminalData = (
     pollIntervalMs: POLL_INTERVAL_MS,
     sourceType,
     sourceUrl,
-    apiUrl: API_URL,
+    apiUrl: sourceUrl,
     activeQuery: query,
   };
 };

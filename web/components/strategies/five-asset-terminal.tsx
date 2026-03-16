@@ -441,11 +441,11 @@ const BenchmarkStrip = ({
           </div>
           <div className="text-center">
             <p className="text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">BK CAGR</p>
-            <p className="mt-1 text-[14px] font-semibold text-[#e2e8f0]">{formatRatioPct(reference.kpis.cagr, 1)}</p>
+            <p className="mt-1 text-[14px] font-semibold text-[#e2e8f0]">{formatPct(reference.kpis.cagr, 1)}</p>
           </div>
           <div className="text-center">
             <p className="text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">BK MDD</p>
-            <p className="mt-1 text-[14px] font-semibold text-[#f87171]">{formatRatioPct(reference.kpis.mdd, 1)}</p>
+            <p className="mt-1 text-[14px] font-semibold text-[#f87171]">{formatPct(reference.kpis.mdd, 1)}</p>
           </div>
           <div className="text-center">
             <p className="text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">Alpha Sharpe</p>
@@ -1389,7 +1389,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
           <div className="flex flex-wrap items-center gap-x-8 gap-y-2 font-mono">
             <div className="flex items-baseline gap-2">
               <span className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">Strat CAGR</span>
-              <span className="text-[14px] font-bold text-[#10b981]">{formatRatioPct(strategy.kpis.strategy.cagr, 1)}</span>
+              <span className="text-[14px] font-bold text-[#10b981]">{formatPct(strategy.kpis.strategy.cagr, 1)}</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">Sharpe</span>
@@ -1397,12 +1397,12 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">MDD</span>
-              <span className="text-[14px] font-bold text-[#ef4444]">{formatRatioPct(strategy.kpis.strategy.mdd, 1)}</span>
+              <span className="text-[14px] font-bold text-[#ef4444]">{formatPct(strategy.kpis.strategy.mdd, 1)}</span>
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">Win Rate</span>
               <span className="text-[14px] font-bold text-[#10b981]">
-                {typeof kpiStrip.strategy?.winRate === "number" ? formatRatioPct(kpiStrip.strategy.winRate, 0) : "N/A"}
+                {typeof kpiStrip.strategy?.winRate === "number" ? formatPct(kpiStrip.strategy.winRate, 0) : "N/A"}
               </span>
             </div>
             <div className="flex items-baseline gap-2">

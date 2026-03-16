@@ -368,10 +368,11 @@ async function fetchStooqHistoricalClose(symbol, endDate) {
 function rebuildPaperBook(strategy, endPrices, generatedAt) {
   const cashStart = Number(strategy.startingCapital || 100000);
   const orders = (strategy.executionHistory || []).map((order) => ({ ...order }));
+  const replayOrders = (strategy.positionReplayHistory || strategy.executionHistory || []).map((order) => ({ ...order }));
   const positions = new Map();
   let cash = cashStart;
 
-  for (const order of orders) {
+  for (const order of replayOrders) {
     const asset = order.asset;
     const quantity = Math.abs(Number(order.quantity || 0));
     const price = Number(order.price || 0);
@@ -664,6 +665,11 @@ async function buildLiveQuotesPayload(env) {
 function buildRangeStrategy(basePayload, startDate, endDate) {
   const base = structuredClone(basePayload);
   const windowed = clampWindow(base.series.portfolio || [], startDate, endDate);
+  const fullHistory = Array.isArray(base.positionReplayHistory)
+    ? base.positionReplayHistory
+    : Array.isArray(base.executionHistory)
+      ? base.executionHistory
+      : [];
   const rebasedPortfolio = rebasePortfolio(windowed.points);
   base.startDate = windowed.startDate;
   base.endDate = windowed.endDate;
@@ -684,6 +690,7 @@ function buildRangeStrategy(basePayload, startDate, endDate) {
     const orderDate = String(order.timestamp || "").slice(0, 10);
     return orderDate >= windowed.startDate && orderDate <= windowed.endDate;
   });
+  base.positionReplayHistory = fullHistory.filter((order) => String(order.timestamp || "").slice(0, 10) <= windowed.endDate);
 
   const lastPoint = rebasedPortfolio[rebasedPortfolio.length - 1];
   base.lastSnapshot = {
