@@ -5,6 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "data:generate": "python3 ../generate_static_macro_json.py",
+    "data:generate:five-asset": "python3 ../strategies/five_asset_macro_cta/run_live_cycle.py --mode auto --web-output",
+    "data:generate:five-asset:bitget-plan": "python3 ../strategies/five_asset_macro_cta/run_bitget_demo_cycle.py --mode auto",
     "build": "next build",
     "build:cf": "node scripts/ensure-static-data.mjs && next build",
     "build:static": "npm run data:generate && npm run build:cf",

@@ -3546,6 +3546,23 @@ def five_asset_terminal_data(
         raise HTTPException(status_code=500, detail=f"Failed to compute five-asset terminal payload: {exc}") from exc
 
 
+@app.get("/api/v1/five-asset-live-quotes")
+def five_asset_live_quotes() -> Dict[str, Any]:
+    try:
+        from strategies.five_asset_macro_cta.src.data import download_live_quote_snapshot
+
+        quotes, warnings = download_live_quote_snapshot()
+        return {
+            "status": "ok",
+            "generatedAt": datetime.utcnow().isoformat() + "Z",
+            "sourceLabel": "Bitget 现货/黄金代理 + Stooq/Yahoo 最新报价",
+            "warnings": warnings,
+            "quotes": quotes,
+        }
+    except Exception as exc:
+        raise HTTPException(status_code=500, detail=f"Failed to fetch five-asset live quotes: {exc}") from exc
+
+
 if __name__ == "__main__":
     import os
     import uvicorn

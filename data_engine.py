@@ -1,7 +1,9 @@
 import concurrent.futures
 import io
 import os
+import shutil
 import ssl
+import subprocess
 import urllib.request
 
 import pandas as pd
@@ -55,19 +57,38 @@ def _fetch_fred_series_via_csv(series_id, start_date):
             "Referer": "https://fred.stlouisfed.org/",
         },
     )
-    with urllib.request.urlopen(request, timeout=20, context=ssl._create_unverified_context()) as response:
-        body = response.read().decode("utf-8", errors="replace")
+    body = None
+    if shutil.which("curl"):
+        try:
+            completed = subprocess.run(
+                ["curl", "-L", "--silent", "--show-error", "--max-time", "20", url],
+                check=True,
+                capture_output=True,
+                text=True,
+                timeout=25,
+            )
+            body = completed.stdout
+        except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+            body = None
+
+    if body is None:
+        with urllib.request.urlopen(request, timeout=20, context=ssl._create_unverified_context()) as response:
+            body = response.read().decode("utf-8", errors="replace")
 
     raw = pd.read_csv(io.StringIO(body))
-    if raw is None or raw.empty or "DATE" not in raw.columns:
+    if raw is None or raw.empty:
         return None
 
-    value_col = series_id if series_id in raw.columns else next((col for col in raw.columns if col != "DATE"), None)
+    date_col = "DATE" if "DATE" in raw.columns else "observation_date" if "observation_date" in raw.columns else None
+    if date_col is None:
+        return None
+
+    value_col = series_id if series_id in raw.columns else next((col for col in raw.columns if col != date_col), None)
     if value_col is None:
         return None
 
     values = pd.to_numeric(raw[value_col].replace(".", pd.NA), errors="coerce")
-    index = pd.to_datetime(raw["DATE"], errors="coerce")
+    index = pd.to_datetime(raw[date_col], errors="coerce")
     series = pd.Series(values.to_numpy(), index=index).dropna()
     if series.empty:
         return None
