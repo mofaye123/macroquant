@@ -1170,6 +1170,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
   const { payload, isLoading, error, isRefreshing, lastLoadedAt, pollIntervalMs, sourceType } = useFiveAssetTerminalData(initialPayload, appliedRange);
   const { payload: liveQuotesPayload, feedState: marketFeedState, lastLoadedAt: marketLoadedAt } = useFiveAssetLiveQuotes();
   const [chartRange, setChartRange] = useState<"3m" | "1y" | "all">("all");
+  const [orderAssetFilter, setOrderAssetFilter] = useState<string>("ALL");
   const isCustomBacktestView = Boolean(payload && baseRange.startDate && baseRange.endDate) && (
     payload!.strategy.startDate !== baseRange.startDate || payload!.strategy.endDate !== baseRange.endDate
   );
@@ -1251,7 +1252,16 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
         reason: "backtest_snapshot",
       }))
     : orders;
-  const groupedDisplayOrders = groupOrdersByTradingDay(displayOrders, timeZone);
+  const preferredOrderAssetOrder = ["BTC", "ETH", "XAU", "MSTR", "SPY", "MSTR-H"];
+  const existingOrderAssets = Array.from(new Set(displayOrders.map((order) => order.asset)));
+  const sortedOrderAssets = [
+    ...preferredOrderAssetOrder.filter((asset) => existingOrderAssets.includes(asset)),
+    ...existingOrderAssets.filter((asset) => !preferredOrderAssetOrder.includes(asset)).sort(),
+  ];
+  const orderAssetOptions = ["ALL", ...sortedOrderAssets];
+  const normalizedOrderAssetFilter = orderAssetOptions.includes(orderAssetFilter) ? orderAssetFilter : "ALL";
+  const filteredDisplayOrders = normalizedOrderAssetFilter === "ALL" ? displayOrders : displayOrders.filter((order) => order.asset === normalizedOrderAssetFilter);
+  const groupedDisplayOrders = groupOrdersByTradingDay(filteredDisplayOrders, timeZone);
   const optionsBoard = terminalBoards?.optionsBoard;
   const operationsBoard = terminalBoards?.operationsBoard;
   const kpiStrip = terminalBoards?.kpiStrip;
@@ -1348,9 +1358,16 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                 MARKET {formatDateTimeInZone(marketLoadedAt, timeZone)}
               </div>
             ) : null}
-            <span className="text-[11px] tracking-[0.14em] text-[#8899aa]">CAPITAL $</span>
-            <div className="min-w-[144px] rounded-[4px] border border-[#1e2d45] bg-[#0f1629] px-4 py-2 text-right text-[14px] font-semibold tracking-[0.08em] text-[#f59e0b]">
-              {formatCapitalValue(displayEquity)}
+            <div className="flex flex-col items-end">
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] tracking-[0.14em] text-[#8899aa]">CAPITAL $</span>
+                <div className="min-w-[144px] rounded-[4px] border border-[#1e2d45] bg-[#0f1629] px-4 py-2 text-right text-[14px] font-semibold tracking-[0.08em] text-[#f59e0b]">
+                  {formatCapitalValue(displayEquity)}
+                </div>
+              </div>
+              <div className="mt-1 font-mono text-[10px] tracking-[0.04em] text-[#64748b]">
+                {isCustomBacktestView ? "区间末总资产 = 现金 + 区间末持仓估值" : "实时总资产 = 现金 + 持仓按最新市场价估值"}
+              </div>
             </div>
           </div>
         </div>
@@ -1812,9 +1829,31 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
       <section className="px-4 pt-4">
         <TerminalCard
           title="LATEST ORDERS"
-          subtitle={isCustomBacktestView ? "Selected interval rebalance timeline." : "Recent execution and shadow sync."}
+          subtitle={
+            isCustomBacktestView
+              ? `Selected interval rebalance timeline. 当前筛选: ${normalizedOrderAssetFilter === "ALL" ? "全部资产" : normalizedOrderAssetFilter}`
+              : `Recent execution and shadow sync. 当前筛选: ${normalizedOrderAssetFilter === "ALL" ? "全部资产" : normalizedOrderAssetFilter}`
+          }
           icon={<CandlestickChart className="h-4 w-4 text-[#60a5fa]" />}
           className="bg-[#091224]"
+          action={
+            <div className="flex flex-wrap items-center justify-end gap-2">
+              <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">资产筛选</span>
+              {orderAssetOptions.map((asset) => (
+                <button
+                  key={asset}
+                  type="button"
+                  onClick={() => setOrderAssetFilter(asset)}
+                  className={cn(
+                    "rounded-[4px] border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em]",
+                    normalizedOrderAssetFilter === asset ? "border-[#f59e0b] bg-[#f59e0b] text-[#06090f]" : "border-[#1e2d45] bg-[#0b1120] text-[#a8bbcf]",
+                  )}
+                >
+                  {asset === "ALL" ? "ALL" : asset}
+                </button>
+              ))}
+            </div>
+          }
         >
           <div className="overflow-x-auto">
             <table className="min-w-full border-separate border-spacing-0">
@@ -1832,66 +1871,74 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                 </tr>
               </thead>
               <tbody>
-                {groupedDisplayOrders.map((group) => (
-                  <Fragment key={group.day}>
-                    <tr>
-                      <td colSpan={9} className="border-b border-t border-[#1e2d45]/60 bg-[#0b1324] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#7dd3fc]">
-                        {group.day} · {group.orders.length} 笔
-                      </td>
-                    </tr>
-                    {group.orders.map((order) => (
-                      <tr key={order.id}>
-                    <td className={tableCellClass}>{formatDateTimeInZone(order.timestamp, timeZone)}</td>
-                    <td className={tableCellClass}>
-                      <div className={cn("font-semibold", assetToneClass(order.asset))}>{order.asset}</div>
-                      <div className="mt-1 text-[11px] text-[#64748b]">{translateVenue(order.venue)}</div>
+                {groupedDisplayOrders.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="border-b border-t border-[#1e2d45]/60 bg-[#0b1324] px-3 py-5 text-center font-mono text-[11px] text-[#94a3b8]">
+                      当前筛选下没有交易记录
                     </td>
-                    <td className={cn(tableCellClass, orderToneClass(order.side))}>{translateSide(order.side)}</td>
-                    <td className={tableCellClass}>{formatPct(order.deltaWeightPct, 2)}</td>
-                    <td className={tableCellClass}>{formatMoney(order.notional, 0)}</td>
-                    <td className={tableCellClass}>{formatMoney(order.price, 2)}</td>
-                    <td className={tableCellClass}>
-                      {typeof order.equityBefore === "number" && typeof order.equityAfter === "number" ? (
-                        <div className="flex flex-col items-end gap-1">
-                          <div className="font-semibold text-white">{formatMoney(order.equityAfter, 0)}</div>
-                          <div className="font-mono text-[10px] text-[#64748b]">
-                            {formatMoney(order.equityBefore, 0)} <span className="px-1 text-[#94a3b8]">-&gt;</span> {formatMoney(order.equityAfter, 0)}
-                          </div>
-                        </div>
-                      ) : typeof order.equityAfter === "number" ? (
-                        formatMoney(order.equityAfter, 0)
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td className={tableCellClass}>
-                      {typeof order.positionValueBefore === "number" && typeof order.positionValueAfter === "number" ? (
-                        <div className="flex flex-col items-end gap-1">
-                          <div className="font-semibold" style={valueToneStyle((order.positionValueAfter ?? 0) - (order.positionValueBefore ?? 0))}>
-                            {formatMoney(order.positionValueBefore, 0)} <span className="px-1 text-[#94a3b8]">-&gt;</span> {formatMoney(order.positionValueAfter, 0)}
-                          </div>
-                          <div className="font-mono text-[10px] text-[#64748b]">
-                            现金 {typeof order.cashBefore === "number" ? formatMoney(order.cashBefore, 0) : "-"} <span className="px-1 text-[#94a3b8]">-&gt;</span>{" "}
-                            {typeof order.cashAfter === "number" ? formatMoney(order.cashAfter, 0) : "-"}
-                          </div>
-                          <div className="font-mono text-[10px] text-[#64748b]">
-                            权重 {formatPct(order.previousWeightPct, 2)} <span className="px-1 text-[#94a3b8]">-&gt;</span> {formatPct(order.targetWeightPct, 2)}
-                          </div>
-                        </div>
-                      ) : typeof order.equityDelta === "number" ? (
-                        <span style={valueToneStyle(order.equityDelta)}>{formatMoney(order.equityDelta, 2)}</span>
-                      ) : (
-                        "-"
-                      )}
-                    </td>
-                    <td className={tableCellClass}>
-                      <div>{translateOrderStatus(order.status)}</div>
-                      <div className="mt-1 text-[11px] text-[#64748b]">{translateReason(order.reason)}</div>
-                    </td>
+                  </tr>
+                ) : (
+                  groupedDisplayOrders.map((group) => (
+                    <Fragment key={group.day}>
+                      <tr>
+                        <td colSpan={9} className="border-b border-t border-[#1e2d45]/60 bg-[#0b1324] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#7dd3fc]">
+                          {group.day} · {group.orders.length} 笔
+                        </td>
                       </tr>
-                    ))}
-                  </Fragment>
-                ))}
+                      {group.orders.map((order) => (
+                        <tr key={order.id}>
+                          <td className={tableCellClass}>{formatDateTimeInZone(order.timestamp, timeZone)}</td>
+                          <td className={tableCellClass}>
+                            <div className={cn("font-semibold", assetToneClass(order.asset))}>{order.asset}</div>
+                            <div className="mt-1 text-[11px] text-[#64748b]">{translateVenue(order.venue)}</div>
+                          </td>
+                          <td className={cn(tableCellClass, orderToneClass(order.side))}>{translateSide(order.side)}</td>
+                          <td className={tableCellClass}>{formatPct(order.deltaWeightPct, 2)}</td>
+                          <td className={tableCellClass}>{formatMoney(order.notional, 0)}</td>
+                          <td className={tableCellClass}>{formatMoney(order.price, 2)}</td>
+                          <td className={tableCellClass}>
+                            {typeof order.equityBefore === "number" && typeof order.equityAfter === "number" ? (
+                              <div className="flex flex-col items-end gap-1">
+                                <div className="font-semibold text-white">{formatMoney(order.equityAfter, 0)}</div>
+                                <div className="font-mono text-[10px] text-[#64748b]">
+                                  {formatMoney(order.equityBefore, 0)} <span className="px-1 text-[#94a3b8]">-&gt;</span> {formatMoney(order.equityAfter, 0)}
+                                </div>
+                              </div>
+                            ) : typeof order.equityAfter === "number" ? (
+                              formatMoney(order.equityAfter, 0)
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td className={tableCellClass}>
+                            {typeof order.positionValueBefore === "number" && typeof order.positionValueAfter === "number" ? (
+                              <div className="flex flex-col items-end gap-1">
+                                <div className="font-semibold" style={valueToneStyle((order.positionValueAfter ?? 0) - (order.positionValueBefore ?? 0))}>
+                                  {formatMoney(order.positionValueBefore, 0)} <span className="px-1 text-[#94a3b8]">-&gt;</span> {formatMoney(order.positionValueAfter, 0)}
+                                </div>
+                                <div className="font-mono text-[10px] text-[#64748b]">
+                                  现金 {typeof order.cashBefore === "number" ? formatMoney(order.cashBefore, 0) : "-"} <span className="px-1 text-[#94a3b8]">-&gt;</span>{" "}
+                                  {typeof order.cashAfter === "number" ? formatMoney(order.cashAfter, 0) : "-"}
+                                </div>
+                                <div className="font-mono text-[10px] text-[#64748b]">
+                                  权重 {formatPct(order.previousWeightPct, 2)} <span className="px-1 text-[#94a3b8]">-&gt;</span> {formatPct(order.targetWeightPct, 2)}
+                                </div>
+                              </div>
+                            ) : typeof order.equityDelta === "number" ? (
+                              <span style={valueToneStyle(order.equityDelta)}>{formatMoney(order.equityDelta, 2)}</span>
+                            ) : (
+                              "-"
+                            )}
+                          </td>
+                          <td className={tableCellClass}>
+                            <div>{translateOrderStatus(order.status)}</div>
+                            <div className="mt-1 text-[11px] text-[#64748b]">{translateReason(order.reason)}</div>
+                          </td>
+                        </tr>
+                      ))}
+                    </Fragment>
+                  ))
+                )}
               </tbody>
             </table>
           </div>
