@@ -157,6 +157,15 @@ function parseDateParam(value, fallback = null) {
   return normalized;
 }
 
+function compareOrdersByTimestampAsc(left, right) {
+  const leftTs = String(left?.timestamp || "");
+  const rightTs = String(right?.timestamp || "");
+  if (leftTs === rightTs) {
+    return String(left?.asset || "").localeCompare(String(right?.asset || ""));
+  }
+  return leftTs.localeCompare(rightTs);
+}
+
 function clampWindow(points, startDate, endDate) {
   const dates = points.map((point) => point.date).sort();
   if (!dates.length) {
@@ -534,162 +543,218 @@ async function fetchStooqHistoricalClose(symbol, endDate) {
 }
 
 function rebuildPaperBook(strategy, endPrices, startPrices, generatedAt) {
-  const cashStart = Number(strategy.startingCapital || 100000);
-  const orders = (strategy.executionHistory || []).map((order) => ({ ...order }));
-  const replayOrders = (strategy.positionReplayHistory || strategy.executionHistory || []).map((order) => ({ ...order }));
-  const viewStartMarker = strategy.startDate ? `${strategy.startDate}T00:00:00Z` : null;
-  const positions = new Map();
-  const carryQuantities = new Map();
-  let cash = cashStart;
+  const startCapital = Number(strategy.startingCapital || 100000);
+  const startMarker = strategy.startDate ? `${strategy.startDate}T00:00:00Z` : null;
+  const assets = Object.keys(strategy.lastSnapshot?.weights || {});
+  const startWeightMap = strategy.series?.netWeights || strategy.series?.weights || {};
+  const orderList = [...(strategy.executionHistory || [])]
+    .map((order) => ({ ...order }))
+    .sort(compareOrdersByTimestampAsc);
+  const markPriceMap = {};
+  const state = new Map();
+  let cash = startCapital;
 
-  for (const order of replayOrders) {
-    const asset = order.asset;
-    const quantity = Math.abs(Number(order.quantity || 0));
-    const price = Number(order.price || 0);
-    const side = String(order.side || "BUY").toUpperCase();
-    const prev = positions.get(asset) || {
-      quantity: 0,
-      avgPrice: 0,
-      venue: order.venue,
-      symbol: order.symbol,
-      productType: order.productType ?? null,
-      executable: Boolean(order.executable),
-      mode: order.executable ? "paper" : "shadow",
-      openedAt: null,
-      lastRebalancedAt: null,
+  const defaultMetaByAsset = (asset) => {
+    const executable = asset === "BTC" || asset === "ETH";
+    return {
+      venue: executable ? "BITGET_PAPER" : "SHADOW_BOOK",
+      symbol: asset === "BTC" ? "BTCUSDT" : asset === "ETH" ? "ETHUSDT" : asset,
+      productType: executable ? "USDT-FUTURES" : null,
+      executable,
+      mode: executable ? "paper" : "shadow",
     };
+  };
 
-    const prevQty = Number(prev.quantity || 0);
-    const prevAvg = Number(prev.avgPrice || 0);
-    let nextQty = prevQty;
-    let nextAvg = prevAvg;
-
-    if (side === "BUY") {
-      nextQty = prevQty + quantity;
-      nextAvg = nextQty > 1e-9
-        ? ((prevQty * prevAvg) + quantity * price) / nextQty
-        : 0;
-      cash -= quantity * price;
-    } else if (side === "SELL" || side === "SHORT") {
-      nextQty = Math.max(0, prevQty - quantity);
-      nextAvg = nextQty > 1e-9 ? prevAvg : 0;
-      cash += quantity * price;
+  const getWeightAtRangeStart = (asset) => {
+    const series = startWeightMap?.[asset];
+    if (Array.isArray(series) && series.length) {
+      return Number(series[0].value || 0);
     }
+    return Number(strategy.lastSnapshot?.net_weights?.[asset] ?? strategy.lastSnapshot?.weights?.[asset] ?? 0);
+  };
 
-    if (prevQty <= 1e-9 && nextQty > 1e-9) {
-      prev.openedAt = order.timestamp;
-    }
-    if (nextQty <= 1e-9) {
-      prev.openedAt = null;
-    }
-
-    positions.set(asset, {
-      ...prev,
-      quantity: nextQty,
-      avgPrice: nextAvg,
-      lastRebalancedAt: order.timestamp,
-      venue: order.venue,
-      symbol: order.symbol,
-      productType: order.productType ?? null,
-      executable: Boolean(order.executable),
-      mode: order.executable ? "paper" : "shadow",
-    });
-
-    if (viewStartMarker && String(order.timestamp || "") < viewStartMarker) {
-      const carryPrev = Number(carryQuantities.get(asset) || 0);
-      if (side === "BUY") {
-        carryQuantities.set(asset, carryPrev + quantity);
-      } else if (side === "SELL" || side === "SHORT") {
-        carryQuantities.set(asset, Math.max(0, carryPrev - quantity));
-      }
-    }
-  }
-
-  const rangeMeta = new Map();
-  for (const asset of Object.keys(strategy.lastSnapshot?.weights || {})) {
-    const carryQty = Number(carryQuantities.get(asset) || 0);
-    rangeMeta.set(asset, {
-      quantity: carryQty,
-      avgPrice: carryQty > 1e-9 ? Number(startPrices?.[asset] || endPrices?.[asset] || 0) : 0,
-      openedAt: carryQty > 1e-9 && viewStartMarker ? viewStartMarker : null,
-      lastRebalancedAt: carryQty > 1e-9 && viewStartMarker ? viewStartMarker : null,
+  for (const asset of assets) {
+    const meta = defaultMetaByAsset(asset);
+    const startPrice = Number(
+      startPrices?.[asset]
+      ?? strategy.windowStartPrices?.[asset]
+      ?? strategy.lastSnapshot?.prices?.[asset]
+      ?? endPrices?.[asset]
+      ?? 0,
+    );
+    const startWeightPct = getWeightAtRangeStart(asset);
+    const initialNotional = (startCapital * startWeightPct) / 100;
+    const initialQuantity = startPrice > 0 ? initialNotional / startPrice : 0;
+    cash -= initialNotional;
+    markPriceMap[asset] = startPrice > 0 ? startPrice : Number(endPrices?.[asset] || 0);
+    state.set(asset, {
+      ...meta,
+      quantity: round(Math.max(initialQuantity, 0), 8),
+      avgPrice: round(initialQuantity > 1e-9 ? startPrice : 0, 4),
+      openedAt: initialQuantity > 1e-9 ? startMarker : null,
+      lastRebalancedAt: initialQuantity > 1e-9 ? startMarker : null,
     });
   }
 
-  for (const order of orders) {
+  const calcEquity = () => {
+    let equity = cash;
+    for (const asset of assets) {
+      const pos = state.get(asset);
+      const qty = Number(pos?.quantity || 0);
+      const px = Number(markPriceMap[asset] || endPrices?.[asset] || 0);
+      equity += qty * px;
+    }
+    return equity;
+  };
+
+  const replayedOrders = [];
+
+  for (const order of orderList) {
     const asset = order.asset;
-    const quantity = Math.abs(Number(order.quantity || 0));
-    if (!(quantity > 0)) {
+    if (!asset || !assets.includes(asset)) {
       continue;
     }
-    const side = String(order.side || "BUY").toUpperCase();
-    const prev = rangeMeta.get(asset) || {
+    const prev = state.get(asset) || {
+      ...defaultMetaByAsset(asset),
       quantity: 0,
       avgPrice: 0,
       openedAt: null,
       lastRebalancedAt: null,
     };
-    if (side === "BUY") {
-      const nextQty = Number(prev.quantity || 0) + quantity;
-      const nextAvg = nextQty > 1e-9
-        ? ((Number(prev.quantity || 0) * Number(prev.avgPrice || 0)) + quantity * Number(order.price || 0)) / nextQty
-        : 0;
-      rangeMeta.set(asset, {
-        quantity: nextQty,
-        avgPrice: nextAvg,
-        openedAt: Number(prev.quantity || 0) > 1e-9 ? prev.openedAt : order.timestamp,
-        lastRebalancedAt: order.timestamp,
-      });
-    } else if (side === "SELL" || side === "SHORT") {
-      const nextQty = Math.max(0, Number(prev.quantity || 0) - quantity);
-      rangeMeta.set(asset, {
-        quantity: nextQty,
-        avgPrice: nextQty > 1e-9 ? Number(prev.avgPrice || 0) : 0,
-        openedAt: nextQty > 1e-9 ? prev.openedAt : null,
-        lastRebalancedAt: order.timestamp,
-      });
+    const side = String(order.side || "BUY").toUpperCase();
+    const prevQty = Number(prev.quantity || 0);
+    const quantityRaw = Math.abs(Number(order.quantity || 0));
+    const tradePrice = Number(order.price || markPriceMap[asset] || endPrices?.[asset] || strategy.lastSnapshot?.prices?.[asset] || 0);
+    const markBefore = Number(markPriceMap[asset] || tradePrice || 0);
+    const positionValueBefore = prevQty * markBefore;
+    const equityBefore = calcEquity();
+    const previousWeightPct = equityBefore > 0 ? (positionValueBefore / equityBefore) * 100 : 0;
+    const targetWeightRaw = Number(order.targetWeightPct);
+    const hasTargetWeight = Number.isFinite(targetWeightRaw);
+
+    let signedQtyDelta = 0;
+    let nextQtyRaw = prevQty;
+    if (hasTargetWeight && tradePrice > 0 && equityBefore > 0) {
+      const targetPositionValue = (equityBefore * targetWeightRaw) / 100;
+      const desiredQty = Math.max(targetPositionValue / tradePrice, 0);
+      signedQtyDelta = desiredQty - prevQty;
+      nextQtyRaw = Math.max(desiredQty, 0);
+    } else {
+      let executedQuantity = quantityRaw;
+      if (side === "SELL" || side === "SHORT") {
+        executedQuantity = Math.min(quantityRaw, Math.max(prevQty, 0));
+      }
+      signedQtyDelta = side === "BUY" ? executedQuantity : side === "SELL" || side === "SHORT" ? -executedQuantity : 0;
+      nextQtyRaw = Math.max(prevQty + signedQtyDelta, 0);
     }
+
+    if (Math.abs(signedQtyDelta) < 1e-10) {
+      signedQtyDelta = 0;
+    }
+
+    const tradeNotional = Math.abs(signedQtyDelta) * tradePrice;
+    const cashBefore = cash;
+    if (signedQtyDelta > 0) {
+      cash -= tradeNotional;
+    } else if (signedQtyDelta < 0) {
+      cash += tradeNotional;
+    }
+
+    const nextQty = round(nextQtyRaw, 8);
+    let nextAvg = Number(prev.avgPrice || 0);
+    if (signedQtyDelta > 0) {
+      nextAvg = nextQtyRaw > 1e-9
+        ? ((prevQty * Number(prev.avgPrice || 0)) + (Math.abs(signedQtyDelta) * tradePrice)) / nextQtyRaw
+        : 0;
+    } else if (nextQtyRaw <= 1e-9) {
+      nextAvg = 0;
+    }
+
+    const openedAt = prevQty <= 1e-9 && nextQtyRaw > 1e-9
+      ? order.timestamp
+      : nextQtyRaw <= 1e-9
+        ? null
+        : prev.openedAt;
+    const lastRebalancedAt = Math.abs(signedQtyDelta) > 1e-9 ? order.timestamp : prev.lastRebalancedAt;
+
+    state.set(asset, {
+      ...prev,
+      quantity: nextQty,
+      avgPrice: round(nextAvg, 4),
+      openedAt,
+      lastRebalancedAt,
+      venue: order.venue || prev.venue,
+      symbol: order.symbol || prev.symbol,
+      productType: order.productType ?? prev.productType,
+      executable: typeof order.executable === "boolean" ? order.executable : prev.executable,
+      mode: typeof order.executable === "boolean" ? (order.executable ? "paper" : "shadow") : prev.mode,
+    });
+
+    markPriceMap[asset] = tradePrice;
+
+    const positionValueAfter = nextQtyRaw * tradePrice;
+    const cashAfter = cash;
+    const equityAfter = calcEquity();
+    const computedTargetWeight = equityAfter > 0 ? (positionValueAfter / equityAfter) * 100 : 0;
+    const targetWeightPct = hasTargetWeight ? targetWeightRaw : computedTargetWeight;
+    const sideForDisplay = signedQtyDelta > 0 ? "BUY" : signedQtyDelta < 0 ? "SELL" : "HOLD";
+    replayedOrders.push({
+      ...order,
+      side: sideForDisplay,
+      quantity: round(Math.abs(signedQtyDelta), 8),
+      notional: round(tradeNotional, 2),
+      price: round(tradePrice, 4),
+      previousWeightPct: round(previousWeightPct, 2),
+      targetWeightPct: round(targetWeightPct, 2),
+      deltaWeightPct: round(targetWeightPct - previousWeightPct, 2),
+      equityBefore: round(equityBefore, 2),
+      equityAfter: round(equityAfter, 2),
+      equityDelta: round(equityAfter - equityBefore, 2),
+      cashBefore: round(cashBefore, 2),
+      cashAfter: round(cashAfter, 2),
+      cashDelta: round(cashAfter - cashBefore, 2),
+      positionValueBefore: round(positionValueBefore, 2),
+      positionValueAfter: round(positionValueAfter, 2),
+      positionValueDelta: round(positionValueAfter - positionValueBefore, 2),
+      status: "snapshot",
+      action: "snapshot",
+    });
   }
 
-  const lastWeights = strategy.lastSnapshot?.weights || {};
   const finalPositions = [];
   let equity = cash;
-  for (const asset of Object.keys(lastWeights)) {
-    const state = positions.get(asset) || {
+  const lastWeights = strategy.lastSnapshot?.weights || {};
+  for (const asset of assets) {
+    const pos = state.get(asset) || {
+      ...defaultMetaByAsset(asset),
       quantity: 0,
       avgPrice: 0,
-      venue: asset === "BTC" || asset === "ETH" ? "BITGET_PAPER" : "SHADOW_BOOK",
-      symbol: asset === "BTC" ? "BTCUSDT" : asset === "ETH" ? "ETHUSDT" : asset,
-      productType: asset === "BTC" || asset === "ETH" ? "USDT-FUTURES" : null,
-      executable: asset === "BTC" || asset === "ETH",
-      mode: asset === "BTC" || asset === "ETH" ? "paper" : "shadow",
       openedAt: null,
       lastRebalancedAt: null,
     };
-    const meta = rangeMeta.get(asset) || { avgPrice: 0, openedAt: null, lastRebalancedAt: null };
-    const markPrice = Number(endPrices[asset] || strategy.lastSnapshot?.prices?.[asset] || 0);
-    const quantity = Math.max(0, Number(state.quantity || 0));
+    const quantity = Math.max(Number(pos.quantity || 0), 0);
+    const markPrice = Number(endPrices?.[asset] || markPriceMap[asset] || strategy.lastSnapshot?.prices?.[asset] || 0);
     const marketValue = quantity * markPrice;
     equity += marketValue;
     finalPositions.push({
       asset,
-      venue: state.venue,
-      symbol: state.symbol,
-      productType: state.productType,
-      executable: state.executable,
-      mode: state.mode,
+      venue: pos.venue,
+      symbol: pos.symbol,
+      productType: pos.productType,
+      executable: Boolean(pos.executable),
+      mode: pos.mode || (pos.executable ? "paper" : "shadow"),
       side: quantity > 1e-9 ? "LONG" : "FLAT",
       quantity: round(quantity, 8),
-      avgPrice: round(Number(meta.avgPrice || state.avgPrice || 0), 4),
+      avgPrice: round(Number(pos.avgPrice || 0), 4),
       markPrice: round(markPrice, 4),
       marketValue: round(marketValue, 2),
       targetWeightPct: round(Number(lastWeights[asset] || 0), 2),
       currentWeightPct: 0,
       driftWeightPct: 0,
       targetValue: 0,
-      unrealizedPnl: round((markPrice - Number(meta.avgPrice || state.avgPrice || 0)) * quantity, 2),
-      openedAt: meta.openedAt,
-      lastRebalancedAt: meta.lastRebalancedAt,
+      unrealizedPnl: round((markPrice - Number(pos.avgPrice || 0)) * quantity, 2),
+      openedAt: pos.openedAt,
+      lastRebalancedAt: pos.lastRebalancedAt,
     });
   }
 
@@ -698,6 +763,14 @@ function rebuildPaperBook(strategy, endPrices, startPrices, generatedAt) {
     position.targetValue = round((equity * position.targetWeightPct) / 100, 2);
     position.driftWeightPct = round(position.targetWeightPct - position.currentWeightPct, 2);
   }
+
+  const displayOrders = replayedOrders.sort((left, right) => {
+    const byTime = String(right.timestamp || "").localeCompare(String(left.timestamp || ""));
+    if (byTime !== 0) {
+      return byTime;
+    }
+    return String(left.asset || "").localeCompare(String(right.asset || ""));
+  });
 
   return {
     status: "range_snapshot",
@@ -714,16 +787,16 @@ function rebuildPaperBook(strategy, endPrices, startPrices, generatedAt) {
       grossExposurePct: equity > 0 ? round((finalPositions.reduce((sum, pos) => sum + pos.marketValue, 0) / equity) * 100, 2) : 0,
     },
     positions: finalPositions,
-    orders: orders.reverse(),
+    orders: displayOrders,
     alerts: [],
     routing: {
       generatedAt,
-      readyExecutableOrders: orders.filter((order) => order.executable).length,
-      shadowSyncOrders: orders.filter((order) => !order.executable).length,
+      readyExecutableOrders: displayOrders.filter((order) => order.executable).length,
+      shadowSyncOrders: displayOrders.filter((order) => !order.executable).length,
       blockedOrders: 0,
       holdCount: 0,
-      executableNotional: round(orders.filter((order) => order.executable).reduce((sum, order) => sum + Number(order.notional || 0), 0), 2),
-      shadowNotional: round(orders.filter((order) => !order.executable).reduce((sum, order) => sum + Number(order.notional || 0), 0), 2),
+      executableNotional: round(displayOrders.filter((order) => order.executable).reduce((sum, order) => sum + Number(order.notional || 0), 0), 2),
+      shadowNotional: round(displayOrders.filter((order) => !order.executable).reduce((sum, order) => sum + Number(order.notional || 0), 0), 2),
       blockedNotional: 0,
       intents: [],
     },
@@ -923,11 +996,15 @@ function buildRangeStrategy(basePayload, startDate, endDate) {
   base.series.volFactor = (base.series.volFactor || []).filter((point) => point.date >= windowed.startDate && point.date <= windowed.endDate);
   base.series.portVol60d = (base.series.portVol60d || []).filter((point) => point.date >= windowed.startDate && point.date <= windowed.endDate);
   base.series.riskSignals = (base.series.riskSignals || []).filter((point) => point.date >= windowed.startDate && point.date <= windowed.endDate);
-  base.executionHistory = (base.executionHistory || []).filter((order) => {
-    const orderDate = String(order.timestamp || "").slice(0, 10);
-    return orderDate >= windowed.startDate && orderDate <= windowed.endDate;
-  });
-  base.positionReplayHistory = fullHistory.filter((order) => String(order.timestamp || "").slice(0, 10) <= windowed.endDate);
+  base.executionHistory = (base.executionHistory || [])
+    .filter((order) => {
+      const orderDate = String(order.timestamp || "").slice(0, 10);
+      return orderDate >= windowed.startDate && orderDate <= windowed.endDate;
+    })
+    .sort(compareOrdersByTimestampAsc);
+  base.positionReplayHistory = fullHistory
+    .filter((order) => String(order.timestamp || "").slice(0, 10) <= windowed.endDate)
+    .sort(compareOrdersByTimestampAsc);
 
   const lastPoint = rebasedPortfolio[rebasedPortfolio.length - 1];
   const assets = Object.keys(base.lastSnapshot?.weights || {});
@@ -1100,14 +1177,13 @@ async function buildTerminalPayload(url, env, ctx) {
 
   const backtest = await fetchStaticPayload(env, ctx, PAGES_BACKTEST_PATH);
   const strategy = buildRangeStrategy(backtest, startDate, endDate);
-  const startPrices = await resolveHistoricalEndPrices(strategy.startDate, strategy.windowStartPrices || strategy.lastSnapshot.prices);
-  strategy.lastSnapshot.prices = await resolveHistoricalEndPrices(strategy.endDate, strategy.lastSnapshot.prices);
-  strategy.windowStartPrices = startPrices;
+  const startPrices = strategy.windowStartPrices || {};
+  const endPrices = strategy.lastSnapshot.prices || {};
   if (strategy.terminalBoards?.tickerTape) {
     strategy.terminalBoards.tickerTape = recomputeRangeTickerTape(strategy);
   }
   if (strategy.terminalBoards?.optionsBoard) {
-    const btcSpot = Number(strategy.lastSnapshot?.prices?.BTC || strategy.terminalBoards.optionsBoard.spot || 0);
+    const btcSpot = Number(endPrices.BTC || strategy.terminalBoards.optionsBoard.spot || 0);
     strategy.terminalBoards.optionsBoard = {
       ...strategy.terminalBoards.optionsBoard,
       spot: round(btcSpot, 2),
@@ -1121,7 +1197,7 @@ async function buildTerminalPayload(url, env, ctx) {
     sourceLabel: "Cloudflare Worker backtest range API",
     warnings: [],
     strategy,
-    paperTrading: rebuildPaperBook(strategy, strategy.lastSnapshot.prices, startPrices, new Date().toISOString()),
+    paperTrading: rebuildPaperBook(strategy, endPrices, startPrices, new Date().toISOString()),
   };
   return terminalPayload;
 }
