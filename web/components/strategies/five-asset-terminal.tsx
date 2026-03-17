@@ -1162,13 +1162,10 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
     startDate: seededStartDate,
     endDate: seededEndDate,
   });
-  const [appliedRange, setAppliedRange] = useState<{ startDate?: string; endDate?: string }>({
-    startDate: seededStartDate || undefined,
-    endDate: seededEndDate || undefined,
-  });
+  const [appliedRange, setAppliedRange] = useState<{ startDate?: string; endDate?: string }>({});
   const [timeZone, setTimeZone] = useState(detectedTimeZone || "UTC");
   const { payload, isLoading, error, isRefreshing, lastLoadedAt, pollIntervalMs, sourceType } = useFiveAssetTerminalData(initialPayload, appliedRange);
-  const { payload: liveQuotesPayload, feedState: marketFeedState, lastLoadedAt: marketLoadedAt } = useFiveAssetLiveQuotes();
+  const { payload: liveQuotesPayload, feedState: marketFeedState, lastLoadedAt: marketLoadedAt, pollIntervalMs: marketPollIntervalMs } = useFiveAssetLiveQuotes();
   const [chartRange, setChartRange] = useState<"3m" | "1y" | "all">("all");
   const [orderAssetFilter, setOrderAssetFilter] = useState<string>("ALL");
   const isCustomBacktestView = Boolean(payload && baseRange.startDate && baseRange.endDate) && (
@@ -1283,6 +1280,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
     .filter((row) => row.value !== null)
     .slice(0, 15)
     .reverse();
+  const displayRefreshSeconds = Math.max(1, Math.round((marketPollIntervalMs || pollIntervalMs || 15000) / 1000));
   const applyBacktestRange = () => {
     let nextStart = draftStartDate || strategy.startDate;
     let nextEnd = draftEndDate || strategy.endDate;
@@ -1291,19 +1289,20 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
       setDraftStartDate(nextStart);
       setDraftEndDate(nextEnd);
     }
-    setAppliedRange({
-      startDate: nextStart,
-      endDate: nextEnd,
-    });
+    if (nextStart === baseRange.startDate && nextEnd === baseRange.endDate) {
+      setAppliedRange({});
+    } else {
+      setAppliedRange({
+        startDate: nextStart,
+        endDate: nextEnd,
+      });
+    }
     setChartRange("all");
   };
   const resetBacktestRange = () => {
     setDraftStartDate(strategy.startDate);
     setDraftEndDate(strategy.endDate);
-    setAppliedRange({
-      startDate: strategy.startDate,
-      endDate: strategy.endDate,
-    });
+    setAppliedRange({});
     setChartRange("all");
   };
 
@@ -1346,7 +1345,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
             <div className="flex items-center gap-2 text-[11px] tracking-[0.12em] text-[#8899aa]">
               <span className={cn("inline-block h-2 w-2 rounded-full", isRefreshing ? "animate-pulse bg-[#10b981]" : "bg-[#f59e0b]")} />
               <span>{isRefreshing ? "REFRESHING" : "AUTO REFRESH"}</span>
-              <span className="text-[#5f738d]">{Math.round(pollIntervalMs / 1000)}s</span>
+              <span className="text-[#5f738d]">{displayRefreshSeconds}s</span>
             </div>
             {lastLoadedAt ? (
               <div className="rounded-[4px] border border-[#1e2d45] bg-[#0b1120] px-3 py-1 text-[11px] tracking-[0.12em] text-[#a8bbcf]">

@@ -7,8 +7,8 @@ import { FiveAssetTerminalPayload } from "@/lib/five-asset-terminal-types";
 const STATIC_URL = process.env.NEXT_PUBLIC_FIVE_ASSET_TERMINAL_DATA_URL ?? "/data/five-asset-terminal.json";
 const CLOUD_API_BASE = "https://macroquant-realtime-api.mofaye.workers.dev";
 const LOCAL_API_BASE = "http://127.0.0.1:8000";
-const SOURCE_MODE = (process.env.NEXT_PUBLIC_FIVE_ASSET_SOURCE_MODE ?? "api-first").trim().toLowerCase();
-const POLL_INTERVAL_MS = 15000;
+const SOURCE_MODE = (process.env.NEXT_PUBLIC_FIVE_ASSET_SOURCE_MODE ?? "static-first").trim().toLowerCase();
+const POLL_INTERVAL_MS = 0;
 
 type ResolvedSource = {
   payload: FiveAssetTerminalPayload;
@@ -72,6 +72,8 @@ const buildUrl = (url: string, query?: TerminalQuery) => {
   return `${url}${url.includes("?") ? "&" : "?"}${params.toString()}`;
 };
 
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 const fetchTerminalPayload = async (url: string, query?: TerminalQuery, signal?: AbortSignal): Promise<FiveAssetTerminalPayload> => {
   const response = await fetch(buildUrl(url, query), {
     method: "GET",
@@ -96,19 +98,26 @@ const resolvePayload = async (query: TerminalQuery, signal?: AbortSignal): Promi
     const errors: string[] = [];
     for (const apiBase of resolveApiBaseCandidates()) {
       const apiUrl = `${apiBase}/api/v1/five-asset-terminal`;
-      try {
-        const payload = await fetchTerminalPayload(apiUrl, query, signal);
-        if (!isUsablePayload(payload)) {
-          throw new Error("Five-asset terminal API payload is empty");
+      let lastError: string | null = null;
+      for (let attempt = 1; attempt <= 2; attempt += 1) {
+        try {
+          const payload = await fetchTerminalPayload(apiUrl, query, signal);
+          if (!isUsablePayload(payload)) {
+            throw new Error("Five-asset terminal API payload is empty");
+          }
+          return {
+            payload,
+            sourceType: "api",
+            sourceUrl: apiUrl,
+          };
+        } catch (error) {
+          lastError = error instanceof Error ? error.message : "Unknown API error";
+          if (attempt < 2) {
+            await sleep(250);
+          }
         }
-        return {
-          payload,
-          sourceType: "api",
-          sourceUrl: apiUrl,
-        };
-      } catch (error) {
-        errors.push(`${apiUrl}: ${error instanceof Error ? error.message : "Unknown API error"}`);
       }
+      errors.push(`${apiUrl}: ${lastError ?? "Unknown API error"}`);
     }
     throw new Error(errors.join(" | "));
   };
@@ -169,7 +178,6 @@ export const useFiveAssetTerminalData = (
 
   useEffect(() => {
     let active = true;
-    let refreshTimer: number | null = null;
     let activeController: AbortController | null = null;
     const hasSeededPayload = Boolean(seededPayload) && !hasCustomRange;
 
@@ -215,33 +223,25 @@ export const useFiveAssetTerminalData = (
       }
     };
 
-    const schedule = () => {
-      refreshTimer = window.setTimeout(async () => {
-        if (!active) {
-          return;
-        }
-        if (document.hidden) {
-          schedule();
-          return;
-        }
-        await run(true);
-        schedule();
-      }, POLL_INTERVAL_MS);
-    };
-
     const handleFocus = () => {
-      void run(true);
+      if (hasCustomRange) {
+        void run(true);
+      }
     };
 
-    void run(hasSeededPayload);
-    schedule();
+    if (hasSeededPayload) {
+      setPayload(seededPayload);
+      setSourceType("static");
+      setSourceUrl(STATIC_URL);
+      setError(null);
+      setIsLoading(false);
+    } else {
+      void run(false);
+    }
     window.addEventListener("focus", handleFocus);
 
     return () => {
       active = false;
-      if (refreshTimer !== null) {
-        window.clearTimeout(refreshTimer);
-      }
       activeController?.abort();
       window.removeEventListener("focus", handleFocus);
     };
