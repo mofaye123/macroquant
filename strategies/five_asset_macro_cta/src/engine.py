@@ -266,6 +266,23 @@ def _above_ma_for_days(series_price: pd.Series, series_ma: pd.Series, end_idx: i
     return bool((price_window > ma_window).all())
 
 
+def _below_ma_stack_for_days(
+    series_fast: pd.Series,
+    series_mid: pd.Series,
+    series_slow: pd.Series,
+    end_idx: int,
+    days: int,
+) -> bool:
+    if end_idx - days + 1 < 0:
+        return False
+    fast_window = series_fast.iloc[end_idx - days + 1 : end_idx + 1]
+    mid_window = series_mid.iloc[end_idx - days + 1 : end_idx + 1]
+    slow_window = series_slow.iloc[end_idx - days + 1 : end_idx + 1]
+    if fast_window.isna().any() or mid_window.isna().any() or slow_window.isna().any():
+        return False
+    return bool(((fast_window < mid_window) & (mid_window < slow_window)).all())
+
+
 def _compute_mstr_premium_frame(price_frame: pd.DataFrame, treasury_schedule: pd.DataFrame) -> pd.DataFrame:
     target_index = pd.to_datetime(price_frame.index)
     expanded_index = treasury_schedule.index.union(target_index)
@@ -292,6 +309,7 @@ def _compute_hedge_targets(
     features: dict[str, pd.DataFrame],
     treasury: pd.DataFrame,
     config: dict[str, Any],
+    long_weights: Optional[pd.DataFrame] = None,
 ) -> pd.DataFrame:
     index = macro.index
     hedges = pd.DataFrame(0.0, index=index, columns=list(HEDGE_ASSETS), dtype=float)
@@ -314,8 +332,24 @@ def _compute_hedge_targets(
     eth_ma60 = features["ETH"]["ma60"]
     eth_ret = features["ETH"]["ret"]
     mstr_price = features["MSTR"]["price"]
+    mstr_ma20 = features["MSTR"]["ma20"]
     mstr_ma60 = features["MSTR"]["ma60"]
+    mstr_ma120 = features["MSTR"]["ma120"]
     premium = treasury["premium_ratio"] if "premium_ratio" in treasury.columns else pd.Series(0.0, index=index)
+    btc_ret_5d = btc_price.pct_change(5).fillna(0.0)
+    mstr_ratio = mstr_price.div(btc_price.replace(0.0, np.nan)).replace([np.inf, -np.inf], np.nan).ffill().bfill()
+
+    mstr_mode = str(mstr_cfg.get("mode", "legacy_premium")).lower()
+    mstr_ratio_window = max(int(mstr_cfg.get("ratio_ma", 20)), 2)
+    mstr_ratio_ma = _rolling_ma(mstr_ratio, mstr_ratio_window)
+    mstr_premium_z_window = max(int(mstr_cfg.get("premium_filter_z_window", 120)), 20)
+    premium_mean = premium.rolling(mstr_premium_z_window, min_periods=max(30, mstr_premium_z_window // 2)).mean()
+    premium_std = premium.rolling(mstr_premium_z_window, min_periods=max(30, mstr_premium_z_window // 2)).std(ddof=0)
+    premium_z = premium.sub(premium_mean).div(premium_std.replace(0.0, np.nan)).replace([np.inf, -np.inf], np.nan).fillna(0.0)
+    mstr_days_active = 0
+    operations_cfg = config.get("terminal_boards", {}).get("operations", {})
+    hedge_budget_pct = float(config.get("hedge_budget_pct", operations_cfg.get("hedge_max_size_pct", 25.0)))
+    hedge_budget_cap = max(0.0, hedge_budget_pct / 100.0)
 
     for i, dt in enumerate(index):
         smooth_score = float(macro.at[dt, "smooth_score"])
@@ -334,7 +368,6 @@ def _compute_hedge_targets(
             btc_active = float(btc_cfg["nav_pct"]) * (float(btc_cfg["leverage"]) if smooth_score < float(btc_cfg["score_full"]) else 1.0)
         elif btc_active > 0 and smooth_score < float(btc_cfg["score_full"]):
             btc_active = float(btc_cfg["nav_pct"]) * float(btc_cfg["leverage"])
-        hedges.at[dt, "BTC"] = -btc_active
 
         eth_macro_trigger = (
             smooth_score < float(eth_cfg["score_th"])
@@ -366,31 +399,118 @@ def _compute_hedge_targets(
                     eth_shock_active = 0.0
                     eth_shock_start = None
 
-        hedges.at[dt, "ETH"] = -min(
+        eth_desired = min(
             float(eth_cfg["nav_pct"]) * float(eth_cfg["leverage"]),
             eth_macro_active + eth_shock_active,
         )
 
-        mstr_trigger = (
-            smooth_score < float(mstr_cfg["score_th"])
-            and _safe_float(btc_price.iat[i], np.nan) < _safe_float(btc_ma60.iat[i], np.inf)
-            and float(premium.iat[i]) > float(mstr_cfg["premium_th"])
-        )
-        mstr_exit = (
-            smooth_score >= float(mstr_cfg["score_exit"])
-            or _above_ma_for_days(mstr_price, mstr_ma60, i, int(mstr_cfg["recover_days"]))
-            or float(premium.iat[i]) < float(mstr_cfg["premium_exit"])
-        )
-        if mstr_active > 0 and mstr_exit:
-            mstr_active = 0.0
-        elif mstr_trigger:
+        if mstr_mode == "trend_relative_v1":
             full_size = float(mstr_cfg["nav_pct"]) * float(mstr_cfg["leverage"])
-            half_size = full_size / 2.0
-            if smooth_score < float(mstr_cfg["score_full"]) or float(premium.iat[i]) > float(mstr_cfg["premium_full"]):
-                mstr_active = full_size
+            entry_days = max(int(mstr_cfg.get("trend_entry_days", 5)), 1)
+            add_days = max(int(mstr_cfg.get("trend_add_days", 10)), entry_days)
+            exit_days = max(int(mstr_cfg.get("exit_days", 3)), 1)
+            exit_ma20_days = max(int(mstr_cfg.get("exit_ma20_days", 1)), 1)
+            max_hold_days = max(int(mstr_cfg.get("max_hold_days", 20)), 0)
+            initial_size_ratio = float(np.clip(float(mstr_cfg.get("initial_size_ratio", 0.50)), 0.10, 1.0))
+            shock_size_ratio = float(np.clip(float(mstr_cfg.get("shock_size_ratio", 1.00)), initial_size_ratio, 1.0))
+            btc_shock_drop_5d = abs(float(mstr_cfg.get("btc_shock_drop_5d", 0.08)))
+            require_btc_bear = bool(mstr_cfg.get("require_btc_bear", True))
+            allow_btc_shock = bool(mstr_cfg.get("allow_btc_shock_entry", True))
+
+            trend_ready = _below_ma_stack_for_days(mstr_ma20, mstr_ma60, mstr_ma120, i, entry_days)
+            trend_add_ready = _below_ma_stack_for_days(mstr_ma20, mstr_ma60, mstr_ma120, i, add_days)
+            btc_bear = (
+                _safe_float(btc_price.iat[i], np.nan) < _safe_float(btc_ma60.iat[i], np.inf)
+                and _safe_float(btc_ma20.iat[i], np.nan) < _safe_float(btc_ma60.iat[i], np.inf)
+            )
+            ratio_weak = _safe_float(mstr_ratio.iat[i], np.nan) < _safe_float(mstr_ratio_ma.iat[i], np.inf)
+            btc_shock = _safe_float(btc_ret_5d.iat[i], 0.0) <= -btc_shock_drop_5d
+
+            primary_gate = trend_ready and (btc_bear or not require_btc_bear)
+            signal_gate = ratio_weak or (allow_btc_shock and btc_shock)
+            mstr_trigger = primary_gate and signal_gate
+
+            target_size = 0.0
+            if mstr_trigger:
+                target_size = full_size * initial_size_ratio
+                if trend_add_ready and ratio_weak:
+                    target_size = full_size
+                if allow_btc_shock and btc_shock:
+                    target_size = max(target_size, full_size * shock_size_ratio)
+
+                if bool(mstr_cfg.get("use_premium_filter", False)):
+                    premium_z_th = float(mstr_cfg.get("premium_filter_z_th", 1.0))
+                    if _safe_float(premium_z.iat[i], 0.0) < premium_z_th:
+                        target_size = min(target_size, full_size * initial_size_ratio)
+
+                if bool(mstr_cfg.get("cap_by_btc_weight", True)) and long_weights is not None and "BTC" in long_weights.columns:
+                    btc_long_weight = max(_safe_float(long_weights.at[dt, "BTC"], 0.0), 0.0)
+                    btc_cap_multiplier = max(float(mstr_cfg.get("btc_weight_cap_multiplier", 1.0)), 0.0)
+                    target_size = min(target_size, btc_long_weight * btc_cap_multiplier)
+
+            mstr_exit = (
+                _above_ma_for_days(mstr_price, mstr_ma20, i, exit_ma20_days)
+                or
+                _above_ma_for_days(mstr_price, mstr_ma60, i, exit_days)
+                or _above_ma_for_days(mstr_ratio, mstr_ratio_ma, i, exit_days)
+                or (
+                    bool(mstr_cfg.get("respect_macro_exit", False))
+                    and smooth_score >= float(mstr_cfg["score_exit"])
+                )
+                or (max_hold_days > 0 and mstr_days_active >= max_hold_days)
+            )
+
+            if mstr_active > 0:
+                mstr_days_active += 1
+                if mstr_exit:
+                    mstr_active = 0.0
+                    mstr_days_active = 0
+                elif target_size > mstr_active:
+                    mstr_active = target_size
+            elif target_size > 0:
+                mstr_active = target_size
+                mstr_days_active = 1
             else:
-                mstr_active = half_size
-        hedges.at[dt, "MSTR"] = -mstr_active
+                mstr_days_active = 0
+        else:
+            mstr_trigger = (
+                smooth_score < float(mstr_cfg["score_th"])
+                and _safe_float(btc_price.iat[i], np.nan) < _safe_float(btc_ma60.iat[i], np.inf)
+                and float(premium.iat[i]) > float(mstr_cfg["premium_th"])
+            )
+            mstr_exit = (
+                smooth_score >= float(mstr_cfg["score_exit"])
+                or _above_ma_for_days(mstr_price, mstr_ma60, i, int(mstr_cfg["recover_days"]))
+                or float(premium.iat[i]) < float(mstr_cfg["premium_exit"])
+            )
+            if mstr_active > 0 and mstr_exit:
+                mstr_active = 0.0
+            elif mstr_trigger:
+                full_size = float(mstr_cfg["nav_pct"]) * float(mstr_cfg["leverage"])
+                half_size = full_size / 2.0
+                if smooth_score < float(mstr_cfg["score_full"]) or float(premium.iat[i]) > float(mstr_cfg["premium_full"]):
+                    mstr_active = full_size
+                else:
+                    mstr_active = half_size
+
+        desired_mstr = max(0.0, float(mstr_active))
+        desired_btc = max(0.0, float(btc_active))
+        desired_eth = max(0.0, float(eth_desired))
+
+        mstr_alloc = min(desired_mstr, hedge_budget_cap)
+        remaining_budget = max(0.0, hedge_budget_cap - mstr_alloc)
+        crypto_total_desired = desired_btc + desired_eth
+        if crypto_total_desired > 1e-12 and remaining_budget > 0:
+            crypto_scale = min(1.0, remaining_budget / crypto_total_desired)
+            btc_alloc = desired_btc * crypto_scale
+            eth_alloc = desired_eth * crypto_scale
+        else:
+            btc_alloc = 0.0
+            eth_alloc = 0.0
+
+        hedges.at[dt, "MSTR"] = -mstr_alloc
+        hedges.at[dt, "BTC"] = -btc_alloc
+        hedges.at[dt, "ETH"] = -eth_alloc
 
     return hedges
 
@@ -1293,6 +1413,7 @@ def build_five_asset_backtest_payload(
         features=features,
         treasury=treasury,
         config=cfg,
+        long_weights=executed_long_weights,
     )
     net_weights, cash_weight = _combine_net_weights(executed_long_weights, desired_hedges)
     desired_cash_weight = (1.0 - desired_long_weights.sum(axis=1) - desired_hedges.abs().sum(axis=1)).clip(lower=0.0)
