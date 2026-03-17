@@ -2,7 +2,7 @@ name: Refresh Macro Snapshot
 
 on:
   schedule:
-    - cron: "5 * * * *"
+    - cron: "5 * * * 1-5"
   workflow_dispatch:
 
 permissions:
@@ -23,18 +23,55 @@ jobs:
           fetch-depth: 0
           ref: main
 
+      - name: Gate publish window (US close + 1h)
+        id: publish_window
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "window_reason=manual_dispatch" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          et_weekday="$(TZ=America/New_York date +%u)"
+          et_hour="$(TZ=America/New_York date +%H)"
+          et_stamp="$(TZ=America/New_York date '+%F %H:%M')"
+          echo "Event=${{ github.event_name }} Current ET: $et_stamp (weekday=$et_weekday hour=$et_hour)"
+
+          if [ "$et_weekday" -gt 5 ]; then
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "window_reason=weekend" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [ "$et_hour" = "17" ]; then
+            echo "should_run=true" >> "$GITHUB_OUTPUT"
+            echo "window_reason=market_close_plus_1h" >> "$GITHUB_OUTPUT"
+          else
+            echo "should_run=false" >> "$GITHUB_OUTPUT"
+            echo "window_reason=outside_publish_hour" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Stop outside publish window
+        if: steps.publish_window.outputs.should_run != 'true'
+        run: |
+          echo "Skip snapshot refresh: ${{ steps.publish_window.outputs.window_reason }}"
+          exit 0
+
       - name: Set up Python
+        if: steps.publish_window.outputs.should_run == 'true'
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: Install Python dependencies
+        if: steps.publish_window.outputs.should_run == 'true'
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
       - name: Generate snapshot
         id: generate
+        if: steps.publish_window.outputs.should_run == 'true'
         env:
           FRED_API_KEY: ${{ secrets.FRED_API_KEY }}
           TAVILY_API_KEY: ${{ secrets.TAVILY_API_KEY }}
@@ -67,6 +104,7 @@ jobs:
 
       - name: Parse snapshot status
         id: status
+        if: steps.publish_window.outputs.should_run == 'true'
         run: |
           python scripts/export_snapshot_status_outputs.py "$STATUS_FILE" _gha_outputs.txt
           cat _gha_outputs.txt >> "$GITHUB_OUTPUT"
@@ -75,6 +113,7 @@ jobs:
 
       - name: Detect snapshot changes
         id: detect_changes
+        if: steps.publish_window.outputs.should_run == 'true'
         run: |
           if [ -n "$(git status --porcelain -- web/public/data/macro-data.json)" ]; then
             echo "changed=true" >> "$GITHUB_OUTPUT"
@@ -83,7 +122,7 @@ jobs:
           fi
 
       - name: Create or update alert issue
-        if: steps.generate.outputs.exit_code != '0' || steps.status.outputs.result == 'kept_existing' || steps.status.outputs.result == 'refused_degraded' || steps.status.outputs.result == 'error'
+        if: steps.publish_window.outputs.should_run == 'true' && (steps.generate.outputs.exit_code != '0' || steps.status.outputs.result == 'kept_existing' || steps.status.outputs.result == 'refused_degraded' || steps.status.outputs.result == 'error')
         uses: actions/github-script@v7
         env:
           STATUS_RESULT: ${{ steps.status.outputs.result }}
@@ -101,7 +140,7 @@ jobs:
           script: |
             const title = "Macro snapshot refresh alert";
             const body = [
-              "The hourly macro snapshot refresh detected a data quality problem. The workflow did not publish the new snapshot.",
+              "The scheduled macro snapshot refresh detected a data quality problem. The workflow did not publish the new snapshot.",
               "",
               `- Workflow ref: ${context.ref}`,
               `- Workflow sha: ${context.sha}`,
@@ -146,7 +185,7 @@ jobs:
             }
 
       - name: Close alert issue after recovery
-        if: steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated'
+        if: steps.publish_window.outputs.should_run == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated'
         uses: actions/github-script@v7
         with:
           script: |
@@ -179,7 +218,7 @@ jobs:
             });
 
       - name: Commit updated snapshot
-        if: steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated'
+        if: steps.publish_window.outputs.should_run == 'true' && steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
@@ -194,7 +233,7 @@ jobs:
           git push origin HEAD:main
 
       - name: Validate Cloudflare credentials
-        if: ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
+        if: steps.publish_window.outputs.should_run == 'true' && ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
@@ -210,7 +249,7 @@ jobs:
           fi
 
       - name: Set up Node
-        if: ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
+        if: steps.publish_window.outputs.should_run == 'true' && ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
         uses: actions/setup-node@v4
         with:
           node-version: "20"
@@ -218,15 +257,15 @@ jobs:
           cache-dependency-path: web/package-lock.json
 
       - name: Install web dependencies
-        if: ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
+        if: steps.publish_window.outputs.should_run == 'true' && ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
         run: cd web && npm ci
 
       - name: Build static site
-        if: ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
+        if: steps.publish_window.outputs.should_run == 'true' && ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
         run: cd web && npm run build:cf
 
       - name: Deploy to Cloudflare Pages
-        if: ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
+        if: steps.publish_window.outputs.should_run == 'true' && ((steps.detect_changes.outputs.changed == 'true' && steps.generate.outputs.exit_code == '0' && steps.status.outputs.result == 'updated') || (github.event_name == 'workflow_dispatch' && steps.generate.outputs.exit_code == '0'))
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
