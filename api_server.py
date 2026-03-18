@@ -2266,7 +2266,9 @@ def build_macro_payload(as_of_date: Optional[pd.Timestamp] = None) -> Dict[str, 
                 "statusTags": [tga_tag, curve_tag, srf_tag, risk_tag],
             },
             "modules": module_cards,
-            "scoreSeries": _series_points(total_series, limit=DAILY_CHART_LIMIT),
+            # Keep full macro score history from CHART_HISTORY_START (2020-01-01)
+            # so dashboard charts are not unintentionally truncated to recent years.
+            "scoreSeries": _series_points(total_series, limit=None),
             "contributors": contributors,
             "realtimeSnapshots": realtime_snapshots,
             "liftDrag": lift_drag,

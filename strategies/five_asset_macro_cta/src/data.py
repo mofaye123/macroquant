@@ -539,7 +539,9 @@ def build_direct_macro_payload_from_frame(frame: pd.DataFrame) -> dict[str, Any]
             },
             "scoreSeries": [
                 {"date": ts.strftime("%Y-%m-%d"), "value": round(float(value), 2)}
-                for ts, value in score_frame["Total_Score"].tail(252).items()
+                for ts, value in score_frame["Total_Score"].loc[
+                    score_frame.index >= pd.Timestamp("2020-01-01")
+                ].items()
             ],
             "modules": modules,
             "realtimeSnapshots": snapshots,

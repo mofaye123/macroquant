@@ -1391,6 +1391,34 @@ def build_five_asset_backtest_payload(
     resolved_score_frame = score_frame
     if resolved_score_frame is None and macro_payload is not None:
         resolved_score_frame = macro_payload_to_score_frame(macro_payload)
+    # Ensure score coverage can reach the full historical backtest window (e.g. 2020-01-01),
+    # even when external macro payload only provides a shorter recent score series.
+    if df_all is not None and not df_all.empty:
+        try:
+            internal_score = _calculate_score_internal(df_all)
+            if not internal_score.empty and "Total_Score" in internal_score.columns:
+                internal_score = (
+                    internal_score[["Total_Score"]]
+                    .astype(float)
+                    .sort_index()
+                )
+                if (
+                    resolved_score_frame is None
+                    or resolved_score_frame.empty
+                    or "Total_Score" not in resolved_score_frame.columns
+                ):
+                    resolved_score_frame = internal_score
+                else:
+                    merged_score = internal_score.copy()
+                    merged_score.update(
+                        resolved_score_frame[["Total_Score"]]
+                        .astype(float)
+                        .sort_index()
+                    )
+                    resolved_score_frame = merged_score
+        except Exception:
+            # Fallback to the provided score_frame if internal reconstruction is unavailable.
+            pass
     resolved_macro_context = macro_signal_context
     if resolved_macro_context is None and macro_payload is not None:
         resolved_macro_context = build_macro_signal_context(macro_payload, source_type="embedded")
