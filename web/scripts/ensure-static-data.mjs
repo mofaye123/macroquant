@@ -6,7 +6,7 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 const snapshotPath = resolve(scriptDir, "..", "public", "data", "macro-data.json");
 const fiveAssetBacktestPath = resolve(scriptDir, "..", "public", "data", "five-asset-backtest.json");
 const fiveAssetTerminalPath = resolve(scriptDir, "..", "public", "data", "five-asset-terminal.json");
-const BASELINE_START = "2020-01-02";
+const BASELINE_START = "2021-01-04";
 const FIVE_ASSETS = ["BTC", "ETH", "XAU", "MSTR", "SPY"];
 
 const fail = (message) => {
