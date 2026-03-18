@@ -20,7 +20,7 @@ WEB_OUTPUT_PATH = ROOT / "web" / "public" / "data" / "five-asset-backtest.json"
 
 def main() -> int:
     parser = argparse.ArgumentParser(description="Run the five-asset macro CTA backtest.")
-    parser.add_argument("--start-date", default="2021-01-04", help="Backtest start date, e.g. 2021-01-04")
+    parser.add_argument("--start-date", default="2020-01-02", help="Backtest start date, e.g. 2020-01-02")
     parser.add_argument("--end-date", default=None, help="Optional backtest end date")
     parser.add_argument(
         "--mode",

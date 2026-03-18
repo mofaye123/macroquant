@@ -40,7 +40,7 @@ LAST_LIVE_STRATEGY_PATH = LIVE_OUTPUT_DIR / "last_live_strategy.json"
 WEB_TERMINAL_PATH = ROOT / "web" / "public" / "data" / "five-asset-terminal.json"
 WEB_STRATEGY_PATH = ROOT / "web" / "public" / "data" / "five-asset-backtest.json"
 LOOKBACK_WARMUP_DAYS = 400
-BASELINE_START_DATE = "2021-01-04"
+BASELINE_START_DATE = "2020-01-02"
 
 
 def _now_iso() -> str:
