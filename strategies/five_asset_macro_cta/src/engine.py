@@ -1138,6 +1138,7 @@ def _build_payload(
     macro_signal_context: Optional[dict[str, Any]] = None,
     execution_history_source: Optional[pd.DataFrame] = None,
     execution_history_view_start: Optional[str] = None,
+    coverage_start_date: Optional[str] = None,
 ) -> dict[str, Any]:
     strategy_perf = compute_perf_metrics(portfolio, risk_free_rate=float(config["risk_free_rate"]))
     benchmark_perf = compute_perf_metrics(benchmark_frame, risk_free_rate=float(config["risk_free_rate"]))
@@ -1243,6 +1244,7 @@ def _build_payload(
         "title": "Five-Asset Macro CTA",
         "startDate": portfolio.index[0].strftime("%Y-%m-%d"),
         "endDate": portfolio.index[-1].strftime("%Y-%m-%d"),
+        "coverageStartDate": coverage_start_date or portfolio.index[0].strftime("%Y-%m-%d"),
         "windowStartPrices": {
             asset: round(float(portfolio.iloc[0][f"{asset}_Price"]), 4)
             for asset in ASSETS
@@ -1460,6 +1462,7 @@ def build_five_asset_backtest_payload(
         macro_signal_context=resolved_macro_context,
         execution_history_source=history_portfolio if view_start_date else None,
         execution_history_view_start=view_start_date,
+        coverage_start_date=history_portfolio.index[0].strftime("%Y-%m-%d"),
     )
 
 

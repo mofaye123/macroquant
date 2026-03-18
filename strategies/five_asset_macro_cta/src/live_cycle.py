@@ -40,7 +40,8 @@ LAST_LIVE_STRATEGY_PATH = LIVE_OUTPUT_DIR / "last_live_strategy.json"
 WEB_TERMINAL_PATH = ROOT / "web" / "public" / "data" / "five-asset-terminal.json"
 WEB_STRATEGY_PATH = ROOT / "web" / "public" / "data" / "five-asset-backtest.json"
 LOOKBACK_WARMUP_DAYS = 400
-BASELINE_START_DATE = "2021-01-04"
+BASELINE_START_DATE = "2020-01-02"
+DEFAULT_VIEW_START_DATE = "2023-01-02"
 
 
 def _now_iso() -> str:
@@ -74,7 +75,10 @@ def _covers_requested_start(payload: dict[str, Any], requested_start: str) -> bo
         payload_start = str(payload.get("startDate") or "")
         if not payload_start:
             return False
-        return pd.Timestamp(payload_start) <= pd.Timestamp(requested_start)
+        requested_ts = pd.Timestamp(requested_start)
+        # Allow non-trading-day offsets (weekends/holidays) when payload starts
+        # on the next available trading session.
+        return pd.Timestamp(payload_start) <= (requested_ts + pd.Timedelta(days=7))
     except Exception:
         return False
 
@@ -224,8 +228,9 @@ def resolve_strategy_payload(
     start_date: Optional[str] = None,
     end_date: Optional[str] = None,
 ) -> dict[str, Any]:
-    requested_start = start_date or BASELINE_START_DATE
-    compute_start = _compute_warmup_start(requested_start) if start_date else requested_start
+    explicit_start = start_date
+    requested_start = explicit_start or DEFAULT_VIEW_START_DATE
+    compute_start = _compute_warmup_start(explicit_start) if explicit_start else BASELINE_START_DATE
     warnings: list[str] = []
     source_mode = "live"
     source_label = "项目宏观实时引擎 + Bitget 现货/黄金代理 + Stooq/Yahoo 行情"
@@ -242,7 +247,7 @@ def resolve_strategy_payload(
             payload, macro_warnings = _build_live_strategy_payload(
                 start_date=compute_start,
                 end_date=end_date,
-                view_start_date=requested_start if start_date else None,
+                view_start_date=requested_start,
             )
             warnings.extend(macro_warnings)
             payload = _enrich_strategy_payload(
@@ -272,7 +277,7 @@ def resolve_strategy_payload(
             cached_payload, cache_meta, cache_warnings = _build_cached_market_payload(
                 start_date=compute_start,
                 end_date=end_date,
-                view_start_date=requested_start if start_date else None,
+                view_start_date=requested_start,
             )
             warnings.extend(cache_warnings)
         except Exception as exc:
@@ -337,7 +342,7 @@ def resolve_strategy_payload(
     payload = build_demo_five_asset_backtest_payload(
         start_date=compute_start,
         end_date=end_date,
-        view_start_date=requested_start if start_date else None,
+        view_start_date=requested_start,
     )
     payload, macro_warnings = _attach_macro_signal_context(
         payload,

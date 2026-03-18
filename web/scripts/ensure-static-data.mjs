@@ -6,7 +6,7 @@ const scriptDir = dirname(fileURLToPath(import.meta.url));
 const snapshotPath = resolve(scriptDir, "..", "public", "data", "macro-data.json");
 const fiveAssetBacktestPath = resolve(scriptDir, "..", "public", "data", "five-asset-backtest.json");
 const fiveAssetTerminalPath = resolve(scriptDir, "..", "public", "data", "five-asset-terminal.json");
-const BASELINE_START = "2021-01-04";
+const BASELINE_START = "2020-01-02";
 const FIVE_ASSETS = ["BTC", "ETH", "XAU", "MSTR", "SPY"];
 
 const fail = (message) => {
@@ -56,12 +56,16 @@ const ensureFiveAssetRange = (payload, path, key = "strategy") => {
   const strategy = key ? payload?.[key] : payload;
   const startDate = strategy?.startDate;
   const endDate = strategy?.endDate;
+  const coverageStartDate = strategy?.coverageStartDate ?? startDate;
   if (typeof startDate !== "string" || typeof endDate !== "string") {
     fail(`Missing startDate/endDate in ${path}`);
   }
-  if (startDate > BASELINE_START) {
+  if (typeof coverageStartDate !== "string") {
+    fail(`Missing coverageStartDate in ${path}`);
+  }
+  if (coverageStartDate > BASELINE_START) {
     fail(
-      `Five-asset baseline is too short in ${path}: startDate=${startDate}, expected <= ${BASELINE_START}.`,
+      `Five-asset baseline is too short in ${path}: coverageStartDate=${coverageStartDate}, expected <= ${BASELINE_START}.`,
     );
   }
 
