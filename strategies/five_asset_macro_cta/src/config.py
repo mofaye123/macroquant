@@ -173,6 +173,7 @@ DEFAULT_MSTR_TREASURY_SCHEDULE = [
 DEFAULT_ENGINE_CONFIG = {
     "start_date": "2021-01-04",
     "risk_free_rate": 0.04,
+    "macro_smooth_span_weeks": 2,
     "macro_smooth_span": 10,
     "macro_lag_days": 1,
     "vol_target": 0.15,

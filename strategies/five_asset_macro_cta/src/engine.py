@@ -57,6 +57,14 @@ def _map_regime(score: float, thresholds: dict[str, float]) -> str:
     return "NEUTRAL"
 
 
+def _score_to_alpha(score: float, thresholds: dict[str, float]) -> float:
+    lo = float(thresholds["risk_off_max"])
+    hi = float(thresholds["risk_on_min"])
+    if hi <= lo:
+        return min(max(score / 100.0, 0.0), 1.0)
+    return min(max((score - lo) / (hi - lo), 0.0), 1.0)
+
+
 def _rolling_ma(price: pd.Series, window: int) -> pd.Series:
     return price.rolling(window=window, min_periods=window).mean()
 
@@ -127,16 +135,23 @@ def _prepare_macro_frame(
         raise ValueError("macro score frame is empty or missing Total_Score")
 
     lag_days = int(config["macro_lag_days"])
-    span = int(config["macro_smooth_span"])
+    span_weeks = int(config.get("macro_smooth_span_weeks", 0) or 0)
+    span = int(config.get("macro_smooth_span", 10))
     macro = pd.DataFrame(index=index)
     raw = score_frame["Total_Score"].astype(float).reindex(index, method="ffill")
     if lag_days > 0:
         raw = raw.shift(lag_days)
     raw = raw.ffill().bfill().clip(lower=0.0, upper=100.0)
-    smooth = raw.ewm(span=span, adjust=False).mean().clip(lower=0.0, upper=100.0)
+    if span_weeks > 0:
+        weekly_raw = raw.resample("W-FRI").last().ffill().bfill()
+        weekly_smooth = weekly_raw.ewm(span=span_weeks, adjust=False).mean()
+        smooth = weekly_smooth.reindex(raw.index, method="ffill").ffill().bfill()
+    else:
+        smooth = raw.ewm(span=span, adjust=False).mean()
+    smooth = smooth.clip(lower=0.0, upper=100.0)
     macro["raw_score"] = raw
     macro["smooth_score"] = smooth
-    macro["alpha"] = (smooth / 100.0).clip(lower=0.0, upper=1.0)
+    macro["alpha"] = smooth.apply(lambda value: _score_to_alpha(float(value), config["regime_thresholds"]))
     macro["score_change_5d"] = smooth.diff(5).fillna(0.0)
     macro["score_change_20d"] = smooth.diff(20).fillna(0.0)
     macro["regime"] = smooth.apply(lambda value: _map_regime(float(value), config["regime_thresholds"]))
@@ -1333,6 +1348,7 @@ def _build_payload(
                 "turnoverBuffer": float(config["execution"].get("trade_buffer", config["execution"].get("turnover_buffer", 0.20))),
             },
             "signal": {
+                "macroSmoothSpanWeeks": int(config.get("macro_smooth_span_weeks", 0) or 0),
                 "macroSmoothSpan": int(config["macro_smooth_span"]),
                 "macroLagDays": int(config["macro_lag_days"]),
                 "volTarget": float(config["vol_target"]),
