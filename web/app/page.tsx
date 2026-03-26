@@ -656,7 +656,10 @@ export default function HomePage() {
               </div>
 
               <div className="space-y-[12px] rounded-[16px] border border-app-border bg-white p-[16px]">
-                <p className="text-[18px] font-extrabold text-app-text">真理检验: 宏观分 vs SPX/BTC</p>
+                <div className="space-y-[2px]">
+                  <p className="text-[18px] font-extrabold text-app-text">真理检验: 宏观分 / SPX / BTC 标准化拟合</p>
+                  <p className="text-[12px] text-app-muted">同轴展示 Z-score 走势，观察形态是否同向；相关系数按日度变化计算。</p>
+                </div>
                 <TruthReferenceChart
                   score={referencePanels.truthTest.series.score}
                   spx={referencePanels.truthTest.series.spx}
