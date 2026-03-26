@@ -46,7 +46,7 @@ function MacroReportContent({
     <div className="space-y-[16px]">
       <BlogPostGrid
         title="宏观报告"
-        description="研报列表采用弹窗阅读，点击任一文章可在当前页打开全文。"
+        description="研报列表采用弹窗阅读，左侧目录可直接跳转到正文对应章节。"
         basePath="/market-analysis/macro-report"
         posts={posts}
         loading={loading}

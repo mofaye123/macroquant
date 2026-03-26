@@ -2,7 +2,7 @@
 """
 Build a static market-analysis document library JSON for the Next.js pages.
 
-This script extracts plain text from two DOCX files and merges local USeco files
+This script extracts structured text from three DOCX files and merges local USeco files
 into the same payload so the frontend can render preview cards + full content.
 """
 
@@ -17,48 +17,225 @@ from pathlib import Path
 from xml.etree import ElementTree as ET
 
 NS = {"w": "http://schemas.openxmlformats.org/wordprocessingml/2006/main"}
+ROOT = Path(__file__).resolve().parents[1]
 
 
-def extract_docx_lines(path: Path) -> list[str]:
+def extract_docx_body_items(path: Path) -> list[dict[str, object]]:
     with zipfile.ZipFile(path) as archive:
         xml = archive.read("word/document.xml")
     root = ET.fromstring(xml)
-    lines: list[str] = []
-    for paragraph in root.findall(".//w:p", NS):
-        text = "".join(node.text or "" for node in paragraph.findall(".//w:t", NS)).strip()
-        text = re.sub(r"\s+", " ", text)
-        if text:
-            lines.append(text)
-    dedup: list[str] = []
-    for line in lines:
-        if dedup and dedup[-1] == line:
+    body = root.find(".//w:body", NS)
+    if body is None:
+        return []
+
+    items: list[dict[str, object]] = []
+
+    for child in body:
+        if child.tag == f'{{{NS["w"]}}}p':
+            text = "".join(node.text or "" for node in child.findall(".//w:t", NS)).strip()
+            text = re.sub(r"\s+", " ", text)
+            if not text:
+                continue
+            p_style = None
+            p_pr = child.find("w:pPr", NS)
+            if p_pr is not None:
+                p_style_node = p_pr.find("w:pStyle", NS)
+                if p_style_node is not None:
+                    p_style = p_style_node.attrib.get(f'{{{NS["w"]}}}val')
+            items.append({"type": "paragraph", "style": p_style, "text": text})
             continue
-        dedup.append(line)
+
+        if child.tag == f'{{{NS["w"]}}}tbl':
+            rows: list[list[str]] = []
+            for tr in child.findall("./w:tr", NS):
+                row: list[str] = []
+                for tc in tr.findall("./w:tc", NS):
+                    cell_lines: list[str] = []
+                    for paragraph in tc.findall("./w:p", NS):
+                        text = "".join(node.text or "" for node in paragraph.findall(".//w:t", NS)).strip()
+                        text = re.sub(r"\s+", " ", text)
+                        if text:
+                            cell_lines.append(text)
+                    row.append(" ".join(cell_lines).strip())
+                rows.append(row)
+
+            if rows and any(any(cell for cell in row) for row in rows):
+                max_cols = max((len(row) for row in rows), default=0)
+                if max_cols <= 1:
+                    for row in rows:
+                        text = " ".join(cell for cell in row if cell).strip()
+                        if text:
+                            items.append({"type": "paragraph", "style": None, "text": text})
+                    continue
+                items.append({"type": "table", "rows": rows})
+
+    dedup: list[dict[str, object]] = []
+    last_paragraph_text: str | None = None
+    for item in items:
+        if item.get("type") == "paragraph":
+            text = str(item.get("text", ""))
+            if text == last_paragraph_text:
+                continue
+            last_paragraph_text = text
+        dedup.append(item)
+
     return dedup
+
+
+def extract_docx_lines(path: Path) -> list[str]:
+    return [text for _, text in extract_docx_paragraphs(path)]
+
+
+def extract_docx_paragraphs(path: Path) -> list[tuple[str | None, str]]:
+    paragraphs: list[tuple[str | None, str]] = []
+    for item in extract_docx_body_items(path):
+        if item.get("type") != "paragraph":
+            continue
+        paragraphs.append((item.get("style") if isinstance(item.get("style"), str) else None, str(item.get("text", ""))))
+    return paragraphs
+
+
+def is_preview_candidate(line: str) -> bool:
+    if len(line) < 20:
+        return False
+    if line in {"目录", "目 录", "执行摘要"}:
+        return False
+    if re.match(r"^(?:[一二三四五六七八九十百]+、|[0-9]+(?:\.[0-9]+)*\.?)\s*", line):
+        return False
+    if re.fullmatch(r"\d{4}(?:[.\-/年])\d{1,2}(?:[.\-/月]\d{1,2}(?:日)?)?", line):
+        return False
+    if re.fullmatch(r"[A-Z0-9 &\-/()（）·]+", line):
+        return False
+    if re.fullmatch(r"[0-9.\-（）()\s]+", line):
+        return False
+    return bool(re.search(r"[\u4e00-\u9fff]", line) and re.search(r"[。！？：；,，]", line))
 
 
 def pick_preview(lines: list[str]) -> str:
     for line in lines:
-        if len(line) < 12:
-            continue
-        if line.startswith("目录"):
-            continue
-        if re.fullmatch(r"[0-9.\-（）()\s]+", line):
-            continue
-        return line[:180]
+        if is_preview_candidate(line):
+            return line[:180]
+    for line in lines:
+        if len(line) >= 28 and re.search(r"[\u4e00-\u9fff]", line) and not re.fullmatch(r"[A-Z0-9 &\-/()（）·]+", line):
+            return line[:180]
     return lines[0][:180] if lines else ""
 
 
-def build_toc(lines: list[str]) -> list[str]:
-    pattern = re.compile(r"^(?:[一二三四五六七八九十]+、|[0-9]+(?:\.[0-9]+)*\.?|附录|总结)")
+def clean_toc_label(line: str) -> str:
+    label = re.sub(r"\d+$", "", line).strip()
+    label = re.sub(r"\s+", " ", label)
+    return label
+
+
+def normalize_heading_key(line: str) -> str:
+    key = clean_toc_label(line)
+    key = re.sub(r"^(?:[一二三四五六七八九十百]+、|[0-9]+(?:\.[0-9]+)*\.?)\s*", "", key)
+    key = re.sub(r"[：:]\s*$", "", key)
+    key = re.sub(r"\s+", "", key)
+    return key
+
+
+def build_toc(paragraphs: list[tuple[str | None, str]]) -> list[str]:
     toc: list[str] = []
-    for line in lines:
-        if pattern.match(line) and len(line) <= 48 and line not in toc:
-            toc.append(line)
+    for style, line in paragraphs:
+        cleaned = clean_toc_label(line)
+        if cleaned in {"目录", "目 录", "执行摘要", "总结", "结论", "报告日期", "研究周期", "报告性质", "核心观点"}:
+            continue
+        if re.fullmatch(r"\d{4}(?:[.\-/年])\d{1,2}(?:[.\-/月]\d{1,2}(?:日)?)?", cleaned):
+            continue
+        if re.fullmatch(r"\d{4}\.\d{2}(?:\.\d{2})?\.?$", cleaned):
+            continue
+        if re.match(r"^\d{4}年\d{1,2}月.*$", cleaned):
+            continue
+        if "研报" in cleaned and not re.match(r"^(?:[一二三四五六七八九十]+、|[0-9]+(?:\.[0-9]+)*\.?)", cleaned):
+            continue
+        numbered = bool(re.match(r"^(?:[一二三四五六七八九十]+、|[0-9]+(?:\.[0-9]+)*\.?)", cleaned))
+        if style is None and not numbered:
+            continue
+        if len(cleaned) > 48:
+            continue
+        if cleaned not in toc:
+            toc.append(cleaned)
     return toc[:14]
 
 
+def build_content_lines(paragraphs: list[tuple[str | None, str]]) -> list[str]:
+    lines: list[str] = []
+    inside_toc = False
+    for style, line in paragraphs:
+        cleaned = line.strip()
+        if not cleaned:
+            continue
+        if cleaned in {"目录", "目 录"}:
+            inside_toc = True
+            continue
+        if inside_toc and style is None:
+            continue
+        if inside_toc and style is not None:
+            inside_toc = False
+        lines.append(cleaned)
+    return lines
+
+
+def escape_table_cell(text: str) -> str:
+    return text.replace("\\", "\\\\").replace("|", "\\|").replace("\n", " ").strip()
+
+
+def serialize_table(rows: list[list[str]]) -> str:
+    cleaned_rows = [[escape_table_cell(cell or "—") for cell in row] for row in rows if any((cell or "").strip() for cell in row)]
+    if not cleaned_rows:
+        return ""
+
+    width = max(len(row) for row in cleaned_rows)
+
+    def pad(row: list[str]) -> list[str]:
+        return row + ["—"] * (width - len(row))
+
+    padded_rows = [pad(row) for row in cleaned_rows]
+    header = padded_rows[0]
+    separator = ["---"] * width
+
+    def render_row(row: list[str]) -> str:
+        return "| " + " | ".join(row) + " |"
+
+    return "\n".join([render_row(header), render_row(separator), *[render_row(row) for row in padded_rows[1:]]])
+
+
+def build_content_blocks(items: list[dict[str, object]]) -> list[str]:
+    blocks: list[str] = []
+    inside_toc = False
+
+    for item in items:
+        item_type = item.get("type")
+        if item_type == "paragraph":
+            style = item.get("style") if isinstance(item.get("style"), str) else None
+            line = str(item.get("text", "")).strip()
+            if not line:
+                continue
+            if line in {"目录", "目 录"}:
+                inside_toc = True
+                continue
+            if inside_toc and style is None:
+                continue
+            if inside_toc and style is not None:
+                inside_toc = False
+            blocks.append(line)
+            continue
+
+        if item_type == "table":
+            if inside_toc:
+                continue
+            rows = item.get("rows")
+            if isinstance(rows, list):
+                table_text = serialize_table(rows)  # type: ignore[arg-type]
+                if table_text:
+                    blocks.append(table_text)
+
+    return blocks
+
+
 def build_payload(
+    macro_doc_c: Path,
     macro_doc_a: Path,
     macro_doc_b: Path,
     useco_script: Path,
@@ -73,6 +250,13 @@ def build_payload(
         return name
 
     macro_inputs = [
+        {
+            "id": "macro-quant-2026-03",
+            "title": "宏观量化研报（2026.03 月中）",
+            "date": "2026-03-13",
+            "tags": ["宏观量化", "流动性", "利率", "信用", "情景推演"],
+            "path": macro_doc_c,
+        },
         {
             "id": "macro-quant-2026-02",
             "title": "宏观量化研报（2026.02 月中）",
@@ -91,7 +275,13 @@ def build_payload(
 
     macro_reports = []
     for item in macro_inputs:
-        lines = extract_docx_lines(item["path"])
+        body_items = extract_docx_body_items(item["path"])
+        paragraphs = [
+            (str(block.get("style")) if isinstance(block.get("style"), str) else None, str(block.get("text", "")))
+            for block in body_items
+            if block.get("type") == "paragraph"
+        ]
+        lines = build_content_lines(paragraphs)
         macro_reports.append(
             {
                 "id": item["id"],
@@ -100,51 +290,11 @@ def build_payload(
                 "tags": item["tags"],
                 "sourceFiles": [safe_source_label(item["path"])],
                 "preview": pick_preview(lines),
-                "toc": build_toc(lines),
-                "content": "\n\n".join(lines),
+                "toc": build_toc(paragraphs),
+                "content": "\n\n".join(build_content_blocks(body_items)),
                 "lineCount": len(lines),
             }
         )
-
-    macro_reports.insert(
-        0,
-        {
-            "id": "macro-merged-2026-01-02",
-            "title": "宏观+市场深度合并解读（2026-01 ~ 2026-02）",
-            "date": "2026-02-13",
-            "tags": ["合并版", "执行框架", "资产配置"],
-            "sourceFiles": [safe_source_label(macro_doc_a), safe_source_label(macro_doc_b)],
-            "preview": "把 2026 年 1 月市场深度与 2 月宏观量化框架合并，形成统一的监控触发器与仓位执行模板。",
-            "toc": [
-                "一、共同主线：伪稳态与高敏感系统",
-                "二、关键分歧：价格平稳 vs 数量收缩",
-                "三、资产映射：美股/美债/加密/贵金属",
-                "四、触发器与动作模板",
-                "五、每周复核清单",
-            ],
-            "content": "\n\n".join(
-                [
-                    "一、共同主线：伪稳态与高敏感系统",
-                    "两份研报都指向同一个核心结论：当前市场不是“稳定”，而是“被政策工具暂时托住的伪稳态”。表面上资金价格与曲线可控，底层数量变量（TGA、准备金、信用阶梯尾部）却在持续收紧。",
-                    "二、关键分歧：价格平稳 vs 数量收缩",
-                    "2 月宏观量化报告强调“价格不等于安全”，1 月市场深度报告强调“事件触发后波动会非线性放大”。执行上必须把数量变量（TGA、ON RRP、信用尾部利差）作为一票否决项。",
-                    "三、资产映射：美股 / 美债 / 加密 / 贵金属",
-                    "1) 美股：顺周期高估值资产对流动性最敏感，应在触发阈值前先降杠杆。",
-                    "2) 美债：在压力情景下是核心对冲；在再通胀情景下需严控长久期风险。",
-                    "3) 加密：高 beta 资产，受美元流动性与风险偏好双重驱动，需和宏观阈值绑定仓位。",
-                    "4) 贵金属：中期受益于制度不确定性，但短期会被流动性挤兑拖累，仓位应分层。",
-                    "四、触发器与动作模板",
-                    "触发器A（流动性恶化）：TGA上行+准备金下滑+ON RRP 低位 -> 降风险敞口并提高对冲权重。",
-                    "触发器B（信用尾部抬升）：CCC OAS 扩大且持续 -> 避开底层信用与高杠杆资产。",
-                    "触发器C（政策再定价）：关键政策人事/议息信号突变 -> 降低方向赌注，转向事件驱动框架。",
-                    "五、每周复核清单",
-                    "每周固定复核：模块 A/B/C/D/E/F/G、跨资产波动同步性、信用尾部变化、事件窗口仓位上限。",
-                    "执行原则：先保生存，再做进攻；先控制回撤，再追求超额收益。",
-                ]
-            ),
-            "lineCount": 16,
-        },
-    )
 
     req_lines = [
         line.strip()
@@ -152,8 +302,6 @@ def build_payload(
         if line.strip() and line.strip().lower() != "streamlit"
     ]
     script_text = useco_script.read_text(encoding="utf-8")
-    script_lines = script_text.splitlines()
-
     indicator_matches = re.findall(r"\"([^\"]+)\":\s*\"([A-Z0-9]+)\"", script_text)
     indicator_items: list[str] = []
     for name, code in indicator_matches:
@@ -222,6 +370,11 @@ def build_payload(
 def main() -> None:
     parser = argparse.ArgumentParser(description="Build market-analysis-library.json from local docs.")
     parser.add_argument(
+        "--macro-doc-c",
+        default="/Users/momo/Desktop/研报/宏观量化研报（2026.03.月中).docx",
+        help="Path to 2026.03 macro quant report DOCX",
+    )
+    parser.add_argument(
         "--macro-doc-a",
         default="/Users/momo/Desktop/研报/宏观量化研报（2026.02 月中）.docx",
         help="Path to 宏观量化研报 DOCX",
@@ -233,12 +386,12 @@ def main() -> None:
     )
     parser.add_argument(
         "--useco-script",
-        default="/Users/momo/Desktop/USeco/us_economics.py",
+        default=str(ROOT / "USeco" / "us_economics.py"),
         help="Path to USeco main script",
     )
     parser.add_argument(
         "--useco-requirements",
-        default="/Users/momo/Desktop/USeco/requirements.txt",
+        default=str(ROOT / "USeco" / "requirements.txt"),
         help="Path to USeco requirements.txt",
     )
     parser.add_argument(
@@ -249,6 +402,7 @@ def main() -> None:
     args = parser.parse_args()
 
     payload = build_payload(
+        macro_doc_c=Path(args.macro_doc_c),
         macro_doc_a=Path(args.macro_doc_a),
         macro_doc_b=Path(args.macro_doc_b),
         useco_script=Path(args.useco_script),

@@ -37,7 +37,7 @@ export function ResearchDocumentModal({ post, basePath, onClose }: ResearchDocum
       onClick={onClose}
       role="presentation"
     >
-      <div className="mx-auto flex h-full w-full max-w-[1120px] items-center justify-center">
+      <div className="mx-auto flex h-full w-full max-w-[1360px] items-center justify-center">
         <div
           className={cn(
             "flex h-full w-full flex-col overflow-hidden rounded-[8px] border border-[#c8bfa8] bg-[#f5f0e8] shadow-[0_24px_90px_rgba(0,0,0,0.28)]"
@@ -61,7 +61,7 @@ export function ResearchDocumentModal({ post, basePath, onClose }: ResearchDocum
             </button>
           </div>
 
-          <div className="min-h-0 flex-1 overflow-y-auto px-[18px] py-[18px] sm:px-[32px] sm:py-[28px]">
+          <div className="min-h-0 flex-1 overflow-y-auto px-[18px] py-[18px] sm:px-[24px] sm:py-[24px] lg:px-[28px] lg:py-[28px]">
             <BlogPostReader post={post} basePath={basePath} showBackLink={false} className="max-w-none" />
           </div>
         </div>
