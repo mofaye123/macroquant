@@ -67,16 +67,16 @@ export const LineScoreChart = ({
       <div className="w-full" style={{ height }}>
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={filteredData} margin={{ top: 10, right: 14, left: 12, bottom: 6 }}>
-          <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
+          <CartesianGrid strokeDasharray="4 5" stroke="rgba(26,26,26,0.10)" />
           <XAxis
             dataKey="date"
-            tick={{ fontSize: 10, fill: "#64748b" }}
+            tick={{ fontSize: 10, fill: "#6f6d69" }}
             tickMargin={8}
             minTickGap={40}
           />
           <YAxis
             domain={yDomain}
-            tick={{ fontSize: 10, fill: "#64748b" }}
+            tick={{ fontSize: 10, fill: "#6f6d69" }}
             tickMargin={8}
             width={52}
           />
@@ -85,19 +85,20 @@ export const LineScoreChart = ({
               const numericValue = typeof value === "number" ? value : Number(value ?? 0);
               return valueFormatter ? valueFormatter(numericValue) : numericValue.toFixed(2);
             }}
-            labelStyle={{ fontSize: 11, color: "#0f172a" }}
+            labelStyle={{ fontSize: 11, color: "#1a1a1a" }}
             contentStyle={{
-              borderRadius: 12,
-              borderColor: "#dbe2ea",
-              boxShadow: "0 12px 30px -16px rgba(15, 23, 42, 0.25)",
-              fontSize: 11
+              borderRadius: 10,
+              borderColor: "rgba(26,26,26,0.14)",
+              boxShadow: "0 12px 30px -18px rgba(26,26,26,0.26)",
+              fontSize: 11,
+              backgroundColor: "rgba(255,253,248,0.96)"
             }}
           />
           {shouldShowScoreBands && (
             <>
-              <ReferenceLine y={66} stroke="#16a34a" strokeDasharray="4 4" ifOverflow="extendDomain" />
-              <ReferenceLine y={50} stroke="#94a3b8" strokeDasharray="4 4" ifOverflow="extendDomain" />
-              <ReferenceLine y={33} stroke="#f59e0b" strokeDasharray="4 4" ifOverflow="extendDomain" />
+              <ReferenceLine y={66} stroke="#1a4d2e" strokeDasharray="4 4" ifOverflow="extendDomain" />
+              <ReferenceLine y={50} stroke="#a99f91" strokeDasharray="4 4" ifOverflow="extendDomain" />
+              <ReferenceLine y={33} stroke="#b45f06" strokeDasharray="4 4" ifOverflow="extendDomain" />
             </>
           )}
           <Line

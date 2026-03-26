@@ -15,7 +15,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="zh-CN">
-      <body className="font-sans">{children}</body>
+      <body className="font-body">{children}</body>
     </html>
   );
 }

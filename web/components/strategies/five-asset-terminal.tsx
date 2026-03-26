@@ -18,7 +18,6 @@ import {
 } from "recharts";
 import {
   AlertTriangle,
-  Bell,
   CandlestickChart,
   Database,
   LayoutDashboard,
@@ -29,7 +28,6 @@ import {
 import { FiveAssetPayload } from "@/lib/five-asset-types";
 import {
   FiveAssetLiveQuote,
-  FiveAssetTerminalAlert,
   FiveAssetTerminalOrder,
   FiveAssetTerminalPayload,
   FiveAssetTerminalPosition,
@@ -38,58 +36,25 @@ import { useFiveAssetLiveQuotes } from "@/lib/use-five-asset-live-quotes";
 import { useFiveAssetTerminalData } from "@/lib/use-five-asset-terminal-data";
 import { cn, formatSigned } from "@/lib/utils";
 
-const pageBg = "#0a0e1a";
-const headerBg = "#06090f";
-const panelBg = "#0f1629";
-const panelInsetBg = "#0b1120";
-const chartPanelBg = "#091224";
-const borderColor = "#1e2d45";
-const accentAmber = "#f59e0b";
-const accentGreen = "#10b981";
-const accentRed = "#ef4444";
-const accentBlue = "#3b82f6";
-const accentPurple = "#8b5cf6";
-const mutedText = "#8899aa";
-const primaryText = "#e2e8f0";
+const accentAmber = "#b45f06";
+const accentGreen = "#1a4d2e";
+const accentPurple = "#223b5b";
 const benchmarkGrey = "#9ca3af";
 
 const ASSET_COLOR_CLASS: Record<string, string> = {
-  BTC: "text-[#f59e0b]",
-  ETH: "text-[#8b5cf6]",
-  MSTR: "text-[#06b6d4]",
-  SPY: "text-[#10b981]",
-  XAU: "text-[#f97316]",
-  "MSTR-H": "text-[#8b5cf6]",
+  BTC: "text-[#b45f06]",
+  ETH: "text-[#223b5b]",
+  MSTR: "text-[#55655b]",
+  SPY: "text-[#1a4d2e]",
+  XAU: "text-[#b45f06]",
+  "MSTR-H": "text-[#223b5b]",
 };
 
-const cardClass = "rounded-[4px] border border-[#1e2d45] bg-[#0f1629] shadow-none";
-const innerBlockClass = "rounded-[4px] border border-[#1e2d45] bg-[#0b1120]";
-const stripClass = "border-x border-b border-[#1e2d45] bg-[#080c16]";
-const tableHeadClass = "border-b border-[#1e2d45] px-3 py-2 text-left font-mono text-[9px] font-semibold tracking-[0.14em] text-[#8899aa] uppercase";
-const tableCellClass = "border-b border-[#1e2d45]/30 px-3 py-2.5 font-mono text-[11px] text-[#e2e8f0]";
+const cardClass = "rounded-[4px] border border-[#b6afa5] bg-[#fbf7f0] shadow-none";
+const innerBlockClass = "rounded-[4px] border border-[#b6afa5] bg-[#fffdf8]";
+const tableHeadClass = "border-b border-[#b6afa5] px-3 py-2 text-left font-mono text-[9px] font-semibold tracking-[0.14em] text-[#6f6d69] uppercase";
+const tableCellClass = "border-b border-[#b6afa5]/30 px-3 py-2.5 font-mono text-[11px] text-[#1a1a1a]";
 const monthKeys = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10", "11", "12"] as const;
-
-const SOURCE_MODE_LABELS: Record<string, string> = {
-  live: "实时",
-  stale_live: "实时快照",
-  cached_live_inputs: "市场缓存",
-  demo: "演示",
-};
-
-const MACRO_SOURCE_LABELS: Record<string, string> = {
-  live_builder: "宏观实时引擎",
-  direct_fred_graph: "FRED 直连宏观引擎",
-  static_json: "宏观静态快照",
-  embedded: "内嵌宏观快照",
-  unavailable: "不可用",
-};
-
-const PAPER_STATUS_LABELS: Record<string, string> = {
-  ok: "可执行",
-  shadow_only: "影子执行",
-  blocked: "已阻断",
-  snapshot: "回测视图",
-};
 
 const POSITION_MODE_LABELS: Record<string, string> = {
   paper: "Bitget纸交易",
@@ -126,6 +91,10 @@ const REBALANCE_REASON_LABELS: Record<string, string> = {
   backtest_snapshot: "区间末期仓位",
 };
 
+const MANUAL_BOOK_STORAGE_KEY = "macroquant.five-asset.manual-book.v1";
+const PAGE_MODE_STORAGE_KEY = "macroquant.five-asset.page-mode.v1";
+const MANUAL_ASSET_ORDER = ["BTC", "ETH", "XAU", "MSTR", "SPY"] as const;
+
 const SIGNAL_LABELS: Record<string, string> = {
   macro_low: "宏观低分",
   macro_drop: "宏观骤降",
@@ -154,38 +123,26 @@ const EXECUTION_MODE_LABELS: Record<string, string> = {
   monthly: "按月",
 };
 
-const LEVEL_LABELS: Record<string, string> = {
-  critical: "严重",
-  warning: "预警",
-  info: "提示",
-};
-
-const levelToneClass: Record<string, string> = {
-  critical: "border-[#7f1d1d] bg-[#450a0a]/70 text-[#fecaca]",
-  warning: "border-[#78350f] bg-[#451a03]/70 text-[#fde68a]",
-  info: "border-[#1e3a5f] bg-[#0c2038]/80 text-[#bfdbfe]",
-};
-
 const heatTone = (value: number | null) => {
   if (value === null || Number.isNaN(value)) {
-    return "border-[#1f2937] bg-[#020617] text-[#475569]";
+    return "border-[#b6afa5] bg-[#fffdf8] text-[#475569]";
   }
   if (value >= 6) {
-    return "border-[#14532d] bg-[#14532d]/80 text-[#dcfce7]";
+    return "border-[#edf7f1] bg-[#edf7f1]/80 text-[#dcfce7]";
   }
   if (value >= 2) {
-    return "border-[#166534] bg-[#166534]/60 text-[#dcfce7]";
+    return "border-[#edf7f1] bg-[#edf7f1]/60 text-[#dcfce7]";
   }
   if (value > 0) {
-    return "border-[#14532d] bg-[#052e16]/70 text-[#bbf7d0]";
+    return "border-[#edf7f1] bg-[#edf7f1]/70 text-[#1a4d2e]";
   }
   if (value <= -6) {
-    return "border-[#7f1d1d] bg-[#7f1d1d]/80 text-[#fee2e2]";
+    return "border-[#f7ecec] bg-[#f7ecec]/80 text-[#fee2e2]";
   }
   if (value <= -2) {
-    return "border-[#7f1d1d] bg-[#7f1d1d]/55 text-[#fecaca]";
+    return "border-[#f7ecec] bg-[#f7ecec]/55 text-[#7b2d2c]";
   }
-  return "border-[#3f1d1d] bg-[#2b0b0e]/65 text-[#fecdd3]";
+  return "border-[#f7eceb] bg-[#f9eceb]/65 text-[#fecdd3]";
 };
 
 const formatDate = (value: string, withYear = false) => {
@@ -216,6 +173,20 @@ const formatDateTime = (value: string) => {
   }).format(date);
 };
 
+const formatDateTimeShort = (value: string) => {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return new Intl.DateTimeFormat("zh-CN", {
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(date);
+};
+
 const formatDateTimeInZone = (value: string, timeZone: string) => {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
@@ -241,23 +212,23 @@ const formatMoney = (value: number, digits = 0) =>
     minimumFractionDigits: digits,
   }).format(value);
 
-const formatCompactMoney = (value: number) =>
-  new Intl.NumberFormat("zh-CN", {
-    style: "currency",
-    currency: "USD",
-    notation: "compact",
-    maximumFractionDigits: 2,
-  }).format(value);
-
 const formatCapitalValue = (value: number) =>
   new Intl.NumberFormat("en-US", {
     maximumFractionDigits: 0,
   }).format(Math.round(value));
 
-const formatRatioPct = (value: number, digits = 1) => `${formatSigned(value * 100, digits)}%`;
+const toDatetimeLocalValue = (value: string | Date) => {
+  const date = value instanceof Date ? value : new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+  const local = new Date(date.getTime() - date.getTimezoneOffset() * 60000);
+  return local.toISOString().slice(0, 16);
+};
+
 const formatPct = (value: number, digits = 1) => `${formatSigned(value, digits)}%`;
 const formatPlain = (value: number, digits = 2) => value.toFixed(digits);
-const assetToneClass = (asset: string) => ASSET_COLOR_CLASS[asset] ?? "text-white";
+const assetToneClass = (asset: string) => ASSET_COLOR_CLASS[asset] ?? "text-[#1a1a1a]";
 const TIMEZONE_OPTIONS = [
   { value: "Asia/Shanghai", label: "Asia/Shanghai" },
   { value: "America/New_York", label: "America/New_York" },
@@ -265,9 +236,6 @@ const TIMEZONE_OPTIONS = [
   { value: "UTC", label: "UTC" },
 ];
 
-const translateSourceMode = (value: string) => SOURCE_MODE_LABELS[value] ?? value;
-const translateMacroSource = (value: string) => MACRO_SOURCE_LABELS[value] ?? value;
-const translatePaperStatus = (value: string) => PAPER_STATUS_LABELS[value] ?? value;
 const translatePositionMode = (value: string) => POSITION_MODE_LABELS[value] ?? value;
 const translateSide = (value: string) => SIDE_LABELS[value] ?? value;
 const translateOrderStatus = (value: string) => ORDER_STATUS_LABELS[value] ?? value;
@@ -305,19 +273,19 @@ const normalizeSourceLabel = (value: string) => {
 
 const regimeToneClass = (regime: string) => {
   if (regime === "RISK_ON") {
-    return "border-[#14532d] bg-[#052e16] text-[#bbf7d0]";
+    return "border-[#edf7f1] bg-[#edf7f1] text-[#1a4d2e]";
   }
   if (regime === "RISK_OFF") {
-    return "border-[#7f1d1d] bg-[#450a0a] text-[#fecaca]";
+    return "border-[#f7ecec] bg-[#f7ecec] text-[#7b2d2c]";
   }
-  return "border-[#1e3a5f] bg-[#0f2743] text-[#bfdbfe]";
+  return "border-[#1e3a5f] bg-[#edf2f7] text-[#223b5b]";
 };
 
 const valueToneClass = (value: number) => (value >= 0 ? "text-[#4ade80]" : "text-[#f87171]");
 const valueToneStyle = (value: number): React.CSSProperties => ({
-  color: value > 0 ? "#4ade80" : value < 0 ? "#f87171" : "#e2e8f0",
+  color: value > 0 ? "#4ade80" : value < 0 ? "#f87171" : "#1a1a1a",
 });
-const priceToneClass = (value: number) => (value >= 0 ? "text-[#10b981]" : "text-[#ef4444]");
+const priceToneClass = (value: number) => (value >= 0 ? "text-[#1a4d2e]" : "text-[#7b2d2c]");
 const roundNumber = (value: number, digits = 2) => Number(value.toFixed(digits));
 
 type TerminalCardProps = {
@@ -329,63 +297,24 @@ type TerminalCardProps = {
   className?: string;
 };
 
-type WarningBannerItem = {
-  level: string;
-  code: string;
-  title: string;
-  detail: string;
-  asset?: string;
-};
-
 type TerminalBoards = NonNullable<FiveAssetPayload["terminalBoards"]>;
-type TerminalOptionsBoard = NonNullable<TerminalBoards["optionsBoard"]>;
 type TerminalOperationsBoard = NonNullable<TerminalBoards["operationsBoard"]>;
 
 const TerminalCard = ({ title, subtitle, icon, action, children, className }: TerminalCardProps) => (
   <section className={cn(cardClass, className)}>
     <div className="flex items-start justify-between gap-4 px-4 pt-3 pb-1.5">
       <div>
-        <div className="flex items-center gap-2 text-[#e2e8f0]">
+        <div className="flex items-center gap-2 text-[#1a1a1a]">
           {icon}
-          <h2 className="font-mono text-[11px] font-semibold tracking-[0.16em] text-[#a8bbcf] uppercase">{title}</h2>
+          <h2 className="font-mono text-[11px] font-semibold tracking-[0.16em] text-[#6f6d69] uppercase">{title}</h2>
         </div>
-        {subtitle ? <p className="mt-1.5 max-w-[720px] font-mono text-[10px] leading-5 text-[#8899aa]">{subtitle}</p> : null}
+        {subtitle ? <p className="mt-1.5 max-w-[720px] font-mono text-[10px] leading-5 text-[#6f6d69]">{subtitle}</p> : null}
       </div>
       {action}
     </div>
     <div className="px-4 pb-3">{children}</div>
   </section>
 );
-
-type MetricCardProps = {
-  label: string;
-  value: string;
-  hint: string;
-  icon: ReactNode;
-  tone?: "up" | "down" | "neutral";
-};
-
-const MetricCard = ({ label, value, hint, icon, tone = "neutral" }: MetricCardProps) => {
-  const toneClass =
-    tone === "up"
-      ? "text-[#4ade80]"
-      : tone === "down"
-        ? "text-[#f87171]"
-        : "text-[#e2e8f0]";
-
-  return (
-    <div className={cn(cardClass, "p-4")}>
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <p className="font-mono text-[10px] uppercase tracking-[0.18em] text-[#8899aa]">{label}</p>
-          <p className={cn("mt-2 font-mono text-[22px] font-semibold leading-none", toneClass)}>{value}</p>
-          <p className="mt-3 font-mono text-[10px] leading-5 text-[#8899aa]">{hint}</p>
-        </div>
-        <div className="rounded-[4px] border border-[#1e2d45] bg-[#0b1120] p-2 text-[#8fb4ff]">{icon}</div>
-      </div>
-    </div>
-  );
-};
 
 const formatPercentPlain = (value: number, digits = 1) => `${value.toFixed(digits)}%`;
 
@@ -394,14 +323,14 @@ const TickerTapeBar = ({
 }: {
   rows: { asset: string; price: number; dayChangePct: number; contributionPct: number; targetWeightPct: number }[];
 }) => (
-  <section className="border-x border-b border-[#1e2d45] bg-[#0f1629] px-6 py-3">
+  <section className="border-x border-b border-[#b6afa5] bg-[#fbf7f0] px-6 py-3">
     <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
       {rows.map((row) => (
         <div key={row.asset} className="flex items-baseline gap-2 font-mono">
           <span className={cn("text-[13px] font-bold tracking-[0.04em]", assetToneClass(row.asset))}>{row.asset}</span>
-          <span className="text-[13px] text-[#e2e8f0]">{formatMoney(row.price, 0)}</span>
+          <span className="text-[13px] text-[#1a1a1a]">{formatMoney(row.price, 0)}</span>
           <span className={cn("text-[11px] font-semibold", valueToneClass(row.dayChangePct))}>{formatSigned(row.dayChangePct, 2)}%</span>
-          <span className="text-[10px] text-[#8899aa]">W {formatPercentPlain(row.targetWeightPct, 1)}</span>
+          <span className="text-[10px] text-[#6f6d69]">W {formatPercentPlain(row.targetWeightPct, 1)}</span>
         </div>
       ))}
     </div>
@@ -419,36 +348,36 @@ const BenchmarkStrip = ({
   }
 
   return (
-    <section className="border-x border-b border-[#1e2d45] bg-[#080c16] px-6 py-3">
+    <section className="border-x border-b border-[#b6afa5] bg-[#f8f5ef] px-6 py-3">
       <div className="flex flex-wrap items-center gap-4 font-mono">
-        <div className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">Benchmark:</div>
+        <div className="text-[11px] uppercase tracking-[0.12em] text-[#6f6d69]">Benchmark:</div>
 
         <div className="flex flex-wrap gap-2">
           {Object.entries(reference.weights).map(([asset, weight]) => (
-            <div key={asset} className="rounded-[4px] border px-3 py-1 text-center" style={{ borderColor: `${asset === "BTC" ? accentAmber : asset === "ETH" ? accentPurple : asset === "MSTR" ? "#06b6d4" : asset === "SPY" ? accentGreen : "#f97316"}66`, backgroundColor: `${asset === "BTC" ? accentAmber : asset === "ETH" ? accentPurple : asset === "MSTR" ? "#06b6d4" : asset === "SPY" ? accentGreen : "#f97316"}22` }}>
+            <div key={asset} className="rounded-[4px] border px-3 py-1 text-center" style={{ borderColor: `${asset === "BTC" ? accentAmber : asset === "ETH" ? accentPurple : asset === "MSTR" ? "#55655b" : asset === "SPY" ? accentGreen : "#b45f06"}66`, backgroundColor: `${asset === "BTC" ? accentAmber : asset === "ETH" ? accentPurple : asset === "MSTR" ? "#55655b" : asset === "SPY" ? accentGreen : "#b45f06"}22` }}>
               <div className={cn("text-[11px] font-semibold", assetToneClass(asset))}>{asset}</div>
-              <div className="mt-1 text-[11px] font-semibold text-[#e2e8f0]">{formatPercentPlain(weight, 0)}</div>
+              <div className="mt-1 text-[11px] font-semibold text-[#1a1a1a]">{formatPercentPlain(weight, 0)}</div>
             </div>
           ))}
         </div>
 
-        <div className="text-[11px] text-[#8899aa]">{reference.methodology}</div>
+        <div className="text-[11px] text-[#6f6d69]">{reference.methodology}</div>
 
         <div className="ml-auto flex flex-wrap items-center gap-8">
           <div className="text-center">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">BK Sharpe</p>
-            <p className="mt-1 text-[14px] font-semibold text-[#e2e8f0]">{formatPlain(reference.kpis.sharpe, 2)}</p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">BK Sharpe</p>
+            <p className="mt-1 text-[14px] font-semibold text-[#1a1a1a]">{formatPlain(reference.kpis.sharpe, 2)}</p>
           </div>
           <div className="text-center">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">BK CAGR</p>
-            <p className="mt-1 text-[14px] font-semibold text-[#e2e8f0]">{formatPct(reference.kpis.cagr, 1)}</p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">BK CAGR</p>
+            <p className="mt-1 text-[14px] font-semibold text-[#1a1a1a]">{formatPct(reference.kpis.cagr, 1)}</p>
           </div>
           <div className="text-center">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">BK MDD</p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">BK MDD</p>
             <p className="mt-1 text-[14px] font-semibold text-[#f87171]">{formatPct(reference.kpis.mdd, 1)}</p>
           </div>
           <div className="text-center">
-            <p className="text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">Alpha Sharpe</p>
+            <p className="text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">Alpha Sharpe</p>
             <p className={cn("mt-1 text-[14px] font-semibold", valueToneClass(reference.alphaVsStrategy.sharpe))}>
               {formatSigned(reference.alphaVsStrategy.sharpe, 2)}
             </p>
@@ -482,33 +411,33 @@ const BacktestControlStrip = ({
   onApply: () => void;
   onReset: () => void;
 }) => (
-  <section className="border-x border-b border-[#1e2d45] bg-[#080c16] px-6 py-4">
+  <section className="border-x border-b border-[#b6afa5] bg-[#f8f5ef] px-6 py-4">
     <div className="grid gap-3 xl:grid-cols-[1.25fr_1fr_auto] xl:items-end">
       <div className="grid gap-3 sm:grid-cols-3">
-        <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">
+        <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">
           开始日期
           <input
             type="date"
             value={draftStartDate}
             onChange={(event) => onStartDateChange(event.target.value)}
-            className="rounded-[4px] border border-[#1e2d45] bg-[#0b1120] px-3 py-2 text-[12px] tracking-[0.04em] text-[#e2e8f0] outline-none focus:border-[#f59e0b]"
+            className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
           />
         </label>
-        <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">
+        <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">
           结束日期
           <input
             type="date"
             value={draftEndDate}
             onChange={(event) => onEndDateChange(event.target.value)}
-            className="rounded-[4px] border border-[#1e2d45] bg-[#0b1120] px-3 py-2 text-[12px] tracking-[0.04em] text-[#e2e8f0] outline-none focus:border-[#f59e0b]"
+            className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
           />
         </label>
-        <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">
+        <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">
           时区
           <select
             value={timeZone}
             onChange={(event) => onTimeZoneChange(event.target.value)}
-            className="rounded-[4px] border border-[#1e2d45] bg-[#0b1120] px-3 py-2 text-[12px] tracking-[0.04em] text-[#e2e8f0] outline-none focus:border-[#f59e0b]"
+            className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
           >
             {TIMEZONE_OPTIONS.map((option) => (
               <option key={option.value} value={option.value}>
@@ -519,13 +448,13 @@ const BacktestControlStrip = ({
         </label>
       </div>
 
-      <div className="rounded-[4px] border border-[#1e2d45] bg-[#0b1120] px-3 py-3 font-mono">
-        <div className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">已加载回测区间</div>
-        <div className="mt-2 text-[12px] text-[#e2e8f0]">
-          {loadedStartDate} <span className="px-1 text-[#94a3b8]">-&gt;</span> {loadedEndDate}
+      <div className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-3 font-mono">
+        <div className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">已加载回测区间</div>
+        <div className="mt-2 text-[12px] text-[#1a1a1a]">
+          {loadedStartDate} <span className="px-1 text-[#6f6d69]">-&gt;</span> {loadedEndDate}
         </div>
-        <div className="mt-2 text-[10px] leading-5 text-[#8899aa]">
-          Benchmark 固定为 <span className="text-[#cbd5e1]">BTC / ETH / XAU / MSTR / SPY</span> 各 20% 等权持有。当前为日线回测，时区用于日期边界和时间显示。
+        <div className="mt-2 text-[10px] leading-5 text-[#6f6d69]">
+          Benchmark 固定为 <span className="text-[#6f6d69]">BTC / ETH / XAU / MSTR / SPY</span> 各 20% 等权持有。当前为日线回测，时区用于日期边界和时间显示。
         </div>
       </div>
 
@@ -533,14 +462,14 @@ const BacktestControlStrip = ({
         <button
           type="button"
           onClick={onApply}
-          className="rounded-[4px] border border-[#f59e0b] bg-[#f59e0b] px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#111827]"
+          className="rounded-[4px] border border-[#b45f06] bg-[#b45f06] px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#1a1a1a]"
         >
           应用回测
         </button>
         <button
           type="button"
           onClick={onReset}
-          className="rounded-[4px] border border-[#1e2d45] bg-[#0b1120] px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#cbd5e1]"
+          className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6d69]"
         >
           重置全样本
         </button>
@@ -590,9 +519,9 @@ const PositionEconomicsCard = ({
   const totalFunding = rows.reduce((sum, row) => sum + row.fundingCost, 0) + hedgeFunding;
 
   return (
-    <section className="border-x border-b border-[#1e2d45] bg-[#06090f] px-6 py-3">
-      <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[#8899aa]">
-        Position Book&nbsp;&nbsp;&middot;&nbsp;&nbsp;<span className="text-[#f59e0b]">NAV {lastSnapshot.strategy_nav.toFixed(3)}x</span>
+    <section className="border-x border-b border-[#b6afa5] bg-[#fbf7f0] px-6 py-3">
+      <div className="mb-2 font-mono text-[11px] uppercase tracking-[0.14em] text-[#6f6d69]">
+        Position Book&nbsp;&nbsp;&middot;&nbsp;&nbsp;<span className="text-[#b45f06]">NAV {lastSnapshot.strategy_nav.toFixed(3)}x</span>
         &nbsp;&nbsp;&middot;&nbsp;&nbsp;CAPITAL ${formatCapitalValue(equity)}
       </div>
       <div className="overflow-x-auto">
@@ -614,9 +543,9 @@ const PositionEconomicsCard = ({
                 <td className={cn(tableCellClass, "px-0")}>
                   <span className={cn("font-semibold", assetToneClass(row.asset))}>{row.asset}</span>
                 </td>
-                <td className={cn(tableCellClass, "text-right text-[#10b981]")}>{row.side === "多头" ? "LONG" : row.side}</td>
+                <td className={cn(tableCellClass, "text-right text-[#1a4d2e]")}>{row.side === "多头" ? "LONG" : row.side}</td>
                 <td className={cn(tableCellClass, "text-right")}>{formatPercentPlain(row.weightPct, 1)}</td>
-                <td className={cn(tableCellClass, "text-right text-[#f59e0b]")}>{row.maxLev.toFixed(1)}x</td>
+                <td className={cn(tableCellClass, "text-right text-[#b45f06]")}>{row.maxLev.toFixed(1)}x</td>
                 <td className={cn(tableCellClass, "text-right")}>{formatMoney(row.notional, 0)}</td>
                 <td className={cn(tableCellClass, "text-right", valueToneClass(row.dayPnl))}>{formatMoney(row.dayPnl, 0)}</td>
                 <td className={cn(tableCellClass, "px-0 text-right", valueToneClass(row.fundingCost))}>{formatMoney(row.fundingCost, 0)}</td>
@@ -624,25 +553,25 @@ const PositionEconomicsCard = ({
             ))}
             <tr>
               <td className={cn(tableCellClass, "px-0")}>
-                <span className="font-semibold text-[#8b5cf6]">MSTR-H</span>
+                <span className="font-semibold text-[#223b5b]">MSTR-H</span>
               </td>
-              <td className="border-b border-[#1e2d45]/30 px-3 py-2.5 text-right font-mono text-[11px] text-[#ef4444]">SHORT</td>
-              <td className={cn(tableCellClass, "text-right text-[#8899aa]")}>{formatPercentPlain(lastSnapshot.mstr_short_pct, 1)} (h)</td>
-              <td className={cn(tableCellClass, "text-right text-[#f59e0b]")}>{operationsBoard.hedgeLeverage.toFixed(1)}x</td>
+              <td className="border-b border-[#b6afa5]/30 px-3 py-2.5 text-right font-mono text-[11px] text-[#7b2d2c]">SHORT</td>
+              <td className={cn(tableCellClass, "text-right text-[#6f6d69]")}>{formatPercentPlain(lastSnapshot.mstr_short_pct, 1)} (h)</td>
+              <td className={cn(tableCellClass, "text-right text-[#b45f06]")}>{operationsBoard.hedgeLeverage.toFixed(1)}x</td>
               <td className={cn(tableCellClass, "text-right")}>{formatMoney(hedgeNotional, 0)}</td>
               <td className={cn(tableCellClass, "text-right", valueToneClass(hedgeDayPnl))}>{formatMoney(hedgeDayPnl, 0)}</td>
               <td className={cn(tableCellClass, "px-0 text-right", valueToneClass(hedgeFunding))}>{formatMoney(hedgeFunding, 0)}</td>
             </tr>
             <tr className="bg-[rgba(245,158,11,0.05)]">
               <td className={cn(tableCellClass, "px-0")}>
-                <span className="font-semibold text-[#fbbf24]">TOTAL</span>
+                <span className="font-semibold text-[#b45f06]">TOTAL</span>
               </td>
               <td className={cn(tableCellClass, "text-right")}>-</td>
-              <td className={cn(tableCellClass, "text-right font-semibold text-[#fbbf24]")}>
+              <td className={cn(tableCellClass, "text-right font-semibold text-[#b45f06]")}>
                 {formatPercentPlain(rows.reduce((sum, row) => sum + row.weightPct, 0) + lastSnapshot.mstr_short_pct, 2)}
               </td>
               <td className={cn(tableCellClass, "text-right")}>-</td>
-              <td className={cn(tableCellClass, "text-right font-semibold text-[#fbbf24]")}>{formatMoney(totalNotional, 0)}</td>
+              <td className={cn(tableCellClass, "text-right font-semibold text-[#b45f06]")}>{formatMoney(totalNotional, 0)}</td>
               <td className={cn(tableCellClass, "text-right font-semibold", valueToneClass(totalDayPnl))}>{formatMoney(totalDayPnl, 0)}</td>
               <td className={cn(tableCellClass, "px-0 text-right font-semibold", valueToneClass(totalFunding))}>{formatMoney(totalFunding, 0)}</td>
             </tr>
@@ -653,281 +582,591 @@ const PositionEconomicsCard = ({
   );
 };
 
-const OptionsBoardCard = ({
-  optionsBoard,
+const ManualBookCard = ({
+  fallbackCapital,
+  markPrices,
+  onPortfolioValueChange,
 }: {
-  optionsBoard?: TerminalOptionsBoard;
+  fallbackCapital: number;
+  markPrices: Record<string, number>;
+  onPortfolioValueChange?: (value: number) => void;
 }) => {
-  const [view, setView] = useState<"chain" | "iv">("chain");
-  if (!optionsBoard) {
-    return null;
-  }
+  const defaultTimestamp = toDatetimeLocalValue(new Date());
+  const [bookState, setBookState] = useState<ManualBookState>({ startingCapital: fallbackCapital, entries: [] });
+  const [storageReady, setStorageReady] = useState(false);
+  const [timestamp, setTimestamp] = useState(defaultTimestamp);
+  const [asset, setAsset] = useState<(typeof MANUAL_ASSET_ORDER)[number]>("BTC");
+  const [side, setSide] = useState<ManualBookSide>("BUY");
+  const [quantity, setQuantity] = useState("");
+  const [price, setPrice] = useState("");
+  const [fee, setFee] = useState("0");
+  const [note, setNote] = useState("");
 
-  const ivChartData = (optionsBoard.ivHistory ?? []).map((row) => ({
-    date: row.date,
-    BTCIV: row.value,
-  }));
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    try {
+      const raw = window.localStorage.getItem(MANUAL_BOOK_STORAGE_KEY);
+      if (raw) {
+        setBookState(normalizeManualBookState(JSON.parse(raw), fallbackCapital));
+      } else {
+        setBookState({ startingCapital: fallbackCapital, entries: [] });
+      }
+    } catch {
+      setBookState({ startingCapital: fallbackCapital, entries: [] });
+    }
+    setStorageReady(true);
+  }, [fallbackCapital]);
+
+  useEffect(() => {
+    if (!storageReady || typeof window === "undefined") {
+      return;
+    }
+    window.localStorage.setItem(MANUAL_BOOK_STORAGE_KEY, JSON.stringify(bookState));
+  }, [bookState, storageReady]);
+
+  const derived = useMemo(() => deriveManualBook(bookState, markPrices), [bookState, markPrices]);
+  useEffect(() => {
+    onPortfolioValueChange?.(derived.equity);
+  }, [derived.equity, onPortfolioValueChange]);
+  const currentMark = Number.isFinite(markPrices[asset]) ? markPrices[asset] : 0;
+  const totalPnl = derived.equity - derived.startingCapital;
+  const timelineData = useMemo(() => {
+    const epsilon = 1e-12;
+    const positions = new Map<string, { quantity: number; avgPrice: number; realizedPnl: number; feesPaid: number }>();
+    const lastTradePriceByAsset = new Map<string, number>();
+    const sortedEntries = [...bookState.entries].sort((left, right) => {
+      const leftTime = new Date(left.timestamp).getTime();
+      const rightTime = new Date(right.timestamp).getTime();
+      if (leftTime !== rightTime) {
+        return leftTime - rightTime;
+      }
+      return left.id.localeCompare(right.id);
+    });
+
+    let cash = Math.max(0, bookState.startingCapital);
+    let realizedPnl = 0;
+    let feesPaid = 0;
+
+    const snapshots: {
+      timestamp: string;
+      equity: number;
+      cash: number;
+      realizedPnl: number;
+      unrealizedPnl: number;
+      feesPaid: number;
+    }[] = [];
+
+    for (const entry of sortedEntries) {
+      const sign = entry.side === "BUY" ? 1 : -1;
+      const tradeQty = entry.price > epsilon ? entry.notionalUsd / entry.price : 0;
+      const signedQty = sign * tradeQty;
+      feesPaid += entry.fee;
+      cash += entry.side === "BUY" ? -(entry.notionalUsd + entry.fee) : entry.notionalUsd - entry.fee;
+      lastTradePriceByAsset.set(entry.asset, entry.price);
+
+      const current = positions.get(entry.asset) ?? { quantity: 0, avgPrice: 0, realizedPnl: 0, feesPaid: 0 };
+      const currentSign = Math.sign(current.quantity);
+      const tradeSign = Math.sign(signedQty);
+
+      if (currentSign === 0 || currentSign === tradeSign) {
+        const nextQty = current.quantity + signedQty;
+        const nextAbsQty = Math.abs(nextQty);
+        const nextAvgPrice =
+          nextAbsQty <= epsilon
+            ? 0
+            : currentSign === 0
+              ? entry.price
+              : (Math.abs(current.quantity) * current.avgPrice + tradeQty * entry.price) / nextAbsQty;
+        positions.set(entry.asset, {
+          quantity: nextQty,
+          avgPrice: nextAvgPrice,
+          realizedPnl: current.realizedPnl,
+          feesPaid: current.feesPaid + entry.fee,
+        });
+      } else {
+        const closedQty = Math.min(Math.abs(current.quantity), tradeQty);
+        const realizedDelta =
+          current.quantity > 0
+            ? (entry.price - current.avgPrice) * closedQty
+            : (current.avgPrice - entry.price) * closedQty;
+        realizedPnl += realizedDelta;
+
+        const remainingTradeQty = tradeQty - closedQty;
+        if (remainingTradeQty <= epsilon) {
+          const remainingQty = current.quantity > 0 ? current.quantity - closedQty : current.quantity + closedQty;
+          const nextQty = Math.abs(remainingQty) <= epsilon ? 0 : remainingQty;
+          positions.set(entry.asset, {
+            quantity: nextQty,
+            avgPrice: Math.abs(nextQty) <= epsilon ? 0 : current.avgPrice,
+            realizedPnl: current.realizedPnl + realizedDelta,
+            feesPaid: current.feesPaid + entry.fee,
+          });
+        } else {
+          const nextQty = tradeSign > 0 ? remainingTradeQty : -remainingTradeQty;
+          positions.set(entry.asset, {
+            quantity: nextQty,
+            avgPrice: entry.price,
+            realizedPnl: current.realizedPnl + realizedDelta,
+            feesPaid: current.feesPaid + entry.fee,
+          });
+        }
+      }
+
+      let markValue = 0;
+      let unrealizedPnl = 0;
+      for (const [positionAsset, position] of positions.entries()) {
+        const markPrice = lastTradePriceByAsset.get(positionAsset) ?? position.avgPrice;
+        markValue += position.quantity * markPrice;
+        unrealizedPnl += position.quantity * (markPrice - position.avgPrice);
+      }
+
+      snapshots.push({
+        timestamp: entry.timestamp,
+        equity: roundNumber(cash + markValue, 2),
+        cash: roundNumber(cash, 2),
+        realizedPnl: roundNumber(realizedPnl, 2),
+        unrealizedPnl: roundNumber(unrealizedPnl, 2),
+        feesPaid: roundNumber(feesPaid, 2),
+      });
+    }
+
+    return snapshots;
+  }, [bookState]);
+  const assetChartData = useMemo(
+    () =>
+      derived.positions.map((row) => ({
+        asset: row.asset,
+        市值: row.marketValue,
+        总盈亏: row.totalPnl,
+      })),
+    [derived.positions],
+  );
+
+  const addEntry = () => {
+    const qty = Number(quantity);
+    const px = Number(price);
+    const feeValue = Number(fee);
+    if (!Number.isFinite(qty) || qty <= 0 || !Number.isFinite(px) || px <= 0) {
+      return;
+    }
+    const nextEntry: ManualBookEntry = {
+      id: `${new Date().toISOString()}-${asset}-${side}-${Math.random().toString(16).slice(2, 8)}`,
+      timestamp: new Date(timestamp || defaultTimestamp).toISOString(),
+      asset,
+      side,
+      notionalUsd: qty,
+      price: px,
+      fee: Number.isFinite(feeValue) && feeValue > 0 ? feeValue : 0,
+      note: note.trim(),
+    };
+
+    setBookState((prev) => ({
+      ...prev,
+      entries: [nextEntry, ...prev.entries],
+    }));
+    setTimestamp(defaultTimestamp);
+    setQuantity("");
+    setPrice("");
+    setFee("0");
+    setNote("");
+  };
+
+  const removeEntry = (entryId: string) => {
+    setBookState((prev) => ({
+      ...prev,
+      entries: prev.entries.filter((entry) => entry.id !== entryId),
+    }));
+  };
+
+  const clearEntries = () => {
+    if (typeof window !== "undefined" && !window.confirm("确定清空本地手工账本吗？")) {
+      return;
+    }
+    setBookState((prev) => ({
+      ...prev,
+      entries: [],
+    }));
+  };
+
+  const exportLedger = () => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const blob = new Blob([JSON.stringify(bookState, null, 2)], { type: "application/json;charset=utf-8" });
+    const url = URL.createObjectURL(blob);
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = `manual-book-${new Date().toISOString().slice(0, 10)}.json`;
+    anchor.click();
+    URL.revokeObjectURL(url);
+  };
 
   return (
     <TerminalCard
-      title="BTC OPTIONS BOARD"
-      subtitle="BTC IV、现货和观察链。"
-      icon={<CandlestickChart className="h-4 w-4 text-[#60a5fa]" />}
-      className="bg-[#091224]"
+      title="实盘记账"
+      subtitle="本地手工记账，不影响策略原始账本。按 USD 名义金额录入，系统自动折算成仓位并计算均价、已实现和未实现盈亏。"
+      icon={<LayoutDashboard className="h-4 w-4 text-[#223b5b]" />}
+      className="bg-[#f8f5ef]"
       action={
-        <div className="flex gap-2">
-          {(["chain", "iv"] as const).map((item) => (
-            <button
-              key={item}
-              type="button"
-              onClick={() => setView(item)}
-              className={cn(
-                "rounded-[4px] border px-3 py-1 font-mono text-[11px] uppercase tracking-[0.12em]",
-                view === item ? "border-[#f59e0b] bg-[#f59e0b] text-[#06090f]" : "border-[#1e2d45] bg-[#1e2d45] text-[#8899aa]",
-              )}
-            >
-              {item === "chain" ? "期权链" : "IV历史"}
-            </button>
-          ))}
+        <div className="flex flex-wrap items-center gap-2">
+          <button
+            type="button"
+            onClick={exportLedger}
+            className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#6f6d69]"
+          >
+            导出 JSON
+          </button>
+          <button
+            type="button"
+            onClick={clearEntries}
+            className="rounded-[4px] border border-[#f7ecec] bg-[#f7ecec] px-3 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7b2d2c]"
+          >
+            清空账本
+          </button>
         </div>
       }
     >
-      <div className="grid gap-3 sm:grid-cols-4">
-        <div className={cn(innerBlockClass, "p-4")}>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">BTC Spot</p>
-          <p className="mt-2 text-[22px] font-semibold text-white">{formatMoney(optionsBoard.spot, 0)}</p>
-          <p className={cn("mt-2 text-[12px]", valueToneClass(optionsBoard.priceChange1dPct))}>
-            {formatSigned(optionsBoard.priceChange1dPct, 2)}%
-          </p>
-        </div>
-        <div className={cn(innerBlockClass, "p-4")}>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">ATM IV</p>
-          <p className="mt-2 text-[22px] font-semibold text-white">{formatPercentPlain(optionsBoard.atmIv, 1)}</p>
-          <p className="mt-2 text-[12px] text-[#94a3b8]">30D 观察到期</p>
-        </div>
-        <div className={cn(innerBlockClass, "p-4")}>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">RV20 / RV60</p>
-          <p className="mt-2 text-[16px] font-semibold text-white">
-            {formatPercentPlain(optionsBoard.realizedVol20d, 1)} / {formatPercentPlain(optionsBoard.realizedVol60d, 1)}
-          </p>
-          <p className="mt-2 text-[12px] text-[#94a3b8]">实现波动率</p>
-        </div>
-        <div className={cn(innerBlockClass, "p-4")}>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">数据逻辑</p>
-          <p className="mt-2 text-[12px] leading-6 text-[#cbd5e1]">{optionsBoard.source}</p>
-        </div>
-      </div>
-
-      {view === "chain" ? (
-        <div className="mt-4 overflow-x-auto">
-          <table className="min-w-full border-separate border-spacing-0">
-            <thead>
-              <tr>
-                <th className={tableHeadClass}>Strike</th>
-                <th className={tableHeadClass}>C Bid</th>
-                <th className={tableHeadClass}>C Ask</th>
-                <th className={tableHeadClass}>Δ Call</th>
-                <th className={tableHeadClass}>P Bid</th>
-                <th className={tableHeadClass}>P Ask</th>
-                <th className={tableHeadClass}>Δ Put</th>
-                <th className={tableHeadClass}>Gamma x1K</th>
-                <th className={tableHeadClass}>IV</th>
-              </tr>
-            </thead>
-            <tbody>
-              {optionsBoard.chain.map((row) => (
-                <tr key={`${row.strike}-${row.atm ? "atm" : "otm"}`} className={row.atm ? "bg-[#3b2a05]/30" : undefined}>
-                  <td className={cn(tableCellClass, row.atm ? "font-semibold text-[#fbbf24]" : "")}>
-                    {row.strike.toLocaleString("zh-CN")}
-                  </td>
-                  <td className={cn(tableCellClass, "text-[#10b981]")}>{formatMoney(row.callBid, 0)}</td>
-                  <td className={cn(tableCellClass, "text-[#34d399]")}>{formatMoney(row.callAsk, 0)}</td>
-                  <td className={cn(tableCellClass, "text-[#10b981]")}>{row.callDelta.toFixed(3)}</td>
-                  <td className={cn(tableCellClass, "text-[#ef4444]")}>{formatMoney(row.putBid, 0)}</td>
-                  <td className={cn(tableCellClass, "text-[#f87171]")}>{formatMoney(row.putAsk, 0)}</td>
-                  <td className={cn(tableCellClass, "text-[#ef4444]")}>{row.putDelta.toFixed(3)}</td>
-                  <td className={cn(tableCellClass, "text-[#9ca3af]")}>{row.gammaPer1k.toFixed(4)}</td>
-                  <td className={cn(tableCellClass, "text-[#8b5cf6]")}>{formatPercentPlain(row.iv, 1)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      ) : (
-        <div className="mt-4 h-[280px] w-full">
-          <ResponsiveContainer>
-            <AreaChart data={ivChartData} margin={{ left: 0, right: 8, top: 10, bottom: 0 }}>
-              <defs>
-                <linearGradient id="btc-iv-gradient" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="5%" stopColor="#a855f7" stopOpacity={0.35} />
-                  <stop offset="95%" stopColor="#a855f7" stopOpacity={0} />
-                </linearGradient>
-              </defs>
-              <CartesianGrid stroke="#1e293b" strokeDasharray="3 3" />
-              <XAxis dataKey="date" tickFormatter={(value) => formatDate(value)} tick={{ fill: "#94a3b8", fontSize: 11 }} minTickGap={24} />
-              <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} width={44} />
-              <Tooltip
-                contentStyle={{ backgroundColor: "#081120", border: "1px solid #1f2937", borderRadius: 12, color: "#e2e8f0" }}
-                labelFormatter={(value) => formatDate(String(value), true)}
-              />
-              <Area type="monotone" dataKey="BTCIV" stroke="#a855f7" fill="url(#btc-iv-gradient)" strokeWidth={2.2} />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
-      )}
-    </TerminalCard>
-  );
-};
-
-const OperationsWorkbench = ({
-  operationsBoard,
-  positions,
-  lastSnapshot,
-  equity,
-}: {
-  operationsBoard?: TerminalOperationsBoard;
-  positions: FiveAssetTerminalPosition[];
-  lastSnapshot: FiveAssetPayload["lastSnapshot"];
-  equity: number;
-}) => {
-  const [selectedRegime, setSelectedRegime] = useState<string>("NEUTRAL");
-  const initialWeights = useMemo(
-    () => Object.fromEntries(positions.map((position) => [position.asset, Number(position.currentWeightPct.toFixed(1))])),
-    [positions],
-  );
-  const [targetWeights, setTargetWeights] = useState<Record<string, number>>(initialWeights);
-  const [leverageMap, setLeverageMap] = useState<Record<string, number>>(
-    Object.fromEntries(positions.map((position) => [position.asset, 1])),
-  );
-
-  if (!operationsBoard) {
-    return null;
-  }
-
-  const applyRegimePreset = (regime: string) => {
-    const preset = operationsBoard.regimePresetWeights[regime];
-    if (!preset) {
-      return;
-    }
-    setSelectedRegime(regime);
-    setTargetWeights({ ...preset });
-  };
-
-  const rows = positions.map((position) => {
-    const currentWeight = position.currentWeightPct;
-    const targetWeight = targetWeights[position.asset] ?? currentWeight;
-    const deltaWeight = targetWeight - currentWeight;
-    const notional = (Math.abs(deltaWeight) / 100) * equity;
-    const fee = notional * (operationsBoard.feePerSidePct / 100);
-    const leverage = leverageMap[position.asset] ?? 1;
-    return {
-      asset: position.asset,
-      currentWeight,
-      targetWeight,
-      deltaWeight,
-      notional,
-      fee,
-      leverage,
-    };
-  });
-
-  const totalWeight = rows.reduce((sum, row) => sum + row.targetWeight, 0);
-  const grossTurnover = rows.reduce((sum, row) => sum + row.notional, 0);
-  const estimatedFees = rows.reduce((sum, row) => sum + row.fee, 0);
-  const grossExposurePct = rows.reduce((sum, row) => sum + row.targetWeight * row.leverage, 0);
-  const hedgeCapacityPct = Math.min(lastSnapshot.mstr_short_pct, operationsBoard.hedgeMaxSizePct);
-
-  return (
-    <TerminalCard
-      title="OPERATIONS"
-      subtitle="调仓预览、费用和暴露。"
-      icon={<Zap className="h-4 w-4 text-[#60a5fa]" />}
-      className="bg-[#091224]"
-    >
-      <div className="flex flex-wrap gap-2">
-        {Object.keys(operationsBoard.regimePresetWeights).map((regime) => (
-          <button
-            key={regime}
-            type="button"
-            onClick={() => applyRegimePreset(regime)}
-            className={cn(
-              "rounded-[4px] border px-3 py-2 font-mono text-[11px] font-semibold tracking-[0.14em]",
-              selectedRegime === regime ? "border-[#f59e0b] bg-[#f59e0b] text-[#06090f]" : "border-[#1e2d45] bg-[#1e2d45] text-[#cbd5e1]",
-            )}
-          >
-            {translateRegime(regime)}
-          </button>
-        ))}
-        <div className={cn("ml-auto rounded-[4px] border px-3 py-2 font-mono text-[11px] font-semibold", Math.abs(totalWeight - 100) <= 5 ? "border-[#14532d] bg-[#052e16] text-[#bbf7d0]" : "border-[#7f1d1d] bg-[#450a0a] text-[#fecaca]")}>
-          目标合计 {formatPercentPlain(totalWeight, 1)}
-        </div>
-      </div>
-
-      <div className="mt-4 space-y-3">
-        {rows.map((row) => (
-          <div key={row.asset} className={cn(innerBlockClass, "p-4")}>
-            <div className="flex items-center gap-4">
-              <div className={cn("w-[42px] text-[13px] font-semibold", assetToneClass(row.asset))}>{row.asset}</div>
+      <div className="grid gap-4 xl:grid-cols-[0.85fr_1.15fr]">
+        <div className="space-y-4">
+          <div className="grid gap-3 sm:grid-cols-2">
+            <div className={cn(innerBlockClass, "p-4")}>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">初始资金</p>
               <input
-                type="range"
+                type="number"
                 min={0}
-                max={60}
-                step={0.5}
-                value={row.targetWeight}
+                step="1000"
+                value={bookState.startingCapital}
                 onChange={(event) =>
-                  setTargetWeights((prev) => ({
+                  setBookState((prev) => ({
                     ...prev,
-                    [row.asset]: Number(event.target.value),
+                    startingCapital: Number(event.target.value) || 0,
                   }))
                 }
-                className="h-2 flex-1 cursor-pointer accent-[#38bdf8]"
+                className="mt-2 w-full rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 font-mono text-[18px] font-semibold text-[#1a1a1a] outline-none focus:border-[#b45f06]"
               />
-              <div className="w-[72px] text-right text-[12px] text-white">{formatPercentPlain(row.targetWeight, 1)}</div>
-              <select
-                value={row.leverage}
-                onChange={(event) =>
-                  setLeverageMap((prev) => ({
-                    ...prev,
-                    [row.asset]: Number(event.target.value),
-                  }))
-                }
-                className="rounded-[4px] border border-[#1e2d45] bg-[#020617] px-2 py-1 font-mono text-[11px] text-[#fbbf24]"
-              >
-                {[1, 1.5, 2].filter((value) => value <= (operationsBoard.leverageCaps[row.asset] ?? 1)).map((value) => (
-                  <option key={value} value={value}>
-                    {value}x
-                  </option>
-                ))}
-              </select>
+              <p className="mt-2 text-[11px] text-[#6f6d69]">本地保存，刷新页面不会丢。</p>
             </div>
-            <div className="mt-3 grid gap-2 text-[12px] text-[#94a3b8] sm:grid-cols-4">
-              <div>当前 {formatPercentPlain(row.currentWeight, 1)}</div>
-              <div className={valueToneClass(row.deltaWeight)}>变动 {formatSigned(row.deltaWeight, 1)}%</div>
-              <div>换手 {formatMoney(row.notional, 0)}</div>
-              <div>费用 {formatMoney(row.fee, 0)}</div>
+            <div className={cn(innerBlockClass, "p-4")}>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">当前状态</p>
+              <p className="mt-2 font-mono text-[24px] font-semibold text-[#1a1a1a]">{storageReady ? "READY" : "LOADING"}</p>
+              <p className="mt-2 text-[11px] text-[#6f6d69]">参考价: {asset} {formatMoney(currentMark, 2)}</p>
             </div>
           </div>
-        ))}
-      </div>
 
-      <div className="mt-4 grid gap-3 sm:grid-cols-4">
-        <div className={cn(innerBlockClass, "p-4")}>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">预计总换手</p>
-          <p className="mt-2 text-[20px] font-semibold text-white">{formatMoney(grossTurnover, 0)}</p>
+          <div className={cn(innerBlockClass, "p-4")}>
+            <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">录入交易</p>
+            <div className="mt-3 grid gap-3 sm:grid-cols-2">
+              <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">
+                时间
+                <input
+                  type="datetime-local"
+                  value={timestamp}
+                  onChange={(event) => setTimestamp(event.target.value)}
+                  className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
+                />
+              </label>
+              <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">
+                资产
+                <select
+                  value={asset}
+                  onChange={(event) => setAsset(event.target.value as (typeof MANUAL_ASSET_ORDER)[number])}
+                  className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
+                >
+                  {MANUAL_ASSET_ORDER.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">
+                动作
+                <select
+                  value={side}
+                  onChange={(event) => setSide(event.target.value as ManualBookSide)}
+                  className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
+                >
+                  <option value="BUY">BUY</option>
+                  <option value="SELL">SELL</option>
+                </select>
+              </label>
+              <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">
+                名义金额 USD
+                <input
+                  type="number"
+                  min={0}
+                  step="1"
+                  value={quantity}
+                  onChange={(event) => setQuantity(event.target.value)}
+                  placeholder="例如 5000"
+                  className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
+                />
+              </label>
+              <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">
+                价格
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={price}
+                  onChange={(event) => setPrice(event.target.value)}
+                  placeholder={currentMark > 0 ? currentMark.toFixed(2) : "填写成交价"}
+                  className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
+                />
+              </label>
+              <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">
+                手续费
+                <input
+                  type="number"
+                  min={0}
+                  step="0.01"
+                  value={fee}
+                  onChange={(event) => setFee(event.target.value)}
+                  className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
+                />
+              </label>
+              <label className="flex flex-col gap-2 font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69] sm:col-span-2">
+                备注
+                <input
+                  type="text"
+                  value={note}
+                  onChange={(event) => setNote(event.target.value)}
+                  placeholder="可填策略、理由、券商订单号"
+                  className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-2 text-[12px] tracking-[0.04em] text-[#1a1a1a] outline-none focus:border-[#b45f06]"
+                />
+              </label>
+            </div>
+            <p className="mt-3 font-mono text-[10px] leading-5 text-[#6f6d69]">这里输入的是美元名义，不是币数量。系统会按成交价自动折算成实际持仓数量。</p>
+            <div className="mt-3 flex flex-wrap items-center gap-2">
+              <button
+                type="button"
+                onClick={addEntry}
+                className="rounded-[4px] border border-[#b45f06] bg-[#b45f06] px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#1a1a1a]"
+              >
+                添加记账
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setTimestamp(defaultTimestamp);
+                  setAsset("BTC");
+                  setSide("BUY");
+                  setQuantity("");
+                  setPrice("");
+                  setFee("0");
+                  setNote("");
+                }}
+                className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-4 py-2 font-mono text-[11px] font-semibold uppercase tracking-[0.12em] text-[#6f6d69]"
+              >
+                清空输入
+              </button>
+            </div>
+          </div>
         </div>
-        <div className={cn(innerBlockClass, "p-4")}>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">预计费用</p>
-          <p className="mt-2 text-[20px] font-semibold text-white">{formatMoney(estimatedFees, 0)}</p>
-        </div>
-        <div className={cn(innerBlockClass, "p-4")}>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">模拟总暴露</p>
-          <p className="mt-2 text-[20px] font-semibold text-white">{formatPercentPlain(grossExposurePct, 1)}</p>
-        </div>
-        <div className={cn(innerBlockClass, "p-4")}>
-          <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">保护层上限</p>
-          <p className="mt-2 text-[20px] font-semibold text-white">
-            {formatPercentPlain(hedgeCapacityPct, 1)} / {formatPercentPlain(operationsBoard.hedgeMaxSizePct, 1)}
-          </p>
+
+        <div className="space-y-4">
+          <div className="grid gap-3 xl:grid-cols-2">
+            <div className={cn(innerBlockClass, "p-4")}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">记账曲线</p>
+                <p className="text-[10px] text-[#6f6d69]">按成交记录重建</p>
+              </div>
+              <div className="mt-3 h-[220px] w-full">
+                {timelineData.length ? (
+                  <ResponsiveContainer>
+                    <AreaChart data={timelineData} margin={{ left: 0, right: 8, top: 10, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="manual-equity-gradient" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#b45f06" stopOpacity={0.28} />
+                          <stop offset="100%" stopColor="#b45f06" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid stroke="#b6afa5" strokeDasharray="2 4" />
+                      <XAxis
+                        dataKey="timestamp"
+                        tickFormatter={(value) => formatDateTimeShort(String(value))}
+                        tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }}
+                        minTickGap={24}
+                      />
+                      <YAxis tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }} width={52} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: "#fbf7f0", border: "1px solid #b6afa5", borderRadius: 4, color: "#1a1a1a" }}
+                        labelFormatter={(value) => formatDateTime(String(value))}
+                      />
+                      <Area type="monotone" dataKey="equity" stroke="#b45f06" fill="url(#manual-equity-gradient)" strokeWidth={2.2} />
+                      <Line type="monotone" dataKey="cash" stroke="#223b5b" dot={false} strokeWidth={1.7} />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex h-full items-center justify-center rounded-[4px] border border-dashed border-[#b6afa5] bg-[#fffdf8] font-mono text-[11px] text-[#6f6d69]">
+                    录入几笔交易后，这里会显示资金曲线。
+                  </div>
+                )}
+              </div>
+            </div>
+
+            <div className={cn(innerBlockClass, "p-4")}>
+              <div className="flex items-center justify-between gap-3">
+                <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">当前资产结构</p>
+                <p className="text-[10px] text-[#6f6d69]">市值与总盈亏</p>
+              </div>
+              <div className="mt-3 h-[220px] w-full">
+                {assetChartData.length ? (
+                  <ResponsiveContainer>
+                    <ComposedChart data={assetChartData} margin={{ left: 4, right: 8, top: 10, bottom: 0 }}>
+                      <CartesianGrid stroke="#b6afa5" strokeDasharray="2 4" />
+                      <XAxis dataKey="asset" tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }} />
+                      <YAxis tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }} width={56} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: "#fbf7f0", border: "1px solid #b6afa5", borderRadius: 4, color: "#1a1a1a" }}
+                        formatter={(value) => formatMoney(Number(value ?? 0), 0)}
+                      />
+                      <Bar dataKey="市值" radius={[4, 4, 0, 0]} fill="#b45f06" />
+                      <Line type="monotone" dataKey="总盈亏" stroke="#1a4d2e" dot={false} strokeWidth={2.1} />
+                    </ComposedChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex h-full items-center justify-center rounded-[4px] border border-dashed border-[#b6afa5] bg-[#fffdf8] font-mono text-[11px] text-[#6f6d69]">
+                    录入几笔交易后，这里会显示资产结构。
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className={cn(innerBlockClass, "p-4")}>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">现金</p>
+              <p className="mt-2 font-mono text-[20px] font-semibold text-[#1a1a1a]">{formatMoney(derived.cash, 0)}</p>
+            </div>
+            <div className={cn(innerBlockClass, "p-4")}>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">权益</p>
+              <p className="mt-2 font-mono text-[20px] font-semibold text-[#1a1a1a]">{formatMoney(derived.equity, 0)}</p>
+            </div>
+            <div className={cn(innerBlockClass, "p-4")}>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">总盈亏</p>
+              <p className={cn("mt-2 font-mono text-[20px] font-semibold", valueToneClass(totalPnl))}>{formatMoney(totalPnl, 0)}</p>
+            </div>
+          </div>
+
+          <div className="grid gap-3 sm:grid-cols-3">
+            <div className={cn(innerBlockClass, "p-4")}>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">已实现</p>
+              <p className={cn("mt-2 font-mono text-[20px] font-semibold", valueToneClass(derived.realizedPnl))}>{formatMoney(derived.realizedPnl, 0)}</p>
+            </div>
+            <div className={cn(innerBlockClass, "p-4")}>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">未实现</p>
+              <p className={cn("mt-2 font-mono text-[20px] font-semibold", valueToneClass(derived.unrealizedPnl))}>{formatMoney(derived.unrealizedPnl, 0)}</p>
+            </div>
+            <div className={cn(innerBlockClass, "p-4")}>
+              <p className="text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">手续费</p>
+              <p className={cn("mt-2 font-mono text-[20px] font-semibold", valueToneClass(-derived.feesPaid))}>{formatMoney(derived.feesPaid, 0)}</p>
+            </div>
+          </div>
+
+          <div className={cn(innerBlockClass, "p-4")}>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">持仓快照</p>
+              <p className="font-mono text-[10px] text-[#6f6d69]">已录入 {derived.entries.length} 笔</p>
+            </div>
+            <div className="overflow-x-auto">
+              <table className="min-w-full border-separate border-spacing-0">
+                <thead>
+                  <tr>
+                    <th className={tableHeadClass}>资产</th>
+                    <th className={tableHeadClass}>持仓单位</th>
+                    <th className={tableHeadClass}>均价</th>
+                    <th className={tableHeadClass}>现价</th>
+                    <th className={tableHeadClass}>市值</th>
+                    <th className={tableHeadClass}>已实现</th>
+                    <th className={tableHeadClass}>未实现</th>
+                    <th className={tableHeadClass}>总P&amp;L</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {derived.positions.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="border-b border-t border-[#b6afa5]/60 bg-[#fbf7f0] px-3 py-5 text-center font-mono text-[11px] text-[#6f6d69]">
+                        暂无手工持仓，先录入一笔交易。
+                      </td>
+                    </tr>
+                  ) : (
+                    derived.positions.map((row) => (
+                      <tr key={row.asset}>
+                        <td className={tableCellClass}>
+                          <span className={cn("font-semibold", assetToneClass(row.asset))}>{row.asset}</span>
+                        </td>
+                        <td className={cn(tableCellClass, row.quantity >= 0 ? "text-[#1a4d2e]" : "text-[#7b2d2c]")}>{formatPlain(row.quantity, 6)}</td>
+                        <td className={tableCellClass}>{formatMoney(row.avgPrice, 2)}</td>
+                        <td className={tableCellClass}>{formatMoney(row.marketPrice, 2)}</td>
+                        <td className={tableCellClass}>{formatMoney(row.marketValue, 0)}</td>
+                        <td className={cn(tableCellClass, valueToneClass(row.realizedPnl))}>{formatMoney(row.realizedPnl, 0)}</td>
+                        <td className={cn(tableCellClass, valueToneClass(row.unrealizedPnl))}>{formatMoney(row.unrealizedPnl, 0)}</td>
+                        <td className={cn(tableCellClass, valueToneClass(row.totalPnl))}>{formatMoney(row.totalPnl, 0)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <div className={cn(innerBlockClass, "p-4")}>
+            <div className="mb-3 flex items-center justify-between gap-3">
+              <p className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">交易流水</p>
+              <p className="font-mono text-[10px] text-[#6f6d69]">{derived.entries.length ? "最新在上" : "空"}</p>
+            </div>
+            <div className="max-h-[340px] overflow-y-auto overflow-x-auto">
+              <table className="min-w-full border-separate border-spacing-0">
+                <thead>
+                  <tr>
+                    <th className={tableHeadClass}>时间</th>
+                    <th className={tableHeadClass}>资产</th>
+                    <th className={tableHeadClass}>动作</th>
+                    <th className={tableHeadClass}>名义金额</th>
+                    <th className={tableHeadClass}>价格</th>
+                    <th className={tableHeadClass}>手续费</th>
+                    <th className={tableHeadClass}>备注</th>
+                    <th className={tableHeadClass}>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {derived.entries.length === 0 ? (
+                    <tr>
+                      <td colSpan={8} className="border-b border-t border-[#b6afa5]/60 bg-[#fbf7f0] px-3 py-5 text-center font-mono text-[11px] text-[#6f6d69]">
+                        还没有手工流水。
+                      </td>
+                    </tr>
+                  ) : (
+                    derived.entries.map((entry) => (
+                      <tr key={entry.id}>
+                        <td className={tableCellClass}>{formatDateTime(entry.timestamp)}</td>
+                        <td className={tableCellClass}>
+                          <span className={cn("font-semibold", assetToneClass(entry.asset))}>{entry.asset}</span>
+                        </td>
+                        <td className={cn(tableCellClass, entry.side === "BUY" ? "text-[#1a4d2e]" : "text-[#7b2d2c]")}>{entry.side}</td>
+                        <td className={tableCellClass}>{formatMoney(entry.notionalUsd, 0)}</td>
+                        <td className={tableCellClass}>{formatMoney(entry.price, 2)}</td>
+                        <td className={tableCellClass}>{formatMoney(entry.fee, 2)}</td>
+                        <td className={tableCellClass}>{entry.note || "-"}</td>
+                        <td className={tableCellClass}>
+                          <button
+                            type="button"
+                            onClick={() => removeEntry(entry.id)}
+                            className="rounded-[4px] border border-[#f7ecec] bg-[#f7ecec] px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em] text-[#7b2d2c]"
+                          >
+                            删除
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       </div>
     </TerminalCard>
@@ -935,7 +1174,7 @@ const OperationsWorkbench = ({
 };
 
 const PageShell = ({ children }: { children: ReactNode }) => (
-  <div className="min-h-screen bg-[#0a0e1a] font-mono text-[#e2e8f0]">
+  <div className="min-h-screen bg-[#f2efe9] font-mono text-[#1a1a1a]">
     <div className="flex min-h-screen w-full flex-col gap-0">
       {children}
     </div>
@@ -945,10 +1184,10 @@ const PageShell = ({ children }: { children: ReactNode }) => (
 const LoadingState = () => (
   <PageShell>
     <div className={cn(cardClass, "m-4 flex min-h-[60vh] flex-col items-center justify-center gap-4")}> 
-      <Database className="h-10 w-10 text-[#60a5fa]" />
+      <Database className="h-10 w-10 text-[#223b5b]" />
       <div className="text-center">
-        <h1 className="text-[22px] font-semibold text-white">五资产组合交易终端</h1>
-        <p className="mt-2 text-[12px] text-[#7f93ad]">正在加载最新策略快照、纸交易账本和风控告警...</p>
+        <h1 className="text-[22px] font-semibold text-[#1a1a1a]">五资产组合交易终端</h1>
+        <p className="mt-2 text-[12px] text-[#6f6d69]">正在加载最新策略快照、纸交易账本和风控告警...</p>
       </div>
     </div>
   </PageShell>
@@ -956,17 +1195,17 @@ const LoadingState = () => (
 
 const ErrorState = ({ message }: { message: string }) => (
   <PageShell>
-    <div className={cn(cardClass, "m-4 flex min-h-[60vh] flex-col items-center justify-center gap-4 border-[#7f1d1d] bg-[#1f0a0d]/90 px-6 text-center")}> 
+    <div className={cn(cardClass, "m-4 flex min-h-[60vh] flex-col items-center justify-center gap-4 border-[#f7ecec] bg-[#f9eceb]/90 px-6 text-center")}> 
       <AlertTriangle className="h-10 w-10 text-[#f87171]" />
       <div>
-        <h1 className="text-[22px] font-semibold text-white">五资产终端加载失败</h1>
-        <p className="mt-2 max-w-[720px] text-[12px] leading-6 text-[#fecaca]">{message}</p>
+        <h1 className="text-[22px] font-semibold text-[#1a1a1a]">五资产终端加载失败</h1>
+        <p className="mt-2 max-w-[720px] text-[12px] leading-6 text-[#7b2d2c]">{message}</p>
       </div>
       <div className="flex flex-wrap items-center justify-center gap-3">
-        <Link href="/backtest" className="rounded-[4px] border border-[#334155] px-4 py-2 text-[12px] text-[#cbd5e1] transition hover:border-[#60a5fa] hover:text-white">
+        <Link href="/backtest" className="rounded-[4px] border border-[#334155] px-4 py-2 text-[12px] text-[#6f6d69] transition hover:border-[#223b5b] hover:text-[#1a1a1a]">
           查看量化回测
         </Link>
-        <Link href="/" className="rounded-[4px] border border-[#334155] px-4 py-2 text-[12px] text-[#cbd5e1] transition hover:border-[#60a5fa] hover:text-white">
+        <Link href="/" className="rounded-[4px] border border-[#334155] px-4 py-2 text-[12px] text-[#6f6d69] transition hover:border-[#223b5b] hover:text-[#1a1a1a]">
           返回主看板
         </Link>
       </div>
@@ -975,13 +1214,22 @@ const ErrorState = ({ message }: { message: string }) => (
 );
 
 const InlineErrorBanner = ({ message }: { message: string }) => (
-  <div className="mx-4 mt-4 rounded-[4px] border border-[#7f1d1d] bg-[#1f0a0d]/80 px-4 py-3 font-mono text-[11px] text-[#fecaca]">
+  <div className="mx-4 mt-4 rounded-[4px] border border-[#f7ecec] bg-[#f9eceb]/80 px-4 py-3 font-mono text-[11px] text-[#7b2d2c]">
     <div className="flex items-start gap-3">
       <AlertTriangle className="mt-0.5 h-4 w-4 shrink-0 text-[#f87171]" />
       <div className="space-y-1">
-        <p className="font-semibold text-white">接口这次没取到新结果，先保留上一次成功的数据。</p>
+        <p className="font-semibold text-[#1a1a1a]">接口这次没取到新结果，先保留上一次成功的数据。</p>
         <p>{message}</p>
       </div>
+    </div>
+  </div>
+);
+
+const SectionLabel = ({ title, subtitle, accentClass }: { title: string; subtitle: string; accentClass: string }) => (
+  <div className="mb-3 flex items-start justify-between gap-4 border-b border-[#b6afa5] pb-3">
+    <div>
+      <p className={cn("font-mono text-[10px] uppercase tracking-[0.18em]", accentClass)}>{title}</p>
+      <p className="mt-1 font-mono text-[11px] leading-5 text-[#6f6d69]">{subtitle}</p>
     </div>
   </div>
 );
@@ -994,21 +1242,6 @@ const buildNavChartData = (strategy: FiveAssetPayload) =>
     策略回撤: row.drawdown,
     基准回撤: row.benchmark_drawdown,
   }));
-
-const buildMonthlyNavChartData = (strategy: FiveAssetPayload) => {
-  const monthlyMap = new Map<string, FiveAssetPayload["series"]["portfolio"][number]>();
-  strategy.series.portfolio.forEach((row) => {
-    monthlyMap.set(row.date.slice(0, 7), row);
-  });
-
-  return Array.from(monthlyMap.values()).map((row) => ({
-    date: row.date,
-    策略净值: row.nav,
-    基准净值: row.benchmark_nav,
-    策略回撤: row.drawdown,
-    基准回撤: row.benchmark_drawdown,
-  }));
-};
 
 const filterChartDataByRange = (
   data: {
@@ -1043,13 +1276,6 @@ const filterChartDataByRange = (
 const calcYearToDate = (months: Record<string, number>) =>
   monthKeys.reduce((sum, month) => sum + (typeof months[month] === "number" ? months[month] : 0), 0);
 
-const buildMacroChartData = (strategy: FiveAssetPayload) =>
-  strategy.series.portfolio.slice(-160).map((row) => ({
-    date: row.date,
-    宏观总分: row.macro_score,
-    风险信号: row.risk_signals,
-  }));
-
 const groupOrdersByTradingDay = (orders: FiveAssetTerminalOrder[], timeZone: string) => {
   const groups: { day: string; orders: FiveAssetTerminalOrder[] }[] = [];
   let currentDay = "";
@@ -1081,6 +1307,205 @@ type TradeRoundRow = {
   status: "closed" | "open";
   openWeightPct: number;
   closeWeightPct: number;
+};
+
+type TerminalPageMode = "live" | "backtest";
+
+type ManualBookSide = "BUY" | "SELL";
+
+type ManualBookEntry = {
+  id: string;
+  timestamp: string;
+  asset: string;
+  side: ManualBookSide;
+  notionalUsd: number;
+  price: number;
+  fee: number;
+  note: string;
+};
+
+type ManualBookState = {
+  startingCapital: number;
+  entries: ManualBookEntry[];
+};
+
+type ManualBookPosition = {
+  asset: string;
+  quantity: number;
+  avgPrice: number;
+  marketPrice: number;
+  marketValue: number;
+  realizedPnl: number;
+  unrealizedPnl: number;
+  feesPaid: number;
+  totalPnl: number;
+};
+
+type ManualBookDerived = {
+  startingCapital: number;
+  cash: number;
+  equity: number;
+  realizedPnl: number;
+  unrealizedPnl: number;
+  feesPaid: number;
+  entries: ManualBookEntry[];
+  positions: ManualBookPosition[];
+};
+
+const normalizeManualBookState = (value: unknown, fallbackCapital: number): ManualBookState => {
+  if (!value || typeof value !== "object") {
+    return { startingCapital: fallbackCapital, entries: [] };
+  }
+
+  const raw = value as Partial<ManualBookState> & { entries?: unknown };
+  const startingCapital = typeof raw.startingCapital === "number" && Number.isFinite(raw.startingCapital) ? Math.max(0, raw.startingCapital) : fallbackCapital;
+  const entries = Array.isArray(raw.entries)
+    ? raw.entries
+        .map((entry) => {
+          if (!entry || typeof entry !== "object") {
+            return null;
+          }
+          const candidate = entry as Partial<ManualBookEntry> & { quantity?: unknown; notionalUsd?: unknown };
+          const asset = typeof candidate.asset === "string" ? candidate.asset.toUpperCase() : "";
+          const side = candidate.side === "SELL" ? "SELL" : "BUY";
+          const price = typeof candidate.price === "number" && Number.isFinite(candidate.price) ? Math.max(0, candidate.price) : NaN;
+          const notionalUsd =
+            typeof candidate.notionalUsd === "number" && Number.isFinite(candidate.notionalUsd)
+              ? Math.max(0, candidate.notionalUsd)
+              : typeof candidate.quantity === "number" && Number.isFinite(candidate.quantity) && Number.isFinite(price)
+                ? Math.max(0, candidate.quantity * price)
+                : NaN;
+          const fee = typeof candidate.fee === "number" && Number.isFinite(candidate.fee) ? Math.max(0, candidate.fee) : 0;
+          const timestamp = typeof candidate.timestamp === "string" ? candidate.timestamp : "";
+          const note = typeof candidate.note === "string" ? candidate.note : "";
+          if (!asset || !timestamp || !Number.isFinite(notionalUsd) || !Number.isFinite(price)) {
+            return null;
+          }
+          return {
+            id: typeof candidate.id === "string" && candidate.id ? candidate.id : `${timestamp}-${asset}-${side}-${Math.random().toString(16).slice(2, 8)}`,
+            timestamp,
+            asset,
+            side,
+            notionalUsd,
+            price,
+            fee,
+            note,
+          } satisfies ManualBookEntry;
+        })
+        .filter((entry): entry is ManualBookEntry => Boolean(entry))
+    : [];
+
+  return { startingCapital, entries };
+};
+
+const deriveManualBook = (state: ManualBookState, markPrices: Record<string, number>): ManualBookDerived => {
+  const epsilon = 1e-12;
+  const positions = new Map<string, { quantity: number; avgPrice: number; realizedPnl: number; feesPaid: number }>();
+  let cash = Math.max(0, state.startingCapital);
+  let realizedPnl = 0;
+  let unrealizedPnl = 0;
+  let feesPaid = 0;
+
+  const sortedEntries = [...state.entries].sort((left, right) => {
+    const leftTime = new Date(left.timestamp).getTime();
+    const rightTime = new Date(right.timestamp).getTime();
+    if (leftTime !== rightTime) {
+      return leftTime - rightTime;
+    }
+    return left.id.localeCompare(right.id);
+  });
+
+  for (const entry of sortedEntries) {
+    const sign = entry.side === "BUY" ? 1 : -1;
+    const tradeNotional = entry.notionalUsd;
+    const tradeQty = entry.price > epsilon ? tradeNotional / entry.price : 0;
+    const signedQty = sign * tradeQty;
+    const entryNotional = tradeNotional;
+    feesPaid += entry.fee;
+    cash += entry.side === "BUY" ? -(entryNotional + entry.fee) : entryNotional - entry.fee;
+
+    const current = positions.get(entry.asset) ?? { quantity: 0, avgPrice: 0, realizedPnl: 0, feesPaid: 0 };
+    const currentSign = Math.sign(current.quantity);
+    const tradeSign = Math.sign(signedQty);
+
+    if (currentSign === 0 || currentSign === tradeSign) {
+      const nextQty = current.quantity + signedQty;
+      const nextAbsQty = Math.abs(nextQty);
+      const nextAvgPrice =
+        nextAbsQty <= epsilon
+          ? 0
+          : currentSign === 0
+            ? entry.price
+            : (Math.abs(current.quantity) * current.avgPrice + tradeQty * entry.price) / nextAbsQty;
+      positions.set(entry.asset, {
+        quantity: nextQty,
+        avgPrice: nextAvgPrice,
+        realizedPnl: current.realizedPnl,
+        feesPaid: current.feesPaid + entry.fee,
+      });
+      continue;
+    }
+
+    const closedQty = Math.min(Math.abs(current.quantity), tradeQty);
+    const realizedDelta =
+      current.quantity > 0
+        ? (entry.price - current.avgPrice) * closedQty
+        : (current.avgPrice - entry.price) * closedQty;
+    realizedPnl += realizedDelta;
+
+    const remainingTradeQty = tradeQty - closedQty;
+    if (remainingTradeQty <= epsilon) {
+      const remainingQty = current.quantity > 0 ? current.quantity - closedQty : current.quantity + closedQty;
+      const nextQty = Math.abs(remainingQty) <= epsilon ? 0 : remainingQty;
+      positions.set(entry.asset, {
+        quantity: nextQty,
+        avgPrice: Math.abs(nextQty) <= epsilon ? 0 : current.avgPrice,
+        realizedPnl: current.realizedPnl + realizedDelta,
+        feesPaid: current.feesPaid + entry.fee,
+      });
+    } else {
+      const nextQty = tradeSign > 0 ? remainingTradeQty : -remainingTradeQty;
+      positions.set(entry.asset, {
+        quantity: nextQty,
+        avgPrice: entry.price,
+        realizedPnl: current.realizedPnl + realizedDelta,
+        feesPaid: current.feesPaid + entry.fee,
+      });
+    }
+  }
+
+  const positionRows = MANUAL_ASSET_ORDER.map((asset) => {
+    const markPrice = Number.isFinite(markPrices[asset]) ? markPrices[asset] : 0;
+    const position = positions.get(asset) ?? { quantity: 0, avgPrice: 0, realizedPnl: 0, feesPaid: 0 };
+    const marketValue = position.quantity * markPrice;
+    const unrealized = position.quantity * (markPrice - position.avgPrice);
+    unrealizedPnl += unrealized;
+    const totalPnl = position.realizedPnl + unrealized - position.feesPaid;
+    return {
+      asset,
+      quantity: roundNumber(position.quantity, 8),
+      avgPrice: roundNumber(position.avgPrice, 4),
+      marketPrice: roundNumber(markPrice, 4),
+      marketValue: roundNumber(marketValue, 2),
+      realizedPnl: roundNumber(position.realizedPnl, 2),
+      unrealizedPnl: roundNumber(unrealized, 2),
+      feesPaid: roundNumber(position.feesPaid, 2),
+      totalPnl: roundNumber(totalPnl, 2),
+    } satisfies ManualBookPosition;
+  }).filter((row) => Math.abs(row.quantity) > epsilon || Math.abs(row.realizedPnl) > epsilon || Math.abs(row.unrealizedPnl) > epsilon || Math.abs(row.feesPaid) > epsilon);
+
+  const equity = cash + positionRows.reduce((sum, row) => sum + row.marketValue, 0);
+
+  return {
+    startingCapital: state.startingCapital,
+    cash: roundNumber(cash, 2),
+    equity: roundNumber(equity, 2),
+    realizedPnl: roundNumber(realizedPnl, 2),
+    unrealizedPnl: roundNumber(unrealizedPnl, 2),
+    feesPaid: roundNumber(feesPaid, 2),
+    entries: sortedEntries,
+    positions: positionRows,
+  };
 };
 
 type OpenLot = {
@@ -1212,12 +1637,6 @@ const buildWeightChartData = (positions: FiveAssetTerminalPosition[]) =>
     目标权重: position.targetWeightPct,
   }));
 
-const buildAttributionData = (strategy: FiveAssetPayload) =>
-  Object.entries(strategy.lastSnapshot.attribution).map(([asset, value]) => ({
-    资产: asset,
-    归因: value,
-  }));
-
 const tickerTapeWithLiveQuotes = (
   rows: { asset: string; price: number; dayChangePct: number; contributionPct: number; targetWeightPct: number }[],
   quotes: Record<string, FiveAssetLiveQuote>,
@@ -1268,16 +1687,6 @@ const mergeLiveQuotesIntoPositions = (
   };
 };
 
-const latestAlertSummary = (alerts: FiveAssetTerminalAlert[]) => {
-  if (!alerts.length) {
-    return "当前没有新增风控告警。";
-  }
-  return alerts
-    .slice(0, 3)
-    .map((alert) => `${LEVEL_LABELS[alert.level] ?? alert.level} · ${alert.title}`)
-    .join(" / ");
-};
-
 const orderToneClass = (side: string) => {
   if (side === "BUY") {
     return "text-[#4ade80]";
@@ -1285,7 +1694,7 @@ const orderToneClass = (side: string) => {
   if (side === "SELL") {
     return "text-[#f87171]";
   }
-  return "text-[#cbd5e1]";
+  return "text-[#6f6d69]";
 };
 
 type FiveAssetTerminalProps = {
@@ -1304,6 +1713,8 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
   });
   const [appliedRange, setAppliedRange] = useState<{ startDate?: string; endDate?: string }>({});
   const [timeZone, setTimeZone] = useState(detectedTimeZone || "UTC");
+  const [pageMode, setPageMode] = useState<TerminalPageMode>("live");
+  const [manualPortfolioValue, setManualPortfolioValue] = useState<number | null>(null);
   const { payload, isLoading, error, isRefreshing, lastLoadedAt, pollIntervalMs, sourceType } = useFiveAssetTerminalData(initialPayload, appliedRange);
   const { payload: liveQuotesPayload, feedState: marketFeedState, lastLoadedAt: marketLoadedAt, pollIntervalMs: marketPollIntervalMs } = useFiveAssetLiveQuotes();
   const [chartRange, setChartRange] = useState<"3m" | "1y" | "all">("all");
@@ -1320,28 +1731,18 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
 
     const strategy = payload.strategy;
     const paperTrading = payload.paperTrading;
-    const sourceWarnings: WarningBannerItem[] = (payload.warnings ?? []).map((warning) => ({
-      level: "warning",
-      code: "SOURCE_WARNING",
-      title: "数据源提示",
-      detail: warning,
-    }));
-    const combinedWarnings: WarningBannerItem[] = [...sourceWarnings, ...paperTrading.alerts];
 
     return {
       strategy,
       paperTrading,
       lastSnapshot: strategy.lastSnapshot,
       navChartData: buildNavChartData(strategy),
-      macroChartData: buildMacroChartData(strategy),
       weightChartData: buildWeightChartData(paperTrading.positions),
-      attributionData: buildAttributionData(strategy),
       positions: paperTrading.positions,
       orders: isCustomBacktestView ? paperTrading.orders : paperTrading.orders.slice(0, 12),
       monthlyRows: Object.entries(strategy.monthly).sort((left, right) => right[0].localeCompare(left[0])),
       regimeSegments: [...strategy.regimeSummary.segments].slice(-8).reverse(),
       diagnostics: strategy.assetSummary,
-      combinedWarnings,
     };
   }, [payload, isCustomBacktestView]);
 
@@ -1363,6 +1764,49 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
     }
   }, [payload, baseRange.startDate, baseRange.endDate, draftStartDate, draftEndDate]);
 
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    const saved = window.localStorage.getItem(PAGE_MODE_STORAGE_KEY);
+    if (saved === "live" || saved === "backtest") {
+      setPageMode(saved);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (typeof window === "undefined") {
+      return;
+    }
+    window.localStorage.setItem(PAGE_MODE_STORAGE_KEY, pageMode);
+  }, [pageMode]);
+
+  const liveQuotes = liveQuotesPayload?.quotes;
+  const liveQuoteMap = useMemo(
+    () => (liveQuotes ?? {}) as Record<string, FiveAssetLiveQuote>,
+    [liveQuotes],
+  );
+  const strategyPricesSource = payload?.strategy?.lastSnapshot?.prices;
+  const strategyPrices = useMemo(
+    () => strategyPricesSource ?? {},
+    [strategyPricesSource],
+  );
+  const manualPositionsForPricingSource = derived?.positions;
+  const manualPositionsForPricing = useMemo(
+    () => manualPositionsForPricingSource ?? [],
+    [manualPositionsForPricingSource],
+  );
+  const manualMarkPrices = useMemo(
+    () =>
+      Object.fromEntries(
+        MANUAL_ASSET_ORDER.map((asset) => [
+          asset,
+          liveQuoteMap[asset]?.price ?? strategyPrices[asset] ?? manualPositionsForPricing.find((position) => position.asset === asset)?.markPrice ?? 0,
+        ]),
+      ) as Record<string, number>,
+    [liveQuoteMap, manualPositionsForPricing, strategyPrices],
+  );
+
   if (isLoading) {
     return <LoadingState />;
   }
@@ -1371,11 +1815,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
     return <ErrorState message={error ?? "五资产终端数据为空，请先执行数据生成命令。"} />;
   }
 
-  const { strategy, paperTrading, lastSnapshot, navChartData, macroChartData, weightChartData, attributionData, positions, orders, monthlyRows, regimeSegments, diagnostics, combinedWarnings } = derived;
-  const liveQuoteMap = (liveQuotesPayload?.quotes ?? {}) as Record<string, FiveAssetLiveQuote>;
-  const paperStatus = isCustomBacktestView ? translatePaperStatus("snapshot") : translatePaperStatus(paperTrading.status);
-  const sourceMode = translateSourceMode(payload.sourceMode);
-  const macroSignal = strategy.macroSignal;
+  const { strategy, paperTrading, lastSnapshot, navChartData, weightChartData, positions, orders, monthlyRows, regimeSegments, diagnostics } = derived;
   const terminalBoards = strategy.terminalBoards;
   const treasurySource = strategy.dataSources?.treasury;
   const tickerTape = terminalBoards?.tickerTape ?? [];
@@ -1383,6 +1823,8 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
   const displayTickerTape = isCustomBacktestView ? tickerTape : tickerTapeWithLiveQuotes(tickerTape, liveQuoteMap);
   const displayPositions = isCustomBacktestView ? positions : livePositionState.positions;
   const displayEquity = isCustomBacktestView ? paperTrading.ledger.equity : livePositionState.equity;
+  const manualFallbackCapital = pageMode === "live" ? displayEquity : (initialPayload?.strategy?.startingCapital ?? 100000);
+  const headerCapitalValue = pageMode === "live" ? (manualPortfolioValue ?? displayEquity) : displayEquity;
   const displayOrders = isCustomBacktestView
     ? orders.map((order) => ({
         ...order,
@@ -1405,16 +1847,14 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
     latestPriceByAsset[position.asset] = position.markPrice;
   }
   const tradeRounds = buildTradeRounds(filteredDisplayOrders, latestPriceByAsset, payload.generatedAt);
-  const optionsBoard = terminalBoards?.optionsBoard;
   const operationsBoard = terminalBoards?.operationsBoard;
   const kpiStrip = terminalBoards?.kpiStrip;
-  const macroGuard = payload.paperTrading.macroGuard;
-  const routing = payload.paperTrading.routing;
   const currentSignalText = lastSnapshot.signal_list.length
     ? lastSnapshot.signal_list.map(translateSignal).join(" / ")
     : "当前没有额外风险触发。";
   const chartData = filterChartDataByRange(navChartData, chartRange);
   const performanceHeader = `BACKTEST ${strategy.startDate} -> ${strategy.endDate}`;
+  const pageHeaderLabel = pageMode === "live" ? "MANUAL BOOK" : performanceHeader;
   const monthlyTiles = monthlyRows
     .flatMap(([year, months]) =>
       monthKeys.map((month) => ({
@@ -1452,33 +1892,80 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
     setChartRange("all");
   };
 
+  const jumpToSection = (mode: TerminalPageMode) => {
+    setPageMode(mode);
+    if (typeof window === "undefined") {
+      return;
+    }
+    const targetId = mode === "live" ? "live-book-section" : "backtest-page-section";
+    window.requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({ behavior: "smooth", block: "start" });
+    });
+  };
+
   return (
     <PageShell>
       {error ? <InlineErrorBanner message={error} /> : null}
-      <header className="border-b-2 border-[#f59e0b] bg-[#06090f] px-6 py-3">
+      <section className="px-4 pt-4">
+        <div className="grid gap-3 md:grid-cols-2">
+          <button
+            type="button"
+            onClick={() => jumpToSection("live")}
+            className={cn(
+              "rounded-[8px] border px-5 py-4 text-left transition",
+              pageMode === "live" ? "border-[#1a4d2e] bg-[#edf7f1]/90 shadow-[0_0_0_1px_rgba(16,185,129,0.35)]" : "border-[#b6afa5] bg-[#fffdf8] hover:border-[#334155]",
+            )}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-mono text-[15px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]">实盘账本 + 数据</span>
+              <span className={cn("rounded-full border px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em]", pageMode === "live" ? "border-[#1a4d2e] text-[#1a4d2e]" : "border-[#334155] text-[#6f6d69]")}>
+                Live
+              </span>
+            </div>
+            <p className="mt-2 font-mono text-[11px] leading-5 text-[#6f6d69]">只保留手工记账、资金曲线和资产结构图，避免和回测页面混在一起。</p>
+          </button>
+          <button
+            type="button"
+            onClick={() => jumpToSection("backtest")}
+            className={cn(
+              "rounded-[8px] border px-5 py-4 text-left transition",
+              pageMode === "backtest" ? "border-[#b45f06] bg-[#2a1602]/90 shadow-[0_0_0_1px_rgba(245,158,11,0.35)]" : "border-[#b6afa5] bg-[#fffdf8] hover:border-[#334155]",
+            )}
+          >
+            <div className="flex items-center justify-between gap-3">
+              <span className="font-mono text-[15px] font-semibold uppercase tracking-[0.16em] text-[#1a1a1a]">回测页面</span>
+              <span className={cn("rounded-full border px-2 py-1 font-mono text-[10px] uppercase tracking-[0.14em]", pageMode === "backtest" ? "border-[#b45f06] text-[#b45f06]" : "border-[#334155] text-[#6f6d69]")}>
+                Backtest
+              </span>
+            </div>
+            <p className="mt-2 font-mono text-[11px] leading-5 text-[#6f6d69]">选择回测区间、查看绩效图、订单、持仓和年度拆分。适合策略复盘和汇报。</p>
+          </button>
+        </div>
+      </section>
+      <header className="border-b-2 border-[#b45f06] bg-[#fbf7f0] px-6 py-3">
         <div className="flex flex-col gap-3 xl:flex-row xl:items-center xl:justify-between">
           <div className="flex flex-wrap items-center gap-4 font-mono">
-            <span className="text-[18px] font-bold tracking-[0.18em] text-[#f59e0b]">PORTFOLIO</span>
-            <span className="text-[#1e2d45]">|</span>
-            <span className="text-[13px] tracking-[0.12em] text-[#e2e8f0]">MACRO CTA TERMINAL</span>
-            <span className="text-[#1e2d45]">|</span>
-            <span className="flex items-center gap-2 text-[12px] tracking-[0.12em] text-[#10b981]">
-              <span className="inline-block h-2 w-2 rounded-full bg-[#10b981]" />
-              {performanceHeader}
+            <span className="text-[18px] font-bold tracking-[0.18em] text-[#b45f06]">PORTFOLIO</span>
+            <span className="text-[#b6afa5]">|</span>
+            <span className="text-[13px] tracking-[0.12em] text-[#1a1a1a]">MACRO CTA TERMINAL</span>
+            <span className="text-[#b6afa5]">|</span>
+            <span className="flex items-center gap-2 text-[12px] tracking-[0.12em] text-[#1a4d2e]">
+              <span className="inline-block h-2 w-2 rounded-full bg-[#1a4d2e]" />
+              {pageHeaderLabel}
             </span>
-            <span className="text-[#1e2d45]">|</span>
-            <span className="text-[12px] tracking-[0.12em] text-[#8899aa]">BITGET PERPS</span>
+            <span className="text-[#b6afa5]">|</span>
+            <span className="text-[12px] tracking-[0.12em] text-[#6f6d69]">BITGET PERPS</span>
             {sourceType ? (
               <>
-                <span className="text-[#1e2d45]">|</span>
-                <span className={cn("text-[12px] tracking-[0.12em]", sourceType === "api" ? "text-[#10b981]" : "text-[#8899aa]")}>
+                <span className="text-[#b6afa5]">|</span>
+                <span className={cn("text-[12px] tracking-[0.12em]", sourceType === "api" ? "text-[#1a4d2e]" : "text-[#6f6d69]")}>
                   {sourceType === "api" ? "STRATEGY API" : "STRATEGY STATIC"}
                 </span>
-                <span className="text-[#1e2d45]">|</span>
+                <span className="text-[#b6afa5]">|</span>
                 <span
                   className={cn(
                     "text-[12px] tracking-[0.12em]",
-                    marketFeedState === "live" ? "text-[#10b981]" : marketFeedState === "cache" ? "text-[#f59e0b]" : "text-[#f87171]",
+                    marketFeedState === "live" ? "text-[#1a4d2e]" : marketFeedState === "cache" ? "text-[#b45f06]" : "text-[#f87171]",
                   )}
                 >
                   {marketFeedState === "live" ? "MARKET LIVE" : marketFeedState === "cache" ? "MARKET CACHE" : "MARKET OFFLINE"}
@@ -1488,505 +1975,311 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
           </div>
 
           <div className="flex flex-wrap items-center gap-3 font-mono">
-            <div className="flex items-center gap-2 text-[11px] tracking-[0.12em] text-[#8899aa]">
-              <span className={cn("inline-block h-2 w-2 rounded-full", isRefreshing ? "animate-pulse bg-[#10b981]" : "bg-[#f59e0b]")} />
+            <div className="flex items-center gap-2 text-[11px] tracking-[0.12em] text-[#6f6d69]">
+              <span className={cn("inline-block h-2 w-2 rounded-full", isRefreshing ? "animate-pulse bg-[#1a4d2e]" : "bg-[#b45f06]")} />
               <span>{isRefreshing ? "REFRESHING" : "AUTO REFRESH"}</span>
               <span className="text-[#5f738d]">{displayRefreshSeconds}s</span>
             </div>
             {lastLoadedAt ? (
-              <div className="rounded-[4px] border border-[#1e2d45] bg-[#0b1120] px-3 py-1 text-[11px] tracking-[0.12em] text-[#a8bbcf]">
+              <div className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-1 text-[11px] tracking-[0.12em] text-[#6f6d69]">
                 UPDATE {formatDateTimeInZone(lastLoadedAt, timeZone)}
               </div>
             ) : null}
             {marketLoadedAt ? (
-              <div className="rounded-[4px] border border-[#1e2d45] bg-[#0b1120] px-3 py-1 text-[11px] tracking-[0.12em] text-[#7dd3fc]">
+              <div className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 py-1 text-[11px] tracking-[0.12em] text-[#223b5b]">
                 MARKET {formatDateTimeInZone(marketLoadedAt, timeZone)}
               </div>
             ) : null}
             <div className="flex flex-col items-end">
               <div className="flex items-center gap-2">
-                <span className="text-[11px] tracking-[0.14em] text-[#8899aa]">CAPITAL $</span>
-                <div className="min-w-[144px] rounded-[4px] border border-[#1e2d45] bg-[#0f1629] px-4 py-2 text-right text-[14px] font-semibold tracking-[0.08em] text-[#f59e0b]">
-                  {formatCapitalValue(displayEquity)}
+                <span className="text-[11px] tracking-[0.14em] text-[#6f6d69]">CAPITAL $</span>
+                <div className="min-w-[144px] rounded-[4px] border border-[#b6afa5] bg-[#fbf7f0] px-4 py-2 text-right text-[14px] font-semibold tracking-[0.08em] text-[#b45f06]">
+                  {formatCapitalValue(headerCapitalValue)}
                 </div>
               </div>
-              <div className="mt-1 font-mono text-[10px] tracking-[0.04em] text-[#64748b]">
-                {isCustomBacktestView ? "区间末总资产 = 现金 + 区间末持仓估值" : "实时总资产 = 现金 + 持仓按最新市场价估值"}
+              <div className="mt-1 font-mono text-[10px] tracking-[0.04em] text-[#6f6d69]">
+                {isCustomBacktestView ? "区间末总资产 = 现金 + 区间末持仓估值" : "实盘总资产 = 手工账本权益，和下方 portfolio 同步"}
               </div>
             </div>
           </div>
         </div>
       </header>
 
-      <BacktestControlStrip
-        draftStartDate={draftStartDate}
-        draftEndDate={draftEndDate}
-        timeZone={timeZone}
-        loadedStartDate={strategy.startDate}
-        loadedEndDate={strategy.endDate}
-        onStartDateChange={setDraftStartDate}
-        onEndDateChange={setDraftEndDate}
-        onTimeZoneChange={setTimeZone}
-        onApply={applyBacktestRange}
-        onReset={resetBacktestRange}
-      />
+      {pageMode === "backtest" ? (
+        <>
+          <section className="px-4 pt-4">
+            <SectionLabel
+              title="回测页面"
+              subtitle="选择区间后，下面所有回测图表、订单和持仓都会按这个区间重算。"
+              accentClass="text-[#b45f06]"
+            />
+          </section>
 
-      {isCustomBacktestView ? (
-        <section className="border-x border-b border-[#1e2d45] bg-[#091224] px-6 py-3 font-mono text-[11px] tracking-[0.04em] text-[#93c5fd]">
-          当前是区间回测视图：`Performance / Benchmark / Holdings` 都按所选起止日期重算，`Latest Orders` 显示的是区间末期仓位快照，不再使用 live paper 执行阻断语义。
-        </section>
-      ) : null}
+          <BacktestControlStrip
+            draftStartDate={draftStartDate}
+            draftEndDate={draftEndDate}
+            timeZone={timeZone}
+            loadedStartDate={strategy.startDate}
+            loadedEndDate={strategy.endDate}
+            onStartDateChange={setDraftStartDate}
+            onEndDateChange={setDraftEndDate}
+            onTimeZoneChange={setTimeZone}
+            onApply={applyBacktestRange}
+            onReset={resetBacktestRange}
+          />
 
-      <PositionEconomicsCard
-        positions={displayPositions}
-        equity={displayEquity}
-        lastSnapshot={lastSnapshot}
-        operationsBoard={operationsBoard}
-      />
+          {isCustomBacktestView ? (
+            <section className="border-x border-b border-[#b6afa5] bg-[#f8f5ef] px-6 py-3 font-mono text-[11px] tracking-[0.04em] text-[#93c5fd]">
+              当前是区间回测视图：`Performance / Benchmark / Holdings` 都按所选起止日期重算，`Latest Orders` 显示的是区间末期仓位快照，不再使用 live paper 执行阻断语义。
+            </section>
+          ) : null}
 
-      {displayTickerTape.length ? <TickerTapeBar rows={displayTickerTape} /> : null}
+          <PositionEconomicsCard
+            positions={displayPositions}
+            equity={displayEquity}
+            lastSnapshot={lastSnapshot}
+            operationsBoard={operationsBoard}
+          />
 
-      {kpiStrip ? (
-        <section className="border-x border-b border-[#1e2d45] bg-[#080c16] px-6 py-3">
-          <div className="flex flex-wrap items-center gap-x-8 gap-y-2 font-mono">
-            <div className="flex items-baseline gap-2">
-              <span className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">Strat CAGR</span>
-              <span className="text-[14px] font-bold text-[#10b981]">{formatPct(strategy.kpis.strategy.cagr, 1)}</span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">Sharpe</span>
-              <span className="text-[14px] font-bold text-[#f59e0b]">{formatPlain(strategy.kpis.strategy.sharpe, 2)}</span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">MDD</span>
-              <span className="text-[14px] font-bold text-[#ef4444]">{formatPct(strategy.kpis.strategy.mdd, 1)}</span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">Win Rate</span>
-              <span className="text-[14px] font-bold text-[#10b981]">
-                {typeof kpiStrip.strategy?.winRate === "number" ? formatPct(kpiStrip.strategy.winRate, 0) : "N/A"}
-              </span>
-            </div>
-            <div className="flex items-baseline gap-2">
-              <span className="text-[11px] uppercase tracking-[0.12em] text-[#8899aa]">Profit Factor</span>
-              <span className="text-[14px] font-bold text-[#10b981]">
-                {typeof kpiStrip.strategy?.profitFactor === "number" ? formatPlain(kpiStrip.strategy.profitFactor, 2) : "N/A"}
-              </span>
-            </div>
-          </div>
-        </section>
-      ) : null}
+          {displayTickerTape.length ? <TickerTapeBar rows={displayTickerTape} /> : null}
 
-      <BenchmarkStrip strategy={strategy} />
-
-      <section className="px-4 pt-4">
-        <div className="mb-3 flex flex-wrap items-center gap-3 font-mono">
-          <span className="text-[12px] uppercase tracking-[0.14em] text-[#8899aa]">Performance Charts</span>
-          <div className="ml-auto flex items-center gap-2">
-            {(["3m", "1y", "all"] as const).map((item) => (
-              <button
-                key={item}
-                type="button"
-                onClick={() => setChartRange(item)}
-                className={cn(
-                  "rounded-[4px] border px-3 py-1 text-[11px] uppercase tracking-[0.12em]",
-                  chartRange === item ? "border-[#f59e0b] bg-[#f59e0b] text-[#06090f]" : "border-[#1e2d45] bg-[#1e2d45] text-[#8899aa]",
-                )}
-              >
-                {item.toUpperCase()}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <section className="grid gap-4 xl:grid-cols-2">
-          <TerminalCard title="STRATEGY / BENCHMARK" className="bg-[#091224]">
-            <div className="mb-3 flex items-center gap-4 border-b border-[#1e2d45]/80 pb-3">
-              <div className="flex items-center gap-2">
-                <span className="block h-[2px] w-8 bg-[#f59e0b]" />
-                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#f8fafc]">Strategy</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <span className="block h-[2px] w-8 border-t-2 border-dashed border-[#94a3b8]" />
-                <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#cbd5e1]">Benchmark</span>
-              </div>
-            </div>
-            <div className="h-[340px] w-full">
-              <ResponsiveContainer>
-                <AreaChart data={chartData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="strategy-nav-top" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.28} />
-                      <stop offset="100%" stopColor="#f59e0b" stopOpacity={0} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="#1e2d45" strokeDasharray="2 4" />
-                  <XAxis dataKey="date" tickFormatter={(value) => formatDate(value)} tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} minTickGap={24} />
-                  <YAxis tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} width={52} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: "#06090f", border: "1px solid #1e2d45", borderRadius: 4, color: "#e2e8f0" }}
-                    labelFormatter={(value) => formatDate(String(value), true)}
-                  />
-                  <Area type="monotone" dataKey="策略净值" stroke="#f59e0b" fill="url(#strategy-nav-top)" strokeWidth={2.4} />
-                  <Line type="monotone" dataKey="基准净值" stroke={benchmarkGrey} dot={false} strokeWidth={1.7} strokeDasharray="4 4" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </TerminalCard>
-
-          <TerminalCard title="DRAWDOWN %" className="bg-[#091224]">
-            <div className="h-[370px] w-full">
-              <ResponsiveContainer>
-                <AreaChart data={chartData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
-                  <defs>
-                    <linearGradient id="drawdown-fill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#f59e0b" stopOpacity={0.22} />
-                      <stop offset="100%" stopColor="#f59e0b" stopOpacity={0.02} />
-                    </linearGradient>
-                  </defs>
-                  <CartesianGrid stroke="#1e2d45" strokeDasharray="2 4" />
-                  <XAxis dataKey="date" tickFormatter={(value) => formatDate(value)} tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} minTickGap={24} />
-                  <YAxis tickFormatter={(value) => `${value}%`} tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} width={52} />
-                  <Tooltip
-                    contentStyle={{ backgroundColor: "#06090f", border: "1px solid #1e2d45", borderRadius: 4, color: "#e2e8f0" }}
-                    labelFormatter={(value) => formatDate(String(value), true)}
-                  />
-                  <Area type="monotone" dataKey="策略回撤" stroke="#f59e0b" fill="url(#drawdown-fill)" strokeWidth={2.1} />
-                  <Line type="monotone" dataKey="基准回撤" stroke="#ef4444" dot={false} strokeWidth={1.6} strokeDasharray="4 4" />
-                </AreaChart>
-              </ResponsiveContainer>
-            </div>
-          </TerminalCard>
-        </section>
-
-        <section className="mt-4 grid gap-4 xl:grid-cols-3">
-          <TerminalCard title="REGIME & RISK" className="bg-[#091224]">
-            <div className="space-y-4 py-1">
-              <div className={cn("font-mono text-[24px] font-bold tracking-[0.06em]", lastSnapshot.regime === "RISK_ON" ? "text-[#10b981]" : lastSnapshot.regime === "RISK_OFF" ? "text-[#ef4444]" : "text-[#f59e0b]")}>
-                {lastSnapshot.regime === "RISK_ON" ? "Risk-On" : lastSnapshot.regime === "RISK_OFF" ? "Risk-Off" : "Neutral"}
-              </div>
-              <div className="grid grid-cols-2 gap-2">
-                <div className={cn(innerBlockClass, "px-3 py-2")}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">Macro Score</div>
-                  <div className="mt-2 font-mono text-[16px] font-semibold text-[#10b981]">{formatPlain(lastSnapshot.macro_score, 1)}</div>
+          {kpiStrip ? (
+            <section className="border-x border-b border-[#b6afa5] bg-[#f8f5ef] px-6 py-3">
+              <div className="flex flex-wrap items-center gap-x-8 gap-y-2 font-mono">
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-[#6f6d69]">Strat CAGR</span>
+                  <span className="text-[14px] font-bold text-[#1a4d2e]">{formatPct(strategy.kpis.strategy.cagr, 1)}</span>
                 </div>
-                <div className={cn(innerBlockClass, "px-3 py-2")}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">Risk Signals</div>
-                  <div className={cn("mt-2 font-mono text-[16px] font-semibold", lastSnapshot.risk_signals > 0 ? "text-[#10b981]" : "text-[#8899aa]")}>
-                    {lastSnapshot.risk_signals}
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-[#6f6d69]">Sharpe</span>
+                  <span className="text-[14px] font-bold text-[#b45f06]">{formatPlain(strategy.kpis.strategy.sharpe, 2)}</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-[#6f6d69]">MDD</span>
+                  <span className="text-[14px] font-bold text-[#7b2d2c]">{formatPct(strategy.kpis.strategy.mdd, 1)}</span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-[#6f6d69]">Win Rate</span>
+                  <span className="text-[14px] font-bold text-[#1a4d2e]">
+                    {typeof kpiStrip.strategy?.winRate === "number" ? formatPct(kpiStrip.strategy.winRate, 0) : "N/A"}
+                  </span>
+                </div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-[11px] uppercase tracking-[0.12em] text-[#6f6d69]">Profit Factor</span>
+                  <span className="text-[14px] font-bold text-[#1a4d2e]">
+                    {typeof kpiStrip.strategy?.profitFactor === "number" ? formatPlain(kpiStrip.strategy.profitFactor, 2) : "N/A"}
+                  </span>
+                </div>
+              </div>
+            </section>
+          ) : null}
+
+          <BenchmarkStrip strategy={strategy} />
+
+          <section className="px-4 pt-4">
+            <div className="mb-3 flex flex-wrap items-center gap-3 font-mono">
+              <span className="text-[12px] uppercase tracking-[0.14em] text-[#6f6d69]">Performance Charts</span>
+              <div className="ml-auto flex items-center gap-2">
+                {(["3m", "1y", "all"] as const).map((item) => (
+                  <button
+                    key={item}
+                    type="button"
+                    onClick={() => setChartRange(item)}
+                    className={cn(
+                      "rounded-[4px] border px-3 py-1 text-[11px] uppercase tracking-[0.12em]",
+                      chartRange === item ? "border-[#b45f06] bg-[#b45f06] text-[#fbf7f0]" : "border-[#b6afa5] bg-[#b6afa5] text-[#6f6d69]",
+                    )}
+                  >
+                    {item.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <section className="grid gap-4 xl:grid-cols-2">
+              <TerminalCard title="STRATEGY / BENCHMARK" className="bg-[#f8f5ef]">
+                <div className="mb-3 flex items-center gap-4 border-b border-[#b6afa5]/80 pb-3">
+                  <div className="flex items-center gap-2">
+                    <span className="block h-[2px] w-8 bg-[#b45f06]" />
+                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#1a1a1a]">Strategy</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="block h-[2px] w-8 border-t-2 border-dashed border-[#6f6d69]" />
+                    <span className="font-mono text-[10px] font-semibold uppercase tracking-[0.14em] text-[#6f6d69]">Benchmark</span>
                   </div>
                 </div>
-                <div className={cn(innerBlockClass, "px-3 py-2")}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">MSTR Short</div>
-                  <div className="mt-2 font-mono text-[16px] font-semibold text-[#8b5cf6]">{formatPercentPlain(lastSnapshot.mstr_short_pct, 1)}</div>
+                <div className="h-[340px] w-full">
+                  <ResponsiveContainer>
+                    <AreaChart data={chartData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="strategy-nav-top" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#b45f06" stopOpacity={0.28} />
+                          <stop offset="100%" stopColor="#b45f06" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid stroke="#b6afa5" strokeDasharray="2 4" />
+                      <XAxis dataKey="date" tickFormatter={(value) => formatDate(value)} tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }} minTickGap={24} />
+                      <YAxis tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }} width={52} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: "#fbf7f0", border: "1px solid #b6afa5", borderRadius: 4, color: "#1a1a1a" }}
+                        labelFormatter={(value) => formatDate(String(value), true)}
+                      />
+                      <Area type="monotone" dataKey="策略净值" stroke="#b45f06" fill="url(#strategy-nav-top)" strokeWidth={2.4} />
+                      <Line type="monotone" dataKey="基准净值" stroke={benchmarkGrey} dot={false} strokeWidth={1.7} strokeDasharray="4 4" />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
-                <div className={cn(innerBlockClass, "px-3 py-2")}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">Strat DD</div>
-                  <div className="mt-2 font-mono text-[16px] font-semibold text-[#ef4444]">{formatPct(lastSnapshot.strategy_dd, 1)}</div>
+              </TerminalCard>
+
+              <TerminalCard title="DRAWDOWN %" className="bg-[#f8f5ef]">
+                <div className="h-[370px] w-full">
+                  <ResponsiveContainer>
+                    <AreaChart data={chartData} margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
+                      <defs>
+                        <linearGradient id="drawdown-fill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="#b45f06" stopOpacity={0.22} />
+                          <stop offset="100%" stopColor="#b45f06" stopOpacity={0.02} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid stroke="#b6afa5" strokeDasharray="2 4" />
+                      <XAxis dataKey="date" tickFormatter={(value) => formatDate(value)} tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }} minTickGap={24} />
+                      <YAxis tickFormatter={(value) => `${value}%`} tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }} width={52} />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: "#fbf7f0", border: "1px solid #b6afa5", borderRadius: 4, color: "#1a1a1a" }}
+                        labelFormatter={(value) => formatDate(String(value), true)}
+                      />
+                      <Area type="monotone" dataKey="策略回撤" stroke="#b45f06" fill="url(#drawdown-fill)" strokeWidth={2.1} />
+                      <Line type="monotone" dataKey="基准回撤" stroke="#7b2d2c" dot={false} strokeWidth={1.6} strokeDasharray="4 4" />
+                    </AreaChart>
+                  </ResponsiveContainer>
                 </div>
-                <div className={cn(innerBlockClass, "px-3 py-2")}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">Strat NAV</div>
-                  <div className="mt-2 font-mono text-[16px] font-semibold text-[#f59e0b]">{lastSnapshot.strategy_nav.toFixed(3)}x</div>
-                </div>
-                <div className={cn(innerBlockClass, "px-3 py-2")}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">BK NAV</div>
-                  <div className="mt-2 font-mono text-[16px] font-semibold text-[#9ca3af]">{lastSnapshot.benchmark_nav.toFixed(3)}x</div>
-                </div>
-                <div className={cn(innerBlockClass, "px-3 py-2")}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">Alpha</div>
-                  <div className="mt-2 font-mono text-[16px] font-semibold text-[#60a5fa]">
-                    {typeof lastSnapshot.alpha === "number" ? lastSnapshot.alpha.toFixed(3) : "N/A"}
+              </TerminalCard>
+            </section>
+
+            <section className="mt-4 grid gap-4 xl:grid-cols-3">
+              <TerminalCard title="REGIME & RISK" className="bg-[#f8f5ef]">
+                <div className="space-y-4 py-1">
+                  <div className={cn("font-mono text-[24px] font-bold tracking-[0.06em]", lastSnapshot.regime === "RISK_ON" ? "text-[#1a4d2e]" : lastSnapshot.regime === "RISK_OFF" ? "text-[#7b2d2c]" : "text-[#b45f06]")}>
+                    {lastSnapshot.regime === "RISK_ON" ? "Risk-On" : lastSnapshot.regime === "RISK_OFF" ? "Risk-Off" : "Neutral"}
                   </div>
-                </div>
-                <div className={cn(innerBlockClass, "px-3 py-2")}>
-                  <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#8899aa]">MSTR Prem</div>
-                  <div className={cn("mt-2 font-mono text-[16px] font-semibold", (lastSnapshot.mstr_premium_pct ?? 0) >= 0 ? "text-[#10b981]" : "text-[#ef4444]")}>
-                    {typeof lastSnapshot.mstr_premium_pct === "number" ? formatSigned(lastSnapshot.mstr_premium_pct, 1) : "N/A"}%
-                  </div>
-                </div>
-              </div>
-              <div className="font-mono text-[11px] leading-6 text-[#8899aa]">{currentSignalText}</div>
-              <div className="font-mono text-[11px] leading-6 text-[#5f738d]">
-                TREASURY SOURCE: {normalizeSourceLabel(treasurySource?.label ?? treasurySource?.source ?? "embedded")}
-              </div>
-            </div>
-          </TerminalCard>
-
-          <TerminalCard title="WEIGHTS" className="bg-[#091224]">
-            <div className="h-[260px] w-full">
-              <ResponsiveContainer>
-                <BarChart data={weightChartData} margin={{ left: 0, right: 8, top: 10, bottom: 0 }}>
-                  <CartesianGrid stroke="#1e2d45" strokeDasharray="2 4" />
-                  <XAxis dataKey="资产" tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} />
-                  <YAxis tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} width={44} />
-                  <Tooltip contentStyle={{ backgroundColor: "#06090f", border: "1px solid #1e2d45", borderRadius: 4, color: "#e2e8f0" }} />
-                  <Bar dataKey="执行权重" radius={[4, 4, 0, 0]}>
-                    {weightChartData.map((row) => (
-                      <Cell key={row.资产} fill={row.资产 === "BTC" ? "#f59e0b" : row.资产 === "ETH" ? "#8b5cf6" : row.资产 === "MSTR" ? "#06b6d4" : row.资产 === "SPY" ? "#10b981" : "#f97316"} />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
-            </div>
-          </TerminalCard>
-
-          <TerminalCard title="MONTHLY NAV" className="bg-[#091224]">
-            <div className="grid grid-cols-5 gap-2 pt-2">
-              {monthlyTiles.map((row) => (
-                <div key={row.key} className={cn("rounded-[4px] border px-2 py-2 text-center font-mono", heatTone(row.value))}>
-                  <div className="text-[10px] text-[#94a3b8]">{row.label}</div>
-                  <div className="mt-1 text-[12px] font-semibold">{row.value === null ? "-" : `${formatSigned(row.value, 0)}%`}</div>
-                </div>
-              ))}
-            </div>
-          </TerminalCard>
-        </section>
-      </section>
-
-      {combinedWarnings.length > 0 ? (
-        <section className="grid gap-3 px-4 pt-4 xl:grid-cols-2">
-          {combinedWarnings.slice(0, 6).map((warning, index) => (
-            <div
-              key={`${warning.code}-${warning.asset ?? index}`}
-              className={cn("rounded-[4px] border px-4 py-3 text-[12px] leading-6", levelToneClass[warning.level] ?? levelToneClass.info)}
-            >
-              <div className="flex items-center justify-between gap-3">
-                <div className="flex items-center gap-2 font-semibold">
-                  <Bell className="h-4 w-4" />
-                  <span>{warning.title}</span>
-                </div>
-                <span className="rounded-full border border-current/30 px-2 py-0.5 text-[10px] uppercase tracking-[0.14em]">
-                  {LEVEL_LABELS[warning.level] ?? warning.level}
-                </span>
-              </div>
-              <p className="mt-2 text-[12px] opacity-90">{warning.detail}</p>
-            </div>
-          ))}
-        </section>
-      ) : null}
-
-      <section className="grid gap-4 px-4 pt-4 xl:grid-cols-[1.15fr_0.85fr]">
-        <TerminalCard
-          title="EXECUTION LEDGER"
-          subtitle="账本、路由和执行状态。"
-          icon={<Database className="h-4 w-4 text-[#60a5fa]" />}
-          className="bg-[#091224]"
-        >
-          <div className="grid gap-3 sm:grid-cols-2">
-            <div className={cn(innerBlockClass, "p-4")}>
-              <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Equity</p>
-              <p className="mt-2 font-mono text-[24px] font-semibold text-white">{formatCompactMoney(displayEquity)}</p>
-              <p className="mt-2 font-mono text-[11px] text-[#8899aa]">Cash {formatCompactMoney(paperTrading.ledger.cash)}</p>
-            </div>
-            <div className={cn(innerBlockClass, "p-4")}>
-              <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Paper Status</p>
-              <p className="mt-2 font-mono text-[24px] font-semibold text-white">{paperStatus}</p>
-              <p className="mt-2 font-mono text-[11px] text-[#8899aa]">{translateVenue(paperTrading.venue)}</p>
-            </div>
-            <div className={cn(innerBlockClass, "p-4")}>
-              <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Executable</p>
-              <p className="mt-2 font-mono text-[18px] font-semibold text-white">{paperTrading.executableAssets.join(" / ") || "N/A"}</p>
-              <p className="mt-2 font-mono text-[11px] text-[#8899aa]">Shadow {paperTrading.shadowAssets.join(" / ") || "N/A"}</p>
-            </div>
-            <div className={cn(innerBlockClass, "p-4")}>
-              <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Route Summary</p>
-              <p className="mt-2 font-mono text-[18px] font-semibold text-white">
-                {routing ? `${routing.readyExecutableOrders} / ${routing.shadowSyncOrders} / ${routing.blockedOrders}` : "N/A"}
-              </p>
-              <p className="mt-2 font-mono text-[11px] text-[#8899aa]">Ready / Shadow / Blocked</p>
-            </div>
-          </div>
-
-          <div className="mt-4 space-y-2 font-mono text-[11px] text-[#a8bbcf]">
-            <div className={cn(innerBlockClass, "px-3 py-2")}>DATA MODE: {sourceMode} | SOURCE: {normalizeSourceLabel(payload.sourceLabel)}</div>
-            <div className={cn(innerBlockClass, "px-3 py-2")}>
-              TREASURY: {normalizeSourceLabel(treasurySource?.label ?? treasurySource?.source ?? "embedded")} | PREMIUM {typeof lastSnapshot.mstr_premium_pct === "number" ? formatSigned(lastSnapshot.mstr_premium_pct, 1) : "N/A"}%
-            </div>
-            <div className={cn(innerBlockClass, "px-3 py-2")}>REBALANCE REASON: {translateReason(lastSnapshot.rebalance_reason)}</div>
-            <div className={cn(innerBlockClass, "px-3 py-2")}>LATEST SIGNAL: {currentSignalText}</div>
-          </div>
-        </TerminalCard>
-
-        <TerminalCard
-          title="LATEST ATTRIBUTION"
-          subtitle="Last day contribution."
-          icon={<Bell className="h-4 w-4 text-[#60a5fa]" />}
-          className="bg-[#091224]"
-        >
-          <div className="h-[320px] w-full">
-            <ResponsiveContainer>
-              <BarChart data={attributionData} layout="vertical" margin={{ left: 8, right: 8, top: 10, bottom: 0 }}>
-                <CartesianGrid stroke="#1e2d45" strokeDasharray="2 4" />
-                <XAxis type="number" tickFormatter={(value) => `${value}%`} tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} />
-                <YAxis type="category" dataKey="资产" tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} width={44} />
-                <Tooltip contentStyle={{ backgroundColor: "#06090f", border: "1px solid #1e2d45", borderRadius: 4, color: "#e2e8f0" }} />
-                <Bar dataKey="归因" radius={[0, 4, 4, 0]}>
-                  {attributionData.map((row) => (
-                    <Cell key={row.资产} fill={row.归因 >= 0 ? "#10b981" : "#ef4444"} />
-                  ))}
-                </Bar>
-              </BarChart>
-            </ResponsiveContainer>
-          </div>
-        </TerminalCard>
-      </section>
-
-      <section className="grid gap-4 px-4 pt-4 xl:grid-cols-2">
-        <TerminalCard
-          title="MACRO SCORE & RISK SIGNALS"
-          subtitle="Macro score and risk pulse."
-          icon={<Shield className="h-4 w-4 text-[#60a5fa]" />}
-          className="bg-[#091224]"
-        >
-          <div className="h-[320px] w-full">
-            <ResponsiveContainer>
-              <ComposedChart data={macroChartData} margin={{ left: 0, right: 8, top: 10, bottom: 0 }}>
-                <CartesianGrid stroke="#1e2d45" strokeDasharray="2 4" />
-                <XAxis dataKey="date" tickFormatter={(value) => formatDate(value)} tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} minTickGap={24} />
-                <YAxis yAxisId="score" domain={[0, 100]} tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} width={40} />
-                <YAxis yAxisId="signal" orientation="right" allowDecimals={false} tick={{ fill: "#8899aa", fontSize: 10, fontFamily: "monospace" }} width={34} />
-                <Tooltip
-                  contentStyle={{ backgroundColor: "#06090f", border: "1px solid #1e2d45", borderRadius: 4, color: "#e2e8f0" }}
-                  labelFormatter={(value) => formatDate(String(value), true)}
-                />
-                <Bar yAxisId="signal" dataKey="风险信号" fill="#f97316" radius={[4, 4, 0, 0]} maxBarSize={16} />
-                <Line yAxisId="score" type="monotone" dataKey="宏观总分" stroke="#3b82f6" dot={false} strokeWidth={2.2} />
-              </ComposedChart>
-            </ResponsiveContainer>
-          </div>
-        </TerminalCard>
-
-        {macroGuard ? (
-          <TerminalCard
-            title="EXECUTION GATE"
-            subtitle="Macro freshness gate."
-            icon={<AlertTriangle className="h-4 w-4 text-[#60a5fa]" />}
-            className="bg-[#091224]"
-          >
-            <div className="grid gap-3 sm:grid-cols-2">
-              <div className={cn(innerBlockClass, "p-4")}>
-                <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Gate Status</p>
-                <p className={cn("mt-2 font-mono text-[24px] font-semibold", macroGuard.executionAllowed ? "text-[#10b981]" : "text-[#ef4444]")}>
-                  {macroGuard.executionAllowed ? "OPEN" : "BLOCKED"}
-                </p>
-                <p className="mt-2 font-mono text-[11px] text-[#8899aa]">SOURCE {translateMacroSource(macroGuard.sourceType)}</p>
-              </div>
-              <div className={cn(innerBlockClass, "p-4")}>
-                <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Signal Age</p>
-                <p className="mt-2 font-mono text-[24px] font-semibold text-white">
-                  {typeof macroGuard.ageHours === "number" ? `${macroGuard.ageHours.toFixed(1)}h` : "N/A"}
-                </p>
-                <p className="mt-2 font-mono text-[11px] text-[#8899aa]">THRESHOLD {macroGuard.maxGeneratedAgeHours ?? "N/A"}h</p>
-              </div>
-              <div className={cn(innerBlockClass, "p-4")}>
-                <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Score Age</p>
-                <p className="mt-2 font-mono text-[24px] font-semibold text-white">
-                  {typeof macroGuard.scoreAgeDays === "number" ? `${macroGuard.scoreAgeDays.toFixed(2)}d` : "N/A"}
-                </p>
-                <p className="mt-2 font-mono text-[11px] text-[#8899aa]">THRESHOLD {macroGuard.maxScoreAgeDays ?? "N/A"}d</p>
-              </div>
-              <div className={cn(innerBlockClass, "p-4")}>
-                <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Order Route</p>
-                <p className="mt-2 font-mono text-[24px] font-semibold text-white">
-                  {routing ? `${routing.readyExecutableOrders}/${routing.blockedOrders}` : "N/A"}
-                </p>
-                <p className="mt-2 font-mono text-[11px] text-[#8899aa]">READY / BLOCKED</p>
-              </div>
-            </div>
-            <div className="mt-4 space-y-2">
-              {(macroGuard.reasons ?? []).length ? (
-                (macroGuard.reasons ?? []).map((reason) => (
-                  <div key={reason.code} className="rounded-[4px] border border-[#7f1d1d] bg-[#2b0b0e]/80 px-3 py-2 font-mono text-[11px] text-[#fecaca]">
-                    <span className="font-semibold">{reason.code}</span> - {reason.message}
-                  </div>
-                ))
-              ) : (
-                <div className="rounded-[4px] border border-[#14532d] bg-[#052e16]/80 px-3 py-2 font-mono text-[11px] text-[#bbf7d0]">
-                  宏观信号通过新鲜度校验，可以进入执行层。
-                </div>
-              )}
-            </div>
-          </TerminalCard>
-        ) : null}
-      </section>
-
-      {macroSignal ? (
-        <section className="px-4 pt-4">
-          <TerminalCard
-            title="MACRO SIGNAL FEED"
-            subtitle="Live macro feed status."
-            icon={<Shield className="h-4 w-4 text-[#60a5fa]" />}
-            className="bg-[#091224]"
-          >
-            <div className="grid gap-4 xl:grid-cols-[1.05fr_0.95fr]">
-              <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
-                <div className={cn(innerBlockClass, "p-4")}>
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Macro Score</p>
-                  <p className="mt-2 font-mono text-[24px] font-semibold text-white">{macroSignal.overallScore?.value?.toFixed(1) ?? formatPlain(lastSnapshot.macro_score, 1)}</p>
-                  <p className="mt-2 font-mono text-[11px] text-[#8899aa]">WoW {typeof macroSignal.overallScore?.wow === "number" ? formatSigned(macroSignal.overallScore.wow, 1) : "N/A"}</p>
-                </div>
-                <div className={cn(innerBlockClass, "p-4")}>
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Source</p>
-                  <p className="mt-2 font-mono text-[16px] font-semibold text-white">{translateMacroSource(macroSignal.sourceType ?? "unavailable")}</p>
-                  <p className="mt-2 font-mono text-[11px] text-[#8899aa]">MODE {macroSignal.dataQuality?.mode ?? "unknown"}</p>
-                </div>
-                <div className={cn(innerBlockClass, "p-4")}>
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Ready Modules</p>
-                  <p className="mt-2 font-mono text-[24px] font-semibold text-white">{macroSignal.dataQuality?.readyModules?.length ?? 0}</p>
-                  <p className="mt-2 font-mono text-[11px] text-[#8899aa]">{(macroSignal.dataQuality?.readyModules ?? []).join(" / ") || "N/A"}</p>
-                </div>
-                <div className={cn(innerBlockClass, "p-4")}>
-                  <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Tags</p>
-                  <div className="mt-2 flex flex-wrap gap-2">
-                    {(macroSignal.overallScore?.statusTags ?? []).slice(0, 4).map((tag) => (
-                      <span key={tag.label} className="rounded-[4px] border border-[#1e2d45] bg-[#020617] px-2 py-1 font-mono text-[10px] text-[#cbd5e1]">
-                        {tag.label}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              </div>
-
-              <div className={cn(innerBlockClass, "p-4")}>
-                <p className="text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">Module Scores</p>
-                <div className="mt-3 grid gap-2">
-                  {(macroSignal.modules ?? []).map((module) => (
-                    <div key={module.id ?? module.slug} className="rounded-[4px] border border-[#1e2d45] bg-[#020617] px-3 py-2">
-                      <div className="flex items-center justify-between gap-3 font-mono">
-                        <span className="text-[11px] font-semibold text-white">{module.id}. {module.title}</span>
-                        <span className="text-[11px] text-[#93c5fd]">{typeof module.score === "number" ? module.score.toFixed(1) : "N/A"}</span>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className={cn(innerBlockClass, "px-3 py-2")}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">Macro Score</div>
+                      <div className="mt-2 font-mono text-[16px] font-semibold text-[#1a4d2e]">{formatPlain(lastSnapshot.macro_score, 1)}</div>
+                    </div>
+                    <div className={cn(innerBlockClass, "px-3 py-2")}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">Risk Signals</div>
+                      <div className={cn("mt-2 font-mono text-[16px] font-semibold", lastSnapshot.risk_signals > 0 ? "text-[#1a4d2e]" : "text-[#6f6d69]")}>
+                        {lastSnapshot.risk_signals}
                       </div>
-                      {module.description ? <p className="mt-1 font-mono text-[10px] leading-5 text-[#8899aa]">{module.description}</p> : null}
+                    </div>
+                    <div className={cn(innerBlockClass, "px-3 py-2")}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">MSTR Short</div>
+                      <div className="mt-2 font-mono text-[16px] font-semibold text-[#223b5b]">{formatPercentPlain(lastSnapshot.mstr_short_pct, 1)}</div>
+                    </div>
+                    <div className={cn(innerBlockClass, "px-3 py-2")}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">Strat DD</div>
+                      <div className="mt-2 font-mono text-[16px] font-semibold text-[#7b2d2c]">{formatPct(lastSnapshot.strategy_dd, 1)}</div>
+                    </div>
+                    <div className={cn(innerBlockClass, "px-3 py-2")}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">Strat NAV</div>
+                      <div className="mt-2 font-mono text-[16px] font-semibold text-[#b45f06]">{lastSnapshot.strategy_nav.toFixed(3)}x</div>
+                    </div>
+                    <div className={cn(innerBlockClass, "px-3 py-2")}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">BK NAV</div>
+                      <div className="mt-2 font-mono text-[16px] font-semibold text-[#9ca3af]">{lastSnapshot.benchmark_nav.toFixed(3)}x</div>
+                    </div>
+                    <div className={cn(innerBlockClass, "px-3 py-2")}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">Alpha</div>
+                      <div className="mt-2 font-mono text-[16px] font-semibold text-[#223b5b]">
+                        {typeof lastSnapshot.alpha === "number" ? lastSnapshot.alpha.toFixed(3) : "N/A"}
+                      </div>
+                    </div>
+                    <div className={cn(innerBlockClass, "px-3 py-2")}>
+                      <div className="font-mono text-[10px] uppercase tracking-[0.12em] text-[#6f6d69]">MSTR Prem</div>
+                      <div className={cn("mt-2 font-mono text-[16px] font-semibold", (lastSnapshot.mstr_premium_pct ?? 0) >= 0 ? "text-[#1a4d2e]" : "text-[#7b2d2c]")}>
+                        {typeof lastSnapshot.mstr_premium_pct === "number" ? formatSigned(lastSnapshot.mstr_premium_pct, 1) : "N/A"}%
+                      </div>
+                    </div>
+                  </div>
+                  <div className="font-mono text-[11px] leading-6 text-[#6f6d69]">{currentSignalText}</div>
+                  <div className="font-mono text-[11px] leading-6 text-[#5f738d]">
+                    TREASURY SOURCE: {normalizeSourceLabel(treasurySource?.label ?? treasurySource?.source ?? "embedded")}
+                  </div>
+                </div>
+              </TerminalCard>
+
+              <TerminalCard title="WEIGHTS" className="bg-[#f8f5ef]">
+                <div className="h-[260px] w-full">
+                  <ResponsiveContainer>
+                    <BarChart data={weightChartData} margin={{ left: 0, right: 8, top: 10, bottom: 0 }}>
+                      <CartesianGrid stroke="#b6afa5" strokeDasharray="2 4" />
+                      <XAxis dataKey="资产" tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }} />
+                      <YAxis tick={{ fill: "#6f6d69", fontSize: 10, fontFamily: "monospace" }} width={44} />
+                      <Tooltip contentStyle={{ backgroundColor: "#fbf7f0", border: "1px solid #b6afa5", borderRadius: 4, color: "#1a1a1a" }} />
+                      <Bar dataKey="执行权重" radius={[4, 4, 0, 0]}>
+                        {weightChartData.map((row) => (
+                          <Cell key={row.资产} fill={row.资产 === "BTC" ? "#b45f06" : row.资产 === "ETH" ? "#223b5b" : row.资产 === "MSTR" ? "#55655b" : row.资产 === "SPY" ? "#1a4d2e" : "#b45f06"} />
+                        ))}
+                      </Bar>
+                    </BarChart>
+                  </ResponsiveContainer>
+                </div>
+              </TerminalCard>
+
+              <TerminalCard title="MONTHLY NAV" className="bg-[#f8f5ef]">
+                <div className="grid grid-cols-5 gap-2 pt-2">
+                  {monthlyTiles.map((row) => (
+                    <div key={row.key} className={cn("rounded-[4px] border px-2 py-2 text-center font-mono", heatTone(row.value))}>
+                      <div className="text-[10px] text-[#6f6d69]">{row.label}</div>
+                      <div className="mt-1 text-[12px] font-semibold">{row.value === null ? "-" : `${formatSigned(row.value, 0)}%`}</div>
                     </div>
                   ))}
                 </div>
-              </div>
-            </div>
-          </TerminalCard>
-        </section>
+              </TerminalCard>
+            </section>
+          </section>
+        </>
       ) : null}
 
-      <section className="grid gap-4 px-4 pt-4 xl:grid-cols-2">
-        <OptionsBoardCard optionsBoard={optionsBoard} />
-        <OperationsWorkbench operationsBoard={operationsBoard} positions={displayPositions} lastSnapshot={lastSnapshot} equity={displayEquity} />
+      {pageMode === "live" ? (
+        <>
+      <section className="px-4 pt-4">
+        <SectionLabel
+          title="实盘记账"
+          subtitle="本页只保留手工记账与对应图表，不再混入回测订单和实时执行面板。"
+          accentClass="text-[#1a4d2e]"
+        />
       </section>
 
+      <section id="live-book-section" className="px-4 pt-4">
+        <ManualBookCard
+          fallbackCapital={manualFallbackCapital}
+          markPrices={manualMarkPrices}
+          onPortfolioValueChange={setManualPortfolioValue}
+        />
+      </section>
+        </>
+      ) : null}
+
+      {pageMode === "backtest" ? (
+        <>
       <section className="px-4 pt-4">
         <TerminalCard
-          title="LATEST ORDERS"
+          title="回测订单"
           subtitle={
             orderViewMode === "rounds"
-              ? `Round-trip view. 一眼查看开仓/平仓时间、方向与 P&L。当前筛选: ${normalizedOrderAssetFilter === "ALL" ? "全部资产" : normalizedOrderAssetFilter}`
+              ? `回测回合视图。看开仓/平仓时间、方向与 P&L。当前筛选: ${normalizedOrderAssetFilter === "ALL" ? "全部资产" : normalizedOrderAssetFilter}`
               : isCustomBacktestView
-                ? `Selected interval rebalance timeline. 当前筛选: ${normalizedOrderAssetFilter === "ALL" ? "全部资产" : normalizedOrderAssetFilter}`
-                : `Recent execution and shadow sync. 当前筛选: ${normalizedOrderAssetFilter === "ALL" ? "全部资产" : normalizedOrderAssetFilter}`
+                ? `所选区间的再平衡时间线。当前筛选: ${normalizedOrderAssetFilter === "ALL" ? "全部资产" : normalizedOrderAssetFilter}`
+                : `策略历史订单与影子同步。当前筛选: ${normalizedOrderAssetFilter === "ALL" ? "全部资产" : normalizedOrderAssetFilter}`
           }
-          icon={<CandlestickChart className="h-4 w-4 text-[#60a5fa]" />}
-          className="bg-[#091224]"
+          icon={<CandlestickChart className="h-4 w-4 text-[#223b5b]" />}
+          className="bg-[#f8f5ef]"
           action={
             <div className="flex flex-wrap items-center justify-end gap-3">
               <div className="flex items-center gap-2">
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">视图</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">视图</span>
                 {[
                   { key: "rounds", label: "交易回合" },
                   { key: "orders", label: "订单流水" },
@@ -1997,7 +2290,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                     onClick={() => setOrderViewMode(view.key as "rounds" | "orders")}
                     className={cn(
                       "rounded-[4px] border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em]",
-                      orderViewMode === view.key ? "border-[#f59e0b] bg-[#f59e0b] text-[#06090f]" : "border-[#1e2d45] bg-[#0b1120] text-[#a8bbcf]",
+                      orderViewMode === view.key ? "border-[#b45f06] bg-[#b45f06] text-[#fbf7f0]" : "border-[#b6afa5] bg-[#fffdf8] text-[#6f6d69]",
                     )}
                   >
                     {view.label}
@@ -2005,7 +2298,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                 ))}
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#8899aa]">资产筛选</span>
+                <span className="font-mono text-[10px] uppercase tracking-[0.14em] text-[#6f6d69]">资产筛选</span>
                 {orderAssetOptions.map((asset) => (
                   <button
                     key={asset}
@@ -2013,7 +2306,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                     onClick={() => setOrderAssetFilter(asset)}
                     className={cn(
                       "rounded-[4px] border px-2.5 py-1 font-mono text-[10px] font-semibold uppercase tracking-[0.12em]",
-                      normalizedOrderAssetFilter === asset ? "border-[#f59e0b] bg-[#f59e0b] text-[#06090f]" : "border-[#1e2d45] bg-[#0b1120] text-[#a8bbcf]",
+                      normalizedOrderAssetFilter === asset ? "border-[#b45f06] bg-[#b45f06] text-[#fbf7f0]" : "border-[#b6afa5] bg-[#fffdf8] text-[#6f6d69]",
                     )}
                   >
                     {asset === "ALL" ? "ALL" : asset}
@@ -2044,7 +2337,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                 <tbody>
                   {tradeRounds.length === 0 ? (
                     <tr>
-                      <td colSpan={11} className="border-b border-t border-[#1e2d45]/60 bg-[#0b1324] px-3 py-5 text-center font-mono text-[11px] text-[#94a3b8]">
+                      <td colSpan={11} className="border-b border-t border-[#b6afa5]/60 bg-[#fbf7f0] px-3 py-5 text-center font-mono text-[11px] text-[#6f6d69]">
                         当前筛选下没有交易回合
                       </td>
                     </tr>
@@ -2055,9 +2348,9 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                         <td className={tableCellClass}>{round.closeAt ? formatDateTimeInZone(round.closeAt, timeZone) : "-"}</td>
                         <td className={tableCellClass}>
                           <div className={cn("font-semibold", assetToneClass(round.asset))}>{round.asset}</div>
-                          <div className="mt-1 text-[11px] text-[#64748b]">{translateVenue(round.venue)}</div>
+                          <div className="mt-1 text-[11px] text-[#6f6d69]">{translateVenue(round.venue)}</div>
                         </td>
-                        <td className={cn(tableCellClass, round.side === "LONG" ? "text-[#10b981]" : "text-[#ef4444]")}>{translateSide(round.side)}</td>
+                        <td className={cn(tableCellClass, round.side === "LONG" ? "text-[#1a4d2e]" : "text-[#7b2d2c]")}>{translateSide(round.side)}</td>
                         <td className={tableCellClass}>{formatPlain(round.quantity, 4)}</td>
                         <td className={tableCellClass}>{formatMoney(round.openPrice, 2)}</td>
                         <td className={tableCellClass}>{formatMoney(round.closePrice, 2)}</td>
@@ -2068,7 +2361,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                           <span
                             className={cn(
                               "inline-flex rounded-[4px] border px-2 py-1 text-[10px] font-semibold uppercase tracking-[0.12em]",
-                              round.status === "closed" ? "border-[#1e3a5f] bg-[#0f2743] text-[#bfdbfe]" : "border-[#14532d] bg-[#052e16] text-[#bbf7d0]",
+                              round.status === "closed" ? "border-[#1e3a5f] bg-[#edf2f7] text-[#223b5b]" : "border-[#edf7f1] bg-[#edf7f1] text-[#1a4d2e]",
                             )}
                           >
                             {round.status === "closed" ? "已平仓" : "持仓中"}
@@ -2099,7 +2392,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                 <tbody>
                   {groupedDisplayOrders.length === 0 ? (
                     <tr>
-                      <td colSpan={9} className="border-b border-t border-[#1e2d45]/60 bg-[#0b1324] px-3 py-5 text-center font-mono text-[11px] text-[#94a3b8]">
+                      <td colSpan={9} className="border-b border-t border-[#b6afa5]/60 bg-[#fbf7f0] px-3 py-5 text-center font-mono text-[11px] text-[#6f6d69]">
                         当前筛选下没有交易记录
                       </td>
                     </tr>
@@ -2107,7 +2400,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                     groupedDisplayOrders.map((group) => (
                       <Fragment key={group.day}>
                         <tr>
-                          <td colSpan={9} className="border-b border-t border-[#1e2d45]/60 bg-[#0b1324] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#7dd3fc]">
+                          <td colSpan={9} className="border-b border-t border-[#b6afa5]/60 bg-[#fbf7f0] px-3 py-2 font-mono text-[10px] uppercase tracking-[0.16em] text-[#223b5b]">
                             {group.day} · {group.orders.length} 笔
                           </td>
                         </tr>
@@ -2116,7 +2409,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                             <td className={tableCellClass}>{formatDateTimeInZone(order.timestamp, timeZone)}</td>
                             <td className={tableCellClass}>
                               <div className={cn("font-semibold", assetToneClass(order.asset))}>{order.asset}</div>
-                              <div className="mt-1 text-[11px] text-[#64748b]">{translateVenue(order.venue)}</div>
+                              <div className="mt-1 text-[11px] text-[#6f6d69]">{translateVenue(order.venue)}</div>
                             </td>
                             <td className={cn(tableCellClass, orderToneClass(order.side))}>{translateSide(order.side)}</td>
                             <td className={tableCellClass}>{formatPct(order.deltaWeightPct, 2)}</td>
@@ -2125,9 +2418,9 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                             <td className={tableCellClass}>
                               {typeof order.equityBefore === "number" && typeof order.equityAfter === "number" ? (
                                 <div className="flex flex-col items-end gap-1">
-                                  <div className="font-semibold text-white">{formatMoney(order.equityAfter, 0)}</div>
-                                  <div className="font-mono text-[10px] text-[#64748b]">
-                                    {formatMoney(order.equityBefore, 0)} <span className="px-1 text-[#94a3b8]">-&gt;</span> {formatMoney(order.equityAfter, 0)}
+                                  <div className="font-semibold text-[#1a1a1a]">{formatMoney(order.equityAfter, 0)}</div>
+                                  <div className="font-mono text-[10px] text-[#6f6d69]">
+                                    {formatMoney(order.equityBefore, 0)} <span className="px-1 text-[#6f6d69]">-&gt;</span> {formatMoney(order.equityAfter, 0)}
                                   </div>
                                 </div>
                               ) : typeof order.equityAfter === "number" ? (
@@ -2140,14 +2433,14 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                               {typeof order.positionValueBefore === "number" && typeof order.positionValueAfter === "number" ? (
                                 <div className="flex flex-col items-end gap-1">
                                   <div className="font-semibold" style={valueToneStyle((order.positionValueAfter ?? 0) - (order.positionValueBefore ?? 0))}>
-                                    {formatMoney(order.positionValueBefore, 0)} <span className="px-1 text-[#94a3b8]">-&gt;</span> {formatMoney(order.positionValueAfter, 0)}
+                                    {formatMoney(order.positionValueBefore, 0)} <span className="px-1 text-[#6f6d69]">-&gt;</span> {formatMoney(order.positionValueAfter, 0)}
                                   </div>
-                                  <div className="font-mono text-[10px] text-[#64748b]">
-                                    现金 {typeof order.cashBefore === "number" ? formatMoney(order.cashBefore, 0) : "-"} <span className="px-1 text-[#94a3b8]">-&gt;</span>{" "}
+                                  <div className="font-mono text-[10px] text-[#6f6d69]">
+                                    现金 {typeof order.cashBefore === "number" ? formatMoney(order.cashBefore, 0) : "-"} <span className="px-1 text-[#6f6d69]">-&gt;</span>{" "}
                                     {typeof order.cashAfter === "number" ? formatMoney(order.cashAfter, 0) : "-"}
                                   </div>
-                                  <div className="font-mono text-[10px] text-[#64748b]">
-                                    权重 {formatPct(order.previousWeightPct, 2)} <span className="px-1 text-[#94a3b8]">-&gt;</span> {formatPct(order.targetWeightPct, 2)}
+                                  <div className="font-mono text-[10px] text-[#6f6d69]">
+                                    权重 {formatPct(order.previousWeightPct, 2)} <span className="px-1 text-[#6f6d69]">-&gt;</span> {formatPct(order.targetWeightPct, 2)}
                                   </div>
                                 </div>
                               ) : typeof order.equityDelta === "number" ? (
@@ -2158,7 +2451,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                             </td>
                             <td className={tableCellClass}>
                               <div>{translateOrderStatus(order.status)}</div>
-                              <div className="mt-1 text-[11px] text-[#64748b]">{translateReason(order.reason)}</div>
+                              <div className="mt-1 text-[11px] text-[#6f6d69]">{translateReason(order.reason)}</div>
                             </td>
                           </tr>
                         ))}
@@ -2174,10 +2467,10 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
 
       <section className="px-4 pt-4">
         <TerminalCard
-          title="HOLDINGS"
-          subtitle={isCustomBacktestView ? "End-of-window positions with cost basis and unrealized PnL." : "Positions, drift and unrealized PnL."}
-          icon={<Database className="h-4 w-4 text-[#60a5fa]" />}
-          className="bg-[#091224]"
+          title="回测持仓"
+          subtitle={isCustomBacktestView ? "区间末期持仓、成本和浮盈亏。" : "持仓、漂移和浮盈亏。"}
+          icon={<Database className="h-4 w-4 text-[#223b5b]" />}
+          className="bg-[#f8f5ef]"
         >
           <div className="overflow-x-auto">
             <table className="min-w-full border-separate border-spacing-0">
@@ -2200,16 +2493,16 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                   <tr key={position.asset}>
                     <td className={tableCellClass}>
                       <div className={cn("font-semibold", assetToneClass(position.asset))}>{position.asset}</div>
-                      <div className="mt-1 text-[11px] text-[#64748b]">{position.symbol}</div>
+                      <div className="mt-1 text-[11px] text-[#6f6d69]">{position.symbol}</div>
                     </td>
                     <td className={tableCellClass}>
                       <div>{translatePositionMode(position.mode)}</div>
-                      <div className="mt-1 text-[11px] text-[#64748b]">{translateVenue(position.venue)}</div>
+                      <div className="mt-1 text-[11px] text-[#6f6d69]">{translateVenue(position.venue)}</div>
                     </td>
-                    <td className={cn(tableCellClass, position.side === "LONG" ? "text-[#10b981]" : position.side === "SHORT" ? "text-[#ef4444]" : "text-[#cbd5e1]")}>{translateSide(position.side)}</td>
+                    <td className={cn(tableCellClass, position.side === "LONG" ? "text-[#1a4d2e]" : position.side === "SHORT" ? "text-[#7b2d2c]" : "text-[#6f6d69]")}>{translateSide(position.side)}</td>
                     <td className={tableCellClass}>
                       <div>{position.openedAt ? formatDateTimeInZone(position.openedAt, timeZone) : "-"}</div>
-                      <div className="mt-1 text-[11px] text-[#64748b]">{position.lastRebalancedAt ? formatDateTimeInZone(position.lastRebalancedAt, timeZone) : "-"}</div>
+                      <div className="mt-1 text-[11px] text-[#6f6d69]">{position.lastRebalancedAt ? formatDateTimeInZone(position.lastRebalancedAt, timeZone) : "-"}</div>
                     </td>
                     <td className={cn(tableCellClass, "text-[#9ca3af]")}>{formatPct(position.targetWeightPct, 2)}</td>
                     <td className={tableCellClass}>{formatPct(position.currentWeightPct, 2)}</td>
@@ -2246,14 +2539,14 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
 
       <section className="grid gap-4 px-4 py-4 xl:grid-cols-[1.1fr_0.9fr]">
         <TerminalCard
-          title="MONTHLY HEATMAP"
-          subtitle="Monthly returns matrix."
-          icon={<LayoutDashboard className="h-4 w-4 text-[#60a5fa]" />}
-          className="bg-[#091224]"
+          title="回测月度净值"
+          subtitle="月度收益矩阵。"
+          icon={<LayoutDashboard className="h-4 w-4 text-[#223b5b]" />}
+          className="bg-[#f8f5ef]"
         >
           <div className="overflow-x-auto">
             <div className="min-w-[920px]">
-              <div className="grid grid-cols-[90px_repeat(12,minmax(0,1fr))_80px] gap-2 text-[11px] text-[#64748b]">
+              <div className="grid grid-cols-[90px_repeat(12,minmax(0,1fr))_80px] gap-2 text-[11px] text-[#6f6d69]">
                 <div className="px-2 py-1">年份</div>
                 {monthKeys.map((month) => (
                   <div key={month} className="px-2 py-1 text-center">{month}月</div>
@@ -2263,7 +2556,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
               <div className="mt-2 space-y-2">
                 {monthlyRows.map(([year, months]) => (
                   <div key={year} className="grid grid-cols-[90px_repeat(12,minmax(0,1fr))_80px] gap-2">
-                    <div className="flex items-center rounded-[4px] border border-[#1f2937] bg-[#081120] px-3 text-[12px] font-semibold text-white">
+                    <div className="flex items-center rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 text-[12px] font-semibold text-[#1a1a1a]">
                       {year}
                     </div>
                     {monthKeys.map((month) => {
@@ -2278,7 +2571,7 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
                         </div>
                       );
                     })}
-                    <div className="flex items-center justify-end rounded-[4px] border border-[#1e2d45] bg-[#0b1120] px-3 text-[12px] font-semibold text-[#10b981]">
+                    <div className="flex items-center justify-end rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] px-3 text-[12px] font-semibold text-[#1a4d2e]">
                       {formatSigned(calcYearToDate(months), 1)}%
                     </div>
                   </div>
@@ -2290,38 +2583,38 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
 
         <div className="grid gap-4">
           <TerminalCard
-            title="ASSET DIAGNOSTICS"
-            subtitle="Returns, drawdown and trend."
-            icon={<Shield className="h-4 w-4 text-[#60a5fa]" />}
-            className="bg-[#091224]"
+            title="回测资产诊断"
+            subtitle="收益、回撤和趋势。"
+            icon={<Shield className="h-4 w-4 text-[#223b5b]" />}
+            className="bg-[#f8f5ef]"
           >
             <div className="space-y-3">
               {diagnostics.map((asset) => (
-                <div key={asset.ticker} className="rounded-[4px] border border-[#1f2937] bg-[#081120] p-3">
+                <div key={asset.ticker} className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <p className={cn("text-[15px] font-semibold", assetToneClass(asset.ticker))}>{asset.ticker}</p>
-                      <p className="mt-1 text-[11px] text-[#64748b]">趋势：{translateTrend(asset.latestTrend)}</p>
+                      <p className="mt-1 text-[11px] text-[#6f6d69]">趋势：{translateTrend(asset.latestTrend)}</p>
                     </div>
                     <span className={cn("text-[13px] font-semibold", valueToneClass(asset.netContributionPct))}>
                       {formatPct(asset.netContributionPct, 2)}
                     </span>
                   </div>
-                  <div className="mt-3 grid grid-cols-2 gap-3 text-[12px] text-[#cbd5e1]">
+                  <div className="mt-3 grid grid-cols-2 gap-3 text-[12px] text-[#6f6d69]">
                     <div>
-                      <p className="text-[#64748b]">累计收益</p>
+                      <p className="text-[#6f6d69]">累计收益</p>
                       <p className="mt-1">{formatPct(asset.totalReturnPct, 1)}</p>
                     </div>
                     <div>
-                      <p className="text-[#64748b]">最大回撤</p>
+                      <p className="text-[#6f6d69]">最大回撤</p>
                       <p className="mt-1">{formatPct(asset.maxDrawdownPct, 1)}</p>
                     </div>
                     <div>
-                      <p className="text-[#64748b]">年化波动</p>
+                      <p className="text-[#6f6d69]">年化波动</p>
                       <p className="mt-1">{formatPct(asset.annualizedVolPct, 1)}</p>
                     </div>
                     <div>
-                      <p className="text-[#64748b]">平均多头权重</p>
+                      <p className="text-[#6f6d69]">平均多头权重</p>
                       <p className="mt-1">{formatPct(asset.avgLongWeightPct, 1)}</p>
                     </div>
                   </div>
@@ -2331,52 +2624,52 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
           </TerminalCard>
 
           <TerminalCard
-            title="REGIME & RULES"
-            subtitle="Regime timeline and config."
-            icon={<Zap className="h-4 w-4 text-[#60a5fa]" />}
-            className="bg-[#091224]"
+            title="策略规则"
+            subtitle="状态区间和执行参数。"
+            icon={<Zap className="h-4 w-4 text-[#223b5b]" />}
+            className="bg-[#f8f5ef]"
           >
-            <div className="space-y-4 text-[12px] text-[#cbd5e1]">
-              <div className="rounded-[4px] border border-[#1f2937] bg-[#081120] p-4">
-                <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">最近状态区间</p>
+            <div className="space-y-4 text-[12px] text-[#6f6d69]">
+              <div className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] p-4">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-[#6f6d69]">最近状态区间</p>
                 <div className="mt-3 space-y-2">
                   {regimeSegments.map((segment, index) => (
-                    <div key={`${segment.start}-${segment.end}-${index}`} className="flex items-center justify-between gap-3 rounded-[4px] border border-[#111827] bg-[#020617] px-3 py-2">
+                    <div key={`${segment.start}-${segment.end}-${index}`} className="flex items-center justify-between gap-3 rounded-[4px] border border-[#1a1a1a] bg-[#fffdf8] px-3 py-2">
                       <span className={cn("rounded-full border px-2 py-1 text-[11px]", regimeToneClass(segment.regime))}>
                         {translateRegime(segment.regime)}
                       </span>
-                      <span className="text-[#94a3b8]">{formatDate(segment.start, true)} - {formatDate(segment.end, true)}</span>
+                      <span className="text-[#6f6d69]">{formatDate(segment.start, true)} - {formatDate(segment.end, true)}</span>
                     </div>
                   ))}
                 </div>
               </div>
 
-              <div className="rounded-[4px] border border-[#1f2937] bg-[#081120] p-4">
-                <p className="text-[11px] uppercase tracking-[0.14em] text-[#64748b]">执行参数</p>
+              <div className="rounded-[4px] border border-[#b6afa5] bg-[#fffdf8] p-4">
+                <p className="text-[11px] uppercase tracking-[0.14em] text-[#6f6d69]">执行参数</p>
                 <div className="mt-3 grid gap-3 sm:grid-cols-2">
                   <div>
-                    <p className="text-[#64748b]">调仓频率</p>
-                    <p className="mt-1 text-white">{translateExecutionMode(strategy.configSummary.execution.rebalanceMode)}</p>
+                    <p className="text-[#6f6d69]">调仓频率</p>
+                    <p className="mt-1 text-[#1a1a1a]">{translateExecutionMode(strategy.configSummary.execution.rebalanceMode)}</p>
                   </div>
                   <div>
-                    <p className="text-[#64748b]">最小持有天数</p>
-                    <p className="mt-1 text-white">{strategy.configSummary.execution.minHoldDays} 天</p>
+                    <p className="text-[#6f6d69]">最小持有天数</p>
+                    <p className="mt-1 text-[#1a1a1a]">{strategy.configSummary.execution.minHoldDays} 天</p>
                   </div>
                   <div>
-                    <p className="text-[#64748b]">权重步长</p>
-                    <p className="mt-1 text-white">{formatPct(strategy.configSummary.execution.weightStep * 100, 1)}</p>
+                    <p className="text-[#6f6d69]">权重步长</p>
+                    <p className="mt-1 text-[#1a1a1a]">{formatPct(strategy.configSummary.execution.weightStep * 100, 1)}</p>
                   </div>
                   <div>
-                    <p className="text-[#64748b]">换手缓冲</p>
-                    <p className="mt-1 text-white">{formatPct(strategy.configSummary.execution.turnoverBuffer * 100, 1)}</p>
+                    <p className="text-[#6f6d69]">换手缓冲</p>
+                    <p className="mt-1 text-[#1a1a1a]">{formatPct(strategy.configSummary.execution.turnoverBuffer * 100, 1)}</p>
                   </div>
                   <div>
-                    <p className="text-[#64748b]">最大总暴露</p>
-                    <p className="mt-1 text-white">{formatPct(strategy.configSummary.maxGrossExposure * 100, 1)}</p>
+                    <p className="text-[#6f6d69]">最大总暴露</p>
+                    <p className="mt-1 text-[#1a1a1a]">{formatPct(strategy.configSummary.maxGrossExposure * 100, 1)}</p>
                   </div>
                   <div>
-                    <p className="text-[#64748b]">基准资产</p>
-                    <p className="mt-1 text-white">{translateBenchmark(strategy.configSummary.benchmarkAsset)}</p>
+                    <p className="text-[#6f6d69]">基准资产</p>
+                    <p className="mt-1 text-[#1a1a1a]">{translateBenchmark(strategy.configSummary.benchmarkAsset)}</p>
                   </div>
                 </div>
               </div>
@@ -2384,6 +2677,8 @@ export const FiveAssetTerminal = ({ initialPayload = null }: FiveAssetTerminalPr
           </TerminalCard>
         </div>
       </section>
+        </>
+      ) : null}
     </PageShell>
   );
 };

@@ -9,10 +9,10 @@ export const StatusPill = ({ label, tone }: StatusPillProps) => {
   return (
     <span
       className={cn(
-        "inline-flex items-center rounded-full border px-[12px] py-[5px] text-[11px] font-semibold tracking-[0.1em]",
-        tone === "positive" && "border-emerald-200 bg-emerald-50 text-emerald-700",
-        tone === "negative" && "border-rose-200 bg-rose-50 text-rose-700",
-        tone === "neutral" && "border-slate-200 bg-slate-100 text-slate-600"
+        "inline-flex items-center rounded-full border px-[12px] py-[5px] font-sans text-[10px] font-semibold uppercase tracking-[0.14em]",
+        tone === "positive" && "border-[rgba(26,77,46,0.18)] bg-[rgba(26,77,46,0.08)] text-[#1a4d2e]",
+        tone === "negative" && "border-[rgba(123,45,44,0.18)] bg-[rgba(123,45,44,0.08)] text-[#7b2d2c]",
+        tone === "neutral" && "border-[rgba(26,26,26,0.12)] bg-[rgba(26,26,26,0.04)] text-app-muted"
       )}
     >
       {label}

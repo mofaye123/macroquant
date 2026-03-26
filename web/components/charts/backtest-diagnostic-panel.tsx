@@ -16,14 +16,13 @@ import {
 } from "recharts";
 
 import { BacktestDiagnosticCandidate, BacktestDiagnostics, TrendPoint } from "@/lib/types";
-import { formatSigned } from "@/lib/utils";
 
 type BacktestDiagnosticPanelProps = {
   diagnostics?: BacktestDiagnostics | null;
 };
 
 const chartContainerClass =
-  "rounded-[18px] border border-slate-800 bg-[#071226] p-[14px] text-slate-100 shadow-[0_24px_60px_-32px_rgba(2,6,23,0.8)]";
+  "rounded-[12px] border border-[rgba(26,26,26,0.10)] bg-[rgba(255,253,248,0.9)] p-[14px] text-app-text shadow-card";
 
 const mergeTrendSeries = (
   seriesMap: Record<string, TrendPoint[] | undefined>,
@@ -108,11 +107,11 @@ const metricCards = (
 };
 
 const darkTooltipStyle = {
-  backgroundColor: "rgba(8, 15, 31, 0.96)",
-  border: "1px solid rgba(148,163,184,0.25)",
-  borderRadius: 12,
-  color: "#e2e8f0",
-  boxShadow: "0 16px 40px -24px rgba(15,23,42,0.9)",
+  backgroundColor: "rgba(255,253,248,0.97)",
+  border: "1px solid rgba(26,26,26,0.14)",
+  borderRadius: 10,
+  color: "#1a1a1a",
+  boxShadow: "0 16px 40px -24px rgba(26,26,26,0.28)",
 };
 
 const renderCandidateTable = (rows: BacktestDiagnosticCandidate[] | undefined) => {
@@ -123,7 +122,7 @@ const renderCandidateTable = (rows: BacktestDiagnosticCandidate[] | undefined) =
   return (
     <div className="overflow-x-auto">
       <table className="min-w-[860px] w-full text-left text-[12px]">
-        <thead className="border-b border-slate-800 text-slate-400">
+        <thead className="border-b border-[rgba(26,26,26,0.12)] text-app-muted">
           <tr>
             <th className="px-[8px] py-[8px] font-semibold">档位</th>
             <th className="px-[8px] py-[8px] font-semibold">持有天数</th>
@@ -139,17 +138,17 @@ const renderCandidateTable = (rows: BacktestDiagnosticCandidate[] | undefined) =
         </thead>
         <tbody>
           {rows.map((row, index) => (
-            <tr key={`${row.sizeProfile}-${row.holdDays}-${row.objectiveScore}-${index}`} className="border-b border-slate-900/80 text-slate-200">
+            <tr key={`${row.sizeProfile}-${row.holdDays}-${row.objectiveScore}-${index}`} className="border-b border-[rgba(26,26,26,0.08)] text-app-text">
               <td className="px-[8px] py-[8px]">{row.sizeProfile}</td>
               <td className="px-[8px] py-[8px]">{row.holdDays}</td>
               <td className="px-[8px] py-[8px]">{row.vixVxvThreshold.toFixed(2)}</td>
               <td className="px-[8px] py-[8px]">-{row.macroDropThreshold.toFixed(0)}</td>
               <td className="px-[8px] py-[8px]">+{row.hySpikeThreshold.toFixed(2)}</td>
               <td className="px-[8px] py-[8px]">-{(row.btcDrawdownThreshold * 100).toFixed(0)}%</td>
-              <td className="px-[8px] py-[8px] text-emerald-300">{row.cagr.toFixed(2)}%</td>
-              <td className="px-[8px] py-[8px] text-rose-300">{row.mdd.toFixed(2)}%</td>
-              <td className="px-[8px] py-[8px] text-emerald-300">{row.mddImprovementPctPoints.toFixed(2)}pct</td>
-              <td className="px-[8px] py-[8px] text-amber-300">{row.cagrDragPctPoints.toFixed(2)}pct</td>
+              <td className="px-[8px] py-[8px] text-[#1a4d2e]">{row.cagr.toFixed(2)}%</td>
+              <td className="px-[8px] py-[8px] text-[#7b2d2c]">{row.mdd.toFixed(2)}%</td>
+              <td className="px-[8px] py-[8px] text-[#1a4d2e]">{row.mddImprovementPctPoints.toFixed(2)}pct</td>
+              <td className="px-[8px] py-[8px] text-[#b45f06]">{row.cagrDragPctPoints.toFixed(2)}pct</td>
             </tr>
           ))}
         </tbody>
@@ -219,7 +218,7 @@ export const BacktestDiagnosticPanel = ({ diagnostics }: BacktestDiagnosticPanel
 
   if (!diagnostics) {
     return (
-      <div className="rounded-[18px] border border-slate-200 bg-white p-[20px] text-[13px] text-slate-500">
+    <div className="rounded-[12px] border border-[rgba(26,26,26,0.10)] bg-[rgba(255,253,248,0.9)] p-[20px] text-[13px] text-app-muted">
         当前结果里还没有诊断数据。需要走 Python 回测接口才能生成诊断图。
       </div>
     );
@@ -227,7 +226,7 @@ export const BacktestDiagnosticPanel = ({ diagnostics }: BacktestDiagnosticPanel
 
   if (diagnostics.status !== "ok") {
     return (
-      <div className="rounded-[18px] border border-amber-200 bg-amber-50 p-[20px] text-[13px] text-amber-800">
+      <div className="rounded-[12px] border border-[rgba(180,95,6,0.18)] bg-[rgba(180,95,6,0.08)] p-[20px] text-[13px] text-[#b45f06]">
         {diagnostics.reason ?? "诊断数据生成失败。"}
       </div>
     );
@@ -236,11 +235,11 @@ export const BacktestDiagnosticPanel = ({ diagnostics }: BacktestDiagnosticPanel
   return (
     <div className="space-y-[16px]">
       <div className="grid gap-[12px] xl:grid-cols-[1.15fr_0.85fr]">
-        <div className="rounded-[18px] border border-slate-200 bg-white p-[16px]">
+        <div className="rounded-[12px] border border-[rgba(26,26,26,0.10)] bg-[rgba(255,253,248,0.9)] p-[16px]">
           <div className="flex items-center justify-between gap-[10px]">
             <div>
-              <p className="text-[18px] font-bold text-slate-900">回测诊断与对冲优化</p>
-              <p className="mt-[4px] text-[12px] text-slate-500">
+              <p className="font-display text-[18px] font-bold text-app-text">回测诊断与对冲优化</p>
+              <p className="mt-[4px] text-[12px] text-app-muted">
                 基于 {diagnostics.assetTicker} 主策略，扫描 hedge trigger / size / hold days，目标是压回撤同时尽量少伤 CAGR。
               </p>
             </div>
@@ -248,10 +247,10 @@ export const BacktestDiagnosticPanel = ({ diagnostics }: BacktestDiagnosticPanel
 
           <div className="mt-[12px] grid gap-[10px] md:grid-cols-3">
             {cards.map((card) => (
-              <div key={card.title} className="rounded-[14px] border border-slate-200 bg-slate-50 p-[12px]">
-                <p className="text-[11px] font-semibold uppercase tracking-[0.12em] text-slate-500">{card.title}</p>
-                <div className="mt-[8px] space-y-[4px] text-[12px] text-slate-600">
-                  <p className="text-[22px] font-bold text-slate-900">{card.endingNav}</p>
+              <div key={card.title} className="rounded-[12px] border border-[rgba(26,26,26,0.10)] bg-[rgba(26,26,26,0.03)] p-[12px]">
+                <p className="font-sans text-[11px] font-semibold uppercase tracking-[0.12em] text-app-muted">{card.title}</p>
+                <div className="mt-[8px] space-y-[4px] font-sans text-[12px] text-app-muted">
+                  <p className="font-mono text-[22px] font-bold text-app-text">{card.endingNav}</p>
                   <p>CAGR {card.cagr}</p>
                   <p>MDD {card.mdd}</p>
                 </div>
@@ -260,12 +259,12 @@ export const BacktestDiagnosticPanel = ({ diagnostics }: BacktestDiagnosticPanel
           </div>
 
           {diagnostics.recommendedConfig && (
-            <div className="mt-[12px] rounded-[14px] border border-blue-200 bg-blue-50 p-[12px]">
-              <p className="text-[12px] font-semibold text-blue-900">推荐 hedge 配置</p>
-              <p className="mt-[6px] text-[12px] leading-relaxed text-blue-900">
+            <div className="mt-[12px] rounded-[12px] border border-[rgba(34,59,91,0.18)] bg-[rgba(34,59,91,0.06)] p-[12px]">
+              <p className="text-[12px] font-semibold text-app-navy">推荐 hedge 配置</p>
+              <p className="mt-[6px] text-[12px] leading-relaxed text-app-navy">
                 {diagnostics.recommendedConfig.note}
               </p>
-              <div className="mt-[8px] grid gap-[8px] sm:grid-cols-2 xl:grid-cols-4 text-[12px] text-blue-900">
+              <div className="mt-[8px] grid gap-[8px] text-[12px] text-app-navy sm:grid-cols-2 xl:grid-cols-4">
                 <span>档位: {diagnostics.recommendedConfig.sizeProfile}</span>
                 <span>持有: {diagnostics.recommendedConfig.holdDays} 天</span>
                 <span>VIX/VXV: {diagnostics.recommendedConfig.vixVxvThreshold}</span>
@@ -279,9 +278,9 @@ export const BacktestDiagnosticPanel = ({ diagnostics }: BacktestDiagnosticPanel
           )}
         </div>
 
-        <div className="rounded-[18px] border border-slate-200 bg-white p-[16px]">
-          <p className="text-[14px] font-bold text-slate-900">参数扫描 Top 6</p>
-          <p className="mt-[4px] text-[12px] text-slate-500">
+        <div className="rounded-[12px] border border-[rgba(26,26,26,0.10)] bg-[rgba(255,253,248,0.9)] p-[16px]">
+          <p className="font-display text-[14px] font-bold text-app-text">参数扫描 Top 6</p>
+          <p className="mt-[4px] text-[12px] text-app-muted">
             评分更看重回撤改善，但会对 CAGR 损失和过度激活对冲做惩罚。
           </p>
           <div className="mt-[10px]">{renderCandidateTable(diagnostics.topCandidates)}</div>
@@ -289,23 +288,23 @@ export const BacktestDiagnosticPanel = ({ diagnostics }: BacktestDiagnosticPanel
       </div>
 
       <div className={chartContainerClass}>
-        <p className="mb-[10px] text-[22px] font-bold tracking-[-0.02em]">2024 年回撤诊断</p>
+        <p className="mb-[10px] font-display text-[22px] font-bold tracking-[-0.02em] text-app-text">2024 年回撤诊断</p>
         <div className="space-y-[10px]">
           <div className="h-[260px]">
             <ResponsiveContainer width="100%" height="100%">
               <ComposedChart data={drawdownData} syncId="drawdown">
-                <CartesianGrid strokeDasharray="4 4" stroke="rgba(148,163,184,0.12)" />
-                <XAxis dataKey="date" tick={{ fill: "#94a3b8", fontSize: 11 }} />
-                <YAxis tick={{ fill: "#94a3b8", fontSize: 11 }} domain={["dataMin", "dataMax"]} />
+                <CartesianGrid strokeDasharray="4 4" stroke="rgba(26,26,26,0.10)" />
+                <XAxis dataKey="date" tick={{ fill: "#6f6d69", fontSize: 11 }} />
+                <YAxis tick={{ fill: "#6f6d69", fontSize: 11 }} domain={["dataMin", "dataMax"]} />
                 <Tooltip contentStyle={darkTooltipStyle} />
                 <Legend />
                 {(diagnostics.drawdownMarkers ?? []).map((date) => (
-                  <ReferenceLine key={date} x={date} stroke="#ff3b30" strokeDasharray="6 6" />
+                  <ReferenceLine key={date} x={date} stroke="#7b2d2c" strokeDasharray="6 6" />
                 ))}
-                <Line type="monotone" dataKey="price" name="BTC" dot={false} stroke="#f59e0b" strokeWidth={2} />
-                <Line type="monotone" dataKey="ema20" name="EMA20" dot={false} stroke="#34d399" strokeDasharray="4 4" />
-                <Line type="monotone" dataKey="ema60" name="EMA60" dot={false} stroke="#60a5fa" strokeDasharray="4 4" />
-                <Line type="monotone" dataKey="ema120" name="EMA120" dot={false} stroke="#c084fc" strokeWidth={2} />
+                <Line type="monotone" dataKey="price" name="BTC" dot={false} stroke="#223b5b" strokeWidth={2} />
+                <Line type="monotone" dataKey="ema20" name="EMA20" dot={false} stroke="#1a4d2e" strokeDasharray="4 4" />
+                <Line type="monotone" dataKey="ema60" name="EMA60" dot={false} stroke="#b45f06" strokeDasharray="4 4" />
+                <Line type="monotone" dataKey="ema120" name="EMA120" dot={false} stroke="#7b2d2c" strokeWidth={2} />
               </ComposedChart>
             </ResponsiveContainer>
           </div>

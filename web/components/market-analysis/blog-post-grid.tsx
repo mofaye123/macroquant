@@ -16,10 +16,10 @@ type BlogPostGridProps = {
 };
 
 const coverThemes = [
-  "from-slate-900 via-slate-800 to-slate-700",
-  "from-blue-900 via-indigo-800 to-slate-800",
-  "from-emerald-900 via-teal-800 to-slate-800",
-  "from-zinc-900 via-stone-800 to-slate-700",
+  "from-[#223b5b] via-[#55655b] to-[#f8f5ef]",
+  "from-[#7b2d2c] via-[#b45f06] to-[#f8f5ef]",
+  "from-[#55655b] via-[#6f6d69] to-[#f8f5ef]",
+  "from-[#223b5b] via-[#7b2d2c] to-[#f8f5ef]",
 ];
 
 export function BlogPostGrid({
@@ -57,16 +57,16 @@ export function BlogPostGrid({
               <Link
                 key={post.id}
                 href={`${basePath}?doc=${encodeURIComponent(post.id)}`}
-                className="group block rounded-[14px] border border-app-border bg-white p-[10px] transition-all hover:-translate-y-[1px] hover:border-blue-200 hover:shadow-soft"
+                className="group block rounded-[12px] border border-app-border bg-[rgba(255,253,248,0.9)] p-[10px] transition-all hover:-translate-y-[1px] hover:border-[rgba(34,59,91,0.18)] hover:shadow-soft"
               >
                 <div className={`h-[140px] rounded-[10px] bg-gradient-to-br ${coverThemes[idx % coverThemes.length]} p-[12px] text-white`}>
-                  <p className="text-[10px] uppercase tracking-[0.16em] text-slate-200">MacroQuant Research</p>
+                  <p className="text-[10px] uppercase tracking-[0.16em] text-white/80">MacroQuant Research</p>
                   <p className="mt-[8px] line-clamp-2 text-[15px] font-semibold leading-tight">{post.title}</p>
                   <div className="mt-[8px] flex flex-wrap gap-[6px]">
                     {post.tags.slice(0, 2).map((tag) => (
                       <span
                         key={`${post.id}-${tag}`}
-                        className="rounded-full bg-white/15 px-[7px] py-[2px] text-[10px] font-medium text-slate-100"
+                        className="rounded-full bg-white/18 px-[7px] py-[2px] text-[10px] font-medium text-white"
                       >
                         {tag}
                       </span>
@@ -76,7 +76,7 @@ export function BlogPostGrid({
 
                 <div className="px-[4px] pb-[4px] pt-[10px]">
                   <p className="text-[11px] uppercase tracking-[0.06em] text-app-muted">{post.date}</p>
-                  <p className="mt-[6px] line-clamp-2 text-[22px] font-semibold leading-tight text-app-text group-hover:text-blue-700">
+                  <p className="mt-[6px] line-clamp-2 font-display text-[22px] font-semibold leading-tight text-app-text group-hover:text-app-navy">
                     {post.title}
                   </p>
                   <p className="mt-[8px] line-clamp-3 text-[13px] leading-relaxed text-app-muted">{post.preview}</p>

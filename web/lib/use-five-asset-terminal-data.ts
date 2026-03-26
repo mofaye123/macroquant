@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 
 import { FiveAssetTerminalPayload } from "@/lib/five-asset-terminal-types";
 
@@ -168,6 +168,10 @@ export const useFiveAssetTerminalData = (
 ) => {
   const seededPayload = isUsablePayload(initialPayload) ? initialPayload : null;
   const hasCustomRange = Boolean(query.startDate || query.endDate);
+  const requestQuery = useMemo(
+    () => ({ startDate: query.startDate, endDate: query.endDate }),
+    [query.startDate, query.endDate],
+  );
   const [payload, setPayload] = useState<FiveAssetTerminalPayload | null>(seededPayload);
   const [isLoading, setIsLoading] = useState(!seededPayload || hasCustomRange);
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -197,7 +201,7 @@ export const useFiveAssetTerminalData = (
       activeController = controller;
 
       try {
-        const resolved = await resolvePayload(query, controller.signal);
+        const resolved = await resolvePayload(requestQuery, controller.signal);
         if (!active) {
           return;
         }
@@ -245,7 +249,7 @@ export const useFiveAssetTerminalData = (
       activeController?.abort();
       window.removeEventListener("focus", handleFocus);
     };
-  }, [seededPayload, hasCustomRange, query.startDate, query.endDate]);
+  }, [seededPayload, hasCustomRange, requestQuery]);
 
   return {
     payload,

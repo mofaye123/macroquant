@@ -71,13 +71,13 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
   return (
     <AppShell dataState={dataState}>
       <div className="space-y-[16px]">
-        <header className="rounded-[18px] border border-app-border bg-[linear-gradient(140deg,#f8fbff_0%,#f1f5ff_55%,#ffffff_100%)] p-[16px]">
-          <p className="text-[11px] uppercase tracking-[0.16em] text-app-muted">{data.subtitle}</p>
-          <h1 className="mt-[4px] text-[28px] font-extrabold tracking-[-0.02em] text-app-text">{data.title}</h1>
-          <p className="mt-[8px] max-w-[950px] text-[13px] text-app-muted">{data.overview}</p>
-          <div className="mt-[14px] inline-flex items-center gap-[8px] rounded-[12px] border border-slate-200 bg-white px-[10px] py-[7px]">
-            <span className="text-[11px] uppercase tracking-[0.15em] text-app-muted">当前分数</span>
-            <strong className="text-[19px] text-app-text">{latest.toFixed(1)}</strong>
+        <header className="rounded-[12px] border border-app-border bg-[linear-gradient(140deg,#f8f5ef_0%,#fffdf8_55%,#f2efe9_100%)] p-[16px]">
+          <p className="font-sans text-[11px] uppercase tracking-[0.18em] text-app-muted">{data.subtitle}</p>
+          <h1 className="mt-[4px] font-display text-[28px] font-bold tracking-[-0.03em] text-app-text">{data.title}</h1>
+          <p className="mt-[8px] max-w-[950px] font-body text-[13px] text-app-muted">{data.overview}</p>
+          <div className="mt-[14px] inline-flex items-center gap-[8px] rounded-[10px] border border-[rgba(26,26,26,0.12)] bg-white/80 px-[10px] py-[7px]">
+            <span className="font-sans text-[11px] uppercase tracking-[0.15em] text-app-muted">当前分数</span>
+            <strong className="font-mono text-[19px] text-app-text">{latest.toFixed(1)}</strong>
             <span className={change >= 0 ? "text-[12px] font-semibold text-app-success" : "text-[12px] font-semibold text-app-danger"}>
               {formatSigned(change)}
             </span>
@@ -85,10 +85,10 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
               className={cn(
                 "rounded-full px-[8px] py-[3px] text-[11px] font-semibold",
                 scoreState.state === "positive"
-                  ? "bg-emerald-50 text-emerald-700"
+                  ? "bg-[rgba(26,77,46,0.08)] text-[#1a4d2e]"
                   : scoreState.state === "negative"
-                    ? "bg-red-50 text-red-700"
-                    : "bg-slate-100 text-slate-600"
+                    ? "bg-[rgba(123,45,44,0.08)] text-[#7b2d2c]"
+                    : "bg-[rgba(26,26,26,0.04)] text-app-muted"
               )}
             >
               {scoreState.label}
@@ -107,7 +107,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                 onRangeChange={setScoreRange}
               />
             </div>
-            <p className="mt-[10px] text-[12px] text-app-muted">低于 33 = 极紧；围绕 50 = 中性；高于 66 = 偏松。读图时先看分数位置，再看斜率方向。</p>
+            <p className="mt-[10px] font-body text-[12px] text-app-muted">低于 33 = 极紧；围绕 50 = 中性；高于 66 = 偏松。读图时先看分数位置，再看斜率方向。</p>
           </SurfaceCard>
 
           <SurfaceCard>
@@ -140,11 +140,11 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
         {overlays.length > 0 && !showSpecialAPanels && !showSpecialBPanels && !showSpecialEPanels && (
           <SurfaceCard>
             <SectionTitle title="因子趋势图" rightSlot={<span className="text-[11px] text-app-muted">统一评分轴: 0 - 100</span>} />
-            <p className="mt-[8px] text-[12px] text-app-muted">同样使用 33 / 50 / 66 三条参考线。这样能直接看出因子是偏紧、均衡还是偏松，而不是只看绝对数值。</p>
+            <p className="mt-[8px] font-body text-[12px] text-app-muted">同样使用 33 / 50 / 66 三条参考线。这样能直接看出因子是偏紧、均衡还是偏松，而不是只看绝对数值。</p>
             <div className="mx-auto mt-[12px] w-full max-w-[980px] space-y-[12px]">
               {overlays.map((series) => (
-                <div key={series.name} className="rounded-[14px] border border-app-border bg-white p-[12px]">
-                  <p className="text-[12px] font-semibold uppercase tracking-[0.12em] text-app-muted">{series.name}</p>
+                <div key={series.name} className="rounded-[12px] border border-[rgba(26,26,26,0.10)] bg-[rgba(255,253,248,0.9)] p-[12px]">
+                  <p className="font-sans text-[12px] font-semibold uppercase tracking-[0.12em] text-app-muted">{series.name}</p>
                   <LineScoreChart data={series.points} color={series.color} yDomain={[0, 100]} height={220} />
                 </div>
               ))}
@@ -168,12 +168,12 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                 {factors.map((factor) => {
                   const rowTone = scoreTone(factor.score);
                   return (
-                    <tr key={factor.name} className="rounded-[10px] bg-slate-50">
+                    <tr key={factor.name} className="rounded-[10px] bg-[rgba(26,26,26,0.03)]">
                       <td className="rounded-l-[10px] px-[10px] py-[10px] font-medium text-app-text">{factor.name}</td>
                       <td className="px-[10px] py-[10px]">
                         <div className="flex items-center gap-[8px]">
                           <span className="font-semibold text-app-text">{factor.score.toFixed(1)}</span>
-                          <span className="h-[6px] w-[80px] rounded-full bg-white">
+                          <span className="h-[6px] w-[80px] rounded-full bg-white/80">
                             <span
                               className={`block h-full rounded-full ${rowTone.bar}`}
                               style={{ width: `${Math.max(0, Math.min(100, factor.score))}%` }}
@@ -199,7 +199,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
 
         <SurfaceCard>
           <SectionTitle title="因子专业定义与量化逻辑" />
-          <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]">
+          <details className="mt-[12px] rounded-[12px] border border-[rgba(26,26,26,0.10)] bg-[rgba(255,253,248,0.9)] p-[12px]">
             <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
               <FileText className="h-[14px] w-[14px]" />
               {`📚 ${data.moduleId.toUpperCase()}模块：因子专业定义与市场逻辑（点击展开）`}
@@ -210,12 +210,12 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                 dangerouslySetInnerHTML={{ __html: normalizedGlossaryHtml }}
               />
             ) : (
-              <div className="mt-[10px] space-y-[9px]">
+                  <div className="mt-[10px] space-y-[9px]">
                 {data.glossary.map((item) => (
-                  <div key={item.term} className="rounded-[12px] border border-slate-200 bg-slate-50 p-[10px]">
+                  <div key={item.term} className="rounded-[12px] border border-[rgba(26,26,26,0.10)] bg-[rgba(26,26,26,0.03)] p-[10px]">
                     <p className="text-[13px] font-bold text-app-text">{item.term}</p>
                     <p className="mt-[4px] text-[12px] leading-relaxed text-app-muted">{item.definition}</p>
-                    <p className="mt-[4px] text-[11px] font-semibold text-blue-700">{item.signal}</p>
+                    <p className="mt-[4px] text-[11px] font-semibold text-app-navy">{item.signal}</p>
                   </div>
                 ))}
               </div>
@@ -223,9 +223,9 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
           </details>
         </SurfaceCard>
 
-        <SurfaceCard>
+        <SurfaceCard className="min-w-0 overflow-hidden">
           <SectionTitle title="原始数据明细" />
-          <details className="mt-[12px] rounded-[12px] border border-slate-200 bg-white p-[12px]">
+          <details className="mt-[12px] flex min-w-0 max-h-[78vh] flex-col overflow-hidden rounded-[12px] border border-[rgba(26,26,26,0.10)] bg-[rgba(255,253,248,0.9)] p-[12px]">
             <summary className="flex cursor-pointer items-center gap-[7px] text-[12px] font-semibold text-app-text">
               <Database className="h-[14px] w-[14px]" />
               {`查看完整原始数据表（${rawRangeLabel} · ${rawRowsByRange.length} 行）`}
@@ -236,16 +236,16 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                 所以这里暂时只能展示分数序列样例。要看到你截图那种完整原始数据明细，需要重新生成一次新的静态快照。
               </div>
             )}
-            <div className="mt-[10px] h-[520px] max-h-[62vh] w-full overflow-scroll overscroll-contain rounded-[10px] border border-slate-100">
+            <div className="mt-[10px] min-h-0 flex-1 w-full max-w-full overflow-auto overscroll-contain rounded-[10px] border border-[rgba(26,26,26,0.08)]">
               <table className="w-full min-w-[720px] text-[11px]">
-                <thead className="sticky top-0 z-20 bg-slate-50 text-app-muted">
+                <thead className="sticky top-0 z-20 bg-[rgba(255,253,248,0.96)] text-app-muted">
                   <tr>
                     {rawTable.columns.map((column, columnIndex) => (
                       <th
                         key={column}
                         className={cn(
                           "px-[8px] py-[6px] text-left font-semibold",
-                          columnIndex === 0 && "sticky left-0 z-30 bg-slate-50 shadow-[8px_0_12px_-12px_rgba(15,23,42,0.2)]"
+                          columnIndex === 0 && "sticky left-0 z-30 bg-[rgba(255,253,248,0.96)] shadow-[8px_0_12px_-12px_rgba(26,26,26,0.18)]"
                         )}
                       >
                         {column}
@@ -261,7 +261,7 @@ export const ModulePageTemplate = ({ data, dataState }: ModulePageTemplateProps)
                           key={`cell-${rowIndex}-${cellIndex}`}
                           className={cn(
                             "px-[8px] py-[6px] whitespace-nowrap",
-                            cellIndex === 0 && "sticky left-0 z-10 bg-white shadow-[8px_0_12px_-12px_rgba(15,23,42,0.16)]"
+                            cellIndex === 0 && "sticky left-0 z-10 bg-[rgba(255,253,248,0.96)] shadow-[8px_0_12px_-12px_rgba(26,26,26,0.14)]"
                           )}
                         >
                           {cell === null ? "-" : cell}

@@ -9,6 +9,15 @@ const STOOQ_SYMBOLS = {
   MSTR: "mstr.us",
   XAU: "xauusd",
 };
+const MARKET_DAILY_SYMBOLS = {
+  US10Y: { symbol: "^TNX", bucket: "rate", name: "US 10Y Yield", scale: 0.1 },
+  DXY: { symbol: "DX-Y.NYB", bucket: "fx", name: "US Dollar Index", scale: 1 },
+  GOLD: { symbol: "GC=F", bucket: "commodity", name: "COMEX Gold", scale: 1 },
+  VIX: { symbol: "^VIX", bucket: "rate", name: "CBOE VIX", scale: 1 },
+  SPX: { symbol: "^GSPC", bucket: "equity_index", name: "S&P 500", scale: 1 },
+};
+const MARKET_DAILY_ORDER = ["US10Y", "DXY", "GOLD", "VIX", "SPX"];
+const MARKET_DAILY_CACHE_KEY = new Request("https://macroquant.internal/api/v1/market-daily", { method: "GET" });
 const CACHE_TTL_SECONDS = 60;
 
 export default {
@@ -34,6 +43,21 @@ export default {
       if (url.pathname === "/api/v1/five-asset-live-quotes") {
         const payload = await buildLiveQuotesPayload(env);
         return withCors(jsonResponse(payload, { cacheControl: "no-store" }), request, env);
+      }
+
+      if (url.pathname === "/api/v1/market-daily") {
+        try {
+          const payload = await buildMarketDailyPayload();
+          const response = jsonResponse(payload, { cacheControl: "no-store" });
+          ctx.waitUntil(caches.default.put(MARKET_DAILY_CACHE_KEY, response.clone()));
+          return withCors(response, request, env);
+        } catch (error) {
+          const cached = await caches.default.match(MARKET_DAILY_CACHE_KEY);
+          if (cached) {
+            return withCors(cached, request, env);
+          }
+          throw error;
+        }
       }
 
       if (url.pathname === "/api/v1/five-asset-backtest") {
@@ -126,6 +150,173 @@ async function fetchText(url, options = {}) {
     throw new Error(`upstream request failed: ${url} (${response.status})`);
   }
   return response.text();
+}
+
+function lastFinite(values) {
+  if (!Array.isArray(values)) {
+    return null;
+  }
+  for (let index = values.length - 1; index >= 0; index -= 1) {
+    const value = Number(values[index]);
+    if (Number.isFinite(value) && value > 0) {
+      return value;
+    }
+  }
+  return null;
+}
+
+function nthFiniteFromEnd(values, offsetFromEnd) {
+  if (!Array.isArray(values) || offsetFromEnd < 1) {
+    return null;
+  }
+  let seen = 0;
+  for (let index = values.length - 1; index >= 0; index -= 1) {
+    const value = Number(values[index]);
+    if (!Number.isFinite(value) || value <= 0) {
+      continue;
+    }
+    seen += 1;
+    if (seen === offsetFromEnd) {
+      return value;
+    }
+  }
+  return null;
+}
+
+function realizedVolPct(values, lookback = 14) {
+  if (!Array.isArray(values)) {
+    return null;
+  }
+  const clean = values
+    .map((value) => Number(value))
+    .filter((value) => Number.isFinite(value) && value > 0);
+  if (clean.length < 3) {
+    return null;
+  }
+  const returns = [];
+  for (let index = 1; index < clean.length; index += 1) {
+    const prev = clean[index - 1];
+    const curr = clean[index];
+    returns.push(prev > 0 ? curr / prev - 1 : 0);
+  }
+  const tail = returns.slice(-lookback);
+  if (tail.length < 2) {
+    return null;
+  }
+  const mean = tail.reduce((sum, value) => sum + value, 0) / tail.length;
+  const variance = tail.reduce((sum, value) => sum + (value - mean) ** 2, 0) / (tail.length - 1);
+  return Math.sqrt(Math.max(variance, 0)) * Math.sqrt(252) * 100;
+}
+
+function normalizeMarketDailyValue(ticker, value) {
+  const raw = Number(value || 0);
+  if (ticker === "US10Y") {
+    return raw / 10.0;
+  }
+  return raw;
+}
+
+async function fetchYahooMarketDailySnapshot(ticker, config) {
+  const url = `https://query1.finance.yahoo.com/v8/finance/chart/${encodeURIComponent(config.symbol)}?range=1mo&interval=1d&includePrePost=false&events=div%2Csplits`;
+  const payload = await fetchJson(url, {
+    cf: { cacheTtl: 20, cacheEverything: true },
+    headers: {
+      "User-Agent": "Mozilla/5.0 (MacroQuant MarketDaily/1.0)",
+      Accept: "application/json,text/plain,*/*",
+    },
+  });
+  const chart = payload?.chart?.result?.[0];
+  if (!chart) {
+    throw new Error(`empty yahoo chart row for ${config.symbol}`);
+  }
+
+  const meta = chart.meta || {};
+  const quote = Array.isArray(chart.indicators?.quote) ? chart.indicators.quote[0] : null;
+  const closes = Array.isArray(quote?.close)
+    ? quote.close.map((value) => Number(value)).filter((value) => Number.isFinite(value) && value > 0)
+    : [];
+  if (!closes.length) {
+    throw new Error(`no close series for ${config.symbol}`);
+  }
+
+  const currentRaw = Number.isFinite(Number(meta.regularMarketPrice)) && Number(meta.regularMarketPrice) > 0
+    ? Number(meta.regularMarketPrice)
+    : lastFinite(closes);
+  const previousRaw = Number.isFinite(Number(meta.chartPreviousClose)) && Number(meta.chartPreviousClose) > 0
+    ? Number(meta.chartPreviousClose)
+    : (closes.length >= 2 ? closes[closes.length - 2] : currentRaw);
+  const prev7Raw = nthFiniteFromEnd(closes, 8) ?? closes[0];
+  const current = normalizeMarketDailyValue(ticker, currentRaw);
+  const previousClose = normalizeMarketDailyValue(ticker, previousRaw);
+  const prev7 = normalizeMarketDailyValue(ticker, prev7Raw);
+  const dayChangePct = previousClose > 0 ? ((current / previousClose) - 1) * 100 : 0;
+  const change7dPct = prev7 > 0 ? ((current / prev7) - 1) * 100 : 0;
+  const quoteDate = meta.regularMarketTime
+    ? new Date(Number(meta.regularMarketTime) * 1000).toISOString().slice(0, 10)
+    : (Array.isArray(chart.timestamp) && chart.timestamp.length
+      ? new Date(Number(chart.timestamp[chart.timestamp.length - 1]) * 1000).toISOString().slice(0, 10)
+      : new Date().toISOString().slice(0, 10));
+
+  return {
+    ticker,
+    name: config.name,
+    bucket: config.bucket,
+    spot: round(current, 2),
+    change24hPct: round(dayChangePct, 4),
+    change7dPct: round(change7dPct, 2),
+    realizedVol14dPct: round(realizedVolPct(closes) || 0, 2),
+    quoteDate,
+    previousClose: round(previousClose, 2),
+    previousCloseDate: null,
+    source: "yahoo",
+  };
+}
+
+async function buildMarketDailyPayload() {
+  const results = await Promise.allSettled(
+    MARKET_DAILY_ORDER.map(async (ticker) => {
+      const config = MARKET_DAILY_SYMBOLS[ticker];
+      if (!config) {
+        throw new Error(`unknown market snapshot ticker: ${ticker}`);
+      }
+      return fetchYahooMarketDailySnapshot(ticker, config);
+    }),
+  );
+
+  const snapshots = [];
+  const warnings = [];
+  for (const result of results) {
+    if (result.status === "fulfilled" && result.value) {
+      snapshots.push(result.value);
+    } else if (result.status === "rejected") {
+      warnings.push(result.reason instanceof Error ? result.reason.message : String(result.reason));
+    }
+  }
+
+  const orderedSnapshots = MARKET_DAILY_ORDER
+    .map((ticker) => snapshots.find((item) => item.ticker === ticker))
+    .filter(Boolean);
+  if (orderedSnapshots.length !== MARKET_DAILY_ORDER.length) {
+    throw new Error(`market daily live snapshots incomplete: ${orderedSnapshots.length}/${MARKET_DAILY_ORDER.length}`);
+  }
+
+  const sourceMode = warnings.length ? "degraded" : "live";
+  return {
+    status: warnings.length ? "degraded" : "ok",
+    generatedAt: new Date().toISOString(),
+    asOfDate: new Date().toISOString().slice(0, 10),
+    headline: "跨资产快照基于 Yahoo Finance 日内/日线行情，默认按昨收对比。",
+    quickView: {
+      marketDataMode: sourceMode,
+      quoteSourceMode: sourceMode,
+    },
+    marketSnapshots: orderedSnapshots,
+    sourceStatus: {
+      marketData: { provider: "yahoo", mode: sourceMode },
+      warnings,
+    },
+    warnings,
+  };
 }
 
 async function fetchStaticPayload(env, ctx, path) {

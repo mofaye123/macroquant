@@ -71,15 +71,15 @@ export const MultiLineChart = ({
       <div className="h-[320px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={merged} margin={{ top: 10, right: 14, left: 12, bottom: 6 }}>
-          <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
-          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-          <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={52} />
-          <Tooltip contentStyle={{ borderRadius: 12, borderColor: "#dbe2ea", fontSize: 11 }} />
-          <ReferenceLine y={66} stroke="#16a34a" strokeDasharray="4 4" ifOverflow="extendDomain" />
-          <ReferenceLine y={50} stroke="#94a3b8" strokeDasharray="4 4" ifOverflow="extendDomain" />
-          <ReferenceLine y={33} stroke="#f59e0b" strokeDasharray="4 4" ifOverflow="extendDomain" />
+          <CartesianGrid strokeDasharray="4 5" stroke="rgba(26,26,26,0.10)" />
+          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#6f6d69" }} minTickGap={40} />
+          <YAxis domain={[0, 100]} tick={{ fontSize: 10, fill: "#6f6d69" }} width={52} />
+          <Tooltip contentStyle={{ borderRadius: 10, borderColor: "rgba(26,26,26,0.14)", backgroundColor: "rgba(255,253,248,0.96)", fontSize: 11 }} />
+          <ReferenceLine y={66} stroke="#1a4d2e" strokeDasharray="4 4" ifOverflow="extendDomain" />
+          <ReferenceLine y={50} stroke="#a99f91" strokeDasharray="4 4" ifOverflow="extendDomain" />
+          <ReferenceLine y={33} stroke="#b45f06" strokeDasharray="4 4" ifOverflow="extendDomain" />
           <Legend wrapperStyle={{ fontSize: 11 }} />
-          <Line type="monotone" dataKey="score" name="Total Score" stroke="#2563eb" strokeWidth={2.2} dot={false} />
+          <Line type="monotone" dataKey="score" name="Total Score" stroke="#223b5b" strokeWidth={2.2} dot={false} />
           {filteredOverlays.map((item) => (
             <Line
               key={item.name}

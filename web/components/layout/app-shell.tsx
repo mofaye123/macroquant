@@ -21,7 +21,7 @@ import {
 } from "lucide-react";
 
 import { MacroDataState, useMacroData } from "@/lib/use-macro-data";
-import { cn, describeScoreState } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 
 type AppShellProps = {
   children: ReactNode;
@@ -109,7 +109,6 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
       pad(shiftedDate.getUTCDate())
     ].join("-") + ` ${pad(shiftedDate.getUTCHours())}:${pad(shiftedDate.getUTCMinutes())}:${pad(shiftedDate.getUTCSeconds())}`;
   };
-  const scoreState = describeScoreState(payload.dashboard.overallScore.value);
   const readyModules = payload.dataQuality?.readyModules?.length ?? 0;
   const missingModules = payload.dataQuality?.missingModules?.length ?? 0;
   const servedFromSnapshot = payload.dataQuality?.servedFromSnapshot === true;
@@ -140,15 +139,15 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
           ? `DEGRADED (Python API ${readyModules}/7)`
           : "LIVE (Python API)";
   const sourceToneClass = !isLive
-    ? "border-amber-200 bg-amber-50 text-amber-800"
+    ? "border-[rgba(180,95,6,0.18)] bg-[rgba(180,95,6,0.08)] text-[#b45f06]"
     : isDegraded
-      ? "border-orange-200 bg-orange-50 text-orange-800"
-      : "border-emerald-200 bg-emerald-50 text-emerald-800";
+      ? "border-[rgba(123,45,44,0.18)] bg-[rgba(123,45,44,0.08)] text-[#7b2d2c]"
+      : "border-[rgba(26,77,46,0.18)] bg-[rgba(26,77,46,0.08)] text-[#1a4d2e]";
   const sourceBadgeClass = !isLive
-    ? "bg-amber-100 text-amber-700"
+    ? "bg-[rgba(180,95,6,0.12)] text-[#b45f06]"
     : isDegraded
-      ? "bg-orange-100 text-orange-700"
-      : "bg-emerald-100 text-emerald-700";
+      ? "bg-[rgba(123,45,44,0.12)] text-[#7b2d2c]"
+      : "bg-[rgba(26,77,46,0.12)] text-[#1a4d2e]";
   const dashboardActive = pathname === "/";
   const childActive = useMemo(
     () => dashboardGroupItems.some((item) => pathname.startsWith(item.href)),
@@ -162,23 +161,23 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
   const backtestActive = pathname === "/backtest" || pathname.startsWith("/backtest/");
 
   return (
-    <div className="min-h-screen bg-[radial-gradient(circle_at_0%_0%,#f8fbff_0%,#eef2f7_35%,#f8fafc_100%)] text-app-text">
+    <div className="min-h-screen bg-[radial-gradient(circle_at_top_left,rgba(255,255,255,0.72),transparent_28%),linear-gradient(180deg,rgba(255,255,255,0.48),rgba(255,255,255,0)),repeating-linear-gradient(0deg,rgba(0,0,0,0.018),rgba(0,0,0,0.018)_1px,transparent_1px,transparent_4px)] text-app-text">
       <div className="mx-auto grid max-w-[1600px] gap-[16px] px-[12px] py-[14px] lg:grid-cols-[250px_1fr] lg:px-[16px]">
-        <aside className="rounded-[20px] border border-app-border bg-app-card p-[16px] shadow-[0_24px_56px_-38px_rgba(15,23,42,0.34)]">
-          <div className="mb-[16px] rounded-[14px] bg-[linear-gradient(135deg,#0f172a_0%,#1e293b_55%,#334155_100%)] p-[14px] text-white">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-slate-300">MacroQuant</p>
-            <h1 className="mt-[6px] text-[17px] font-bold leading-[1.3]">宏观金融环境量化</h1>
-            <p className="mt-[6px] text-[11px] text-slate-300">Data Cutoff (Date): {dataCutoffDate}</p>
+        <aside className="rounded-[14px] border border-app-border bg-[rgba(255,253,248,0.8)] p-[16px] shadow-card">
+          <div className="mb-[16px] border-b border-[rgba(26,26,26,0.12)] pb-[12px]">
+            <p className="font-sans text-[10px] uppercase tracking-[0.24em] text-app-muted">MacroQuant</p>
+            <h1 className="mt-[8px] font-display text-[18px] font-bold leading-[1.2] text-app-text">宏观金融环境量化</h1>
+            <p className="mt-[6px] font-mono text-[11px] text-app-muted">Data Cutoff (Date): {dataCutoffDate}</p>
           </div>
 
           <div className={cn("mb-[12px] rounded-[12px] border px-[10px] py-[9px] text-[11px]", sourceToneClass)}>
             <div className="flex items-center justify-between gap-[8px]">
-              <p className="font-semibold">Data Source</p>
+              <p className="font-sans font-semibold uppercase tracking-[0.12em]">Data Source</p>
               <span className={cn("rounded-full px-[8px] py-[2px] text-[10px] font-semibold", sourceBadgeClass)}>
                 {sourceLabel}
               </span>
             </div>
-            <div className="mt-[8px] grid grid-cols-[auto_1fr] gap-x-[8px] gap-y-[3px] text-[10px] leading-tight">
+            <div className="mt-[8px] grid grid-cols-[auto_1fr] gap-x-[8px] gap-y-[3px] font-mono text-[10px] leading-tight">
               <p className="opacity-80">UTC</p>
               <p>{latestUpdatedUtc}</p>
               <p className="opacity-80">UTC+8</p>
@@ -205,12 +204,12 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
             </details>
           </div>
 
-          <nav className="space-y-[8px] rounded-[14px] border border-app-border bg-white/70 p-[8px]">
+          <nav className="space-y-[8px] rounded-[12px] border border-[rgba(26,26,26,0.12)] bg-[rgba(255,253,248,0.72)] p-[8px]">
               <div className="space-y-[6px]">
                 <div
                   className={cn(
                     "flex items-center gap-[8px] rounded-[10px] border px-[8px] py-[5px]",
-                    dashboardActive || childActive ? "border-blue-200 bg-blue-50" : "border-transparent"
+                    dashboardActive || childActive ? "border-[rgba(34,59,91,0.18)] bg-[rgba(34,59,91,0.08)]" : "border-transparent"
                   )}
                 >
                   <Link
@@ -218,7 +217,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                     className={cn(
                       "flex min-w-0 flex-1 items-center gap-[8px] rounded-[8px] px-[2px] py-[2px] text-[11px] font-semibold transition-colors",
                       dashboardActive
-                        ? "text-blue-700"
+                        ? "text-app-navy"
                         : "text-app-muted hover:text-app-text"
                     )}
                   >
@@ -231,7 +230,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                     className={cn(
                     "inline-flex h-[20px] w-[20px] items-center justify-center rounded-[6px] transition-colors",
                     dashboardActive || childActive
-                      ? "text-blue-700 hover:bg-blue-100"
+                      ? "text-app-navy hover:bg-[rgba(34,59,91,0.10)]"
                       : "text-app-muted hover:bg-slate-100 hover:text-app-text"
                     )}
                     aria-label={dashboardExpanded ? "收起模块导航" : "展开模块导航"}
@@ -252,8 +251,8 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                           className={cn(
                             "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
                             active
-                              ? "border-blue-200 bg-blue-50 text-blue-700"
-                              : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                              ? "border-[rgba(34,59,91,0.18)] bg-[rgba(34,59,91,0.08)] text-app-navy"
+                              : "border-transparent text-app-muted hover:border-app-border hover:bg-[rgba(26,26,26,0.03)] hover:text-app-text"
                           )}
                         >
                           <Icon className="h-[14px] w-[14px]" />
@@ -269,7 +268,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                 <div
                   className={cn(
                     "flex items-center gap-[8px] rounded-[10px] border px-[8px] py-[5px]",
-                    marketActive || marketChildActive ? "border-blue-200 bg-blue-50" : "border-transparent"
+                    marketActive || marketChildActive ? "border-[rgba(34,59,91,0.18)] bg-[rgba(34,59,91,0.08)]" : "border-transparent"
                   )}
                 >
                   <Link
@@ -277,7 +276,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                     className={cn(
                       "flex min-w-0 flex-1 items-center gap-[8px] rounded-[8px] px-[2px] py-[2px] text-[11px] font-semibold transition-colors",
                       marketActive
-                        ? "text-blue-700"
+                        ? "text-app-navy"
                         : "text-app-muted hover:text-app-text"
                     )}
                   >
@@ -290,7 +289,7 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                     className={cn(
                     "inline-flex h-[20px] w-[20px] items-center justify-center rounded-[6px] transition-colors",
                     marketActive || marketChildActive
-                      ? "text-blue-700 hover:bg-blue-100"
+                      ? "text-app-navy hover:bg-[rgba(34,59,91,0.10)]"
                       : "text-app-muted hover:bg-slate-100 hover:text-app-text"
                     )}
                     aria-label={marketExpanded ? "收起市场行情导航" : "展开市场行情导航"}
@@ -311,8 +310,8 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
                           className={cn(
                             "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
                             active
-                              ? "border-blue-200 bg-blue-50 text-blue-700"
-                              : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                              ? "border-[rgba(34,59,91,0.18)] bg-[rgba(34,59,91,0.08)] text-app-navy"
+                              : "border-transparent text-app-muted hover:border-app-border hover:bg-[rgba(26,26,26,0.03)] hover:text-app-text"
                           )}
                         >
                           <Icon className="h-[14px] w-[14px]" />
@@ -330,8 +329,8 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
               className={cn(
                 "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
                 backtestActive
-                  ? "border-blue-200 bg-blue-50 text-blue-700"
-                  : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                  ? "border-[rgba(34,59,91,0.18)] bg-[rgba(34,59,91,0.08)] text-app-navy"
+                  : "border-transparent text-app-muted hover:border-app-border hover:bg-[rgba(26,26,26,0.03)] hover:text-app-text"
               )}
             >
               <BarChart3 className="h-[14px] w-[14px]" />
@@ -341,9 +340,9 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
               href="/five-asset-cta"
               target="_blank"
               rel="noopener noreferrer"
-              className={cn(
-                "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
-                "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+            className={cn(
+              "flex items-center gap-[8px] rounded-[10px] border px-[9px] py-[7px] text-[11px] font-medium transition-colors",
+                "border-transparent text-app-muted hover:border-app-border hover:bg-[rgba(26,26,26,0.03)] hover:text-app-text"
               )}
             >
               <Activity className="h-[14px] w-[14px]" />
@@ -352,12 +351,12 @@ export const AppShell = ({ children, dataState }: AppShellProps) => {
 
           </nav>
 
-          <div className="mt-[14px] rounded-[12px] border border-amber-100 bg-amber-50 px-[10px] py-[9px] text-[11px] text-amber-700">
+          <div className="mt-[14px] rounded-[12px] border border-[rgba(180,95,6,0.18)] bg-[rgba(180,95,6,0.08)] px-[10px] py-[9px] text-[11px] text-[#b45f06]">
             实时行情仅用于盘面验证，不直接覆盖模块因子打分。
           </div>
         </aside>
 
-        <main className="min-h-[calc(100vh-24px)] rounded-[20px] border border-app-border bg-app-card p-[16px] shadow-[0_24px_56px_-38px_rgba(15,23,42,0.34)] lg:p-[20px]">
+        <main className="min-w-0 min-h-[calc(100vh-24px)] overflow-x-hidden rounded-[14px] border border-app-border bg-[rgba(255,253,248,0.9)] p-[16px] shadow-card lg:p-[20px]">
           {children}
         </main>
       </div>

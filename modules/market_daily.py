@@ -614,7 +614,7 @@ def _build_market_snapshots(as_of_dt: Optional[datetime] = None) -> Tuple[List[D
                     "name": display_name,
                     "bucket": bucket,
                     "spot": round(latest or 0.0, 2),
-                    "change24hPct": round(chg1 or 0.0, 2),
+                    "change24hPct": round(chg1 or 0.0, 4),
                     "change7dPct": round(chg7 or 0.0, 2),
                     "realizedVol14dPct": round(vol or 0.0, 2),
                     "source": "yfinance",

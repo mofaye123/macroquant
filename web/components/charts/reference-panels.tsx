@@ -75,32 +75,33 @@ export const LiquidityReferenceChart = ({ tga, sofr, srf }: LiquidityReferenceCh
       <div className="h-[320px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 8, right: 14, left: 12, bottom: 6 }}>
-          <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
-          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-          <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#64748b" }} width={56} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#64748b", fontSize: 10 }} />
-          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={56} label={{ value: "Rate", angle: 90, position: "insideRight", fill: "#64748b", fontSize: 10 }} />
+          <CartesianGrid strokeDasharray="4 5" stroke="rgba(26,26,26,0.10)" />
+          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#6f6d69" }} minTickGap={40} />
+          <YAxis yAxisId="left" tick={{ fontSize: 10, fill: "#6f6d69" }} width={56} label={{ value: "Billions", angle: -90, position: "insideLeft", fill: "#6f6d69", fontSize: 10 }} />
+          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#6f6d69" }} width={56} label={{ value: "Rate", angle: 90, position: "insideRight", fill: "#6f6d69", fontSize: 10 }} />
           <Tooltip
-            labelStyle={{ fontSize: 11, color: "#0f172a" }}
+            labelStyle={{ fontSize: 11, color: "#1a1a1a" }}
             contentStyle={{
-              borderRadius: 12,
-              borderColor: "#dbe2ea",
-              boxShadow: "0 12px 30px -16px rgba(15, 23, 42, 0.25)",
+              borderRadius: 10,
+              borderColor: "rgba(26,26,26,0.14)",
+              boxShadow: "0 12px 30px -18px rgba(26,26,26,0.26)",
               fontSize: 11,
+              backgroundColor: "rgba(255,253,248,0.96)",
             }}
           />
           <ReferenceLine
             yAxisId="left"
             y={400}
-            stroke="#16a34a"
+            stroke="#1a4d2e"
             strokeDasharray="4 4"
-            label={{ value: "TGA 利好 <400B", position: "insideBottomRight", fill: "#15803d", fontSize: 10 }}
+            label={{ value: "TGA 利好 <400B", position: "insideBottomRight", fill: "#1a4d2e", fontSize: 10 }}
           />
           <ReferenceLine
             yAxisId="left"
             y={800}
-            stroke="#f97316"
+            stroke="#b45f06"
             strokeDasharray="4 4"
-            label={{ value: "TGA 警戒 >800B", position: "insideTopRight", fill: "#c2410c", fontSize: 10 }}
+            label={{ value: "TGA 警戒 >800B", position: "insideTopRight", fill: "#b45f06", fontSize: 10 }}
           />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Area
@@ -108,8 +109,8 @@ export const LiquidityReferenceChart = ({ tga, sofr, srf }: LiquidityReferenceCh
             type="monotone"
             dataKey="tga"
             name="TGA ($B)"
-            stroke="#94a3b8"
-            fill="#cbd5e1"
+            stroke="#6f6d69"
+            fill="#d6d0c5"
             fillOpacity={0.45}
             strokeWidth={2}
             dot={false}
@@ -119,11 +120,11 @@ export const LiquidityReferenceChart = ({ tga, sofr, srf }: LiquidityReferenceCh
             type="monotone"
             dataKey="sofr"
             name="SOFR (%)"
-            stroke="#2563eb"
+            stroke="#223b5b"
             strokeWidth={2.2}
             dot={false}
           />
-          <Bar yAxisId="left" dataKey="srf" name="SRF ($B)" barSize={8} fill="#f87171" radius={[4, 4, 0, 0]} />
+          <Bar yAxisId="left" dataKey="srf" name="SRF ($B)" barSize={8} fill="#7b2d2c" radius={[4, 4, 0, 0]} />
           </ComposedChart>
         </ResponsiveContainer>
       </div>
@@ -156,25 +157,26 @@ export const TruthReferenceChart = ({ score, spx, btc }: TruthReferenceChartProp
       <div className="h-[320px] w-full">
         <ResponsiveContainer width="100%" height="100%">
           <ComposedChart data={data} margin={{ top: 8, right: 14, left: 12, bottom: 6 }}>
-          <CartesianGrid strokeDasharray="4 5" stroke="#e5e7eb" />
-          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#64748b" }} minTickGap={40} />
-          <YAxis yAxisId="left" domain={[0, 100]} tick={{ fontSize: 10, fill: "#64748b" }} width={52} />
-          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#64748b" }} width={58} />
+          <CartesianGrid strokeDasharray="4 5" stroke="rgba(26,26,26,0.10)" />
+          <XAxis dataKey="date" tick={{ fontSize: 10, fill: "#6f6d69" }} minTickGap={40} />
+          <YAxis yAxisId="left" domain={[0, 100]} tick={{ fontSize: 10, fill: "#6f6d69" }} width={52} />
+          <YAxis yAxisId="right" orientation="right" tick={{ fontSize: 10, fill: "#6f6d69" }} width={58} />
           <Tooltip
-            labelStyle={{ fontSize: 11, color: "#0f172a" }}
+            labelStyle={{ fontSize: 11, color: "#1a1a1a" }}
             contentStyle={{
-              borderRadius: 12,
-              borderColor: "#dbe2ea",
-              boxShadow: "0 12px 30px -16px rgba(15, 23, 42, 0.25)",
+              borderRadius: 10,
+              borderColor: "rgba(26,26,26,0.14)",
+              boxShadow: "0 12px 30px -18px rgba(26,26,26,0.26)",
               fontSize: 11,
+              backgroundColor: "rgba(255,253,248,0.96)",
             }}
           />
           <ReferenceLine
             yAxisId="left"
             y={50}
-            stroke="#94a3b8"
+            stroke="#a99f91"
             strokeDasharray="4 4"
-            label={{ value: "中轴 50", position: "insideTopRight", fill: "#64748b", fontSize: 10 }}
+            label={{ value: "中轴 50", position: "insideTopRight", fill: "#6f6d69", fontSize: 10 }}
           />
           <Legend wrapperStyle={{ fontSize: 11 }} />
           <Area
@@ -182,8 +184,8 @@ export const TruthReferenceChart = ({ score, spx, btc }: TruthReferenceChartProp
             type="monotone"
             dataKey="score"
             name="宏观得分"
-            stroke="#16a34a"
-            fill="#dcfce7"
+            stroke="#1a4d2e"
+            fill="#e4efe7"
             fillOpacity={0.55}
             strokeWidth={2.2}
             dot={false}
@@ -193,7 +195,7 @@ export const TruthReferenceChart = ({ score, spx, btc }: TruthReferenceChartProp
             type="monotone"
             dataKey="spx"
             name="S&P 500"
-            stroke="#ca8a04"
+            stroke="#223b5b"
             strokeWidth={2}
             strokeDasharray="5 4"
             dot={false}
@@ -203,7 +205,7 @@ export const TruthReferenceChart = ({ score, spx, btc }: TruthReferenceChartProp
             type="monotone"
             dataKey="btc"
             name="Bitcoin"
-            stroke="#f97316"
+            stroke="#b45f06"
             strokeWidth={2}
             strokeDasharray="5 4"
             dot={false}

@@ -145,23 +145,23 @@ export function DocumentCollectionView({
                   type="button"
                   onClick={() => setActiveId(doc.id)}
                   className={cn(
-                    "rounded-[14px] border bg-white p-[14px] text-left transition-all",
+                    "rounded-[12px] border bg-[rgba(255,253,248,0.9)] p-[14px] text-left transition-all",
                     isActive
-                      ? "border-blue-300 shadow-soft"
-                      : "border-app-border hover:-translate-y-[1px] hover:border-blue-200"
+                      ? "border-[rgba(123,45,44,0.22)] shadow-soft"
+                      : "border-app-border hover:-translate-y-[1px] hover:border-[rgba(34,59,91,0.18)]"
                   )}
                 >
                   <p className="text-[15px] font-semibold text-app-text">{doc.title}</p>
                   <p className="mt-[4px] text-[12px] text-app-muted">数据日期：{doc.date} · 行数：{doc.lineCount}</p>
                   <div className="mt-[8px] flex flex-wrap gap-[6px]">
                     {doc.tags.map((tag) => (
-                      <span key={`${doc.id}-${tag}`} className="rounded-full border border-app-border bg-app-bg px-[8px] py-[2px] text-[11px] text-app-muted">
+                      <span key={`${doc.id}-${tag}`} className="rounded-full border border-[rgba(26,26,26,0.10)] bg-[rgba(26,26,26,0.03)] px-[8px] py-[2px] text-[11px] text-app-muted">
                         {tag}
                       </span>
                     ))}
                   </div>
                   <p className="mt-[8px] max-h-[56px] overflow-hidden text-[12px] leading-relaxed text-app-muted">{doc.preview}</p>
-                  <p className="mt-[10px] text-[12px] font-semibold text-blue-600">打开阅读</p>
+                  <p className="mt-[10px] text-[12px] font-semibold text-app-navy">打开阅读</p>
                 </button>
               );
             })}
@@ -172,8 +172,8 @@ export function DocumentCollectionView({
       {activeDoc ? (
         <SurfaceCard>
           <SectionTitle title={`正文 · ${activeDoc.title}`} />
-          <div className="mt-[8px] rounded-[10px] border border-app-border bg-slate-50 px-[10px] py-[8px] text-[11px] text-app-muted">
-            <p className="font-semibold text-slate-700">Research Terminal View</p>
+          <div className="mt-[8px] rounded-[10px] border border-[rgba(26,26,26,0.10)] bg-[rgba(26,26,26,0.03)] px-[10px] py-[8px] text-[11px] text-app-muted">
+            <p className="font-semibold text-app-text">Research Terminal View</p>
             <p className="mt-[2px]">
               来源：云端文档库（已脱敏） · 数据日期：{activeDoc.date} · 行数：{activeDoc.lineCount}
             </p>
@@ -188,7 +188,7 @@ export function DocumentCollectionView({
             </div>
           ) : (
             <div className="mt-[12px] grid gap-[12px] xl:grid-cols-[230px_minmax(0,1fr)]">
-              <aside className="rounded-[12px] border border-app-border bg-white px-[10px] py-[10px]">
+              <aside className="rounded-[12px] border border-app-border bg-[rgba(255,253,248,0.9)] px-[10px] py-[10px]">
                 <p className="text-[12px] font-semibold text-app-text">目录导航</p>
                 <div className="mt-[8px] max-h-[62vh] space-y-[4px] overflow-auto">
                   {headingBlocks.length > 0
@@ -200,8 +200,8 @@ export function DocumentCollectionView({
                           className={cn(
                             "block w-full rounded-[8px] border px-[8px] py-[6px] text-left text-[11px] leading-relaxed transition-colors",
                             activeHeadingBlockIdx === item.blockIdx
-                              ? "border-blue-200 bg-blue-50 text-blue-700"
-                              : "border-transparent text-app-muted hover:border-app-border hover:bg-slate-50 hover:text-app-text"
+                              ? "border-[rgba(34,59,91,0.18)] bg-[rgba(34,59,91,0.08)] text-app-navy"
+                              : "border-transparent text-app-muted hover:border-app-border hover:bg-[rgba(26,26,26,0.03)] hover:text-app-text"
                           )}
                         >
                           <span className="mr-[6px] text-[10px] opacity-70">{String(idx + 1).padStart(2, "0")}</span>

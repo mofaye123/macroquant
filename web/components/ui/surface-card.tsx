@@ -12,7 +12,7 @@ export const SurfaceCard = ({ children, className, ...rest }: SurfaceCardProps) 
     <section
       {...rest}
       className={cn(
-        "rounded-[18px] border border-app-border bg-app-card p-[18px] shadow-[0_24px_55px_-36px_rgba(15,23,42,0.36)]",
+        "rounded-[12px] border border-app-border bg-[rgba(255,253,248,0.86)] p-[18px] shadow-card backdrop-blur-[2px]",
         className
       )}
     >

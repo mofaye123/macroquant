@@ -112,7 +112,7 @@ export const USEconomicDashboard = ({
   loading: boolean;
   error: string | null;
 }) => {
-  const categories = data?.categories ?? [];
+  const categories = useMemo(() => data?.categories ?? [], [data?.categories]);
   const [selectedKey, setSelectedKey] = useState<string>(categories[0]?.key ?? "");
   const [activeTab, setActiveTab] = useState<TabKey>("trend");
   const [cycleYears, setCycleYears] = useState<number>(5);

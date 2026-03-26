@@ -24,10 +24,10 @@ import { useBacktestData } from "@/lib/use-backtest-data";
 import { useMacroData } from "@/lib/use-macro-data";
 
 const MONTH_NAMES = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-const cardClass = "rounded-[10px] border border-[#30363d] bg-[#161b22]";
+const cardClass = "rounded-[10px] border border-[#b6afa5] bg-[#fbf7f0]";
 const filterButtonClass =
-  "rounded-[6px] border border-[#30363d] px-[12px] py-[4px] text-[11px] text-[#8b949e] transition hover:border-[#58a6ff] hover:text-[#58a6ff]";
-const activeFilterButtonClass = "border-[#58a6ff] bg-[#58a6ff] text-white";
+  "rounded-[6px] border border-[#b6afa5] px-[12px] py-[4px] text-[11px] text-[#6f6d69] transition hover:border-[#223b5b] hover:text-[#223b5b]";
+const activeFilterButtonClass = "border-[#223b5b] bg-[#223b5b] text-[#f8f5ef]";
 
 type MetricBlock = {
   key: "bh" | "cta" | "comb";
@@ -86,16 +86,16 @@ const formatSigned = (value: number | null | undefined, digits = 1) => {
   return `${value >= 0 ? "+" : ""}${value.toFixed(digits)}`;
 };
 
-const pctToneClass = (value: number) => (value >= 0 ? "text-[#3fb950]" : "text-[#f85149]");
+const pctToneClass = (value: number) => (value >= 0 ? "text-[#1a4d2e]" : "text-[#7b2d2c]");
 
 const riskColor = (value: number) => {
   if (value >= 65) {
-    return "#3fb950";
+    return "#1a4d2e";
   }
   if (value >= 40) {
-    return "#f0883e";
+    return "#b45f06";
   }
-  return "#f85149";
+  return "#7b2d2c";
 };
 
 const buildMetrics = (rows: BacktestHedgeReportRow[]): MetricBlock[] => {
@@ -149,9 +149,9 @@ const buildMetrics = (rows: BacktestHedgeReportRow[]): MetricBlock[] => {
   };
 
   return [
-    compute("bh", "买入持有 (Buy & Hold)", "#94a3b8", (row) => row.buyHoldRet),
-    compute("cta", "纯 CTA 策略", "#58a6ff", (row) => row.ctaRet),
-    compute("comb", "CTA + 对冲组合", "#3fb950", (row) => row.combinedRet),
+    compute("bh", "买入持有 (Buy & Hold)", "#6f6d69", (row) => row.buyHoldRet),
+    compute("cta", "纯 CTA 策略", "#223b5b", (row) => row.ctaRet),
+    compute("comb", "CTA + 对冲组合", "#1a4d2e", (row) => row.combinedRet),
   ];
 };
 
@@ -239,9 +239,9 @@ const buildHeatmap = (rows: BacktestHedgeReportRow[], key: HeatmapKey) => {
 
 const heatColor = (value: number | null) => {
   if (value === null) {
-    return "#1c2128";
+    return "#f2efe9";
   }
-  if (value >= 30) return "#166534";
+  if (value >= 30) return "#1a4d2e";
   if (value >= 15) return "#15803d";
   if (value >= 5) return "#16a34a";
   if (value > 0) return "#1e4a2a";
@@ -317,9 +317,9 @@ const moduleSourceText = (modules: ModuleScoreCard[]) => {
 
 const moduleChangeToneClass = (value: number | null) => {
   if (value === null || Number.isNaN(value)) {
-    return "text-[#8b949e]";
+    return "text-[#6f6d69]";
   }
-  return value >= 0 ? "text-[#3fb950]" : "text-[#f85149]";
+  return value >= 0 ? "text-[#1a4d2e]" : "text-[#7b2d2c]";
 };
 
 const toSortedPoints = (points?: { date: string; value: number }[]) =>
@@ -507,8 +507,8 @@ const RiskPips = ({ value }: { value: number }) => (
     {Array.from({ length: 5 }, (_, index) => (
       <span
         key={index}
-        className={`h-[8px] w-[8px] rounded-[2px] border border-[#30363d] ${
-          index < value ? "bg-[#f85149] border-[#f85149]" : "bg-[#2a2a2a]"
+        className={`h-[8px] w-[8px] rounded-[2px] border border-[#b6afa5] ${
+          index < value ? "bg-[#7b2d2c] border-[#7b2d2c]" : "bg-[#e5ddd0]"
         }`}
       />
     ))}
@@ -523,7 +523,7 @@ const ChartShell = ({
   children: ReactNode;
 }) => (
   <div className={`${cardClass} p-[12px]`}>
-    {title ? <p className="mb-[8px] text-[11px] uppercase tracking-[0.08em] text-[#8b949e]">{title}</p> : null}
+    {title ? <p className="mb-[8px] text-[11px] uppercase tracking-[0.08em] text-[#6f6d69]">{title}</p> : null}
     {children}
   </div>
 );
@@ -552,7 +552,7 @@ export const LiveHedgeReportBacktest = () => {
   });
 
   const report = useMemo(() => buildFallbackReportFromPayload(payload), [payload]);
-  const rows = report?.rows ?? [];
+  const rows = useMemo(() => report?.rows ?? [], [report]);
   const dashboardModules = macroState.payload.dashboard?.modules;
 
   const [startIdx, setStartIdx] = useState(0);
@@ -654,9 +654,9 @@ export const LiveHedgeReportBacktest = () => {
 
   const drawdownCards = useMemo(
     () => [
-      { label: "买入持有", color: "#94a3b8", periods: extractDrawdownPeriods(viewRows, (row) => row.buyHoldNav) },
-      { label: "纯 CTA 策略", color: "#58a6ff", periods: extractDrawdownPeriods(viewRows, (row) => row.ctaNav) },
-      { label: "CTA + 对冲", color: "#3fb950", periods: extractDrawdownPeriods(viewRows, (row) => row.combinedNav) },
+      { label: "买入持有", color: "#6f6d69", periods: extractDrawdownPeriods(viewRows, (row) => row.buyHoldNav) },
+      { label: "纯 CTA 策略", color: "#223b5b", periods: extractDrawdownPeriods(viewRows, (row) => row.ctaNav) },
+      { label: "CTA + 对冲", color: "#1a4d2e", periods: extractDrawdownPeriods(viewRows, (row) => row.combinedNav) },
     ],
     [viewRows]
   );
@@ -718,15 +718,15 @@ export const LiveHedgeReportBacktest = () => {
   const usingApi = macroState.sourceType === "api";
   const sourceBadgeText = usingApi ? "LIVE API" : "SNAPSHOT";
   const sourceBadgeClass = usingApi
-    ? "border-[#3fb950] bg-[#1a3a1a] text-[#3fb950]"
-    : "border-[#58a6ff] bg-[#102548] text-[#58a6ff]";
+    ? "border-[#1a4d2e] bg-[#1a3a1a] text-[#1a4d2e]"
+    : "border-[#223b5b] bg-[#edf2f7] text-[#223b5b]";
   const sourceDetail = usingApi
     ? macroState.sourceUrl ?? report?.meta.dataSource ?? "MacroQuant API"
     : report?.meta.dataSource ?? "static macro-data.json";
 
   return (
-    <div className="min-h-screen bg-[#0d1117] text-[#e6edf3]">
-      <div className="border-b border-[#30363d] bg-[#161b22] px-[24px] py-[14px]">
+    <div className="min-h-screen bg-[#f2efe9] text-[#1a1a1a]">
+      <div className="border-b border-[#b6afa5] bg-[#fbf7f0] px-[24px] py-[14px]">
         <div className="flex flex-wrap items-center justify-between gap-[16px]">
           <div>
             <div className="flex items-center gap-[8px]">
@@ -737,12 +737,12 @@ export const LiveHedgeReportBacktest = () => {
                 {sourceBadgeText}
               </span>
               {isLoading ? (
-                <span className="rounded-full border border-[#58a6ff] bg-[#102548] px-[8px] py-[2px] text-[10px] text-[#58a6ff]">
+                <span className="rounded-full border border-[#223b5b] bg-[#edf2f7] px-[8px] py-[2px] text-[10px] text-[#223b5b]">
                   计算中
                 </span>
               ) : null}
             </div>
-            <p className="mt-[6px] text-[11px] text-[#8b949e]">
+            <p className="mt-[6px] text-[11px] text-[#6f6d69]">
               数据来源: {sourceDetail} · 策略执行区间{" "}
               {report?.meta.strategyStart ?? payload.startDate ?? "-"} →{" "}
               {report?.meta.strategyEnd ?? payload.endDate ?? "-"}
@@ -750,22 +750,22 @@ export const LiveHedgeReportBacktest = () => {
           </div>
 
           <div className="flex flex-wrap items-end gap-[10px]">
-            <label className="flex flex-col gap-[4px] text-[11px] text-[#8b949e]">
+            <label className="flex flex-col gap-[4px] text-[11px] text-[#6f6d69]">
               策略开始日期
               <input
                 type="date"
-                className="rounded-[8px] border border-[#30363d] bg-[#0d1117] px-[10px] py-[8px] text-[12px] text-[#e6edf3] outline-none focus:border-[#58a6ff]"
+                className="rounded-[8px] border border-[#b6afa5] bg-[#f2efe9] px-[10px] py-[8px] text-[12px] text-[#1a1a1a] outline-none focus:border-[#223b5b]"
                 value={controls.startDate || payload.startDate || ""}
                 onChange={(event) =>
                   setControls((current) => ({ ...current, startDate: event.target.value }))
                 }
               />
             </label>
-            <label className="flex flex-col gap-[4px] text-[11px] text-[#8b949e]">
+            <label className="flex flex-col gap-[4px] text-[11px] text-[#6f6d69]">
               策略结束日期
               <input
                 type="date"
-                className="rounded-[8px] border border-[#30363d] bg-[#0d1117] px-[10px] py-[8px] text-[12px] text-[#e6edf3] outline-none focus:border-[#58a6ff]"
+                className="rounded-[8px] border border-[#b6afa5] bg-[#f2efe9] px-[10px] py-[8px] text-[12px] text-[#1a1a1a] outline-none focus:border-[#223b5b]"
                 value={controls.endDate || payload.endDate || ""}
                 onChange={(event) =>
                   setControls((current) => ({ ...current, endDate: event.target.value }))
@@ -775,7 +775,7 @@ export const LiveHedgeReportBacktest = () => {
             <button
               type="button"
               onClick={resetControls}
-              className="rounded-[8px] border border-[#30363d] px-[12px] py-[8px] text-[12px] text-[#8b949e] transition hover:border-[#58a6ff] hover:text-[#58a6ff]"
+              className="rounded-[8px] border border-[#b6afa5] px-[12px] py-[8px] text-[12px] text-[#6f6d69] transition hover:border-[#223b5b] hover:text-[#223b5b]"
             >
               恢复默认
             </button>
@@ -785,17 +785,17 @@ export const LiveHedgeReportBacktest = () => {
 
       {!rows.length ? (
         <div className="mx-auto max-w-[1280px] px-[24px] py-[24px]">
-          <div className={`${cardClass} p-[18px] text-[13px] text-[#e6edf3]`}>
+          <div className={`${cardClass} p-[18px] text-[13px] text-[#1a1a1a]`}>
             <p className="font-semibold">当前还没有可渲染的 hedge 回测报告。</p>
-            <p className="mt-[8px] text-[#8b949e]">
+            <p className="mt-[8px] text-[#6f6d69]">
               {reportError ?? "请确认后端 API 已启动，并且区间内有足够的宏观与价格数据。"}
             </p>
           </div>
         </div>
       ) : (
         <div className="mx-auto max-w-[1400px] pb-[32px]">
-          <div className="flex flex-wrap items-center gap-[6px] border-b border-[#30363d] bg-[#161b22] px-[24px] py-[10px]">
-            <span className="mr-[4px] text-[10px] text-[#8b949e]">年份</span>
+          <div className="flex flex-wrap items-center gap-[6px] border-b border-[#b6afa5] bg-[#fbf7f0] px-[24px] py-[10px]">
+            <span className="mr-[4px] text-[10px] text-[#6f6d69]">年份</span>
             {renderOrderFilterButton("全部", activeRange === "all", () => {
               setActiveRange("all");
               setStartIdx(0);
@@ -810,8 +810,8 @@ export const LiveHedgeReportBacktest = () => {
             )}
           </div>
 
-          <div className="flex flex-wrap items-center gap-[10px] border-b border-[#30363d] px-[24px] py-[8px]">
-            <label className="text-[11px] text-[#8b949e]">建仓起点</label>
+          <div className="flex flex-wrap items-center gap-[10px] border-b border-[#b6afa5] px-[24px] py-[8px]">
+            <label className="text-[11px] text-[#6f6d69]">建仓起点</label>
             <input
               type="range"
               min={0}
@@ -822,9 +822,9 @@ export const LiveHedgeReportBacktest = () => {
                 setStartIdx(next);
                 setActiveRange("custom");
               }}
-              className="min-w-[180px] flex-1 accent-[#58a6ff]"
+              className="min-w-[180px] flex-1 accent-[#223b5b]"
             />
-            <label className="text-[11px] text-[#8b949e]">截止日期</label>
+            <label className="text-[11px] text-[#6f6d69]">截止日期</label>
             <input
               type="range"
               min={0}
@@ -835,21 +835,21 @@ export const LiveHedgeReportBacktest = () => {
                 setEndIdx(next);
                 setActiveRange("custom");
               }}
-              className="min-w-[180px] flex-1 accent-[#58a6ff]"
+              className="min-w-[180px] flex-1 accent-[#223b5b]"
             />
-            <span className="min-w-[280px] text-right text-[11px] text-[#58a6ff]">
+            <span className="min-w-[280px] text-right text-[11px] text-[#223b5b]">
               {viewStart} → {viewEnd} ({viewRows.length} 天)
             </span>
           </div>
 
           {reportError ? (
-            <div className="px-[24px] pt-[16px] text-[12px] text-[#f0883e]">{reportError}</div>
+            <div className="px-[24px] pt-[16px] text-[12px] text-[#b45f06]">{reportError}</div>
           ) : null}
 
           <section className="px-[24px] pt-[14px]">
             <div className="flex items-center gap-[8px] pb-[6px]">
-              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#58a6ff]" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#8b949e]">
+              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#223b5b]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#6f6d69]">
                 绩效指标
               </p>
             </div>
@@ -857,38 +857,38 @@ export const LiveHedgeReportBacktest = () => {
               {metrics.map((metric) => (
                 <div key={metric.key} className={`${cardClass} p-[12px]`}>
                   <div
-                    className="border-b border-[#30363d] pb-[8px] text-[10px] font-bold uppercase tracking-[0.05em]"
+                    className="border-b border-[#b6afa5] pb-[8px] text-[10px] font-bold uppercase tracking-[0.05em]"
                     style={{ color: metric.color }}
                   >
                     {metric.label} · {formatPct((metric.totalNav - 1) * 100, 1)} 总收益
                   </div>
                   <div className="mt-[10px] grid grid-cols-2 gap-[10px]">
                     <div>
-                      <div className="text-[9px] uppercase tracking-[0.05em] text-[#8b949e]">CAGR</div>
+                      <div className="text-[9px] uppercase tracking-[0.05em] text-[#6f6d69]">CAGR</div>
                       <div className={`text-[18px] font-bold ${pctToneClass(metric.cagr)}`}>
                         {formatPct(metric.cagr * 100)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[9px] uppercase tracking-[0.05em] text-[#8b949e]">最大回撤</div>
-                      <div className="text-[18px] font-bold text-[#f85149]">
+                      <div className="text-[9px] uppercase tracking-[0.05em] text-[#6f6d69]">最大回撤</div>
+                      <div className="text-[18px] font-bold text-[#7b2d2c]">
                         {formatPct(metric.mdd * 100)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[9px] uppercase tracking-[0.05em] text-[#8b949e]">夏普比</div>
-                      <div className="text-[18px] font-bold text-[#bc8cff]">
+                      <div className="text-[9px] uppercase tracking-[0.05em] text-[#6f6d69]">夏普比</div>
+                      <div className="text-[18px] font-bold text-[#223b5b]">
                         {formatNumber(metric.sharpe)}
                       </div>
                     </div>
                     <div>
-                      <div className="text-[9px] uppercase tracking-[0.05em] text-[#8b949e]">卡玛比</div>
-                      <div className="text-[18px] font-bold text-[#e3b341]">
+                      <div className="text-[9px] uppercase tracking-[0.05em] text-[#6f6d69]">卡玛比</div>
+                      <div className="text-[18px] font-bold text-[#b45f06]">
                         {formatNumber(metric.calmar)}
                       </div>
                     </div>
                   </div>
-                  <p className="mt-[8px] text-[10px] text-[#8b949e]">
+                  <p className="mt-[8px] text-[10px] text-[#6f6d69]">
                     月度胜率 {formatPct(metric.winRate * 100)}
                   </p>
                 </div>
@@ -898,17 +898,17 @@ export const LiveHedgeReportBacktest = () => {
 
           <section className="px-[24px] pt-[14px]">
             <div className="flex items-center gap-[8px] pb-[6px]">
-              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#e3b341]" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#8b949e]">
+              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#b45f06]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#6f6d69]">
                 宏观模块评分 (最新值)
               </p>
             </div>
-            <p className="pb-[8px] text-[10px] text-[#8b949e]">口径: {moduleSourceText(modules)}</p>
+            <p className="pb-[8px] text-[10px] text-[#6f6d69]">口径: {moduleSourceText(modules)}</p>
             <div className="grid gap-[8px] md:grid-cols-4 xl:grid-cols-7">
               {modules.map((module) => (
                 <div key={module.key} className={`${cardClass} p-[10px]`}>
-                  <p className="text-[9px] uppercase tracking-[0.03em] text-[#8b949e]">模块 {module.key}</p>
-                  <p className="mt-[4px] text-[10px] text-[#8b949e]">{module.name}</p>
+                  <p className="text-[9px] uppercase tracking-[0.03em] text-[#6f6d69]">模块 {module.key}</p>
+                  <p className="mt-[4px] text-[10px] text-[#6f6d69]">{module.name}</p>
                   <div className="mt-[6px] flex items-end gap-[6px]">
                     <p className="text-[18px] font-bold" style={{ color: module.color }}>
                       {module.value.toFixed(1)}
@@ -919,14 +919,14 @@ export const LiveHedgeReportBacktest = () => {
                       </p>
                     ) : null}
                   </div>
-                  <div className="mt-[5px] h-[3px] rounded-[2px] bg-[#2a2a2a]">
+                  <div className="mt-[5px] h-[3px] rounded-[2px] bg-[#e5ddd0]">
                     <div
                       className="h-[3px] rounded-[2px]"
                       style={{ width: `${Math.max(0, Math.min(100, module.value))}%`, backgroundColor: module.color }}
                     />
                   </div>
                   {module.change !== null ? (
-                    <p className="mt-[5px] text-[9px] text-[#8b949e]">周变化</p>
+                    <p className="mt-[5px] text-[9px] text-[#6f6d69]">周变化</p>
                   ) : null}
                 </div>
               ))}
@@ -935,8 +935,8 @@ export const LiveHedgeReportBacktest = () => {
 
           <section className="px-[24px] pt-[14px]">
             <div className="flex items-center gap-[8px] pb-[6px]">
-              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#3fb950]" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#8b949e]">
+              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#1a4d2e]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#6f6d69]">
                 NAV 对比曲线 · 回撤 · BTC 价格
               </p>
             </div>
@@ -945,64 +945,64 @@ export const LiveHedgeReportBacktest = () => {
                 <div className="h-[280px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={navChartData} syncId="backtest-nav">
-                      <CartesianGrid stroke="#30363d" strokeDasharray="3 3" />
+                      <CartesianGrid stroke="#b6afa5" strokeDasharray="3 3" />
                       <XAxis dataKey="date" hide />
                       <YAxis
-                        stroke="#8b949e"
-                        tick={{ fill: "#8b949e", fontSize: 10 }}
+                        stroke="#6f6d69"
+                        tick={{ fill: "#6f6d69", fontSize: 10 }}
                         tickFormatter={(value: number) => value.toFixed(2)}
                       />
                       <Tooltip
-                        contentStyle={{ backgroundColor: "#0d1117", border: "1px solid #30363d" }}
-                        labelStyle={{ color: "#e6edf3" }}
+                        contentStyle={{ backgroundColor: "#f2efe9", border: "1px solid #b6afa5" }}
+                        labelStyle={{ color: "#1a1a1a" }}
                       />
                       <Legend />
-                      <Line dataKey="combinedNav" name="CTA+对冲" stroke="#3fb950" dot={false} strokeWidth={2.4} />
-                      <Line dataKey="ctaNav" name="纯CTA策略" stroke="#58a6ff" dot={false} strokeWidth={1.8} />
-                      <Line dataKey="buyHoldNav" name="买入持有" stroke="#94a3b8" dot={false} strokeWidth={1.5} strokeDasharray="5 4" />
+                      <Line dataKey="combinedNav" name="CTA+对冲" stroke="#1a4d2e" dot={false} strokeWidth={2.4} />
+                      <Line dataKey="ctaNav" name="纯CTA策略" stroke="#223b5b" dot={false} strokeWidth={1.8} />
+                      <Line dataKey="buyHoldNav" name="买入持有" stroke="#6f6d69" dot={false} strokeWidth={1.5} strokeDasharray="5 4" />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
                 <div className="h-[140px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={navChartData} syncId="backtest-nav">
-                      <CartesianGrid stroke="#30363d" strokeDasharray="3 3" />
+                      <CartesianGrid stroke="#b6afa5" strokeDasharray="3 3" />
                       <XAxis dataKey="date" hide />
                       <YAxis
-                        stroke="#8b949e"
-                        tick={{ fill: "#8b949e", fontSize: 10 }}
+                        stroke="#6f6d69"
+                        tick={{ fill: "#6f6d69", fontSize: 10 }}
                         tickFormatter={(value: number) => `${value.toFixed(0)}%`}
                       />
                       <Tooltip
-                        contentStyle={{ backgroundColor: "#0d1117", border: "1px solid #30363d" }}
-                        labelStyle={{ color: "#e6edf3" }}
+                        contentStyle={{ backgroundColor: "#f2efe9", border: "1px solid #b6afa5" }}
+                        labelStyle={{ color: "#1a1a1a" }}
                       />
-                      <Line dataKey="combinedDrawdownPct" name="组合回撤%" stroke="#3fb950" dot={false} strokeWidth={1.5} />
-                      <Line dataKey="ctaDrawdownPct" name="CTA回撤%" stroke="#58a6ff" dot={false} strokeWidth={1.2} />
-                      <Line dataKey="buyHoldDrawdownPct" name="BH回撤%" stroke="#94a3b8" dot={false} strokeWidth={1} strokeDasharray="5 4" />
+                      <Line dataKey="combinedDrawdownPct" name="组合回撤%" stroke="#1a4d2e" dot={false} strokeWidth={1.5} />
+                      <Line dataKey="ctaDrawdownPct" name="CTA回撤%" stroke="#223b5b" dot={false} strokeWidth={1.2} />
+                      <Line dataKey="buyHoldDrawdownPct" name="BH回撤%" stroke="#6f6d69" dot={false} strokeWidth={1} strokeDasharray="5 4" />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
                 <div className="h-[120px]">
                   <ResponsiveContainer width="100%" height="100%">
                     <LineChart data={navChartData} syncId="backtest-nav">
-                      <CartesianGrid stroke="#30363d" strokeDasharray="3 3" />
-                      <XAxis dataKey="date" stroke="#8b949e" tick={{ fill: "#8b949e", fontSize: 10 }} minTickGap={32} />
+                      <CartesianGrid stroke="#b6afa5" strokeDasharray="3 3" />
+                      <XAxis dataKey="date" stroke="#6f6d69" tick={{ fill: "#6f6d69", fontSize: 10 }} minTickGap={32} />
                       <YAxis
-                        stroke="#8b949e"
+                        stroke="#6f6d69"
                         scale="log"
                         domain={["auto", "auto"]}
-                        tick={{ fill: "#8b949e", fontSize: 10 }}
+                        tick={{ fill: "#6f6d69", fontSize: 10 }}
                         tickFormatter={(value: number) => `$${Math.round(value).toLocaleString()}`}
                       />
                       <Tooltip
-                        contentStyle={{ backgroundColor: "#0d1117", border: "1px solid #30363d" }}
-                        labelStyle={{ color: "#e6edf3" }}
+                        contentStyle={{ backgroundColor: "#f2efe9", border: "1px solid #b6afa5" }}
+                        labelStyle={{ color: "#1a1a1a" }}
                         formatter={(value: number | string | undefined) =>
                           typeof value === "number" ? `$${value.toLocaleString()}` : String(value ?? "-")
                         }
                       />
-                      <Line dataKey="price" name="BTC/USD" stroke="#f0883e" dot={false} strokeWidth={1.5} />
+                      <Line dataKey="price" name="BTC/USD" stroke="#b45f06" dot={false} strokeWidth={1.5} />
                     </LineChart>
                   </ResponsiveContainer>
                 </div>
@@ -1012,8 +1012,8 @@ export const LiveHedgeReportBacktest = () => {
 
           <section className="px-[24px] pt-[14px]">
             <div className="flex items-center gap-[8px] pb-[6px]">
-              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#f85149]" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#8b949e]">
+              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#7b2d2c]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#6f6d69]">
                 主要回撤区间诊断
               </p>
             </div>
@@ -1026,17 +1026,17 @@ export const LiveHedgeReportBacktest = () => {
                   {card.periods.length ? (
                     card.periods.map((period) => (
                       <div key={`${period.start}-${period.trough}-${period.end}`} className="mb-[4px] flex items-center justify-between gap-[8px] text-[11px]">
-                        <span className="text-[#8b949e]">
+                        <span className="text-[#6f6d69]">
                           {period.start} → {period.trough}
                           {period.ongoing ? " 持续" : ""}
                         </span>
-                        <span className="font-semibold text-[#f85149]">
+                        <span className="font-semibold text-[#7b2d2c]">
                           {period.mdd.toFixed(1)}% / {period.duration}d
                         </span>
                       </div>
                     ))
                   ) : (
-                    <p className="text-[11px] text-[#8b949e]">当前窗口没有显著回撤。</p>
+                    <p className="text-[11px] text-[#6f6d69]">当前窗口没有显著回撤。</p>
                   )}
                 </div>
               ))}
@@ -1045,8 +1045,8 @@ export const LiveHedgeReportBacktest = () => {
 
           <section className="px-[24px] pt-[14px]">
             <div className="flex items-center gap-[8px] pb-[6px]">
-              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#bc8cff]" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#8b949e]">
+              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#223b5b]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#6f6d69]">
                 对冲信号面板 (Sig1-5 · 风险评分 · 对冲仓位)
               </p>
             </div>
@@ -1054,49 +1054,49 @@ export const LiveHedgeReportBacktest = () => {
               <div className="h-[400px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={signalChartData}>
-                    <CartesianGrid stroke="#30363d" strokeDasharray="3 3" />
-                    <XAxis dataKey="date" stroke="#8b949e" tick={{ fill: "#8b949e", fontSize: 10 }} minTickGap={32} />
+                    <CartesianGrid stroke="#b6afa5" strokeDasharray="3 3" />
+                    <XAxis dataKey="date" stroke="#6f6d69" tick={{ fill: "#6f6d69", fontSize: 10 }} minTickGap={32} />
                     <YAxis
                       yAxisId="signals"
                       domain={[0, 6]}
-                      stroke="#8b949e"
-                      tick={{ fill: "#8b949e", fontSize: 10 }}
+                      stroke="#6f6d69"
+                      tick={{ fill: "#6f6d69", fontSize: 10 }}
                     />
                     <YAxis
                       yAxisId="risk"
                       orientation="right"
                       domain={[0, 5.5]}
-                      stroke="#8b949e"
-                      tick={{ fill: "#8b949e", fontSize: 10 }}
+                      stroke="#6f6d69"
+                      tick={{ fill: "#6f6d69", fontSize: 10 }}
                     />
                     <YAxis
                       yAxisId="hedge"
                       orientation="left"
-                      stroke="#8b949e"
-                      tick={{ fill: "#8b949e", fontSize: 10 }}
+                      stroke="#6f6d69"
+                      tick={{ fill: "#6f6d69", fontSize: 10 }}
                       domain={[0, "auto"]}
                     />
                     <YAxis
                       yAxisId="ratio"
                       orientation="right"
-                      stroke="#8b949e"
-                      tick={{ fill: "#8b949e", fontSize: 10 }}
+                      stroke="#6f6d69"
+                      tick={{ fill: "#6f6d69", fontSize: 10 }}
                       domain={["auto", "auto"]}
                       hide
                     />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#0d1117", border: "1px solid #30363d" }}
-                      labelStyle={{ color: "#e6edf3" }}
+                      contentStyle={{ backgroundColor: "#f2efe9", border: "1px solid #b6afa5" }}
+                      labelStyle={{ color: "#1a1a1a" }}
                     />
                     <Legend />
-                    <Line yAxisId="signals" dataKey="sig1" name="Sig1 技术破位" stroke="#f85149" strokeOpacity={0} dot={{ r: 3, fill: "#f85149" }} connectNulls={false} />
-                    <Line yAxisId="signals" dataKey="sig2" name="Sig2 VIX倒挂" stroke="#f0883e" strokeOpacity={0} dot={{ r: 3, fill: "#f0883e" }} connectNulls={false} />
-                    <Line yAxisId="signals" dataKey="sig3" name="Sig3 宏观骤降" stroke="#bc8cff" strokeOpacity={0} dot={{ r: 3, fill: "#bc8cff" }} connectNulls={false} />
-                    <Line yAxisId="signals" dataKey="sig4" name="Sig4 HY扩张" stroke="#58a6ff" strokeOpacity={0} dot={{ r: 3, fill: "#58a6ff" }} connectNulls={false} />
-                    <Line yAxisId="signals" dataKey="sig5" name="Sig5 BTC动量" stroke="#e3b341" strokeOpacity={0} dot={{ r: 3, fill: "#e3b341" }} connectNulls={false} />
-                    <Bar yAxisId="risk" dataKey="riskScore" name="综合风险分" fill="#f85149" fillOpacity={0.65} />
-                    <Line yAxisId="hedge" dataKey="hedgePositionPct" name="对冲仓位%" stroke="#bc8cff" dot={false} strokeWidth={1.5} />
-                    <Line yAxisId="ratio" dataKey="vixVxv" name="VIX/VXV" stroke="#f0883e" dot={false} strokeWidth={1.2} strokeDasharray="4 4" />
+                    <Line yAxisId="signals" dataKey="sig1" name="Sig1 技术破位" stroke="#7b2d2c" strokeOpacity={0} dot={{ r: 3, fill: "#7b2d2c" }} connectNulls={false} />
+                    <Line yAxisId="signals" dataKey="sig2" name="Sig2 VIX倒挂" stroke="#b45f06" strokeOpacity={0} dot={{ r: 3, fill: "#b45f06" }} connectNulls={false} />
+                    <Line yAxisId="signals" dataKey="sig3" name="Sig3 宏观骤降" stroke="#223b5b" strokeOpacity={0} dot={{ r: 3, fill: "#223b5b" }} connectNulls={false} />
+                    <Line yAxisId="signals" dataKey="sig4" name="Sig4 HY扩张" stroke="#223b5b" strokeOpacity={0} dot={{ r: 3, fill: "#223b5b" }} connectNulls={false} />
+                    <Line yAxisId="signals" dataKey="sig5" name="Sig5 BTC动量" stroke="#b45f06" strokeOpacity={0} dot={{ r: 3, fill: "#b45f06" }} connectNulls={false} />
+                    <Bar yAxisId="risk" dataKey="riskScore" name="综合风险分" fill="#7b2d2c" fillOpacity={0.65} />
+                    <Line yAxisId="hedge" dataKey="hedgePositionPct" name="对冲仓位%" stroke="#223b5b" dot={false} strokeWidth={1.5} />
+                    <Line yAxisId="ratio" dataKey="vixVxv" name="VIX/VXV" stroke="#b45f06" dot={false} strokeWidth={1.2} strokeDasharray="4 4" />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -1105,8 +1105,8 @@ export const LiveHedgeReportBacktest = () => {
 
           <section className="px-[24px] pt-[14px]">
             <div className="flex items-center gap-[8px] pb-[6px]">
-              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#f0883e]" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#8b949e]">
+              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#b45f06]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#6f6d69]">
                 CTA 仓位 + 宏观评分 + VIX
               </p>
             </div>
@@ -1114,44 +1114,44 @@ export const LiveHedgeReportBacktest = () => {
               <div className="h-[360px]">
                 <ResponsiveContainer width="100%" height="100%">
                   <ComposedChart data={positionChartData}>
-                    <CartesianGrid stroke="#30363d" strokeDasharray="3 3" />
-                    <XAxis dataKey="date" stroke="#8b949e" tick={{ fill: "#8b949e", fontSize: 10 }} minTickGap={32} />
+                    <CartesianGrid stroke="#b6afa5" strokeDasharray="3 3" />
+                    <XAxis dataKey="date" stroke="#6f6d69" tick={{ fill: "#6f6d69", fontSize: 10 }} minTickGap={32} />
                     <YAxis
                       yAxisId="position"
-                      stroke="#8b949e"
-                      tick={{ fill: "#8b949e", fontSize: 10 }}
+                      stroke="#6f6d69"
+                      tick={{ fill: "#6f6d69", fontSize: 10 }}
                       domain={[-0.1, 2.5]}
                     />
                     <YAxis
                       yAxisId="hedge"
                       orientation="right"
-                      stroke="#8b949e"
-                      tick={{ fill: "#8b949e", fontSize: 10 }}
+                      stroke="#6f6d69"
+                      tick={{ fill: "#6f6d69", fontSize: 10 }}
                     />
                     <YAxis
                       yAxisId="score"
                       orientation="left"
-                      stroke="#8b949e"
-                      tick={{ fill: "#8b949e", fontSize: 10 }}
+                      stroke="#6f6d69"
+                      tick={{ fill: "#6f6d69", fontSize: 10 }}
                       domain={[0, 100]}
                       hide
                     />
                     <YAxis
                       yAxisId="vix"
                       orientation="right"
-                      stroke="#8b949e"
-                      tick={{ fill: "#8b949e", fontSize: 10 }}
+                      stroke="#6f6d69"
+                      tick={{ fill: "#6f6d69", fontSize: 10 }}
                       hide
                     />
                     <Tooltip
-                      contentStyle={{ backgroundColor: "#0d1117", border: "1px solid #30363d" }}
-                      labelStyle={{ color: "#e6edf3" }}
+                      contentStyle={{ backgroundColor: "#f2efe9", border: "1px solid #b6afa5" }}
+                      labelStyle={{ color: "#1a1a1a" }}
                     />
                     <Legend />
-                    <Area yAxisId="position" dataKey="ctaPosition" name="CTA仓位(x)" stroke="#58a6ff" fill="#58a6ff" fillOpacity={0.08} />
-                    <Line yAxisId="hedge" dataKey="hedgePositionPct" name="对冲仓位%" stroke="#bc8cff" dot={false} strokeWidth={1.5} />
-                    <Line yAxisId="score" dataKey="totalScore" name="宏观总分" stroke="#e3b341" dot={false} strokeWidth={1.5} />
-                    <Line yAxisId="vix" dataKey="vix" name="VIX" stroke="#f85149" dot={false} strokeWidth={1.1} strokeDasharray="4 4" />
+                    <Area yAxisId="position" dataKey="ctaPosition" name="CTA仓位(x)" stroke="#223b5b" fill="#223b5b" fillOpacity={0.08} />
+                    <Line yAxisId="hedge" dataKey="hedgePositionPct" name="对冲仓位%" stroke="#223b5b" dot={false} strokeWidth={1.5} />
+                    <Line yAxisId="score" dataKey="totalScore" name="宏观总分" stroke="#b45f06" dot={false} strokeWidth={1.5} />
+                    <Line yAxisId="vix" dataKey="vix" name="VIX" stroke="#7b2d2c" dot={false} strokeWidth={1.1} strokeDasharray="4 4" />
                   </ComposedChart>
                 </ResponsiveContainer>
               </div>
@@ -1160,8 +1160,8 @@ export const LiveHedgeReportBacktest = () => {
 
           <section className="px-[24px] pt-[14px]">
             <div className="flex items-center gap-[8px] pb-[6px]">
-              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#39d353]" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#8b949e]">
+              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#1a4d2e]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#6f6d69]">
                 月度收益热图
               </p>
             </div>
@@ -1174,15 +1174,15 @@ export const LiveHedgeReportBacktest = () => {
               <table className="min-w-[860px] border-collapse text-[11px]">
                 <thead>
                   <tr>
-                    <th className="min-w-[60px] border border-[#1c2128] bg-[#1c2128] px-[8px] py-[4px] text-left text-[10px] text-[#8b949e]">
+                    <th className="min-w-[60px] border border-[#f2efe9] bg-[#f2efe9] px-[8px] py-[4px] text-left text-[10px] text-[#6f6d69]">
                       年份
                     </th>
                     {MONTH_NAMES.map((month) => (
-                      <th key={month} className="border border-[#1c2128] bg-[#1c2128] px-[8px] py-[4px] text-[10px] text-[#8b949e]">
+                      <th key={month} className="border border-[#f2efe9] bg-[#f2efe9] px-[8px] py-[4px] text-[10px] text-[#6f6d69]">
                         {month}
                       </th>
                     ))}
-                    <th className="border border-[#1c2128] bg-[#1c2128] px-[8px] py-[4px] text-[10px] text-[#8b949e]">
+                    <th className="border border-[#f2efe9] bg-[#f2efe9] px-[8px] py-[4px] text-[10px] text-[#6f6d69]">
                       全年
                     </th>
                   </tr>
@@ -1192,7 +1192,7 @@ export const LiveHedgeReportBacktest = () => {
                     let annual = 1;
                     return (
                       <tr key={year}>
-                        <td className="border border-[#1c2128] px-[8px] py-[4px] text-left font-semibold text-[#8b949e]">
+                        <td className="border border-[#f2efe9] px-[8px] py-[4px] text-left font-semibold text-[#6f6d69]">
                           {year}
                         </td>
                         {Array.from({ length: 12 }, (_, index) => {
@@ -1203,10 +1203,10 @@ export const LiveHedgeReportBacktest = () => {
                           return (
                             <td
                               key={`${year}-${index + 1}`}
-                              className="border border-[#1c2128] px-[8px] py-[4px] text-center"
+                              className="border border-[#f2efe9] px-[8px] py-[4px] text-center"
                               style={{
                                 backgroundColor: heatColor(value),
-                                color: value !== null && Math.abs(value) > 10 ? "#fff" : "#e6edf3",
+                                color: value !== null && Math.abs(value) > 10 ? "#fff" : "#1a1a1a",
                               }}
                             >
                               {value === null ? "–" : `${value >= 0 ? "+" : ""}${value.toFixed(1)}%`}
@@ -1214,7 +1214,7 @@ export const LiveHedgeReportBacktest = () => {
                           );
                         })}
                         <td
-                          className="border border-[#1c2128] px-[8px] py-[4px] text-center font-bold text-white"
+                          className="border border-[#f2efe9] px-[8px] py-[4px] text-center font-bold text-[#1a1a1a]"
                           style={{ backgroundColor: heatColor((annual - 1) * 100) }}
                         >
                           {`${annual >= 1 ? "+" : ""}${((annual - 1) * 100).toFixed(1)}%`}
@@ -1229,8 +1229,8 @@ export const LiveHedgeReportBacktest = () => {
 
           <section className="px-[24px] pt-[14px]">
             <div className="flex items-center gap-[8px] pb-[6px]">
-              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#8b949e]" />
-              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#8b949e]">
+              <div className="h-[16px] w-[3px] rounded-[2px] bg-[#6f6d69]" />
+              <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-[#6f6d69]">
                 交易记录 / Order Log
               </p>
             </div>
@@ -1246,16 +1246,16 @@ export const LiveHedgeReportBacktest = () => {
                   value={orderQuery}
                   onChange={(event) => setOrderQuery(event.target.value)}
                   placeholder="搜索触发/日期..."
-                  className="ml-[4px] rounded-[6px] border border-[#30363d] bg-[#161b22] px-[10px] py-[4px] text-[11px] text-[#e6edf3] outline-none focus:border-[#58a6ff]"
+                  className="ml-[4px] rounded-[6px] border border-[#b6afa5] bg-[#fbf7f0] px-[10px] py-[4px] text-[11px] text-[#1a1a1a] outline-none focus:border-[#223b5b]"
                 />
-                <span className="ml-auto text-[11px] text-[#8b949e]">
+                <span className="ml-auto text-[11px] text-[#6f6d69]">
                   显示 {visibleOrders.length} / {report?.orders.length ?? 0} 条
                 </span>
               </div>
-              <div className="overflow-x-auto rounded-[8px] border border-[#30363d]">
+              <div className="overflow-x-auto rounded-[8px] border border-[#b6afa5]">
                 <table className="min-w-[1080px] w-full border-collapse">
                   <thead>
-                    <tr className="bg-[#1c2128] text-left text-[10px] uppercase tracking-[0.05em] text-[#8b949e]">
+                    <tr className="bg-[#f2efe9] text-left text-[10px] uppercase tracking-[0.05em] text-[#6f6d69]">
                       {[
                         { key: "date", label: "日期" },
                         { key: "type", label: "类型" },
@@ -1271,7 +1271,7 @@ export const LiveHedgeReportBacktest = () => {
                       ].map((column) => (
                         <th
                           key={column.key}
-                          className="cursor-pointer border-b border-[#30363d] px-[10px] py-[6px] hover:text-[#58a6ff]"
+                          className="cursor-pointer border-b border-[#b6afa5] px-[10px] py-[6px] hover:text-[#223b5b]"
                           onClick={() => setOrderSort(column.key as OrderSortKey)}
                         >
                           {column.label}
@@ -1281,45 +1281,45 @@ export const LiveHedgeReportBacktest = () => {
                   </thead>
                   <tbody>
                     {visibleOrders.map((order) => (
-                      <tr key={`${order.date}-${order.type}-${order.direction}-${order.oldPos}-${order.newPos}`} className="text-[11px] hover:bg-[#1c2128]">
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">{order.date}</td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">
+                      <tr key={`${order.date}-${order.type}-${order.direction}-${order.oldPos}-${order.newPos}`} className="text-[11px] hover:bg-[#f2efe9]">
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">{order.date}</td>
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">
                           <span
                             className={`rounded-[4px] px-[7px] py-[2px] text-[10px] font-semibold ${
-                              order.type === "CTA" ? "bg-[#1a2a1a] text-[#3fb950]" : "bg-[#2a1a3a] text-[#bc8cff]"
+                              order.type === "CTA" ? "bg-[#edf7f1] text-[#1a4d2e]" : "bg-[#f4edf7] text-[#223b5b]"
                             }`}
                           >
                             {order.type}
                           </span>
                         </td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">
                           <span
                             className={`rounded-[4px] px-[7px] py-[2px] text-[10px] font-semibold ${
                               order.direction === "BUY"
-                                ? "bg-[#1a3a1a] text-[#3fb950]"
+                                ? "bg-[#1a3a1a] text-[#1a4d2e]"
                                 : order.direction === "SELL"
-                                  ? "bg-[#3a1a1a] text-[#f85149]"
+                                  ? "bg-[#f7ecec] text-[#7b2d2c]"
                                   : order.direction.includes("↑")
-                                    ? "bg-[#2a1a3a] text-[#bc8cff]"
-                                    : "bg-[#1a2a3a] text-[#58a6ff]"
+                                    ? "bg-[#f4edf7] text-[#223b5b]"
+                                    : "bg-[#f3efe8] text-[#223b5b]"
                             }`}
                           >
                             {order.direction}
                           </span>
                         </td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">{order.oldPos.toFixed(3)}</td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">{order.newPos.toFixed(3)}</td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">
-                          <span className={order.delta >= 0 ? "text-[#3fb950]" : "text-[#f85149]"}>
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">{order.oldPos.toFixed(3)}</td>
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">{order.newPos.toFixed(3)}</td>
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">
+                          <span className={order.delta >= 0 ? "text-[#1a4d2e]" : "text-[#7b2d2c]"}>
                             {order.delta >= 0 ? "+" : ""}
                             {order.delta.toFixed(3)}
                           </span>
                         </td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">{order.trigger}</td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">${order.price.toLocaleString()}</td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">{order.macroScore.toFixed(1)}</td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">{order.hedgePct.toFixed(1)}%</td>
-                        <td className="border-b border-[#1c2128] px-[10px] py-[6px]">
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">{order.trigger}</td>
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">${order.price.toLocaleString()}</td>
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">{order.macroScore.toFixed(1)}</td>
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">{order.hedgePct.toFixed(1)}%</td>
+                        <td className="border-b border-[#f2efe9] px-[10px] py-[6px]">
                           <RiskPips value={order.riskScore} />
                         </td>
                       </tr>

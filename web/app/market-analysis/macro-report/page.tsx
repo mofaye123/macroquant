@@ -1,6 +1,6 @@
 "use client";
 
-import { Suspense, useMemo } from "react";
+import { Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 import { BlogPostGrid } from "@/components/market-analysis/blog-post-grid";
@@ -34,10 +34,7 @@ function MacroReportContent({
   const searchParams = useSearchParams();
   const docId = searchParams.get("doc");
   const posts = library?.macroReports ?? [];
-  const selectedPost = useMemo(
-    () => (docId ? posts.find((doc) => doc.id === docId) ?? null : null),
-    [docId, posts]
-  );
+  const selectedPost = docId ? library?.macroReports?.find((doc) => doc.id === docId) ?? null : null;
 
   if (selectedPost) {
     return <BlogPostReader post={selectedPost} basePath="/market-analysis/macro-report" />;

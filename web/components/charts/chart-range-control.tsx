@@ -25,7 +25,7 @@ export const ChartRangePicker = ({
 }) => (
   <div
     className={cn(
-      "inline-flex items-center gap-[3px] rounded-[10px] border border-slate-200 bg-white/90 px-[4px] py-[4px] shadow-[0_8px_18px_-14px_rgba(15,23,42,0.3)]",
+      "inline-flex items-center gap-[3px] rounded-[8px] border border-[rgba(26,26,26,0.14)] bg-[rgba(255,253,248,0.92)] px-[4px] py-[4px] shadow-soft",
       className
     )}
   >
@@ -35,10 +35,10 @@ export const ChartRangePicker = ({
         type="button"
         onClick={() => onChange(option)}
         className={cn(
-          "rounded-[8px] px-[7px] py-[4px] text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors",
+          "rounded-[7px] px-[7px] py-[4px] font-sans text-[10px] font-semibold uppercase tracking-[0.08em] transition-colors",
           value === option
-            ? "bg-blue-50 text-blue-700"
-            : "text-app-muted hover:bg-slate-50 hover:text-app-text"
+            ? "bg-[rgba(34,59,91,0.12)] text-app-navy"
+            : "text-app-muted hover:bg-[rgba(26,26,26,0.04)] hover:text-app-text"
         )}
       >
         {option}
