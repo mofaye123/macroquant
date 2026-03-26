@@ -2,13 +2,14 @@
 
 import Link from "next/link";
 
-import { SectionTitle } from "@/components/ui/section-title";
-import { SurfaceCard } from "@/components/ui/surface-card";
 import type { ResearchDocument } from "@/lib/market-analysis-library";
+import { cn } from "@/lib/utils";
 
 type BlogPostReaderProps = {
   post: ResearchDocument;
   basePath: string;
+  showBackLink?: boolean;
+  className?: string;
 };
 
 type ParagraphBlock =
@@ -49,79 +50,85 @@ const parseParagraphBlocks = (content: string): ParagraphBlock[] => {
   });
 };
 
-export function BlogPostReader({ post, basePath }: BlogPostReaderProps) {
+export function BlogPostReader({ post, basePath, showBackLink = true, className }: BlogPostReaderProps) {
   const blocks = parseParagraphBlocks(post.content);
 
   return (
-    <div className="space-y-[16px]">
-      <SurfaceCard>
+    <div className={cn("mx-auto w-full max-w-[820px] space-y-[22px]", className)}>
+      {showBackLink ? (
         <div className="flex items-center justify-between gap-[8px]">
-          <SectionTitle title="文章详情" />
-          <Link href={basePath} className="text-[12px] font-semibold text-blue-600 hover:text-blue-700">
+          <p className="text-[10px] uppercase tracking-[0.2em] text-app-muted">MacroQuant Research</p>
+          <Link href={basePath} className="text-[12px] font-semibold text-[#8B4513] hover:text-[#2D5016]">
             返回列表
           </Link>
         </div>
-        <p className="mt-[10px] text-[11px] uppercase tracking-[0.08em] text-app-muted">{post.date}</p>
-        <h1 className="mt-[6px] text-[30px] font-semibold leading-tight text-app-text">{post.title}</h1>
-        <div className="mt-[10px] flex flex-wrap gap-[6px]">
+      ) : null}
+
+      <header className="text-center">
+        <p className="text-[11px] uppercase tracking-[0.18em] text-app-muted">{post.date}</p>
+        <h1 className="mt-[10px] text-[36px] font-semibold leading-[1.18] tracking-[-0.01em] text-[#0f0f0f]">
+          {post.title}
+        </h1>
+        <div className="mt-[14px] flex flex-wrap items-center justify-center gap-[6px]">
           {post.tags.map((tag) => (
             <span
               key={`${post.id}-${tag}`}
-              className="rounded-full border border-app-border bg-app-bg px-[8px] py-[2px] text-[11px] text-app-muted"
+              className="rounded-[2px] border border-[rgba(26,26,26,0.12)] bg-white px-[9px] py-[3px] text-[11px] font-medium text-app-muted"
             >
               {tag}
             </span>
           ))}
         </div>
-      </SurfaceCard>
+      </header>
 
-      <SurfaceCard>
-        <article className="rounded-[12px] border border-app-border bg-white px-[20px] py-[18px]">
-          <div className="space-y-[12px]">
-            {blocks.map((block, idx) => {
-              if (block.type === "heading") {
-                return (
-                  <h2 key={`${post.id}-h-${idx}`} className="pt-[6px] text-[22px] font-semibold leading-tight text-slate-900">
-                    {block.text}
-                  </h2>
-                );
-              }
-
-              if (block.type === "ul") {
-                return (
-                  <ul
-                    key={`${post.id}-ul-${idx}`}
-                    className="list-disc space-y-[4px] pl-[20px] text-[16px] leading-[1.9] text-app-text"
-                  >
-                    {block.items.map((item, listIdx) => (
-                      <li key={`${post.id}-ul-${idx}-${listIdx}`}>{item}</li>
-                    ))}
-                  </ul>
-                );
-              }
-
-              if (block.type === "ol") {
-                return (
-                  <ol
-                    key={`${post.id}-ol-${idx}`}
-                    className="list-decimal space-y-[4px] pl-[20px] text-[16px] leading-[1.9] text-app-text"
-                  >
-                    {block.items.map((item, listIdx) => (
-                      <li key={`${post.id}-ol-${idx}-${listIdx}`}>{item}</li>
-                    ))}
-                  </ol>
-                );
-              }
-
+      <article className="rounded-[4px] border border-[#c8bfa8] bg-white px-[28px] py-[24px] shadow-[0_1px_0_rgba(0,0,0,0.03)]">
+        <div className="space-y-[13px]">
+          {blocks.map((block, idx) => {
+            if (block.type === "heading") {
               return (
-                <p key={`${post.id}-p-${idx}`} className="text-[17px] leading-[1.95] text-slate-800">
+                <h2
+                  key={`${post.id}-h-${idx}`}
+                  className="border-l-[3px] border-[#2D5016] bg-[rgba(45,80,22,0.05)] pl-[10px] pt-[5px] text-[20px] font-semibold leading-tight text-[#121212]"
+                >
                   {block.text}
-                </p>
+                </h2>
               );
-            })}
-          </div>
-        </article>
-      </SurfaceCard>
+            }
+
+            if (block.type === "ul") {
+              return (
+                <ul
+                  key={`${post.id}-ul-${idx}`}
+                  className="list-disc space-y-[6px] pl-[20px] text-[16px] leading-[1.9] text-[#1a1a1a]"
+                >
+                  {block.items.map((item, listIdx) => (
+                    <li key={`${post.id}-ul-${idx}-${listIdx}`}>{item}</li>
+                  ))}
+                </ul>
+              );
+            }
+
+            if (block.type === "ol") {
+              return (
+                <ol
+                  key={`${post.id}-ol-${idx}`}
+                  className="list-decimal space-y-[6px] pl-[20px] text-[16px] leading-[1.9] text-[#1a1a1a]"
+                >
+                  {block.items.map((item, listIdx) => (
+                    <li key={`${post.id}-ol-${idx}-${listIdx}`}>{item}</li>
+                  ))}
+                </ol>
+              );
+            }
+
+            return (
+              <p key={`${post.id}-p-${idx}`} className="text-[16px] leading-[1.9] text-[#1a1a1a]">
+                {block.text}
+              </p>
+            );
+          })}
+        </div>
+      </article>
     </div>
   );
 }

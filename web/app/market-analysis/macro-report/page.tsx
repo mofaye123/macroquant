@@ -1,10 +1,10 @@
 "use client";
 
-import { Suspense } from "react";
-import { useSearchParams } from "next/navigation";
+import { Suspense, useCallback } from "react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
 
 import { BlogPostGrid } from "@/components/market-analysis/blog-post-grid";
-import { BlogPostReader } from "@/components/market-analysis/blog-post-reader";
+import { ResearchDocumentModal } from "@/components/market-analysis/research-document-modal";
 import { AppShell } from "@/components/layout/app-shell";
 import { useMarketAnalysisLibrary } from "@/lib/use-market-analysis-library";
 import { useMacroData } from "@/lib/use-macro-data";
@@ -31,23 +31,35 @@ function MacroReportContent({
   loading: boolean;
   error: string | null;
 }) {
+  const router = useRouter();
+  const pathname = usePathname();
   const searchParams = useSearchParams();
   const docId = searchParams.get("doc");
   const posts = library?.macroReports ?? [];
   const selectedPost = docId ? library?.macroReports?.find((doc) => doc.id === docId) ?? null : null;
 
-  if (selectedPost) {
-    return <BlogPostReader post={selectedPost} basePath="/market-analysis/macro-report" />;
-  }
+  const closeModal = useCallback(() => {
+    router.replace(pathname, { scroll: false });
+  }, [pathname, router]);
 
   return (
-    <BlogPostGrid
-      title="宏观报告"
-      description="研报列表采用博客流展示，点击任一文章可进入详情页阅读全文。"
-      basePath="/market-analysis/macro-report"
-      posts={posts}
-      loading={loading}
-      error={error}
-    />
+    <div className="space-y-[16px]">
+      <BlogPostGrid
+        title="宏观报告"
+        description="研报列表采用弹窗阅读，点击任一文章可在当前页打开全文。"
+        basePath="/market-analysis/macro-report"
+        posts={posts}
+        loading={loading}
+        error={error}
+      />
+
+      {selectedPost ? (
+        <ResearchDocumentModal
+          post={selectedPost}
+          basePath="/market-analysis/macro-report"
+          onClose={closeModal}
+        />
+      ) : null}
+    </div>
   );
 }
