@@ -21,7 +21,7 @@ def _compute_macro_regime_series(df_all, target_index, z_window=60):
     if src.empty:
         return pd.Series(index=target_index, dtype=object)
 
-    monthly = src.resample('M').last().ffill()
+    monthly = src.resample('ME').last().ffill()
     monthly['IP_YoY'] = monthly['INDPRO'].pct_change(12) * 100
     monthly['PCE_YoY'] = monthly['PCEPILFE'].pct_change(12) * 100
 
@@ -1040,7 +1040,7 @@ def compute_perf_metrics(df, risk_free_rate=0.04):
     recov_idx = nav.loc[trough_dt:][nav.loc[trough_dt:] >= peak_level]
     recovery_days = np.nan if recov_idx.empty else (recov_idx.index[0] - trough_dt).days
 
-    monthly_nav = (1 + ret).resample('M').prod()
+    monthly_nav = (1 + ret).resample('ME').prod()
     monthly_ret = monthly_nav - 1
     rf_monthly = (1 + float(risk_free_rate)) ** (1 / 12) - 1
     monthly_excess = monthly_ret - rf_monthly

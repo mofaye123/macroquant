@@ -878,7 +878,7 @@ def _build_regime_view(df_all: pd.DataFrame) -> Dict[str, Any]:
     if reg.empty:
         return {"current": None, "growthZ": None, "inflationZ": None, "lastSwitch": None, "timeline": []}
 
-    reg_m = reg.resample("M").last()
+    reg_m = reg.resample("ME").last()
     reg_m["Growth_YoY"] = reg_m["INDPRO"].pct_change(12) * 100
     reg_m["CorePCE_YoY"] = reg_m["PCEPILFE"].pct_change(12) * 100
     g_mean = reg_m["Growth_YoY"].rolling(60, min_periods=12).mean()
