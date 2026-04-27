@@ -9,10 +9,6 @@ on:
         description: "Manual backfill days (0=today/latest, 1=yesterday)"
         required: false
         default: "0"
-      require_gemini:
-        description: "Fail workflow if published report is not Gemini-generated"
-        required: false
-        default: "true"
 
 permissions:
   contents: write
@@ -24,6 +20,8 @@ concurrency:
 jobs:
   generate-daily-report:
     runs-on: ubuntu-latest
+    env:
+      FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
     steps:
       - name: Check out repository
         uses: actions/checkout@v4
@@ -115,20 +113,46 @@ jobs:
           MARKET_DAILY_AI_MODEL: ${{ vars.MARKET_DAILY_AI_MODEL }}
           MARKET_NEWS_RSS_URLS: ${{ vars.MARKET_NEWS_RSS_URLS }}
         run: |
-          python scripts/generate_daily_report_digest.py \
-            --input .cache/daily-report/macro-data.json \
-            --json-output .cache/daily-report/market-daily.json \
-            --md-output .cache/daily-report/market-daily.md \
-            --prefer-ai-markdown \
-            --min-chars 1500 \
-            --max-output-tokens 12288 \
-            --continuation-rounds 10 \
-            --publish-output web/public/data/market-daily-latest.json
+          attempts=4
+          base_sleep=20
+          success="false"
+          for attempt in $(seq 1 "${attempts}"); do
+            echo "Generate daily report attempt ${attempt}/${attempts}"
+            python scripts/generate_daily_report_digest.py \
+              --input .cache/daily-report/macro-data.json \
+              --json-output .cache/daily-report/market-daily.json \
+              --md-output .cache/daily-report/market-daily.md \
+              --prefer-ai-markdown \
+              --min-chars 1500 \
+              --max-output-tokens 12288 \
+              --continuation-rounds 10 \
+              --publish-output web/public/data/market-daily-latest.json
+
+            SOURCE="$(jq -r '.markdownSource // "unknown"' web/public/data/market-daily-latest.json)"
+            AI_RENDER_STATUS="$(jq -r '.aiRender.status // "unknown"' web/public/data/market-daily-latest.json)"
+            AI_FINISH_REASON="$(jq -r '.aiRender.finishReason // "unknown"' web/public/data/market-daily-latest.json)"
+            AI_DETAIL="$(jq -r '.aiRender.detail // ""' web/public/data/market-daily-latest.json)"
+            echo "Attempt ${attempt}: markdownSource=${SOURCE}, aiRender.status=${AI_RENDER_STATUS}, finishReason=${AI_FINISH_REASON}"
+
+            if [ "${SOURCE}" = "gemini" ]; then
+              success="true"
+              break
+            fi
+
+            if [ "${attempt}" -lt "${attempts}" ]; then
+              sleep_seconds=$((base_sleep * attempt))
+              echo "::warning::Gemini output not ready (source=${SOURCE}). Retrying in ${sleep_seconds}s. Detail: ${AI_DETAIL}"
+              sleep "${sleep_seconds}"
+            fi
+          done
+
+          if [ "${success}" != "true" ]; then
+            echo "::error::Gemini generation failed after ${attempts} attempts; fallback/template is not allowed."
+            exit 1
+          fi
 
       - name: Validate Gemini generation result
         if: steps.publish_window.outputs.should_run == 'true'
-        env:
-          REQUIRE_GEMINI_INPUT: ${{ github.event.inputs.require_gemini || 'true' }}
         run: |
           SOURCE="$(jq -r '.markdownSource // "unknown"' web/public/data/market-daily-latest.json)"
           AI_STATUS="$(jq -r '.daily.aiDecision.status // "unknown"' web/public/data/market-daily-latest.json)"
@@ -137,12 +161,7 @@ jobs:
           echo "Daily aiDecision.status=${AI_STATUS}"
           echo "Daily aiRender=${AI_RENDER}"
 
-          REQUIRE_GEMINI="${REQUIRE_GEMINI_INPUT}"
-          if [ "${{ github.event_name }}" != "workflow_dispatch" ]; then
-            REQUIRE_GEMINI="true"
-          fi
-
-          if [ "${REQUIRE_GEMINI}" = "true" ] && [ "${SOURCE}" != "gemini" ]; then
+          if [ "${SOURCE}" != "gemini" ]; then
             echo "::error::Daily report is not Gemini-generated (markdownSource=${SOURCE})."
             exit 1
           fi
