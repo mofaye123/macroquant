@@ -2,7 +2,7 @@ name: Generate Market Daily Report
 
 on:
   schedule:
-    - cron: "5 * * * 1-5"
+    - cron: "5,25,45 * * * 1-5"
   workflow_dispatch:
     inputs:
       days_ago:
@@ -29,7 +29,7 @@ jobs:
           fetch-depth: 0
           ref: main
 
-      - name: Gate publish window (US close + 1h)
+      - name: Gate publish window (US close + 1h to +3h)
         id: publish_window
         run: |
           if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
@@ -50,9 +50,9 @@ jobs:
             exit 0
           fi
 
-          if [ "$et_hour" = "17" ]; then
+          if [ "$et_hour" = "17" ] || [ "$et_hour" = "18" ] || [ "$et_hour" = "19" ]; then
             echo "should_run=true" >> "$GITHUB_OUTPUT"
-            echo "window_reason=market_close_plus_1h" >> "$GITHUB_OUTPUT"
+            echo "window_reason=market_close_plus_1h_to_3h" >> "$GITHUB_OUTPUT"
           else
             echo "should_run=false" >> "$GITHUB_OUTPUT"
             echo "window_reason=outside_publish_hour" >> "$GITHUB_OUTPUT"
@@ -113,8 +113,7 @@ jobs:
           MARKET_DAILY_AI_MODEL: ${{ vars.MARKET_DAILY_AI_MODEL }}
           MARKET_NEWS_RSS_URLS: ${{ vars.MARKET_NEWS_RSS_URLS }}
         run: |
-          attempts=4
-          base_sleep=20
+          attempts=8
           success="false"
           for attempt in $(seq 1 "${attempts}"); do
             echo "Generate daily report attempt ${attempt}/${attempts}"
@@ -140,7 +139,16 @@ jobs:
             fi
 
             if [ "${attempt}" -lt "${attempts}" ]; then
-              sleep_seconds=$((base_sleep * attempt))
+              case "${attempt}" in
+                1) sleep_seconds=20 ;;
+                2) sleep_seconds=40 ;;
+                3) sleep_seconds=60 ;;
+                4) sleep_seconds=90 ;;
+                5) sleep_seconds=120 ;;
+                6) sleep_seconds=180 ;;
+                7) sleep_seconds=240 ;;
+                *) sleep_seconds=300 ;;
+              esac
               echo "::warning::Gemini output not ready (source=${SOURCE}). Retrying in ${sleep_seconds}s. Detail: ${AI_DETAIL}"
               sleep "${sleep_seconds}"
             fi
