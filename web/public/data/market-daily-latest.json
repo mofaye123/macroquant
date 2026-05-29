@@ -1,32 +1,32 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-05-29T21:21:26Z",
-  "asOfDate": "2026-05-29",
+  "reportGeneratedAt": "2026-05-29T22:48:37Z",
+  "asOfDate": "2026-06-01",
   "headline": "宏观中性，建议事件驱动下的结构化交易。",
   "markdownSource": "gemini",
-  "markdownCharCount": 5507,
+  "markdownCharCount": 5012,
   "aiRender": {
     "enabled": true,
     "status": "ok",
     "usedFallback": false,
     "requestedModel": "gemini-2.5-pro",
     "usedModelFallback": true,
-    "charCount": 5506,
+    "charCount": 5011,
     "minCharTarget": 1500,
     "finishReason": "STOP",
-    "detail": "Gemini preview generated (5506 chars, finishReason=STOP).",
+    "detail": "Gemini preview generated (5011 chars, finishReason=STOP).",
     "model": "gemini-2.5-flash",
     "reasoningMode": "deep_think",
     "qualified": true,
     "qualifiedReason": "ok"
   },
-  "markdown": "# 市场研究日报（2026-05-29）\n\n## 一、热点要闻\n\n### 美国加密货币监管框架引发关注\n\n**事件概述：** 近期，美国关于加密货币监管的《清晰法案》（Clarity Act）成为业界讨论的焦点。布鲁金斯学会的一位研究员指出，该法案存在在缺乏充分监督的情况下进行监管的风险，引发了对未来数字资产行业监管路径的担忧。\n\n**要点：** 《清晰法案》旨在为加密货币市场提供更明确的监管指导，但批评者认为，其可能导致监管权力过度集中或在不完全理解行业复杂性的情况下制定规则，从而扼杀创新或造成不必要的市场扭曲。\n\n**市场影响：** 市场对监管政策的明朗化抱有期待，但同时也警惕过度或不当监管可能带来的负面影响。此类法案的进展将直接影响加密货币项目的合规成本、市场准入以及投资者信心，可能导致短期内市场情绪波动，并促使行业参与者重新评估其在美国市场的战略布局。\n\n### 日本银行业面临存款保卫战\n\n**事件概述：** 路透社报道称，随着储户转向追求更高市场回报，日本各银行正努力争取并留住存款。这一现象反映出日本金融市场环境正在发生微妙变化，储户行为模式受到市场利率和投资机会的影响。\n\n**要点：** 长期以来，日本的低利率环境使得银行存款的吸引力有限。然而，随着全球市场利率的波动以及日本国内经济预期的调整，部分储户开始寻求收益更高的投资产品，这给传统银行的存款业务带来了挑战。银行需要调整其产品策略，以应对储户对更高回报的追求。\n\n**市场影响：** 这一趋势可能促使日本银行业加速创新，推出更具竞争力的存款产品或财富管理服务，以防止资金外流。同时，这也可能对日本央行的货币政策产生间接影响，因为存款基础的变化会影响银行的放贷能力和整体金融稳定性。如果这一趋势持续，可能会加剧日本金融机构之间的竞争，并可能对日本国债市场产生一定影响。\n\n### 美联储动态与国际大宗商品市场\n\n**数据不足：** 暂无美联储相关政策声明或官员讲话的最新动态。\n**数据不足：** 暂无国际大宗商品市场或地缘供给冲击相关的具体新闻线索。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\n\n在过去24小时内，COMEX黄金价格上涨1.5691%，至4569.9美元，近7日累计涨幅为1.08%，显示出在当前市场环境下，黄金作为避险资产或通胀对冲工具的吸引力有所增强。COMEX白银价格则微幅下跌0.0793%，近7日下跌0.41%，报75.58美元，其14日波动率高达22.71%，显示出较高的短期不确定性。\n\n原油市场方面，WTI原油和布伦特原油均呈现显著下跌。WTI原油24小时内下跌1.2823%，至87.76美元，近7日累计跌幅达9.15%。布伦特原油跌幅更为明显，24小时内下跌2.1449%，至91.7美元，近7日累计下跌11.44%。两者14日波动率分别高达55.57%和45.05%，表明原油市场近期波动剧烈，可能反映了对全球经济增长放缓导致需求下降的担忧，或对未来供给预期的调整。\n\n外汇市场中，美元指数（DXY）微幅下跌0.0788%，报98.94，近7日累计下跌0.38%，波动率相对较低，为3.01%。美国10年期国债收益率（US10Y）下跌0.0449%，至4.45%，近7日累计下跌2.3%，显示出债券市场存在一定的避险买盘或对未来利率路径的重新评估。CBOE VIX指数（恐慌指数）下跌2.6684%，至15.32，近7日累计下跌8.26%，尽管有所回落，但其14日波动率仍维持在41.0%的高位，提示市场情绪仍存在潜在的不确定性。\n\n### 加密货币表现\n\n过去24小时内，主要加密货币价格表现平稳，但近7日普遍呈现小幅回调。比特币（BTC）价格微涨0.1087%，至73616.49美元，但近7日累计下跌2.48%。以太坊（ETH）上涨0.4766%，至2017.12美元，近7日下跌2.30%。索拉纳（SOL）上涨0.1519%，至82.11美元，近7日下跌2.61%。三大主流加密货币的14日波动率均维持在22%至30%之间，显示出其固有的高波动性特征。尽管短期内有所企稳，但周度表现的疲软可能反映了市场在经历前期上涨后的获利了结，或对宏观经济及监管不确定性的消化。\n\n### 美股指数表现\n\n美国股市主要指数在过去24小时及近7日均录得上涨，显示出市场整体的积极情绪。道琼斯工业平均指数（DJI）24小时内上涨0.7174%，至51032.46点，近7日累计上涨0.9%。标普500指数（SPX）上涨0.2172%，至7580.06点，近7日累计上涨1.43%。纳斯达克综合指数（IXIC）上涨0.2049%，至26972.62点，近7日累计上涨2.39%，领跑三大指数，凸显科技股的强势表现。\n\n小盘股指数罗素2000（RUT）在过去24小时内下跌0.5868%，但近7日仍上涨1.75%，表明小盘股在短期内有所承压，但周度表现依然积极。追踪标普500的SPDR S&P 500 ETF（SPY）上涨0.2491%，近7日上涨1.45%。追踪纳斯达克100的Invesco QQQ ETF（QQQ）上涨0.3684%，近7日上涨2.89%，进一步印证了科技和成长股在当前市场中的主导地位。\n\n### 科技巨头动态\n\n主要科技巨头在近期表现出不同的走势，但整体趋势偏多。苹果（AAPL）在过去24小时微跌0.14%，但近7日和20日分别上涨4.38%和15.0%，RSI14为83.46，显示出强劲的趋势多头信号。特斯拉（TSLA）24小时下跌1.43%，但近7日和20日分别上涨7.84%和14.19%，RSI14为52.96，同样维持趋势多头。\n\n微软（MSFT）表现尤为突出，24小时内大涨5.45%，近7日和20日分别上涨7.86%和10.41%，RSI14为70.91，趋势多头信号显著。博通（AVGO）也录得强劲涨幅，24小时上涨4.73%，近7日和20日分别上涨8.68%和7.03%，RSI14为57.75，同样为趋势多头。\n\n英伟达（NVDA）则呈现短期回调，24小时下跌1.45%，近7日下跌4.29%，但近20日仍上涨5.8%，RSI14为46.25，虽然仍被标记为趋势多头，但短期动能有所减弱，可能存在获利了结压力。\n\n### 板块异动观察\n\n从板块表现来看，科技板块（XLK）继续领跑市场，24小时内上涨2.2317%，近7日累计上涨5.89%，14日波动率达22.08%，显示出其强大的增长动能和市场关注度。金融板块（XLF）24小时上涨0.6046%，但近7日微跌0.69%，波动率12.52%，表现相对平稳。\n\n能源板块（XLE）则表现疲软，24小时下跌1.1589%，近7日累计下跌5.38%，14日波动率24.69%，是近期表现最弱的板块之一，与原油价格的下跌趋势相符。医疗保健板块（XLV）24小时下跌0.9345%，近7日微跌0.28%。工业板块（XLI）24小时下跌0.3855%，近7日上涨0.79%，表现中规中矩。\n\n整体而言，市场内部轮动不均衡，科技板块的强势表现与能源板块的疲软形成鲜明对比，反映出市场对不同行业增长前景的差异化预期。波动性方面，VIX指数现报15.32，10年期美债收益率现报4.45%，显示市场在一定程度的乐观中仍保持对宏观环境的审慎。\n\n## 三、深度个股解读\n\n### 苹果 (AAPL)\n\n**事件概述：** 苹果公司股价在过去24小时微幅下跌0.14%，但近7日和近20日分别录得4.38%和15.0%的显著涨幅，14日年化波动率为12.5%。其RSI14指标高达83.46，显示出强劲的超买信号，但技术分析仍将其归类为趋势多头。\n\n**市场解读：** 尽管短期内出现小幅回调，但苹果股价在中长期内表现出强劲的上升势头，这可能得益于市场对其创新能力、生态系统优势以及未来产品线（如AI集成）的乐观预期。RSI指标的超买状态提示短期内可能存在技术性回调或盘整的需求，但整体市场对其基本面和增长前景的信心依然稳固。\n\n**投资启示：** 鉴于其均线结构偏多，投资者可优先考虑顺势持有。对于寻求入场的投资者，可关注回调机会，采取分批建仓的策略，以期在市场消化短期超买情绪后获得更优的投资成本。\n\n### 微软 (MSFT)\n\n**事件概述：** 微软公司股价在过去24小时内大幅上涨5.45%，近7日和近20日分别上涨7.86%和10.41%，14日年化波动率为38.7%。RSI14指标为70.91，处于超买区域边缘，技术信号显示为趋势多头。\n\n**市场解读：** 微软的强劲表现可能反映了市场对其在云计算、人工智能等核心业务领域持续领先地位的认可，以及对其未来增长前景的积极反馈。尤其是在AI技术快速发展的背景下，微软的战略布局和产品落地能力使其成为投资者追捧的焦点。短期内的巨大涨幅可能吸引部分获利盘，但强劲的基本面和市场情绪有望支撑其股价。\n\n**投资启示：** 微软的均线结构明确偏多，建议投资者优先顺势持有。对于未持仓的投资者，可密切关注市场对其短期涨幅的消化情况，在健康回调时考虑分批介入，以把握其长期增长潜力。\n\n### 英伟达 (NVDA)\n\n**事件概述：** 英伟达股价在过去24小时下跌1.45%，近7日累计下跌4.29%，但近20日仍保持5.8%的涨幅，14日年化波动率为42.0%。RSI14指标为46.25，处于中性区域，技术信号仍为趋势多头。\n\n**市场解读：** 英伟达作为人工智能芯片领域的领导者，其股价在经历前期大幅上涨后，近期出现了一定程度的回调，这可能反映了市场对短期估值过高或获利了结的需求。尽管短期承压，但其在AI算力领域的不可替代性以及持续的技术创新，使得市场对其长期增长前景依然充满信心。RSI指标回到中性区域，可能预示着短期调整接近尾声，或为后续行情积蓄动能。\n\n**投资启示：** 尽管短期内有所回调，但英伟达的均线结构仍偏多，建议已持仓投资者可继续持有。对于关注该公司的投资者，当前的回调可能提供了一个相对合理的入场机会，可考虑在关键支撑位附近分批买入，但需注意其较高的波动性。\n\n## 四、加密货币项目动态\n\n近期加密货币市场在监管、市场结构和生态发展方面均呈现活跃态势。在稳定币领域，摩根大通首席执行官杰米·戴蒙在《清晰法案》的辩论中，就稳定币奖励问题表达了担忧，认为银行不会接受此类奖励机制，这进一步凸显了传统金融机构与加密货币行业在监管和商业模式上的分歧。\n\n市场结构方面，美国商品期货交易委员会（CFTC）对加密货币永续合约表示支持，并发布了关于24/7全天候交易的咨询意见，认为这种交易模式对加密货币市场而言是积极的，但可能不适用于其他传统金融领域。这一立场为加密衍生品市场在美国的发展提供了潜在的利好。同时，Coinbase宣布将其全球加密衍生品市场引入美国机构客户，标志着美国机构投资者在合规框架下参与加密衍生品交易的渠道进一步拓宽。然而，法国监管机构警告称，未获得欧盟牌照的加密公司将面临起诉，这表明全球各地对加密行业的合规要求日益趋严。\n\n比特币生态方面，比特币价格近期跌至六周新低，分析师密切关注72,000美元的关键支撑位，认为该价位可能标志着当前下跌趋势的“终结”。这反映了市场对短期价格走势的谨慎情绪，以及对关键技术支撑位的重视。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n\n*   **2026-05-28 10:00 ET (14:00 UTC) | 美国 | 州级生产率数据 (Productivity by State)**\n    *   重要性：低\n    *   说明：由美国劳工统计局（BLS）官方发布，提供各州生产率表现的详细数据。\n*   **2026-05-28 10:00 ET (14:00 UTC) | 美国 | 美国生产率与单位劳动力成本 (US Productivity and Unit Labor Costs)**\n    *   重要性：低\n    *   说明：由美国劳工统计局（BLS）官方发布，衡量美国经济的生产效率和劳动力成本变化。\n\n### 重要事件预告\n\n**数据不足：** 暂无其他重要事件预告。\n\n### 机构观点\n\n当前宏观经济环境仍处于中性区间，市场整体表现更适合采取事件驱动下的结构化交易策略，而非激进的单边押注。在此背景下，仓位管理和交易节奏的把握应优先于对市场方向的激进表达。\n\n从边际变化来看，国债期限结构是当前市场的主要支撑项，其积极变化对市场情绪起到了一定的提振作用。然而，系统流动性依然是主要的拖累项，这组分化可能成为跨资产走势围绕其展开的关键因素。\n\n权益资产方面，标普500指数和纳斯达克综合指数在近7日分别上涨1.43%和2.39%，表明成长型资产仍在努力消化宏观经济和估值双重约束带来的压力。行业层面，科技板块（Technology）在近7日表现相对占优，而能源板块（Energy）则相对承压，这显示出市场内部轮动并不均衡，资金偏好集中于特定增长领域。\n\n加密资产方面，比特币（BTC）和以太坊（ETH）在近7日分别下跌2.48%和2.30%。对于加密资产的短线交易，建议投资者更应结合关键价位和成交量确认来判断趋势的延续性，以应对其固有的高波动性。\n\n## 免责声明\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
+  "markdown": "# 市场研究日报（2026-06-01）\n\n## 一、热点要闻\n\n**美国就业报告受关注，利率路径与债券收益率成市场风险焦点**\n华尔街本周密切关注即将发布的美国就业报告，该报告被视为评估美联储未来利率路径的关键指标。在当前美国股市持续上涨的背景下，市场参与者正密切审视潜在的利率调整以及随之而来的债券收益率变化可能带来的风险。分析师指出，强劲的就业数据可能强化美联储维持较高利率的预期，从而对股市估值构成压力；反之，若就业市场出现降温迹象，则可能为美联储的鸽派转向提供空间，提振市场情绪。投资者需警惕就业数据公布后市场可能出现的波动，尤其是在当前高位运行的股票市场中，任何关于利率预期的变化都可能引发显著的资产重估。\n\n**大宗商品市场受宏观因素驱动，油价波动引关注**\n近期大宗商品市场表现出受宏观经济因素显著驱动的特征。华尔街日报市场评论指出，基础材料板块的下跌主要源于宏观层面的压力，而油价的波动性是市场讨论中的一个重要关注点。尽管近期原油价格有所回调，但其在宏观经济背景下的走势，特别是对通胀预期的影响，持续牵动市场神经。投资者正密切关注全球经济增长前景、地缘政治紧张局势以及主要产油国的供应策略，这些因素都将对大宗商品，尤其是原油的价格走势产生深远影响。\n\n**“清晰法案”引发监管争议，加密货币领域面临新挑战**\n在宏观经济政策领域，一项名为“清晰法案”（Clarity Act）的立法提案在加密货币行业引发了广泛讨论。CoinDesk报道称，一位布鲁金斯学会研究员指出，该法案存在“无监督监管”的风险，可能导致在缺乏充分监督的情况下对数字资产市场实施新的监管框架。这一担忧凸显了加密货币行业在快速发展过程中，如何平衡创新与监管的复杂性。市场参与者正密切关注相关立法进展，以及其可能对稳定币、交易所及整个数字资产生态系统带来的结构性影响。监管的不确定性可能在短期内对加密资产价格和市场情绪造成波动。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\n\n上个交易日，大宗商品市场呈现分化走势。COMEX黄金价格上涨1.5691%至4569.9美元，近七日累计上涨1.08%，显示出避险属性或通胀对冲需求的存在，其14日波动率维持在13.97%。COMEX白银则微跌0.0793%至75.58美元，近七日下跌0.41%，波动率达22.71%。原油市场承压，WTI原油下跌1.2823%至87.76美元，近七日跌幅达9.15%；布伦特原油下跌2.1449%至91.7美元，近七日跌幅为11.44%。原油价格的显著下跌反映了市场对全球经济增长放缓的担忧或供应增加的预期。美元指数（DXY）小幅走弱0.0788%至98.94，近七日下跌0.38%，波动率较低，为3.01%。美国10年期国债收益率下降0.0449%至4.45%，近七日累计下降2.3%，表明市场对长期利率的预期有所调整。CBOE波动率指数（VIX）下跌2.6684%至15.32，近七日下降8.26%，显示市场恐慌情绪有所缓解。\n\n### 加密货币表现\n\n加密货币市场整体呈现小幅回调态势。比特币（BTC）在过去24小时内下跌0.1626%至73416.96美元，近七日累计下跌2.74%，其14日波动率为22.5%。以太坊（ETH）逆势上涨0.2614%至2012.8美元，但近七日仍下跌2.51%，14日波动率为29.56%。Solana（SOL）下跌0.1652%至81.85美元，近七日下跌2.91%，14日波动率达30.51%。整体而言，主要加密货币在过去一周均面临一定抛售压力，市场正在寻找新的方向性催化剂。\n\n### 美股指数表现\n\n美国股市主要指数普遍上涨。道琼斯工业平均指数（DJI）上涨0.7174%至51032.46点，近七日累计上涨0.9%。标普500指数（SPX）上涨0.2172%至7580.06点，近七日上涨1.43%。纳斯达克综合指数（IXIC）上涨0.2049%至26972.62点，近七日涨幅达2.39%，显示科技股表现相对强劲。罗素2000指数（RUT）小幅下跌0.5868%至2919.34点，但近七日仍上涨1.75%，反映中小盘股的韧性。SPDR标普500ETF（SPY）和Invesco QQQ（QQQ）也分别上涨0.2491%和0.3684%，与对应指数表现一致。\n\n### 科技巨头动态\n\n主要科技巨头股价表现不一，但多数维持趋势多头信号。苹果（AAPL）小幅下跌0.14%，但近七日上涨4.38%，近20日上涨15.0%，RSI14为83.46，显示强劲的上涨动能。特斯拉（TSLA）下跌1.43%，但近七日上涨7.84%，近20日上涨14.19%，RSI14为52.96。微软（MSFT）表现亮眼，单日大涨5.45%，近七日上涨7.86%，近20日上涨10.41%，RSI14为70.91。博通（AVGO）同样表现强劲，单日上涨4.73%，近七日上涨8.68%，近20日上涨7.03%，RSI14为57.75。英伟达（NVDA）逆势下跌1.45%，近七日下跌4.29%，但近20日仍上涨5.8%，RSI14为46.25，显示短期回调。\n\n### 板块异动观察\n\n从板块表现来看，科技板块（XLK）表现突出，过去24小时上涨2.2317%，近七日累计上涨5.89%，14日波动率达22.08%，领跑市场。金融板块（XLF）上涨0.6046%，但近七日下跌0.69%。能源板块（XLE）受原油价格下跌影响，单日下跌1.1589%，近七日累计下跌5.38%，表现偏弱。医疗保健板块（XLV）下跌0.9345%，近七日下跌0.28%。工业板块（XLI）下跌0.3855%，近七日上涨0.79%。这表明市场内部轮动并不均衡，资金倾向于流入科技等成长性板块，而对能源等周期性板块持谨慎态度。\n\n市场复盘线索显示，当前宏观总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。本周市场的主要驱动力来自外部冲击与汇率，边际变化显著为正，而系统流动性则构成主要拖累，边际变化为负。跨资产走势更可能围绕这组分化展开。波动与利率环境方面，VIX指数现报15.32，10年期美债收益率现报4.45%。\n\n## 三、深度个股解读\n\n**Apple (AAPL)**\n\n*   **事件概述：** 苹果公司股价在过去24小时内小幅回调0.14%，但其近七日和近20日表现依然强劲，分别录得4.38%和15.0%的涨幅。该股14日年化波动率为12.5%。\n*   **市场解读：** 尽管短期内出现轻微回调，苹果的均线结构仍呈现偏多态势，市场信号显示其处于趋势多头。这表明投资者对苹果的长期增长前景和产品创新能力保持信心。近期股价的上涨可能受到市场对新产品发布预期或服务业务增长的乐观情绪推动。\n*   **投资启示：** 鉴于其强劲的趋势多头信号和积极的均线结构，建议投资者优先顺势持有。对于寻求入场的投资者，可考虑在股价回调时分批介入，以优化持仓成本。\n\n**Microsoft (MSFT)**\n\n*   **事件概述：** 微软公司股价在过去24小时内大涨5.45%，近七日和近20日分别上涨7.86%和10.41%。该股14日年化波动率为38.7%。\n*   **市场解读：** 微软的股价表现尤为突出，单日大幅上涨，且均线结构显示出强烈的偏多趋势，市场信号明确为趋势多头。这可能与公司在云计算、人工智能等核心业务领域的持续强劲增长，或近期发布的利好消息有关。市场对其未来盈利能力和技术领导地位抱有高度期待。\n*   **投资启示：** 微软的强劲表现使其成为当前市场中值得关注的标的。建议投资者继续顺势持有，并密切关注公司基本面和技术面的进一步发展。对于潜在的回调，可视为分批增持的机会。\n\n**NVIDIA (NVDA)**\n\n*   **事件概述：** 英伟达公司股价在过去24小时内下跌1.45%，近七日累计下跌4.29%，但近20日仍保持5.8%的涨幅。该股14日年化波动率为42.0%。\n*   **市场解读：** 尽管英伟达近期经历短期回调，但其整体均线结构仍偏多，市场信号维持趋势多头。这表明当前的回调可能更多是技术性调整或获利了结，而非基本面恶化。作为人工智能和高性能计算领域的领导者，英伟达的长期增长前景依然被看好。\n*   **投资启示：** 投资者应认识到短期波动，但鉴于其长期趋势和行业地位，建议优先顺势持有。对于看好其长期发展的投资者，当前的回调可能提供了一个分批买入或加仓的策略性机会。\n\n## 四、加密货币项目动态\n\n*   **稳定币：** 摩根大通首席执行官杰米·戴蒙在“清晰法案”辩论中，就稳定币奖励问题升级了与银行界的争论，指出银行将不接受此类奖励机制，这凸显了传统金融机构与数字资产领域在监管和业务模式上的分歧。\n*   **交易所 / 市场结构：** 路透社“晨间要闻”关注市场交易的潜在协议或僵局，这可能影响全球金融市场的结构性变化，进而对加密货币交易所的运营和市场流动性产生间接影响。\n*   **比特币生态：** 比特币价格跌至六周新低，分析师密切关注72000美元的关键支撑位，认为该价位可能标志着当前回调的结束。\n*   **行业观察：** 美国商品期货交易委员会（CFTC）支持加密货币永续合约，并发布了关于24/7全天候交易的咨询意见，认可其在加密市场的应用。\n*   **行业观察：** 美国监管机构表示，24/7全天候交易模式非常适合加密货币市场，但可能不适用于其他传统金融领域，这反映了监管机构对加密市场独特性的认识。\n*   **行业观察：** Coinbase将其全球加密衍生品市场服务扩展至美国机构客户，此举旨在满足机构投资者对加密衍生品日益增长的需求，并进一步推动数字资产在主流金融中的融合。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n\n*   **2026-06-02 10:00 ET (14:00 UTC) | 美国 | 美国 JOLTS 职位空缺 | 重要性：中**\n    *   说明：劳工统计局（BLS）官方发布日历，衡量劳动力市场需求的重要指标。\n*   **2026-06-03 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存 | 重要性：中**\n    *   说明：美国能源信息署（EIA）官方页面；节假日周可能调整发布时间，该数据反映美国原油供需状况。\n*   **2026-06-04 08:30 ET (12:30 UTC) | 美国 | 美国生产率与单位劳动力成本 | 重要性：低**\n    *   说明：劳工统计局（BLS）官方发布日历，提供经济效率和通胀压力的线索。\n*   **2026-06-05 08:30 ET (12:30 UTC) | 美国 | 美国非农就业数据 | 重要性：高**\n    *   说明：劳工统计局（BLS）官方发布日历，是评估美国劳动力市场健康状况和美联储货币政策预期的关键数据。\n\n### 重要事件预告\n\n暂无其他重要事件预告。\n\n### 机构观点\n\n当前宏观环境整体处于中性区间，市场更适合进行事件驱动下的结构化交易，而非激进的单边押注。在交易策略上，仓位管理与节奏控制应优先于对市场方向的过度表达。从边际变化来看，外部冲击与汇率因素是当前市场的主要支撑项，其边际变化为正；而系统流动性则构成主要拖累因素，其边际变化为负。跨资产类别的走势预计将围绕这组分化特征展开。\n\n在权益资产方面，标普500指数近七日上涨1.43%，纳斯达克综合指数近七日上涨2.39%，这表明成长型资产仍在努力消化宏观环境与估值双重约束带来的压力。行业层面，科技板块（Technology）在近七日表现相对占优，而能源板块（Energy）则相对承压，这反映出市场内部轮动并不均衡。\n\n加密资产方面，比特币（BTC）近七日下跌2.74%，以太坊（ETH）近七日下跌2.51%。对于加密资产的短线交易，市场观察建议更应结合关键价位和成交量确认来判断走势的延续性，而非盲目追涨杀跌。\n\n## 免责声明\n\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
   "daily": {
-    "asOfDate": "2026-05-29",
-    "generatedAt": "2026-05-29T21:20:11Z",
+    "asOfDate": "2026-06-01",
+    "generatedAt": "2026-05-29T22:47:55Z",
     "headline": "宏观中性，建议事件驱动下的结构化交易。",
     "quickView": {
-      "overallScore": 56.37,
+      "overallScore": 57.29,
       "riskLevel": "中",
       "quoteSourceMode": "live",
       "newsSourceMode": "hybrid",
@@ -39,30 +39,30 @@
         "ticker": "BTC",
         "name": "Bitcoin",
         "bucket": "crypto",
-        "spot": 73616.49,
-        "change24hPct": 0.1087,
-        "change7dPct": -2.48,
-        "realizedVol14dPct": 22.67,
+        "spot": 73416.96,
+        "change24hPct": -0.1626,
+        "change7dPct": -2.74,
+        "realizedVol14dPct": 22.5,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "Ethereum",
         "bucket": "crypto",
-        "spot": 2017.12,
-        "change24hPct": 0.4766,
-        "change7dPct": -2.3,
-        "realizedVol14dPct": 29.78,
+        "spot": 2012.8,
+        "change24hPct": 0.2614,
+        "change7dPct": -2.51,
+        "realizedVol14dPct": 29.56,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "Solana",
         "bucket": "crypto",
-        "spot": 82.11,
-        "change24hPct": 0.1519,
-        "change7dPct": -2.61,
-        "realizedVol14dPct": 30.68,
+        "spot": 81.85,
+        "change24hPct": -0.1652,
+        "change7dPct": -2.91,
+        "realizedVol14dPct": 30.51,
         "source": "yfinance"
       },
       {
@@ -248,12 +248,39 @@
     ],
     "hotNews": [
       {
+        "title": "Wall St Week Ahead Jobs report on tap for soaring US stocks as rate path, bond yields eyed as risks - Reuters",
+        "summary": "# Wall St Week Ahead Jobs report on tap for soaring US stocks as rate path, bond yields eyed as risks | Reuters. Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. # Wall St Wee",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/business/wall-st-week-ahead-jobs-report-tap-soaring-us-stocks-rate-path-bond-yields-eyed-2026-05-29/",
+        "publishedAt": "2026-05-29T10:13:25Z",
+        "bucket": "macro_policy",
+        "editorScore": 21.2574
+      },
+      {
+        "title": "Emerging Markets Won’t Protect You From AI Mania - WSJ",
+        "summary": "# Emerging Markets Won’t Protect You From AI Mania - WSJ. DJIA Futures 50817.00 0.15%. S&P 500 Futures 7586.75 0.07%. Nasdaq Futures 30306.25 -0.00%. https://www.wsj.com/finance/stocks/emerging-markets-wont-protect-you-from-ai-mania-f3109fa4. # Emerging Markets Won’t Protect You ",
+        "source": "wsj.com",
+        "url": "https://www.wsj.com/finance/stocks/emerging-markets-wont-protect-you-from-ai-mania-f3109fa4",
+        "publishedAt": "2026-05-29T10:26:00Z",
+        "bucket": "equity",
+        "editorScore": 20.5098
+      },
+      {
+        "title": "Basic Materials Roundup: Market Talk - WSJ",
+        "summary": "# Basic Materials Roundup: Market Talk - WSJ. DJIA Futures 50843.00 0.20%. S&P 500 Futures 7589.50 0.10%. Nasdaq Futures 30339.00 0.11%. U.S. 10 Yr -0/32 4.452%. Gold 4567.30 0.77%. S&P GSCI Index Spot 697.92 -0.71%. Instead, the decline seems largely macro-driven, as rising oil ",
+        "source": "wsj.com",
+        "url": "https://www.wsj.com/business/basic-materials-roundup-market-talk-68340560",
+        "publishedAt": "2026-05-29T11:04:00Z",
+        "bucket": "commodities",
+        "editorScore": 20.4681
+      },
+      {
         "title": "‘The banks will not accept it’: Dimon escalates battle over stablecoin rewards in CLARITY Act debate",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/policy/2026/05/29/the-banks-will-not-accept-it-dimon-escalates-battle-over-stablecoin-rewards-in-clarity-act-debate",
         "publishedAt": "2026-05-29T20:03:52Z",
         "bucket": "crypto",
-        "editorScore": 18.183
+        "editorScore": 17.8176
       },
       {
         "title": "Morning Bid: Deal or no deal - Reuters",
@@ -262,7 +289,7 @@
         "url": "https://www.reuters.com/commentary/reuters-open-interest/global-markets-view-usa-2026-05-29/",
         "publishedAt": "2026-05-29T10:40:35Z",
         "bucket": "crypto",
-        "editorScore": 17.836
+        "editorScore": 17.4706
       },
       {
         "title": "Bitcoin plums new six-week lows as analyst eyes BTC price dip 'end' at $72K",
@@ -270,16 +297,7 @@
         "url": "https://cointelegraph.com/markets/bitcoin-plums-new-six-week-lows-as-analyst-eyes-btc-price-dip-end-at-72k?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-05-29T17:03:12Z",
         "bucket": "crypto",
-        "editorScore": 17.7302
-      },
-      {
-        "title": "European markets rise as investors await US-Iran ceasefire extension - Reuters",
-        "summary": "# European markets rise as investors await US-Iran ceasefire extension | Reuters. Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. ## Browse Legal. # European markets rise as ",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/european-markets-rise-investors-await-us-iran-ceasefire-extension-2026-05-29/",
-        "publishedAt": "2026-05-29T07:34:30Z",
-        "bucket": "equity",
-        "editorScore": 15.8606
+        "editorScore": 17.3648
       },
       {
         "title": "Mass deployment of AI agents is a disaster waiting to happen, says CertiK CEO",
@@ -287,7 +305,7 @@
         "url": "https://www.coindesk.com/tech/2026/05/29/mass-deployment-of-ai-agents-is-a-disaster-waiting-to-happen-says-certik-ceo",
         "publishedAt": "2026-05-29T15:31:07Z",
         "bucket": "equity",
-        "editorScore": 15.6465
+        "editorScore": 15.2811
       },
       {
         "title": "Sui network temporarily stalls again after Thursday's outage",
@@ -295,7 +313,7 @@
         "url": "https://cointelegraph.com/news/sui-temporary-stall-several-hours-second-day?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-05-29T18:46:50Z",
         "bucket": "equity",
-        "editorScore": 15.462
+        "editorScore": 15.0966
       },
       {
         "title": "Clarity Act Risks Regulation Without Oversight, Brookings Fellow Says",
@@ -303,16 +321,7 @@
         "url": "https://www.coindesk.com/policy/2026/05/29/clarity-act-risks-regulation-without-oversight-brookings-fellow-says",
         "publishedAt": "2026-05-29T15:14:55Z",
         "bucket": "general",
-        "editorScore": 11.679
-      },
-      {
-        "title": "Japan banks battle to secure deposits as savers chase market highs - Reuters",
-        "summary": "# Japan banks battle to secure deposits as savers chase market highs | Reuters. Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Legal. # Japan banks battle to secure deposits as saver",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/finance/japan-banks-battle-secure-deposits-savers-chase-market-highs-2026-05-28/",
-        "publishedAt": "2026-05-28T07:11:48Z",
-        "bucket": "general",
-        "editorScore": 6.2
+        "editorScore": 11.3136
       },
       {
         "title": "CFTC backs crypto perpetual contracts, issues advisory on 24/7 trading",
@@ -320,7 +329,7 @@
         "url": "https://cointelegraph.com/news/cftc-crypto-perpetual-contracts-trading-advisory?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-05-29T20:52:01Z",
         "bucket": "crypto",
-        "editorScore": 17.1836
+        "editorScore": 16.8182
       },
       {
         "title": "U.S. regulator says 24/7 trading is great for crypto, may not be fit for other sectors",
@@ -328,7 +337,7 @@
         "url": "https://www.coindesk.com/policy/2026/05/29/u-s-regulator-says-24-7-trading-is-great-for-crypto-may-not-be-fit-for-other-sectors",
         "publishedAt": "2026-05-29T16:29:42Z",
         "bucket": "crypto",
-        "editorScore": 17.0906
+        "editorScore": 16.7252
       },
       {
         "title": "Coinbase brings global crypto derivatives markets to US institutional clients",
@@ -336,32 +345,23 @@
         "url": "https://cointelegraph.com/news/coinbase-regulated-access-global-crypto-perpetual-futures-options-us-institutions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-05-29T17:56:33Z",
         "bucket": "crypto",
-        "editorScore": 16.4525
-      },
-      {
-        "title": "Crypto companies without EU licences face prosecution, French regulator warns - Reuters",
-        "summary": "# Crypto companies without EU licences face prosecution, French regulator warns | Reuters. Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. # Crypto companies without EU licen",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/finance/crypto-companies-without-eu-licences-face-prosecution-french-regulator-warns-2026-05-28/",
-        "publishedAt": "2026-05-28T12:56:52Z",
-        "bucket": "crypto",
-        "editorScore": 12.4038
+        "editorScore": 16.0871
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
-      "本周主驱动来自 国债期限结构，边际变化 +16.9。",
+      "本周主驱动来自 外部冲击与汇率，边际变化 +16.8。",
       "主要拖累来自 系统流动性，边际变化 -10.3。",
-      "BTC 24H +0.11%，7D -2.48%，执行上优先看关键位是否放量确认。",
+      "BTC 24H -0.16%，7D -2.74%，执行上优先看关键位是否放量确认。",
       "板块层面，XLK 近7日 +5.89% 领跑，XLE 近7日 -5.38% 偏弱。",
       "波动与利率环境方面，VIX 现报 15.32，10Y 收益率现报 4.45。"
     ],
     "deskViews": [
       "当前宏观总分仍处中性区间，市场更适合结构化交易而非单边押注，仓位与节奏管理优先于方向激进表达。",
-      "边际变化上，国债期限结构 是当前主要支撑项，而 系统流动性 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
+      "边际变化上，外部冲击与汇率 是当前主要支撑项，而 系统流动性 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
       "权益资产方面，标普口径近7日 +1.43%，纳指口径近7日 +2.39%，说明成长资产仍在消化宏观与估值的双重约束。",
       "行业层面，Technology 近7日表现相对占优，Energy 相对承压，说明市场内部轮动并不均衡。",
-      "加密资产方面，BTC 近7日 -2.48%，ETH 近7日 -2.30%，短线更适合结合关键价位和成交确认判断延续性。"
+      "加密资产方面，BTC 近7日 -2.74%，ETH 近7日 -2.51%，短线更适合结合关键价位和成交确认判断延续性。"
     ],
     "deepStockDives": [
       {
@@ -456,29 +456,43 @@
         "headline": "Coinbase brings global crypto derivatives markets to US institutional clients",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/coinbase-regulated-access-global-crypto-perpetual-futures-options-us-institutions?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-      },
-      {
-        "project": "行业观察",
-        "headline": "Crypto companies without EU licences face prosecution, French regulator warns - Reuters",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/finance/crypto-companies-without-eu-licences-face-prosecution-french-regulator-warns-2026-05-28/"
       }
     ],
     "marketCalendar": [
       {
-        "date": "2026-05-28",
+        "date": "2026-06-05",
+        "timeEt": "08:30",
+        "timeUtc": "12:30",
+        "country": "美国",
+        "category": "Macro",
+        "event": "美国非农就业数据",
+        "importance": "高",
+        "note": "BLS 官方发布日历"
+      },
+      {
+        "date": "2026-06-02",
         "timeEt": "10:00",
         "timeUtc": "14:00",
         "country": "美国",
         "category": "Macro",
-        "event": "Productivity by State",
-        "importance": "低",
+        "event": "美国 JOLTS 职位空缺",
+        "importance": "中",
         "note": "BLS 官方发布日历"
       },
       {
-        "date": "2026-05-28",
-        "timeEt": "10:00",
-        "timeUtc": "14:00",
+        "date": "2026-06-03",
+        "timeEt": "10:30",
+        "timeUtc": "14:30",
+        "country": "美国",
+        "category": "Energy",
+        "event": "美国 EIA 原油库存",
+        "importance": "中",
+        "note": "EIA 官方页面；节假日周可能调整发布时间。"
+      },
+      {
+        "date": "2026-06-04",
+        "timeEt": "08:30",
+        "timeUtc": "12:30",
         "country": "美国",
         "category": "Macro",
         "event": "美国生产率与单位劳动力成本",
