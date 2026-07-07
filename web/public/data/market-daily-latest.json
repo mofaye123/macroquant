@@ -1,32 +1,32 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-07-06T23:19:48Z",
-  "asOfDate": "2026-07-07",
+  "reportGeneratedAt": "2026-07-07T21:08:36Z",
+  "asOfDate": "2026-07-08",
   "headline": "宏观偏紧，优先风险控制与防守仓位。",
   "markdownSource": "gemini",
-  "markdownCharCount": 5726,
+  "markdownCharCount": 3933,
   "aiRender": {
     "enabled": true,
     "status": "ok",
     "usedFallback": false,
     "requestedModel": "gemini-2.5-pro",
     "usedModelFallback": true,
-    "charCount": 5725,
+    "charCount": 3932,
     "minCharTarget": 1500,
     "finishReason": "STOP",
-    "detail": "Gemini preview generated (5725 chars, finishReason=STOP).",
+    "detail": "Gemini preview generated (3932 chars, finishReason=STOP).",
     "model": "gemini-2.5-flash",
     "reasoningMode": "deep_think",
     "qualified": true,
     "qualifiedReason": "ok"
   },
-  "markdown": "# 市场研究日报（2026-07-07）\n\n## 一、热点要闻\n\n**美联储政策解读与市场预期分歧**\n近期市场对于美联储未来货币政策走向的解读出现分歧。有观点认为，交易员可能对美联储的政策意图存在误读，这暗示了市场对加息路径或降息时机的预期可能与美联储的实际立场不符。这种分歧可能导致未来政策声明或经济数据发布时市场波动性加剧。\n*   **事件概述：** 市场分析人士指出，当前交易员对美联储政策的理解可能存在偏差，引发了对未来利率路径的重新评估。\n*   **要点：** 市场对美联储政策的解读存在不确定性，可能低估了其紧缩倾向或高估了其宽松潜力。\n*   **市场影响：** 这种不确定性可能导致美元指数、美债收益率以及风险资产价格的短期波动，投资者需警惕潜在的市场修正。\n\n**比特币在美国的监管框架仍在探索中**\n比特币在美国的监管环境仍处于动态演变之中，联邦机构正在积极协商并制定相关储备金要求和监管框架。这一过程的复杂性反映了加密货币作为新兴资产类别所面临的监管挑战，以及不同机构之间在管辖权和政策制定上的协调需求。\n*   **事件概述：** 美国联邦机构仍在就比特币的储备金要求和整体监管框架进行深入讨论和协调。\n*   **要点：** 监管不确定性是当前加密市场面临的主要宏观风险之一，其进展将对合规性、机构采纳和市场发展产生深远影响。\n*   **市场影响：** 监管框架的最终确立将为比特币及更广泛的加密市场提供 clearer 的操作指引，但在此之前，相关政策的不确定性可能继续抑制机构资金的流入，并影响市场情绪。\n\n**宏观经济与企业盈利展望**\n尽管市场普遍存在通胀担忧，但有投资者预计第二季度企业盈利将表现稳健。这一预期表明，在当前宏观经济环境下，部分企业可能展现出较强的韧性，能够有效应对成本上升的压力。此外，韩国半导体巨头SK海力士在美国的首次亮相，被专家视为韩美贸易关系“巨大”的体现，凸显了全球供应链和技术合作的重要性。\n*   **事件概述：** 投资者对第二季度企业盈利持乐观态度，同时韩国半导体企业SK海力士成功进入美国市场。\n*   **要点：** 强劲的企业盈利预期可能为股市提供支撑，而国际贸易和技术合作的深化则反映了全球经济的结构性变化。\n*   **市场影响：** 若企业盈利普遍超出预期，可能提振市场信心，尤其是在科技和工业等领域。SK海力士的动向也可能预示着半导体行业全球化布局的进一步加速。\n\n**其他宏观经济事件**\n美国西弗吉尼亚州一处仓库发生火灾，浓烟滚滚，但目前尚无关于其对区域经济或供应链产生重大影响的详细报告。此外，美国Blank Rome律师事务所正面临集体诉讼，起因是数据泄露事件，这再次提醒了企业在数据安全和隐私保护方面所面临的日益严峻的挑战和潜在的法律风险。\n\n## 二、市场复盘\n\n**大宗商品&外汇表现**\n在过去24小时内，贵金属市场表现强劲。COMEX黄金价格上涨1.50%，报收于4174.5美元，近七日累计涨幅达到3.78%，14日波动率为24.88%。COMEX白银表现更为突出，24小时内上涨3.00%，报收于62.47美元，近七日累计涨幅高达7.37%，其14日波动率达到50.2%，显示出较高的活跃度。\n原油市场方面，WTI原油价格在过去24小时内持平，报收于68.69美元，近七日累计下跌2.91%。布伦特原油价格小幅上涨0.45%，报收于72.12美元，近七日累计下跌1.41%。两种原油的14日波动率均在35%左右，表明市场存在一定的不确定性。\n外汇市场中，美元指数（DXY）在过去24小时内微跌0.005%，报收于100.86，近七日累计下跌0.25%，14日波动率为4.11%，整体保持相对稳定。美国10年期国债收益率（US10Y）在过去24小时内下降0.13%，报收于4.48%，但近七日累计上涨2.4%，反映出市场对长期利率的重新定价。CBOE波动率指数（VIX）在过去24小时内下跌3.59%，报收于15.57，近七日累计下跌11.78%，14日波动率高达86.98%，显示市场短期恐慌情绪有所缓解。\n\n**加密货币表现**\n加密货币市场在过去七日内普遍呈现上涨态势。比特币（BTC）在过去24小时内上涨0.91%，报收于64128.62美元，近七日累计涨幅达到6.64%，14日波动率为34.11%。以太坊（ETH）表现更为亮眼，24小时内上涨1.21%，报收于1804.61美元，近七日累计涨幅高达12.07%，14日波动率为51.73%。Solana（SOL）也录得上涨，24小时内上涨0.76%，报收于82.04美元，近七日累计涨幅为9.46%，14日波动率为59.9%。整体来看，加密市场在近期表现出较强的上升势头。\n\n**美股指数表现**\n美国股市主要指数在过去24小时内普遍上涨。道琼斯工业平均指数（DJI）上涨0.29%，报收于53055.91点，近七日累计上涨1.67%。标普500指数（SPX）上涨0.72%，报收于7537.43点，近七日累计上涨1.30%。纳斯达克综合指数（IXIC）表现最为强劲，上涨1.12%，报收于26121.16点，近七日累计上涨1.17%。罗素2000指数（RUT）上涨0.45%，报收于3009.54点，但近七日累计微跌0.03%。\nETF方面，SPDR标普500ETF（SPY）上涨0.87%，报收于751.28美元，近七日累计上涨1.39%。Invesco纳斯达克100指数ETF（QQQ）上涨1.43%，报收于722.82美元，但近七日累计微跌0.17%。\n\n**科技巨头动态**\n主要科技巨头在过去24小时内表现不一，但多数在中短期内显示出趋势走弱的信号。\n*   博通（AVGO）日内上涨3.73%，但近七日下跌2.14%，近二十日累计下跌10.74%，14日RSI为47.4，信号显示趋势走弱。\n*   英伟达（NVDA）日内上涨0.37%，近七日下跌1.73%，近二十日累计下跌10.57%，14日RSI为40.87，信号显示趋势走弱。\n*   微软（MSFT）日内下跌0.96%，但近七日上涨5.82%，近二十日累计下跌9.65%，14日RSI为48.34，信号显示趋势走弱。\n*   Meta（META）日内上涨2.98%，近七日上涨7.64%，但近二十日累计下跌4.35%，14日RSI为57.33，信号显示趋势走弱。\n*   亚马逊（AMZN）日内上涨0.61%，近七日上涨4.22%，但近二十日累计下跌3.79%，14日RSI为54.38，信号显示趋势走弱。\n尽管部分公司近期有所反弹，但整体技术信号仍提示中短期结构偏弱，需警惕下行风险。\n\n**板块异动观察**\n在过去24小时内，科技板块（XLK）上涨1.65%，但近七日累计下跌0.99%，14日波动率为37.59%。金融板块（XLF）表现强劲，24小时内上涨0.93%，近七日累计上涨4.50%，14日波动率为14.19%，成为近期领涨板块。能源板块（XLE）24小时内微跌0.17%，近七日累计下跌0.84%，14日波动率为13.11%。医疗保健板块（XLV）24小时内下跌1.09%，近七日累计上涨0.76%，14日波动率为23.59%。工业板块（XLI）24小时内上涨0.90%，近七日累计上涨1.53%，14日波动率为21.68%。\n整体市场复盘显示，当前市场总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。本周市场的主要驱动力来自资金价格与摩擦，边际变化贡献了36.7个点，而系统流动性仍是主要拖累项，边际变化为-9.3个点。比特币在过去24小时内上涨0.91%，近七日上涨6.64%，执行上优先关注关键价位是否放量确认。板块层面，金融板块近七日表现相对占优，科技板块相对承压。波动与利率环境方面，VIX指数现报15.57，10年期美债收益率现报4.48%。\n\n## 三、深度个股解读\n\n**博通 (AVGO)**\n*   **事件概述：** 博通股价在过去24小时内上涨3.73%，但近七日累计下跌2.14%，近二十日累计下跌10.74%。其14日年化波动率为63.9%。\n*   **市场解读：** 尽管短期内有所反弹，但博通在中短期内仍呈现结构性偏弱的趋势。这可能与宏观经济环境、行业竞争加剧或特定业务进展不及预期有关。\n*   **投资启示：** 鉴于其中短期趋势走弱的信号，投资者应优先采取防守策略，严格控制仓位和风险。在考虑介入之前，建议等待出现明确的放量企稳信号，以确认筑底或趋势反转。\n\n**英伟达 (NVDA)**\n*   **事件概述：** 英伟达股价在过去24小时内上涨0.37%，近七日累计下跌1.73%，近二十日累计下跌10.57%。其14日年化波动率为42.0%。\n*   **市场解读：** 作为AI和高性能计算领域的领军企业，英伟达近期表现出中短期结构偏弱的态势，这可能反映了市场对其未来增长预期、估值水平或宏观科技需求放缓的担忧。\n*   **投资启示：** 投资者应保持谨慎，优先防守。在市场情绪和技术面未出现显著改善之前，不宜盲目追高。关注其关键技术支撑位，并等待明确的放量企稳信号，以判断后续走势。\n\n**微软 (MSFT)**\n*   **事件概述：** 微软股价在过去24小时内下跌0.96%，但近七日累计上涨5.82%，近二十日累计下跌9.65%。其14日年化波动率为53.1%。\n*   **市场解读：** 微软作为科技巨头，尽管近七日有所反弹，但从更长期的二十日表现来看，仍处于回调区间，显示中短期结构偏弱。这可能与市场对云计算增长放缓的担忧或整体科技股回调有关。\n*   **投资启示：** 投资者应保持警惕，优先防守。虽然其业务基本面稳健，但在当前市场环境下，仍需关注宏观经济和利率环境对其估值的影响。等待市场给出明确的企稳信号，再考虑调整仓位。\n\n**Meta (META)**\n*   **事件概述：** Meta股价在过去24小时内上涨2.98%，近七日累计上涨7.64%，但近二十日累计下跌4.35%。其14日年化波动率为71.7%。\n*   **市场解读：** Meta近期表现出较强的短期反弹动能，但从二十日表现看，仍处于调整区间，技术信号显示中短期结构偏弱。这可能反映了市场对其广告业务前景、元宇宙投资回报以及监管压力的复杂评估。\n*   **投资启示：** 投资者应关注其短期反弹的持续性，但鉴于中短期结构偏弱的信号，仍需优先防守。在确定其基本面改善或市场情绪彻底扭转之前，应谨慎对待。\n\n**亚马逊 (AMZN)**\n*   **事件概述：** 亚马逊股价在过去24小时内上涨0.61%，近七日累计上涨4.22%，但近二十日累计下跌3.79%。其14日年化波动率为47.9%。\n*   **市场解读：** 亚马逊作为电商和云计算巨头，近期股价有所回升，但从二十日表现看，仍处于调整状态，技术信号显示中短期结构偏弱。这可能与市场对其零售业务增长放缓、成本压力以及云计算业务竞争加剧的担忧有关。\n*   **投资启示：** 投资者应关注其短期反弹的力度，但鉴于中短期结构偏弱的信号，仍需优先防守。在市场给出明确的企稳信号，并确认其业务增长动能恢复之前，应保持谨慎。\n\n## 四、加密货币项目动态\n\n*   **Solana生态：** 尽管存在通胀担忧，投资者仍预计Solana生态相关项目在第二季度将取得稳健的业绩表现。\n*   **比特币生态：** 美国联邦机构仍在就比特币的储备金要求进行讨论，这表明其在美国的监管框架仍在建设中。\n*   **以太坊生态：** 据彭博社报道，前Tether首席信息官正寻求出售其在稳定币发行商Tether的股份，这可能引发市场对稳定币领域股权结构变化的关注。\n*   **比特币生态：** 在MicroStrategy出售部分比特币后，比特币价格迅速回升，且资金费率达到9%，市场观察人士正在评估这是否预示着牛市的回归。\n*   **以太坊生态：** Visa最新数据显示，Circle发行的USDC在稳定币交易量方面正在超越Tether发行的USDT，显示出USDC市场份额的增长。\n*   **交易所/市场结构：** 随着芯片股的复苏和油价的下跌，美国股指期货上涨，这可能对加密货币市场情绪产生间接影响。\n\n## 五、今日市场日历\n\n**数据发布时刻表**\n*   **2026年07月08日 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存**\n    *   **重要性：** 中\n    *   **说明：** 这是美国能源信息署（EIA）官方发布的每周原油库存数据，对全球原油价格走势具有重要影响。节假日周可能调整发布时间。\n\n**重要事件预告**\n*   今日无其他重要事件预告。\n\n**机构观点**\n当前市场总分落入偏紧区域，宏观环境偏紧，这使得投资组合更适合采取防守与降杠杆策略，优先控制回撤而非追求高胜率进攻。从边际变化来看，资金价格与摩擦是当前市场的主要支撑项，而系统流动性仍是主要拖累项，预计跨资产走势将围绕这组分化展开。\n权益资产方面，标普500指数近七日上涨1.30%，纳斯达克指数近七日上涨1.17%，这表明成长型资产仍在消化宏观经济和估值的双重约束。在行业层面，金融板块近七日表现相对占优，而科技板块相对承压，这反映出市场内部轮动并不均衡，资金可能正在从高估值成长股转向价值型或周期性板块。\n加密资产方面，比特币近七日上涨6.64%，以太坊近七日上涨12.07%，显示出较强的短期动能。然而，短线投资者更适合结合关键价位和成交量确认来判断其延续性，警惕潜在的回调风险。整体而言，在当前中高风险水平下，风险控制和防守性仓位是核心策略。\n\n## 免责声明\n\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
+  "markdown": "# 市场研究日报（2026-07-08）\n\n## 一、热点要闻\n\n**市场热议美联储政策解读，投资者关注二季度财报表现**\n\n**事件概述：** 近期市场焦点集中于对美联储货币政策意图的解读，有观点认为交易员可能对美联储的立场存在误读。与此同时，尽管通胀担忧持续存在，部分投资者仍对即将公布的第二季度企业财报抱有坚实预期。此外，韩国半导体巨头SK海力士在美国市场的首次亮相，被专家视为美韩两国贸易关系强劲的体现。\n\n**要点：**\n*   **美联储政策预期：** 市场对美联储未来利率路径的判断可能与实际情况存在偏差，这可能引发后续市场波动。投资者需密切关注美联储官员的表态及经济数据，以校准对货币政策的预期。\n*   **企业盈利韧性：** 尽管宏观层面通胀压力不减，但市场对企业盈利的信心依然存在，尤其是在第二季度财报季临近之际。这表明企业在成本压力下仍展现出一定的定价能力和运营效率。\n*   **国际贸易与投资：** SK海力士在美国的投资与市场拓展，不仅凸显了全球半导体产业的战略布局，也反映出主要经济体之间在关键技术领域的合作与竞争态势。此举对全球供应链和区域经济发展具有重要意义。\n\n**市场影响：** 对美联储政策的重新评估可能导致资金流向和资产定价的调整，尤其是在利率敏感型资产上。若企业财报表现超出预期，可能为股市提供短期支撑，缓解宏观担忧。同时，国际贸易和投资动态将持续影响相关产业链和区域经济体的表现。\n\n**国际大宗商品：**\n数据不足。\n\n## 二、市场复盘\n\n**大宗商品&外汇表现**\n在过去24小时内，大宗商品市场呈现分化走势。COMEX黄金价格下跌0.929%，报4116.5美元，但近7日仍录得2.33%的涨幅。COMEX白银跌幅更为显著，下跌2.4386%，报60.41美元，近7日上涨1.57%。原油市场表现强劲，WTI原油价格大涨5.2662%，报72.16美元，近7日上涨3.83%；布伦特原油亦上涨5.4591%，报75.92美元，近7日上涨4.11%。美元指数（DXY）小幅上涨0.2469%，报101.1，近7日微跌0.09%。美国10年期国债收益率上升0.9811%，报4.53%，近7日上涨2.51%。CBOE波动率指数（VIX）上涨3.5967%，报16.13，但近7日下跌1.95%。\n\n**加密货币表现**\n主要加密货币在过去24小时内普遍小幅回调，但近7日仍保持强劲涨势。比特币（BTC）下跌0.327%，报63785.75美元，近7日上涨8.93%。以太坊（ETH）下跌0.6121%，报1786.57美元，近7日涨幅高达13.82%。Solana（SOL）下跌0.7998%，报81.26美元，近7日上涨10.52%。整体而言，加密资产市场在过去一周表现出显著的韧性和上涨动能。\n\n**美股指数表现**\n美国主要股指在过去24小时内普遍下跌。道琼斯工业平均指数下跌0.2465%，报52925.15点，近7日仍上涨1.16%。标普500指数下跌0.4455%，报7503.85点，近7日微涨0.06%。纳斯达克综合指数跌幅居前，下跌1.158%，报25818.69点，近7日下跌1.51%。罗素2000指数下跌0.8989%，报2982.49点，近7日下跌1.38%。反映市场情绪的SPDR标普500 ETF（SPY）下跌0.4752%，Invesco QQQ（QQQ）下跌1.8525%，显示出科技股和成长股的承压。\n\n**科技巨头动态**\n主要科技巨头股价表现不一，但整体趋势偏弱。微软（MSFT）日内上涨0.54%，近7日上涨10.21%，但近20日下跌6.68%，RSI14显示45.19，趋势走弱。英伟达（NVDA）日内上涨0.71%，近7日上涨0.61%，近20日下跌3.98%，RSI14为33.46，趋势走弱。博通（AVGO）日内下跌0.83%，近7日下跌2.15%，近20日下跌3.88%，RSI14为42.21，趋势走弱。Meta（META）日内上涨2.55%，近7日上涨13.39%，近20日上涨3.81%，RSI14为55.11，趋势走弱。特斯拉（TSLA）日内下跌4.02%，近7日上涨7.41%，近20日上涨3.04%，RSI14为47.69，处于震荡区间。\n\n**板块异动观察**\n行业板块表现分化明显。科技板块（XLK）在过去24小时内下跌2.3915%，近7日跌幅达5.95%，显示出显著的弱势。金融板块（XLF）表现相对稳健，24小时内微跌0.1603%，但近7日上涨4.55%，领跑市场。能源板块（XLE）受原油价格上涨提振，24小时内大涨2.8421%，近7日上涨2.88%。医疗保健板块（XLV）上涨1.5312%，近7日上涨3.64%。工业板块（XLI）下跌1.7137%，近7日下跌1.54%。\n\n**市场复盘总结**\n当前市场总分处于中低位，整体风险水平中高，宏观偏紧，提示投资者优先风险控制与防守仓位。技术触发信号需要搭配更严格的仓位与止损规则。本周市场的主要驱动力来自资金价格与摩擦，其边际变化贡献了40.2个点。然而，系统流动性依然是主要的拖累因素，边际变化为-9.7个点。在资产表现方面，比特币在过去24小时内微跌0.33%，但近7日仍录得8.93%的显著涨幅，执行上需优先关注关键价位是否放量确认。板块层面，金融板块（XLF）近7日上涨4.55%表现领跑，而科技板块（XLK）近7日下跌5.95%则相对偏弱。波动性与利率环境方面，CBOE VIX指数现报16.13，美国10年期国债收益率现报4.53%，显示市场对未来不确定性仍有一定预期。\n\n## 三、深度个股解读\n\n**微软 (MSFT)**\n\n*   **事件概述：** 微软股价在过去24小时内上涨0.54%，近7日累计上涨10.21%，但从近20日来看，其股价下跌了6.68%。该股14日年化波动率为51.6%。\n*   **市场解读：** 尽管短期内有所反弹，但微软的中短期结构显示出偏弱的趋势。市场可能正在消化此前快速上涨带来的估值压力，或对未来增长前景存在一定程度的谨慎。\n*   **投资启示：** 鉴于当前趋势偏弱，投资者应优先采取防守策略，避免盲目追高。建议密切关注股价能否在关键支撑位放量企稳，以寻求更明确的入场信号。\n\n**英伟达 (NVDA)**\n\n*   **事件概述：** 英伟达股价在过去24小时内上涨0.71%，近7日累计上涨0.61%，但近20日下跌3.98%。该股14日年化波动率为36.9%。\n*   **市场解读：** 英伟达作为AI芯片领域的领军企业，其股价在经历前期大幅上涨后，目前也呈现中短期结构偏弱的态势。这可能反映了市场对科技股整体估值的调整，或对AI产业短期增长速度的重新评估。\n*   **投资启示：** 投资者应保持谨慎，优先考虑防守性仓位。在当前趋势不明朗的情况下，等待股价出现放量企稳的明确信号，再考虑进行配置。\n\n**Meta (META)**\n\n*   **事件概述：** Meta股价在过去24小时内上涨2.55%，近7日累计上涨13.39%，近20日累计上涨3.81%。该股14日年化波动率为68.9%。\n*   **市场解读：** Meta在过去一周表现强劲，但其整体信号仍显示为趋势走弱。这可能表明市场对其短期上涨的持续性存在疑虑，或认为当前的上涨是技术性反弹而非趋势反转。\n*   **投资启示：** 尽管短期表现亮眼，但中短期结构偏弱的信号提示投资者仍需保持警惕。建议优先防守，等待市场给出更为明确的企稳信号，以规避潜在风险。\n\n## 四、加密货币项目动态\n\n*   加密货币交易所Kraken正寻求在欧洲获得银行牌照，以拓展其金融服务范围。\n*   由贝莱德支持的代币化平台Securitize在SPAC上市首日股价下跌40%，尽管当前代币化市场热度不减。\n*   资管巨头Vanguard在多年对加密货币持怀疑态度后，正积极招聘数字资产主管，预示其对数字资产领域的战略调整。\n*   美国证券交易委员会（SEC）最早可能在本月提出新的加密货币监管规则，旨在简化初创公司融资流程。\n\n## 五、今日市场日历\n\n**数据发布时刻表**\n\n*   2026-07-08 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存 | 重要性=中 | 说明=EIA 官方页面；节假日周可能调整发布时间。\n*   2026-07-14 08:30 ET (12:30 UTC) | 美国 | 美国 CPI | 重要性=高 | 说明=BLS 官方发布日历。\n\n**重要事件预告**\n数据不足。\n\n**市场观察**\n当前市场环境整体偏紧，建议投资者在资产配置上更侧重防守与降杠杆，将控制回撤置于追求高胜率进攻之前。从边际变化来看，资金价格与摩擦是当前市场的主要支撑因素，而系统流动性不足仍是主要的拖累项，预计跨资产走势将围绕这一分化展开。权益资产方面，标普500指数近7日仅微涨0.06%，而纳斯达克综合指数近7日下跌1.51%，这表明成长型资产仍在努力消化宏观经济和估值双重约束带来的压力。行业层面，金融板块近7日表现相对占优，而科技板块则相对承压，显示出市场内部轮动的不均衡性。在加密资产领域，比特币近7日上涨8.93%，以太坊近7日上涨13.82%，短期内投资者更适合结合关键价位和成交量确认来判断其走势的延续性。\n\n## 免责声明\n\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
   "daily": {
-    "asOfDate": "2026-07-07",
-    "generatedAt": "2026-07-06T23:19:15Z",
+    "asOfDate": "2026-07-08",
+    "generatedAt": "2026-07-07T21:07:20Z",
     "headline": "宏观偏紧，优先风险控制与防守仓位。",
     "quickView": {
-      "overallScore": 40.97,
+      "overallScore": 39.68,
       "riskLevel": "中高",
       "quoteSourceMode": "live",
       "newsSourceMode": "hybrid",
@@ -39,214 +39,248 @@
         "ticker": "BTC",
         "name": "Bitcoin",
         "bucket": "crypto",
-        "spot": 64128.62,
-        "change24hPct": 0.9139,
-        "change7dPct": 6.64,
-        "realizedVol14dPct": 34.11,
+        "spot": 63785.75,
+        "change24hPct": -0.327,
+        "change7dPct": 8.93,
+        "realizedVol14dPct": 32.19,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "Ethereum",
         "bucket": "crypto",
-        "spot": 1804.61,
-        "change24hPct": 1.2117,
-        "change7dPct": 12.07,
-        "realizedVol14dPct": 51.73,
+        "spot": 1786.57,
+        "change24hPct": -0.6121,
+        "change7dPct": 13.82,
+        "realizedVol14dPct": 47.44,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "Solana",
         "bucket": "crypto",
-        "spot": 82.04,
-        "change24hPct": 0.7577,
-        "change7dPct": 9.46,
-        "realizedVol14dPct": 59.9,
+        "spot": 81.26,
+        "change24hPct": -0.7998,
+        "change7dPct": 10.52,
+        "realizedVol14dPct": 56.48,
         "source": "yfinance"
       },
       {
         "ticker": "GOLD",
         "name": "COMEX Gold",
         "bucket": "commodity",
-        "spot": 4174.5,
-        "change24hPct": 1.5027,
-        "change7dPct": 3.78,
-        "realizedVol14dPct": 24.88,
+        "spot": 4116.5,
+        "change24hPct": -0.929,
+        "change7dPct": 2.33,
+        "realizedVol14dPct": 23.8,
         "source": "yfinance"
       },
       {
         "ticker": "SILVER",
         "name": "COMEX Silver",
         "bucket": "commodity",
-        "spot": 62.47,
-        "change24hPct": 3.0045,
-        "change7dPct": 7.37,
-        "realizedVol14dPct": 50.2,
+        "spot": 60.41,
+        "change24hPct": -2.4386,
+        "change7dPct": 1.57,
+        "realizedVol14dPct": 42.2,
         "source": "yfinance"
       },
       {
         "ticker": "WTI",
         "name": "WTI Crude",
         "bucket": "commodity",
-        "spot": 68.69,
-        "change24hPct": 0.0,
-        "change7dPct": -2.91,
-        "realizedVol14dPct": 35.08,
+        "spot": 72.16,
+        "change24hPct": 5.2662,
+        "change7dPct": 3.83,
+        "realizedVol14dPct": 44.9,
         "source": "yfinance"
       },
       {
         "ticker": "BRENT",
         "name": "Brent Crude",
         "bucket": "commodity",
-        "spot": 72.12,
-        "change24hPct": 0.4457,
-        "change7dPct": -1.41,
-        "realizedVol14dPct": 35.73,
+        "spot": 75.92,
+        "change24hPct": 5.4591,
+        "change7dPct": 4.11,
+        "realizedVol14dPct": 46.77,
         "source": "yfinance"
       },
       {
         "ticker": "DXY",
         "name": "US Dollar Index",
         "bucket": "fx",
-        "spot": 100.86,
-        "change24hPct": -0.005,
-        "change7dPct": -0.25,
-        "realizedVol14dPct": 4.11,
+        "spot": 101.1,
+        "change24hPct": 0.2469,
+        "change7dPct": -0.09,
+        "realizedVol14dPct": 3.78,
         "source": "yfinance"
       },
       {
         "ticker": "US10Y",
         "name": "US 10Y Yield",
         "bucket": "rate",
-        "spot": 4.48,
-        "change24hPct": -0.1338,
-        "change7dPct": 2.4,
-        "realizedVol14dPct": 14.22,
+        "spot": 4.53,
+        "change24hPct": 0.9811,
+        "change7dPct": 2.51,
+        "realizedVol14dPct": 14.99,
         "source": "yfinance"
       },
       {
         "ticker": "VIX",
         "name": "CBOE VIX",
         "bucket": "rate",
-        "spot": 15.57,
-        "change24hPct": -3.5913,
-        "change7dPct": -11.78,
-        "realizedVol14dPct": 86.98,
+        "spot": 16.13,
+        "change24hPct": 3.5967,
+        "change7dPct": -1.95,
+        "realizedVol14dPct": 53.22,
         "source": "yfinance"
       },
       {
         "ticker": "DJI",
         "name": "Dow Jones",
         "bucket": "equity_index",
-        "spot": 53055.91,
-        "change24hPct": 0.2946,
-        "change7dPct": 1.67,
-        "realizedVol14dPct": 6.45,
+        "spot": 52925.15,
+        "change24hPct": -0.2465,
+        "change7dPct": 1.16,
+        "realizedVol14dPct": 6.69,
         "source": "yfinance"
       },
       {
         "ticker": "SPX",
         "name": "S&P 500",
         "bucket": "equity_index",
-        "spot": 7537.43,
-        "change24hPct": 0.7242,
-        "change7dPct": 1.3,
-        "realizedVol14dPct": 11.36,
+        "spot": 7503.85,
+        "change24hPct": -0.4455,
+        "change7dPct": 0.06,
+        "realizedVol14dPct": 8.44,
         "source": "yfinance"
       },
       {
         "ticker": "IXIC",
         "name": "Nasdaq Composite",
         "bucket": "equity_index",
-        "spot": 26121.16,
-        "change24hPct": 1.1168,
-        "change7dPct": 1.17,
-        "realizedVol14dPct": 20.02,
+        "spot": 25818.69,
+        "change24hPct": -1.158,
+        "change7dPct": -1.51,
+        "realizedVol14dPct": 17.29,
         "source": "yfinance"
       },
       {
         "ticker": "RUT",
         "name": "Russell 2000",
         "bucket": "equity_index",
-        "spot": 3009.54,
-        "change24hPct": 0.4483,
-        "change7dPct": -0.03,
-        "realizedVol14dPct": 8.28,
+        "spot": 2982.49,
+        "change24hPct": -0.8989,
+        "change7dPct": -1.38,
+        "realizedVol14dPct": 8.07,
         "source": "yfinance"
       },
       {
         "ticker": "SPY",
         "name": "SPDR S&P 500 ETF",
         "bucket": "equity_index",
-        "spot": 751.28,
-        "change24hPct": 0.8727,
-        "change7dPct": 1.39,
-        "realizedVol14dPct": 13.72,
+        "spot": 747.71,
+        "change24hPct": -0.4752,
+        "change7dPct": 0.13,
+        "realizedVol14dPct": 11.39,
         "source": "yfinance"
       },
       {
         "ticker": "QQQ",
         "name": "Invesco QQQ",
         "bucket": "equity_index",
-        "spot": 722.82,
-        "change24hPct": 1.4342,
-        "change7dPct": -0.17,
-        "realizedVol14dPct": 28.91,
+        "spot": 709.43,
+        "change24hPct": -1.8525,
+        "change7dPct": -3.66,
+        "realizedVol14dPct": 25.19,
         "source": "yfinance"
       },
       {
         "ticker": "XLK",
         "name": "Technology",
         "bucket": "equity_sector",
-        "spot": 183.57,
-        "change24hPct": 1.6502,
-        "change7dPct": -0.99,
-        "realizedVol14dPct": 37.59,
+        "spot": 179.18,
+        "change24hPct": -2.3915,
+        "change7dPct": -5.95,
+        "realizedVol14dPct": 33.41,
         "source": "yfinance"
       },
       {
         "ticker": "XLF",
         "name": "Financials",
         "bucket": "equity_sector",
-        "spot": 56.14,
-        "change24hPct": 0.9349,
-        "change7dPct": 4.5,
-        "realizedVol14dPct": 14.19,
+        "spot": 56.05,
+        "change24hPct": -0.1603,
+        "change7dPct": 4.55,
+        "realizedVol14dPct": 14.4,
         "source": "yfinance"
       },
       {
         "ticker": "XLE",
         "name": "Energy",
         "bucket": "equity_sector",
-        "spot": 53.13,
-        "change24hPct": -0.1691,
-        "change7dPct": -0.84,
-        "realizedVol14dPct": 13.11,
+        "spot": 54.64,
+        "change24hPct": 2.8421,
+        "change7dPct": 2.88,
+        "realizedVol14dPct": 19.72,
         "source": "yfinance"
       },
       {
         "ticker": "XLV",
         "name": "Health Care",
         "bucket": "equity_sector",
-        "spot": 161.96,
-        "change24hPct": -1.0871,
-        "change7dPct": 0.76,
-        "realizedVol14dPct": 23.59,
+        "spot": 164.44,
+        "change24hPct": 1.5312,
+        "change7dPct": 3.64,
+        "realizedVol14dPct": 23.72,
         "source": "yfinance"
       },
       {
         "ticker": "XLI",
         "name": "Industrials",
         "bucket": "equity_sector",
-        "spot": 185.56,
-        "change24hPct": 0.8972,
-        "change7dPct": 1.53,
-        "realizedVol14dPct": 21.68,
+        "spot": 182.38,
+        "change24hPct": -1.7137,
+        "change7dPct": -1.54,
+        "realizedVol14dPct": 20.9,
         "source": "yfinance"
       }
     ],
     "hotNews": [
+      {
+        "title": "Crypto exchange Kraken is trying to become a bank in Europe",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/07/07/crypto-exchange-kraken-is-trying-to-become-a-bank-in-europe",
+        "publishedAt": "2026-07-07T18:38:10Z",
+        "bucket": "crypto",
+        "editorScore": 19.1796
+      },
+      {
+        "title": "BlackRock-backed Securitize slides 40% after SPAC debut despite tokenization boom",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/07/07/blackrock-backed-securitize-slides-40-after-spac-debut-despite-tokenization-boom",
+        "publishedAt": "2026-07-07T19:35:14Z",
+        "bucket": "crypto",
+        "editorScore": 17.9174
+      },
+      {
+        "title": "Morning Bid: Chip dip - Reuters",
+        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. Image 3: Traders work on the floor of the New York Stock Exchange (NYSE), in New York City. Traders work on the floor of the N",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/commentary/reuters-open-interest/global-markets-view-usa-2026-07-07/",
+        "publishedAt": "2026-07-07T10:38:09Z",
+        "bucket": "crypto",
+        "editorScore": 17.8796
+      },
+      {
+        "title": "Wall Street closes higher as Broadcom rallies - Reuters",
+        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Israel and Hamas at War. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. the S&P 500 rising more than seven-tenths of a percent and the Nas",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/video/watch/idRW562506072026RP1/",
+        "publishedAt": "2026-07-06T22:57:27Z",
+        "bucket": "equity",
+        "editorScore": 16.96
+      },
       {
         "title": "Investor expects solid Q2 results despite inflation concerns - Reuters",
         "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Israel and Hamas at War. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. And another week or two we're going to start getting second quarte",
@@ -254,15 +288,15 @@
         "url": "https://www.reuters.com/video/watch/idRW562406072026RP1/?chan=markets-now",
         "publishedAt": "2026-07-06T20:48:50Z",
         "bucket": "geopolitics",
-        "editorScore": 22.3743
+        "editorScore": 16.9241
       },
       {
-        "title": "Bitcoin's U.S. reserve still a work-in-progress as federal agencies hash it out",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/policy/2026/07/06/bitcoin-s-u-s-reserve-still-a-work-in-progress-as-federal-agencies-hash-it-out",
-        "publishedAt": "2026-07-06T21:40:06Z",
-        "bucket": "macro_policy",
-        "editorScore": 20.4879
+        "title": "Kraken wins $22M arbitration against former auditor Mazars",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/kraken-wins-22m-arbitration-against-former-auditor-mazars?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-07-07T19:31:03Z",
+        "bucket": "equity",
+        "editorScore": 15.7
       },
       {
         "title": "Market Talk: Have traders misread the Fed? - Reuters",
@@ -271,7 +305,7 @@
         "url": "https://www.reuters.com/video/watch/idRW545806072026RP1",
         "publishedAt": "2026-07-06T11:12:23Z",
         "bucket": "macro_policy",
-        "editorScore": 20.2724
+        "editorScore": 14.8222
       },
       {
         "title": "Tech Set to Rebound as AI Leadership Faces Fresh Tests - Bloomberg.com",
@@ -280,7 +314,7 @@
         "url": "https://www.bloomberg.com/news/articles/2026-07-06/tech-set-to-rebound-as-ai-leadership-faces-fresh-tests",
         "publishedAt": "2026-07-06T18:00:33Z",
         "bucket": "equity",
-        "editorScore": 19.2731
+        "editorScore": 13.8229
       },
       {
         "title": "Thick smoke billows from warehouse fire in West Virginia - Reuters",
@@ -289,49 +323,7 @@
         "url": "https://www.reuters.com/video/watch/idRW543806072026RP1/",
         "publishedAt": "2026-07-06T09:02:03Z",
         "bucket": "geopolitics",
-        "editorScore": 19.0294
-      },
-      {
-        "title": "Former Tether CIO seeks to sell stake in stablecoin issuer, Bloomberg reports",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/former-tether-cio-seeks-to-sell-stake-in-stablecoin-issuer-bloomberg-reports?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-07-06T21:57:20Z",
-        "bucket": "crypto",
-        "editorScore": 18.4597
-      },
-      {
-        "title": "Bitcoin recovers from Strategy's BTC sale, funding rates hit 9%: Are bulls back?",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/markets/bitcoin-recovers-from-strategy-btc-sale-funding-rates-hit-9-are-bulls-back?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-07-06T21:06:00Z",
-        "bucket": "crypto",
-        "editorScore": 18.4458
-      },
-      {
-        "title": "Circle’s USDC is leaving Tether behind in the stablecoin volume race, new data from Visa shows",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/business/2026/07/06/circle-s-usdc-is-leaving-tether-behind-in-the-stablecoin-volume-race",
-        "publishedAt": "2026-07-06T16:00:15Z",
-        "bucket": "crypto",
-        "editorScore": 17.9719
-      },
-      {
-        "title": "Tech Stocks’ Rebound Stalls, Dollar Edges Higher: Markets Wrap - Bloomberg.com",
-        "summary": "# Tech Lifts US Stock Futures After Holiday Break: Markets Wrap. SK Hynix Seeks Valuation Boost in $29 Billion US Listing. SK Hynix Inc.’s $29 billion US stock-market listing may help the company compete in the global stock market for memory chips used in AI computing. Bloomberg’",
-        "source": "bloomberg.com",
-        "url": "https://www.bloomberg.com/news/articles/2026-07-05/stock-market-today-dow-s-p-live-updates",
-        "publishedAt": "2026-07-06T11:50:32Z",
-        "bucket": "equity",
-        "editorScore": 17.7314
-      },
-      {
-        "title": "US stock futures up as chip shares recover, oil prices decline - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. A view inside the New York Stock Exchange (NYSE) in New York City, U.S., April 29, 2026. The Dow (.DJI), opens new tab closed at a record high on Thursday during a h",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/world/asia-pacific/us-stock-futures-up-chip-shares-recover-oil-prices-decline-2026-07-06/",
-        "publishedAt": "2026-07-06T10:11:25Z",
-        "bucket": "equity",
-        "editorScore": 17.7184
+        "editorScore": 13.6
       },
       {
         "title": "SK Hynix's US debut comes amid 'tremendous' Korean trade, expert says - Reuters",
@@ -340,91 +332,116 @@
         "url": "https://www.reuters.com/video/watch/idRW562306072026RP1/?chan=markets-now",
         "publishedAt": "2026-07-06T20:03:38Z",
         "bucket": "general",
-        "editorScore": 14.386
+        "editorScore": 8.9357
       },
       {
-        "title": "US law firm Blank Rome faces class action over data breach - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Legal. # US law firm Blank Rome faces class action over data breach. Image 2: The logo of law firm Blank Rome is seen at their legal of",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/legal/litigation/us-law-firm-blank-rome-faces-class-action-over-data-breach-2026-07-06/",
-        "publishedAt": "2026-07-06T17:20:47Z",
-        "bucket": "general",
-        "editorScore": 13.7074
+        "title": "Vanguard seeks digital assets chief after years of crypto skepticism",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/vanguard-seeks-digital-assets-chief-after-years-of-crypto-skepticism?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-07-07T20:57:02Z",
+        "bucket": "crypto",
+        "editorScore": 17.2582
+      },
+      {
+        "title": "U.S. SEC to propose crypto rule as soon as this month to ease startups, fundraising",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/policy/2026/07/07/u-s-sec-to-propose-crypto-rule-as-soon-as-this-month-to-ease-startups-fundraising",
+        "publishedAt": "2026-07-07T16:08:19Z",
+        "bucket": "crypto",
+        "editorScore": 17.2553
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
-      "本周主驱动来自 资金价格与摩擦，边际变化 +36.7。",
-      "主要拖累来自 系统流动性，边际变化 -9.3。",
-      "BTC 24H +0.91%，7D +6.64%，执行上优先看关键位是否放量确认。",
-      "板块层面，XLF 近7日 +4.50% 领跑，XLK 近7日 -0.99% 偏弱。",
-      "波动与利率环境方面，VIX 现报 15.57，10Y 收益率现报 4.48。"
+      "本周主驱动来自 资金价格与摩擦，边际变化 +40.2。",
+      "主要拖累来自 系统流动性，边际变化 -9.7。",
+      "BTC 24H -0.33%，7D +8.93%，执行上优先看关键位是否放量确认。",
+      "板块层面，XLF 近7日 +4.55% 领跑，XLK 近7日 -5.95% 偏弱。",
+      "波动与利率环境方面，VIX 现报 16.13，10Y 收益率现报 4.53。"
     ],
     "deskViews": [
       "总分落入偏紧区域，组合更适合防守与降杠杆，优先控制回撤而非追求高胜率进攻。",
       "边际变化上，资金价格与摩擦 是当前主要支撑项，而 系统流动性 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
-      "权益资产方面，标普口径近7日 +1.30%，纳指口径近7日 +1.17%，说明成长资产仍在消化宏观与估值的双重约束。",
+      "权益资产方面，标普口径近7日 +0.06%，纳指口径近7日 -1.51%，说明成长资产仍在消化宏观与估值的双重约束。",
       "行业层面，Financials 近7日表现相对占优，Technology 相对承压，说明市场内部轮动并不均衡。",
-      "加密资产方面，BTC 近7日 +6.64%，ETH 近7日 +12.07%，短线更适合结合关键价位和成交确认判断延续性。"
+      "加密资产方面，BTC 近7日 +8.93%，ETH 近7日 +13.82%，短线更适合结合关键价位和成交确认判断延续性。"
     ],
     "deepStockDives": [
       {
-        "name": "Broadcom",
-        "ticker": "AVGO",
+        "name": "Microsoft",
+        "ticker": "MSFT",
         "signal": "趋势走弱",
-        "summary": "近1日+3.73%，近7日-2.14%，近20日-10.74%，14日年化波动63.9%。 中短期结构偏弱，优先防守，等待放量企稳信号。",
-        "rsi14": 47.4,
-        "change1dPct": 3.73,
-        "change7dPct": -2.14,
-        "ret20dPct": -10.74,
-        "vol14dPct": 63.92
+        "summary": "近1日+0.54%，近7日+10.21%，近20日-6.68%，14日年化波动51.6%。 中短期结构偏弱，优先防守，等待放量企稳信号。",
+        "rsi14": 45.19,
+        "change1dPct": 0.54,
+        "change7dPct": 10.21,
+        "ret20dPct": -6.68,
+        "vol14dPct": 51.64
       },
       {
         "name": "NVIDIA",
         "ticker": "NVDA",
         "signal": "趋势走弱",
-        "summary": "近1日+0.37%，近7日-1.73%，近20日-10.57%，14日年化波动42.0%。 中短期结构偏弱，优先防守，等待放量企稳信号。",
-        "rsi14": 40.87,
-        "change1dPct": 0.37,
-        "change7dPct": -1.73,
-        "ret20dPct": -10.57,
-        "vol14dPct": 42.04
+        "summary": "近1日+0.71%，近7日+0.61%，近20日-3.98%，14日年化波动36.9%。 中短期结构偏弱，优先防守，等待放量企稳信号。",
+        "rsi14": 33.46,
+        "change1dPct": 0.71,
+        "change7dPct": 0.61,
+        "ret20dPct": -3.98,
+        "vol14dPct": 36.92
       },
       {
-        "name": "Microsoft",
-        "ticker": "MSFT",
+        "name": "Broadcom",
+        "ticker": "AVGO",
         "signal": "趋势走弱",
-        "summary": "近1日-0.96%，近7日+5.82%，近20日-9.65%，14日年化波动53.1%。 中短期结构偏弱，优先防守，等待放量企稳信号。",
-        "rsi14": 48.34,
-        "change1dPct": -0.96,
-        "change7dPct": 5.82,
-        "ret20dPct": -9.65,
-        "vol14dPct": 53.09
+        "summary": "近1日-0.83%，近7日-2.15%，近20日-3.88%，14日年化波动61.5%。 中短期结构偏弱，优先防守，等待放量企稳信号。",
+        "rsi14": 42.21,
+        "change1dPct": -0.83,
+        "change7dPct": -2.15,
+        "ret20dPct": -3.88,
+        "vol14dPct": 61.49
       },
       {
         "name": "Meta",
         "ticker": "META",
         "signal": "趋势走弱",
-        "summary": "近1日+2.98%，近7日+7.64%，近20日-4.35%，14日年化波动71.7%。 中短期结构偏弱，优先防守，等待放量企稳信号。",
-        "rsi14": 57.33,
-        "change1dPct": 2.98,
-        "change7dPct": 7.64,
-        "ret20dPct": -4.35,
-        "vol14dPct": 71.67
+        "summary": "近1日+2.55%，近7日+13.39%，近20日+3.81%，14日年化波动68.9%。 中短期结构偏弱，优先防守，等待放量企稳信号。",
+        "rsi14": 55.11,
+        "change1dPct": 2.55,
+        "change7dPct": 13.39,
+        "ret20dPct": 3.81,
+        "vol14dPct": 68.94
       },
       {
-        "name": "Amazon",
-        "ticker": "AMZN",
-        "signal": "趋势走弱",
-        "summary": "近1日+0.61%，近7日+4.22%，近20日-3.79%，14日年化波动47.9%。 中短期结构偏弱，优先防守，等待放量企稳信号。",
-        "rsi14": 54.38,
-        "change1dPct": 0.61,
-        "change7dPct": 4.22,
-        "ret20dPct": -3.79,
-        "vol14dPct": 47.89
+        "name": "Tesla",
+        "ticker": "TSLA",
+        "signal": "震荡",
+        "summary": "近1日-4.02%，近7日+7.41%，近20日+3.04%，14日年化波动82.2%。 方向未明，关注突破/跌破关键区间后的确认信号。",
+        "rsi14": 47.69,
+        "change1dPct": -4.02,
+        "change7dPct": 7.41,
+        "ret20dPct": 3.04,
+        "vol14dPct": 82.24
       }
     ],
     "cryptoProjectUpdates": [
+      {
+        "project": "交易所 / 市场结构",
+        "headline": "Crypto exchange Kraken is trying to become a bank in Europe",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/07/07/crypto-exchange-kraken-is-trying-to-become-a-bank-in-europe"
+      },
+      {
+        "project": "行业观察",
+        "headline": "BlackRock-backed Securitize slides 40% after SPAC debut despite tokenization boom",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/07/07/blackrock-backed-securitize-slides-40-after-spac-debut-despite-tokenization-boom"
+      },
+      {
+        "project": "交易所 / 市场结构",
+        "headline": "Morning Bid: Chip dip - Reuters",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/commentary/reuters-open-interest/global-markets-view-usa-2026-07-07/"
+      },
       {
         "project": "Solana 生态",
         "headline": "Investor expects solid Q2 results despite inflation concerns - Reuters",
@@ -432,37 +449,29 @@
         "url": "https://www.reuters.com/video/watch/idRW562406072026RP1/?chan=markets-now"
       },
       {
-        "project": "比特币生态",
-        "headline": "Bitcoin's U.S. reserve still a work-in-progress as federal agencies hash it out",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/policy/2026/07/06/bitcoin-s-u-s-reserve-still-a-work-in-progress-as-federal-agencies-hash-it-out"
-      },
-      {
-        "project": "以太坊生态",
-        "headline": "Former Tether CIO seeks to sell stake in stablecoin issuer, Bloomberg reports",
+        "project": "行业观察",
+        "headline": "Vanguard seeks digital assets chief after years of crypto skepticism",
         "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/former-tether-cio-seeks-to-sell-stake-in-stablecoin-issuer-bloomberg-reports?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+        "url": "https://cointelegraph.com/news/vanguard-seeks-digital-assets-chief-after-years-of-crypto-skepticism?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
       },
       {
-        "project": "比特币生态",
-        "headline": "Bitcoin recovers from Strategy's BTC sale, funding rates hit 9%: Are bulls back?",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/markets/bitcoin-recovers-from-strategy-btc-sale-funding-rates-hit-9-are-bulls-back?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
-      },
-      {
-        "project": "以太坊生态",
-        "headline": "Circle’s USDC is leaving Tether behind in the stablecoin volume race, new data from Visa shows",
+        "project": "行业观察",
+        "headline": "U.S. SEC to propose crypto rule as soon as this month to ease startups, fundraising",
         "source": "CoinDesk",
-        "url": "https://www.coindesk.com/business/2026/07/06/circle-s-usdc-is-leaving-tether-behind-in-the-stablecoin-volume-race"
-      },
-      {
-        "project": "交易所 / 市场结构",
-        "headline": "US stock futures up as chip shares recover, oil prices decline - Reuters",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/world/asia-pacific/us-stock-futures-up-chip-shares-recover-oil-prices-decline-2026-07-06/"
+        "url": "https://www.coindesk.com/policy/2026/07/07/u-s-sec-to-propose-crypto-rule-as-soon-as-this-month-to-ease-startups-fundraising"
       }
     ],
     "marketCalendar": [
+      {
+        "date": "2026-07-14",
+        "timeEt": "08:30",
+        "timeUtc": "12:30",
+        "country": "美国",
+        "category": "Macro",
+        "event": "美国 CPI",
+        "importance": "高",
+        "note": "BLS 官方发布日历"
+      },
       {
         "date": "2026-07-08",
         "timeEt": "10:30",
@@ -487,12 +496,12 @@
         "若宏观总分连续两周下行，降低趋势策略开仓频率。"
       ],
       "driverModules": [
-        "G",
-        "F"
+        "F",
+        "G"
       ],
       "pressureModules": [
-        "D",
-        "A"
+        "A",
+        "D"
       ],
       "nextStep": "已具备调用条件，可在日报任务中接入自动总结与执行建议生成。"
     },
@@ -509,12 +518,12 @@
         "若宏观总分连续两周下行，降低趋势策略开仓频率。"
       ],
       "driverModules": [
-        "G",
-        "F"
+        "F",
+        "G"
       ],
       "pressureModules": [
-        "D",
-        "A"
+        "A",
+        "D"
       ],
       "nextStep": "已具备调用条件，可在日报任务中接入自动总结与执行建议生成。"
     },
