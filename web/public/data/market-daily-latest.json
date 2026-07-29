@@ -1,29 +1,29 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-07-29T21:39:53Z",
+  "reportGeneratedAt": "2026-07-29T22:42:17Z",
   "asOfDate": "2026-07-30",
   "headline": "宏观偏紧，优先风险控制与防守仓位。",
   "markdownSource": "gemini",
-  "markdownCharCount": 6293,
+  "markdownCharCount": 5367,
   "aiRender": {
     "enabled": true,
     "status": "ok",
     "usedFallback": false,
     "requestedModel": "gemini-2.5-pro",
     "usedModelFallback": true,
-    "charCount": 6292,
+    "charCount": 5366,
     "minCharTarget": 1500,
     "finishReason": "STOP",
-    "detail": "Gemini preview generated (6292 chars, finishReason=STOP).",
+    "detail": "Gemini preview generated (5366 chars, finishReason=STOP).",
     "model": "gemini-2.5-flash",
     "reasoningMode": "deep_think",
     "qualified": true,
     "qualifiedReason": "ok"
   },
-  "markdown": "# 市场研究日报（2026-07-30）\n\n## 一、热点要闻\n\n### 美联储维持利率不变，市场关注未来政策路线图\n\n**事件概述：** 美联储于2026年7月29日宣布维持联邦基金利率不变，延续了此前的政策暂停周期。此次会议召开前，市场普遍预期美联储将继续按兵不动，但对未来政策走向的预期仍存在较大不确定性。特别值得关注的是，美联储理事凯文·沃什（Kevin Warsh）在过去两个月内多次重申恢复物价稳定的决心，并致力于消除投资者对美联储已默许更高通胀的看法。然而，他尚未详细阐明当前利率水平将如何实现这一目标，这为市场留下了诸多疑问。\n\n**要点：**\n*   美联储连续会议维持利率不变，表明其在当前经济环境下采取观望态度。\n*   沃什理事的鹰派言论凸显了美联储内部对通胀控制的坚定立场。\n*   市场对未来货币政策路径缺乏明确指引，尤其是在通什理事未具体说明如何利用现有工具达成目标的情况下。\n\n**市场影响：** 尽管利率维持不变，但美联储内部对通胀的强硬立场以及未来政策路线图的不确定性，可能导致市场对紧缩政策的预期升温。这可能对风险资产构成压力，并促使投资者重新评估其投资组合的风险敞口。美元指数短期内可能因避险情绪和对未来加息的潜在预期而获得支撑，而大宗商品价格则可能面临双重影响，一方面受美元走强压制，另一方面受全球经济增长前景影响。\n\n### 币安通过ADGM交易所推出受监管的黄金、白银期权\n\n**事件概述：** 全球领先的加密货币交易所币安（Binance）于2026年7月29日宣布，通过阿布扎比全球市场（ADGM）的交易所平台，正式推出受监管的黄金和白银期权产品。此举标志着加密货币平台与传统金融资产的进一步融合，为投资者提供了更多元化的交易选择。\n\n**要点：**\n*   币安拓展其产品范围，将传统贵金属引入加密交易生态系统。\n*   通过ADGM的监管框架，确保了这些期权产品的合规性。\n*   此举旨在吸引更广泛的机构和零售投资者参与数字资产与传统资产的交叉交易。\n\n**市场影响：** 这一发展不仅提升了加密货币市场的机构化和合规化水平，也为传统贵金属投资者提供了新的流动性和交易渠道。对于黄金和白银市场而言，可能会增加其价格发现机制的复杂性，并引入新的市场参与者。长期来看，这种融合趋势可能模糊传统金融与数字金融的界限，推动更广泛的资产数字化进程。\n\n### 金融行业转型加速，对冲基金规模创历史新高\n\n**事件概述：** 摩根士丹利高管近期表示，传统的朝九晚五银行工作模式正在走向终结，这反映了金融行业在数字化转型和全球化背景下深刻的结构性变化。与此同时，对冲基金行业正经历有史以来最快的增长速度，吸引了大量资金流入，显示出另类投资在全球资本市场中的地位日益提升。\n\n**要点：**\n*   传统银行运营模式面临挑战，数字化和灵活性成为行业新趋势。\n*   对冲基金行业的蓬勃发展，表明投资者对高风险、高回报策略的需求旺盛。\n*   金融服务业的整体转型，包括技术驱动的效率提升和投资策略的多元化。\n\n**市场影响：** 银行业工作模式的转变预示着效率提升和成本结构优化，可能对传统银行的盈利模式和人才策略产生深远影响。对冲基金的快速增长则反映了市场对主动管理和多元化投资策略的强烈需求，尤其是在当前宏观经济不确定性较高、市场波动加剧的环境下。这可能导致更多资金从传统资产流向另类投资，进一步加剧市场分化，并对资产配置策略提出新的要求。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\n\n在过去24小时内，大宗商品市场呈现显著分化。COMEX黄金价格上涨2.22%，报收于4126.0美元，但近7日累计下跌0.5%。COMEX白银价格上涨1.05%，报收于57.9美元，近7日累计下跌3.53%。贵金属的短期反弹可能与美元走弱及避险情绪有关，但中期趋势仍显疲软。原油市场表现强劲，WTI原油价格飙升6.74%，报收于84.6美元，布伦特原油价格上涨7.67%，报收于90.54美元，尽管两者近7日均有所下跌。原油的短期大幅上涨可能受到供应担忧或地缘政治事件的驱动，其14日波动率分别高达73.65%和84.95%，显示市场情绪剧烈。\n\n外汇市场方面，美元指数（DXY）下跌0.54%，报收于100.83，近7日累计下跌0.31%。美元的走弱为部分大宗商品提供了支撑。美国10年期国债收益率（US10Y）小幅上涨0.39%，报收于4.62%，近7日累计下跌0.75%。值得注意的是，CBOE波动率指数（VIX）在过去24小时内大幅上涨13.45%，报收于20.66，近7日更是累计上涨24.16%，其14日波动率高达124.11%。VIX指数的飙升表明市场避险情绪浓厚，投资者对未来市场走势的担忧加剧，宏观风险偏好显著下降。\n\n### 加密货币表现\n\n加密货币市场在过去24小时及7日内普遍承压。比特币（BTC）价格下跌0.49%，报收于63559.41美元，近7日累计下跌3.84%。以太坊（ETH）价格下跌1.61%，报收于1889.05美元，近7日累计下跌2.30%。Solana（SOL）价格下跌0.98%，报收于72.98美元，近7日累计下跌6.32%。主要加密资产的集体回调反映了整体市场风险偏好的下降，以及投资者对高风险资产的谨慎态度。比特币和以太坊的14日波动率分别为25.13%和40.66%，显示市场仍处于活跃波动之中，但短期内缺乏明确的上涨动能。\n\n### 美股指数表现\n\n美国股市主要指数在过去24小时内普遍下跌，且近7日跌幅显著。道琼斯工业平均指数（DJI）下跌2.19%，报收于51594.14点，近7日累计下跌1.20%。标普500指数（SPX）下跌1.52%，报收于7316.15点，近7日累计下跌2.44%。纳斯达克综合指数（IXIC）跌幅最为显著，下跌1.74%，报收于24442.94点，近7日累计下跌4.86%。罗素2000指数（RUT）下跌1.61%，报收于2906.31点，近7日累计下跌1.81%。\n\n追踪标普500指数的SPDR S&P 500 ETF（SPY）下跌1.54%，近7日下跌2.40%。追踪纳斯达克100指数的Invesco QQQ ETF（QQQ）下跌2.04%，近7日更是累计下跌6.18%。美股的普遍回调，尤其是科技股集中的纳斯达克指数和QQQ的显著跌幅，表明市场对宏观经济前景的担忧以及对高估值成长股的压力正在显现。\n\n### 科技巨头动态\n\n在科技巨头层面，多数公司股价在近期表现疲软。特斯拉（TSLA）在过去1日下跌2.97%，近7日累计下跌19.28%，近20日跌幅高达29.07%，其14日相对强弱指数（RSI14）仅为9.07，发出“趋势走弱”信号。英伟达（NVDA）下跌3.55%，近7日下跌6.53%，近20日下跌5.04%，RSI14为40.41，同样显示“趋势走弱”。亚马逊（AMZN）下跌1.82%，近7日下跌9.34%，近20日下跌4.90%，RSI14为27.42，也处于“趋势走弱”状态。微软（MSFT）下跌0.71%，近7日下跌2.92%，RSI14为53.87，也呈现“趋势走弱”态势。\n\n与此形成对比的是，苹果（AAPL）在过去1日小幅下跌0.56%，但近7日累计上涨3.55%，近20日更是上涨16.88%，RSI14为68.65，发出“趋势多头”信号。苹果的相对强势表明在整体科技股承压的环境下，部分具备强劲基本面和市场地位的巨头仍能保持韧性。\n\n### 板块异动观察\n\n从板块层面看，市场轮动和分化趋势明显。科技板块（XLK）在过去24小时内下跌2.64%，近7日累计下跌7.60%，是表现最弱的板块之一，其14日波动率高达25.81%。这与纳斯达克指数和科技巨头的疲软表现相呼应，反映出投资者对高增长科技股的风险偏好显著降低。\n\n金融板块（XLF）下跌1.60%，近7日累计上涨1.12%，显示出一定的韧性。能源板块（XLE）逆势上涨1.88%，但近7日累计下跌0.93%，其24小时的上涨可能与原油价格的飙升有关。工业板块（XLI）下跌3.19%，近7日累计下跌1.22%。\n\n值得注意的是，医疗保健板块（XLV）在过去24小时内仅下跌0.61%，近7日累计上涨4.27%，是同期表现最佳的板块。这表明在当前宏观偏紧、风险偏好下降的市场环境下，防御性较强的医疗保健板块受到资金青睐，成为市场内部轮动中的亮点。\n\n综合市场复盘线索，当前市场总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。本周市场的主要驱动因素来自外部冲击与汇率变化，边际变化为+5.7。然而，主要拖累因素仍是风险偏好，边际变化高达-21.9。这种驱动与拖累的结构性分化，预示着跨资产走势将围绕这一组分化展开。VIX指数现报20.66，美国10年期国债收益率现报4.62，波动率高企与利率环境的相对稳定共同构成了当前复杂的市场背景。\n\n## 三、深度个股解读\n\n### 特斯拉 (TSLA)\n\n**事件概述：** 特斯拉近期股价表现疲软，过去1日下跌2.97%，近7日累计下跌19.28%，近20日跌幅更是达到29.07%。其14日年化波动率为74.7%，相对强弱指数（RSI14）仅为9.07，显示出强烈的“趋势走弱”信号。\n\n**市场解读：** 特斯拉作为高增长科技股的代表，其股价的显著回调反映了当前市场对风险资产的普遍规避情绪，以及对高估值成长股的持续压力。在宏观偏紧、风险偏好下降的环境下，投资者对未来增长前景和盈利能力的担忧加剧，导致资金从这类股票中流出。同时，公司自身可能面临的竞争加剧、生产挑战或市场需求变化等因素也可能加剧了下跌势头。\n\n**投资启示：** 鉴于特斯拉中短期结构偏弱，投资者应优先采取防守策略，控制仓位风险。在当前趋势下，不宜盲目抄底，应耐心等待股价出现放量企稳的明确信号，或基本面出现显著改善的迹象后，再考虑重新评估投资机会。\n\n### 苹果 (AAPL)\n\n**事件概述：** 苹果公司股价在近期市场普遍回调中展现出较强韧性。过去1日小幅下跌0.56%，但近7日累计上涨3.55%，近20日更是上涨16.88%。其14日年化波动率为32.9%，相对强弱指数（RSI14）为68.65，发出“趋势多头”信号。\n\n**市场解读：** 苹果的逆势上涨表明其强大的品牌影响力、稳健的财务表现以及持续的产品创新能力，使其在市场不确定性增加时成为资金的避风港。在科技板块普遍承压的背景下，苹果的韧性可能源于其庞大的用户基础、稳定的服务收入以及相对较低的宏观经济敏感性。投资者可能将其视为在动荡市场中相对安全的优质资产。\n\n**投资启示：** 鉴于苹果均线结构偏多，投资者可优先顺势持有。对于尚未持有的投资者，可在股价回调时分批介入，以把握其长期增长潜力。但仍需关注整体市场情绪变化以及公司后续财报表现，以动态调整投资策略。\n\n### 英伟达 (NVDA)\n\n**事件概述：** 英伟达股价近期表现不佳，过去1日下跌3.55%，近7日累计下跌6.53%，近20日下跌5.04%。其14日年化波动率为53.9%，相对强弱指数（RSI14）为40.41，显示出“趋势走弱”信号。\n\n**市场解读：** 英伟达作为人工智能和高性能计算领域的领导者，其股价回调与整个科技板块的疲软趋势一致。尽管其长期增长前景依然乐观，但在当前宏观经济逆风和市场风险偏好下降的环境下，投资者可能选择获利了结或规避高估值成长股。此外，供应链问题、竞争加剧或市场对AI芯片需求增速的重新评估也可能对其股价构成压力。\n\n**投资启示：** 英伟达中短期结构偏弱，投资者应优先采取防守策略，避免逆势操作。在当前环境下，等待市场情绪改善，或股价在关键支撑位获得有效支撑并出现放量企稳信号后，再考虑重新审视投资机会，以降低潜在风险。\n\n## 四、加密货币项目动态\n\n近期加密货币市场动态丰富，反映了行业在技术发展、市场结构和监管融合方面的多重趋势。比特币和以太坊生态系统持续受到关注，Cointelegraph等媒体广泛报道了其区块链新闻，显示出这两个核心协议的活跃度。值得注意的是，随着加密永续期货市场的蓬勃发展，以太坊的角色正在发生转变，其作为去中心化金融（DeFi）和智能合约平台的基础地位进一步巩固，并逐渐成为衍生品交易的重要结算层。\n\n在机构参与方面，有消息指出，传统金融巨头Citadel正在押注美联储可能在周三加息，这在一定程度上影响了比特币（BTC）的市场情绪，表明传统宏观经济事件对加密市场的影响力日益增强。同时，加密交易所的创新也在继续，币安通过ADGM交易所推出受监管的黄金和白银期权，不仅拓宽了加密平台的业务范围，也进一步促进了数字资产与传统资产的融合，为投资者提供了更多元化的合规交易选择。\n\n此外，ARK分析师指出，加密市场正进入历史上最大的盘整阶段，这预示着市场可能在经历一段时期的价格波动后，进入一个相对稳定或横盘整理的阶段，为未来的爆发积蓄能量。Solana生态系统也持续发展，吸引了开发者和用户的关注，尽管其具体动态在当前输入材料中未详细展开，但作为高性能公链，其生态建设的进展对整个加密行业具有重要意义。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n\n*   **2026年8月4日 10:00 ET (14:00 UTC) | 美国 | 美国 JOLTS 职位空缺**\n    *   **重要性：** 中\n    *   **说明：** 由美国劳工统计局（BLS）官方发布，该数据衡量了美国劳动力市场的职位空缺数量，是评估劳动力需求和市场紧张程度的关键指标。市场将密切关注其变化，以判断劳动力市场的健康状况及对美联储货币政策的影响。\n\n*   **2026年8月5日 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存**\n    *   **重要性：** 中\n    *   **说明：** 由美国能源信息署（EIA）官方发布，该数据反映了美国商业原油库存量的周度变化。原油库存的变化对全球原油价格具有重要影响，投资者将根据库存增减判断市场供需关系，并据此调整对原油及相关能源产品的交易策略。节假日周可能调整发布时间，需留意官方公告。\n\n### 重要事件预告\n\n目前输入材料中未提供除经济数据发布外的其他重要事件预告。\n\n### 市场观察\n\n当前市场整体情绪偏紧，宏观环境对风险资产构成压力，因此，投资组合更适合采取防守与降杠杆策略，优先控制回撤而非追求高胜率进攻。从边际变化来看，外部冲击与汇率变动是当前市场的主要支撑项，而风险偏好持续下降则是主要的拖累因素，预示着跨资产走势将围绕这种分化展开。\n\n权益资产方面，标普500指数近7日下跌2.44%，纳斯达克指数近7日下跌4.86%，这明确表明成长型资产仍在消化宏观环境与估值的双重约束。行业层面，医疗保健板块在近7日表现相对占优，而科技板块则相对承压，这反映出市场内部轮动并不均衡，资金倾向于流向防御性较强的板块。加密资产方面，比特币近7日下跌3.84%，以太坊近7日下跌2.30%，短线交易者更适合结合关键价位和成交量确认来判断其延续性，谨慎操作。\n\n## 免责声明\n\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
+  "markdown": "# 市场研究日报（2026-07-30）\n\n## 一、热点要闻\n\n**美联储维持利率不变，市场关注未来政策路径**\n**事件概述：** 美联储在最近一次议息会议上决定维持联邦基金利率不变，延续了此前的暂停加息周期。这一决定符合市场普遍预期，但投资者仍在密切关注美联储未来政策走向的信号。值得注意的是，市场传闻和分析师观点显示，美联储内部对于政策路径可能存在分歧，部分市场参与者甚至预期，如果美联储理事凯文·沃什（Kevin Warsh）的政策路线图被采纳，可能会出现一次意外的加息举动。\n**要点：**\n*   美联储连续会议维持利率不变，市场普遍预期其将继续观望。\n*   尽管维持利率，但市场对美联储未来可能采取的鹰派立场仍保持警惕，尤其是在能源价格再次上涨的背景下。\n*   有分析机构，如Citadel Securities，预测美联储本周可能意外加息，这与市场主流预期形成反差，为未来的货币政策增添了不确定性。\n**市场影响：** 美联储的按兵不动短期内可能为市场提供喘息空间，但潜在的鹰派信号和意外加息的可能性将继续对风险资产构成压力。投资者将密切关注美联储官员的后续表态以及即将发布的经济数据，以研判货币政策的实际走向。美元指数的波动和十年期美债收益率的走势将是衡量市场预期的重要指标。\n\n**华尔街巨头力挺加密市场结构法案，监管框架渐明**\n**事件概述：** 包括贝莱德、富达、富兰克林邓普顿、高盛和SoFi在内的多家华尔街金融巨头近期公开表达了对《加密市场结构法案》（Clarity Act）的支持。随着参议院审议时间表的临近，这一举动凸显了传统金融机构对加密货币领域监管清晰度的迫切需求，并有望加速相关立法进程。\n**要点：**\n*   多家知名传统金融机构公开支持《Clarity Act》，表明其对加密市场规范化发展的积极态度。\n*   该法案旨在为加密资产提供更明确的监管框架，解决长期存在的法律不确定性问题。\n*   华尔街巨头的介入可能加速法案在参议院的审议和通过，为加密行业带来更稳定的运营环境。\n**市场影响：** 这一进展对加密货币市场而言是积极信号，预示着机构投资者对加密资产的接受度正在提高，并期待更完善的监管体系。监管清晰度的提升有望吸引更多传统资金进入加密领域，从而推动市场长期发展。同时，这也可能促使加密项目在合规性方面投入更多资源，加速行业向主流金融体系融合。\n\n**金融科技冲击传统银行业务，行业格局面临重塑**\n**事件概述：** 随着金融科技（Fintech）的快速发展，传统银行面临着日益严峻的挑战。有分析指出，金融科技对大型银行构成了实质性威胁，尤其是在客户服务、效率和创新方面。与此同时，摩根士丹利高管也表示，传统的朝九晚五银行工作模式正在走向终结，预示着银行业务模式和运营方式的深刻变革。在加密领域，Binance.US首席执行官透露，该公司计划以CFTC许可实体的身份进入预测市场，进一步模糊了传统金融与数字资产之间的界限。\n**要点：**\n*   金融科技公司通过技术创新和高效服务，正在侵蚀传统银行的市场份额。\n*   银行业务模式正在经历结构性转变，传统工作时间和运营方式不再适应市场需求。\n*   加密货币交易所积极拓展业务范围，如Binance.US进军预测市场，显示出数字资产与金融服务融合的趋势。\n**市场影响：** 传统银行业将面临持续的转型压力，需要加大对技术创新和数字化转型的投入，以应对金融科技的竞争。对于投资者而言，关注那些能够成功适应新趋势、积极拥抱技术变革的金融机构将是关键。同时，金融科技和加密领域的创新也将带来新的投资机会，尤其是在支付、借贷、资产管理等细分领域。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\n\n过去24小时内，大宗商品市场呈现显著波动。COMEX黄金价格上涨2.41%至4133.5美元，COMEX白银价格上涨1.86%至58.36美元，显示出在市场不确定性增加时，贵金属的避险属性得到凸显。原油市场则经历大幅反弹，WTI原油价格飙升6.55%至84.45美元，布伦特原油价格上涨7.50%至90.40美元，但从7日表现来看，WTI和布伦特原油仍分别下跌2.74%和3.90%，表明短期反弹未能完全抵消此前跌幅。美国美元指数（DXY）下跌0.57%至100.8，而美国10年期国债收益率小幅上涨0.39%至4.62%。CBOE波动率指数（VIX）大幅跳升13.45%至20.66，近7日涨幅高达24.16%，反映出市场恐慌情绪和不确定性显著升温。\n\n### 加密货币表现\n\n加密货币市场整体表现疲软。比特币（BTC）在过去24小时内微跌0.0029%至63869.52美元，近7日跌幅为3.38%。以太坊（ETH）下跌0.92%至1902.22美元，7日跌幅为1.62%。Solana（SOL）下跌0.37%至73.43美元，7日跌幅为5.75%。主要加密资产普遍承压，显示出在宏观风险偏好下降的环境下，加密市场也未能幸免。\n\n### 美股指数表现\n\n美国股市主要股指全线显著下挫。道琼斯工业平均指数（DJI）下跌2.19%至51594.14点，标普500指数（SPX）下跌1.52%至7316.15点，纳斯达克综合指数（IXIC）下跌1.74%至24442.94点。代表小盘股的罗素2000指数（RUT）下跌1.61%至2906.31点。追踪标普500的SPDR S&P 500 ETF（SPY）下跌1.54%至729.46美元，追踪纳斯达克100的Invesco QQQ（QQQ）下跌2.04%至661.73美元。从7日表现来看，主要指数跌幅均在1.2%至6.18%之间，其中纳斯达克综合指数和Invesco QQQ跌幅居前，显示科技股承压明显。\n\n### 科技巨头动态\n\n科技巨头股价表现分化，但整体偏弱。特斯拉（TSLA）在过去24小时内下跌2.97%，近7日跌幅高达19.28%，近20日跌幅为29.07%，RSI14指标显示其处于趋势走弱区间。英伟达（NVDA）下跌3.55%，近7日下跌6.53%，近20日下跌5.04%，同样显示趋势走弱。亚马逊（AMZN）下跌1.82%，近7日下跌9.34%，近20日下跌4.90%，趋势亦偏弱。微软（MSFT）下跌0.71%，近7日下跌2.92%，近20日上涨4.70%，但短期趋势也显示走弱。苹果（AAPL）则逆势表现，24小时内微跌0.56%，但近7日上涨3.55%，近20日上涨16.88%，RSI14指标为68.65，显示其处于趋势多头区间，是少数表现强劲的科技巨头。\n\n### 板块异动观察\n\n从行业板块来看，市场轮动明显。科技板块（XLK）在过去24小时内下跌2.64%，近7日跌幅高达7.60%，显示出科技股的普遍承压。工业板块（XLI）下跌3.19%，近7日下跌1.22%。金融板块（XLF）下跌1.60%，但近7日上涨1.12%。能源板块（XLE）在24小时内上涨1.88%，但近7日仍下跌0.93%。医疗保健板块（XLV）表现相对稳健，24小时内下跌0.61%，但近7日上涨4.27%，成为近期市场中表现最为强劲的板块。这表明在当前宏观偏紧、风险偏好下降的环境下，市场资金正从高增长、高估值的科技股流向具有防御属性的医疗保健等板块。\n\n**市场复盘总结：**\n当前市场总分处于中低位，整体风险水平偏高，技术触发信号需要搭配更严格的仓位与止损规则。本周市场的主要驱动力来自外部冲击与汇率，边际变化为+5.7，对市场形成一定支撑。然而，主要拖累因素是风险偏好，边际变化为-21.9，导致风险资产普遍承压。比特币在过去24小时内基本持平，近7日下跌3.38%，执行上需优先关注关键价位是否放量确认。板块层面，医疗保健板块（XLV）近7日上涨4.27%领跑市场，而科技板块（XLK）近7日下跌7.60%表现偏弱。波动率方面，VIX指数现报20.66，显示市场波动性显著上升；10年期美债收益率现报4.62%，反映出利率环境依然偏紧。\n\n## 三、深度个股解读\n\n**特斯拉 (TSLA)**\n**事件概述：** 特斯拉股价在过去24小时内下跌2.97%，近7日累计下跌19.28%，近20日跌幅更是达到29.07%。其14日年化波动率高达74.7%，显示出极高的市场不确定性。\n**市场解读：** 特斯拉近期股价表现持续疲软，跌幅显著，表明市场对其短期前景持悲观态度。这可能与宏观经济逆风、电动汽车市场竞争加剧、公司自身交付数据或盈利预期调整等因素有关。高波动率也反映出投资者情绪的剧烈波动和对未来走势判断的分歧。\n**投资启示：** 鉴于特斯拉中短期结构偏弱，投资者应优先采取防守策略，控制仓位风险。在缺乏明确企稳信号和放量反弹之前，不宜盲目抄底。建议密切关注公司基本面变化、行业竞争态势以及市场情绪的转变，等待股价出现放量企稳信号后再考虑介入。\n\n**苹果 (AAPL)**\n**事件概述：** 苹果公司股价在过去24小时内微跌0.56%，但近7日累计上涨3.55%，近20日更是上涨16.88%。其14日年化波动率为32.9%，相对稳定。RSI14指标显示为68.65，处于趋势多头区间。\n**市场解读：** 在整体市场承压的背景下，苹果股价逆势上涨，表现出较强的韧性。这可能得益于其稳健的财务表现、强大的品牌影响力、持续的产品创新以及在服务业务领域的增长。市场对苹果的长期价值和防御性属性给予了肯定。\n**投资启示：** 苹果的均线结构偏多，显示出良好的上升趋势。对于现有投资者，建议优先顺势持有，并可在股价回调时考虑分批增持。对于潜在投资者，可在市场回调或股价短期调整时寻找介入机会，但需注意整体市场风险。\n\n**英伟达 (NVDA)**\n**事件概述：** 英伟达股价在过去24小时内下跌3.55%，近7日累计下跌6.53%，近20日下跌5.04%。其14日年化波动率为53.9%，显示出较高的波动性。\n**市场解读：** 英伟达作为人工智能和高性能计算领域的领军企业，近期股价表现趋弱，这可能反映了市场对科技股整体估值的担忧，以及对未来增长速度的重新评估。尽管长期前景依然看好，但短期内宏观经济压力和市场风险偏好下降对其股价构成影响。\n**投资启示：** 英伟达中短期结构偏弱，投资者应优先采取防守策略，控制风险。在股价未能有效企稳并出现放量反弹信号之前，不建议激进操作。建议密切关注公司即将发布的财报、新产品进展以及市场对半导体行业周期的预期，等待明确的底部信号。\n\n## 四、加密货币项目动态\n\n*   **以太坊生态：** 随着加密永续期货市场的蓬勃发展，以太坊在整个生态系统中的角色正在发生转变，其作为底层基础设施和DeFi核心的地位日益凸显。\n*   **交易所 / 市场结构：** 罗宾汉（Robinhood）尽管公布了超出预期的财报，但由于加密货币收入的降温，其股价仍下跌4%，反映出市场对加密业务增长前景的担忧。\n*   **行业观察：** ARK分析师指出，加密行业正进入历史上最大的整合阶段，预示着市场将经历一轮洗牌和结构性优化。\n*   **行业观察：** 包括贝莱德、富达在内的华尔街巨头公开支持《Clarity Act》，旨在为加密市场提供更清晰的监管框架，这有望推动加密资产的合规化进程。\n*   **交易所 / 市场结构：** 随着科技股和通胀担忧加剧，市场预警信号再次闪现，表明投资者对宏观经济和风险资产的担忧持续存在。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n\n*   **2026-08-04 10:00 ET (14:00 UTC) | 美国 | 美国 JOLTS 职位空缺**\n    *   重要性：中\n    *   说明：由美国劳工统计局（BLS）官方发布，反映劳动力市场需求状况。\n*   **2026-08-05 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存**\n    *   重要性：中\n    *   说明：由美国能源信息署（EIA）官方发布，反映美国原油供需情况，节假日周可能调整发布时间。\n\n### 重要事件预告\n\n数据不足。\n\n### 机构观点\n\n市场观察显示，当前市场总分落入偏紧区域，这意味着投资组合更适合采取防守策略并降低杠杆，优先控制回撤而非追求高胜率的进攻机会。从边际变化来看，外部冲击与汇率是当前市场的主要支撑项，而风险偏好仍是主要拖累项，因此跨资产走势更可能围绕这组分化展开。在权益资产方面，标普500指数近7日下跌2.44%，纳斯达克指数近7日下跌4.86%，这表明成长型资产仍在消化宏观环境和估值的双重约束。行业层面，医疗保健板块近7日表现相对占优，而科技板块则相对承压，说明市场内部的轮动并不均衡。加密资产方面，比特币近7日下跌3.38%，以太坊近7日下跌1.62%，短线操作更适合结合关键价位和成交量确认来判断趋势的延续性。\n\n## 免责声明\n\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
   "daily": {
     "asOfDate": "2026-07-30",
-    "generatedAt": "2026-07-29T21:39:12Z",
+    "generatedAt": "2026-07-29T22:41:05Z",
     "headline": "宏观偏紧，优先风险控制与防守仓位。",
     "quickView": {
       "overallScore": 43.74,
@@ -39,80 +39,80 @@
         "ticker": "BTC",
         "name": "Bitcoin",
         "bucket": "crypto",
-        "spot": 63559.41,
-        "change24hPct": -0.4884,
-        "change7dPct": -3.84,
-        "realizedVol14dPct": 25.13,
+        "spot": 63869.52,
+        "change24hPct": -0.0029,
+        "change7dPct": -3.38,
+        "realizedVol14dPct": 25.05,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "Ethereum",
         "bucket": "crypto",
-        "spot": 1889.05,
-        "change24hPct": -1.6093,
-        "change7dPct": -2.3,
-        "realizedVol14dPct": 40.66,
+        "spot": 1902.22,
+        "change24hPct": -0.9234,
+        "change7dPct": -1.62,
+        "realizedVol14dPct": 40.09,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "Solana",
         "bucket": "crypto",
-        "spot": 72.98,
-        "change24hPct": -0.9758,
-        "change7dPct": -6.32,
-        "realizedVol14dPct": 35.38,
+        "spot": 73.43,
+        "change24hPct": -0.3652,
+        "change7dPct": -5.75,
+        "realizedVol14dPct": 35.23,
         "source": "yfinance"
       },
       {
         "ticker": "GOLD",
         "name": "COMEX Gold",
         "bucket": "commodity",
-        "spot": 4126.0,
-        "change24hPct": 2.2223,
-        "change7dPct": -0.5,
-        "realizedVol14dPct": 23.68,
+        "spot": 4133.5,
+        "change24hPct": 2.4081,
+        "change7dPct": -0.32,
+        "realizedVol14dPct": 24.15,
         "source": "yfinance"
       },
       {
         "ticker": "SILVER",
         "name": "COMEX Silver",
         "bucket": "commodity",
-        "spot": 57.9,
-        "change24hPct": 1.0542,
-        "change7dPct": -3.53,
-        "realizedVol14dPct": 35.25,
+        "spot": 58.36,
+        "change24hPct": 1.857,
+        "change7dPct": -2.76,
+        "realizedVol14dPct": 36.08,
         "source": "yfinance"
       },
       {
         "ticker": "WTI",
         "name": "WTI Crude",
         "bucket": "commodity",
-        "spot": 84.6,
-        "change24hPct": 6.7373,
-        "change7dPct": -2.57,
-        "realizedVol14dPct": 73.65,
+        "spot": 84.45,
+        "change24hPct": 6.5481,
+        "change7dPct": -2.74,
+        "realizedVol14dPct": 73.2,
         "source": "yfinance"
       },
       {
         "ticker": "BRENT",
         "name": "Brent Crude",
         "bucket": "commodity",
-        "spot": 90.54,
-        "change24hPct": 7.6704,
-        "change7dPct": -3.75,
-        "realizedVol14dPct": 84.95,
+        "spot": 90.4,
+        "change24hPct": 7.5039,
+        "change7dPct": -3.9,
+        "realizedVol14dPct": 84.56,
         "source": "yfinance"
       },
       {
         "ticker": "DXY",
         "name": "US Dollar Index",
         "bucket": "fx",
-        "spot": 100.83,
-        "change24hPct": -0.5415,
-        "change7dPct": -0.31,
-        "realizedVol14dPct": 3.87,
+        "spot": 100.8,
+        "change24hPct": -0.5701,
+        "change7dPct": -0.33,
+        "realizedVol14dPct": 3.99,
         "source": "yfinance"
       },
       {
@@ -253,16 +253,16 @@
         "url": "https://www.coindesk.com/markets/2026/07/29/fomc-hold-fed-holds-rates-steady-extending-pause-as-markets-await-warsh-s-policy-roadmap",
         "publishedAt": "2026-07-29T17:58:33Z",
         "bucket": "macro_policy",
-        "editorScore": 21.6818
+        "editorScore": 21.4237
       },
       {
-        "title": "Cointelegraph Bitcoin & Ethereum Blockchain News",
-        "summary": "## Bitcoin\n\nImage 24### Bitcoin price eyes $66K as US stocks rise on Iran-strike pause Bitcoin copied US stocks as relief over end of US-Iran strikes spread to risk assets at the start of the US trading session.\nWilliam SubergJul 27, 2026\n\nImage 25\n\n### Rate path still divides in",
-        "source": "cointelegraph.com",
-        "url": "https://cointelegraph.com",
-        "publishedAt": "2026-07-29T12:16:22Z",
-        "bucket": "crypto",
-        "editorScore": 21.056
+        "title": "Market Talk: 'Expect another hawkish tone' from the Fed - Reuters",
+        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. The bar to a Fed hike today is high, but energy prices are on the rise again. ## Market Talk: '",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/video/watch/idRW170329072026RP1/",
+        "publishedAt": "2026-07-29T10:58:36Z",
+        "bucket": "macro_policy",
+        "editorScore": 20.3739
       },
       {
         "title": "As crypto perpetual futures boom, Ethereum’s role is shifting",
@@ -270,76 +270,16 @@
         "url": "https://www.coindesk.com/tech/2026/07/29/as-crypto-perpetual-futures-boom-ethereum-s-role-is-shifting",
         "publishedAt": "2026-07-29T18:00:00Z",
         "bucket": "crypto",
-        "editorScore": 20.3878
+        "editorScore": 20.1298
       },
       {
-        "title": "Citadel bets on a Fed rate hike Wednesday as bitcoin (BTC ...",
-        "summary": "5.   5Wall Street veteran Don Wilson says regulators are getting perps all wrong12 hours ago  \n6.   6BlackRock, Fidelity, other Wall Street giants back the Clarity Act13 hours ago  \n7.   7Ethereum startup EthSystems bets privacy is key to getting banks on public blockchains13 hou",
-        "source": "coindesk.com",
-        "url": "https://www.coindesk.com/markets/2026/07/29/citadel-bets-on-a-fed-rate-hike-wednesday-as-bitcoin-analysts-call-a-hold-someone-will-be-wrong",
-        "publishedAt": "2026-07-29T05:40:00Z",
-        "bucket": "crypto",
-        "editorScore": 20.2045
-      },
-      {
-        "title": "Binance launches regulated gold, silver options through ADGM exchange",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/binance-launches-regulated-gold-silver-options-through-adgm-exchange?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-07-29T17:09:24Z",
-        "bucket": "commodities",
-        "editorScore": 19.077
-      },
-      {
-        "title": "The Fed Is Heading Into One of Its Most Unpredictable Meetings in Years",
-        "summary": "Warsh has vowed repeatedly over the last two months to restore price stability, to disabuse investors of the idea the Fed has implicitly accepted higher inflation. He hasn’t spelled out how current interest rates will accomplish that.\n\nCopyright ©2026 Dow Jones & Company, Inc. Al",
-        "source": "wsj.com",
-        "url": "https://www.wsj.com/economy/central-banking/the-fed-is-heading-into-one-of-its-most-unpredictable-meetings-in-years-849198f5",
-        "publishedAt": "2026-07-23T09:30:00Z",
-        "bucket": "macro_policy",
-        "editorScore": 17.1
-      },
-      {
-        "title": "South Korea $2 trillion stock rout breaks records as SK Hynix results disappoint",
-        "summary": "The share price index has fallen more than 40% since peaking last month. It is nevertheless up 41.5% in U.S. dollar terms year-to-date, making it the best ⁠performing ​major market this year.\n\n\"Today's price action suggests that the leverage within ​Korean equities remains high a",
+        "title": "S&P 500, Nasdaq futures inch up before Fed decision; chip stocks wobble - Reuters",
+        "summary": "## Browse World. ## Browse Business. Image 3: Traders work on the floor of the NYSE in New York. Futures-options traders work on the floor at the New York Stock Exchange's NYSE American (AMEX) in New York City, U.S. July 28, 2026. July 29 (Reuters) - S&P 500 and Nasdaq futures in",
         "source": "reuters.com",
-        "url": "https://www.reuters.com/world/asia-pacific/south-korea-stock-rout-breaks-records-sk-hynix-earnings-disappoint-2026-07-29",
-        "publishedAt": "2026-07-29T06:02:59Z",
+        "url": "https://www.reuters.com/business/sp-500-nasdaq-futures-inch-up-before-fed-decision-chip-stocks-wobble-2026-07-29/",
+        "publishedAt": "2026-07-29T10:16:04Z",
         "bucket": "equity",
-        "editorScore": 16.7002
-      },
-      {
-        "title": "Financial Services Roundup: Market Talk",
-        "summary": "Copyright ©2026 Dow Jones & Company, Inc. All Rights Reserved. 87990cbe856818d5eddac44c7b1cdeb8\n\n## Videos\n\n### Most Popular News\n\n### Most Popular\n\n### Further Reading\n\n### BNP Paribas Lifts Dividend as Revenue, Profit Beat Estimates\n\n### Bank of Montreal and Rival Lenders Lift ",
-        "source": "wsj.com",
-        "url": "https://www.wsj.com/business/financial-services-roundup-market-talk-20180f16",
-        "publishedAt": "2026-07-29T11:37:00Z",
-        "bucket": "equity",
-        "editorScore": 16.592
-      },
-      {
-        "title": "US prosecutors propose changes to CLARITY as voting window narrows: Report",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/clarity-act-changes-law-enforcement-voting-narrows?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-07-29T19:43:29Z",
-        "bucket": "equity",
-        "editorScore": 15.619
-      },
-      {
-        "title": "The traditional 9-to-5 banking day is officially dying, says Morgan Stanley execs",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/07/29/morgan-stanley-execs-admit-the-traditional-9-to-5-banking-day-is-officially-dying",
-        "publishedAt": "2026-07-29T16:09:32Z",
-        "bucket": "general",
-        "editorScore": 11.8275
-      },
-      {
-        "title": "Hedge funds grow at the fastest rate ever",
-        "summary": "# Hedge funds grow at the fastest rate ever\n\n## Try unlimited access\n\nThen R$375 per month. Complete digital access to quality FT journalism on any device. Cancel anytime during your trial.\n\n## Explore more offers.\n\n### FT Digital Edition\n\nOur digitised version of the FT newspape",
-        "source": "ft.com",
-        "url": "https://www.ft.com/content/e341f8d2-199b-4f8d-a36c-860d977f3b81?syn-25a6b1a6=1",
-        "publishedAt": "2026-07-27T08:16:33Z",
-        "bucket": "general",
-        "editorScore": 6.2
+        "editorScore": 19.3967
       },
       {
         "title": "Crypto entering biggest consolidation phase in history, says ARK analyst",
@@ -347,14 +287,74 @@
         "url": "https://cointelegraph.com/news/crypto-entering-biggest-consolidation-phase-in-history-says-ark-analyst?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-07-29T20:40:38Z",
         "bucket": "crypto",
-        "editorScore": 18.5571
+        "editorScore": 18.2991
+      },
+      {
+        "title": "Robinhood slides 4% despite earnings beat as crypto revenue cools",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/07/29/robinhood-slides-4-despite-earnings-beat-as-crypto-revenue-cools",
+        "publishedAt": "2026-07-29T20:40:43Z",
+        "bucket": "crypto",
+        "editorScore": 17.9994
+      },
+      {
+        "title": "Citadel Securities Sees Warsh Delivering Surprise Fed Rate Hike - Bloomberg.com",
+        "summary": "# Citadel Securities Sees Warsh Delivering Surprise Fed Rate Hike. Provide news feedback or report an error. Send a tip to our reporters. ## **Takeaways** by Bloomberg AISubscribe. Citadel Securities expects the Federal Reserve to raise interest rates this week — a surprise move ",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/news/articles/2026-07-27/citadel-securities-sees-warsh-delivering-surprise-fed-rate-hike",
+        "publishedAt": "2026-07-27T21:42:13Z",
+        "bucket": "macro_policy",
+        "editorScore": 15.6
+      },
+      {
+        "title": "Sectors Up Close: 'Fintech is a threat' to big banks - Reuters",
+        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Israel and Hamas at War. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. *   ### Image 2: Sectors Up Close: 'Fintech is a threat' to big ba",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/video/watch/idRW115327072026RP1/?chan=business",
+        "publishedAt": "2026-07-27T13:48:29Z",
+        "bucket": "geopolitics",
+        "editorScore": 13.6
+      },
+      {
+        "title": "Market warning signals flare again as tech, inflation fears intensify - Reuters",
+        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. Image 3: Traders work on the floor of the NYSE in New York. A trader works on the floor at the New York Stock Exchange (NYSE) ",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/business/finance/global-markets-stress-graphic-2026-07-28/",
+        "publishedAt": "2026-07-28T13:26:07Z",
+        "bucket": "equity",
+        "editorScore": 12.8886
+      },
+      {
+        "title": "Binance.US to attempt prediction markets entry as CFTC-licensed entity, says CEO",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/binance-us-prediction-markets-cftc-designated-contract-market?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-07-29T21:52:27Z",
+        "bucket": "general",
+        "editorScore": 11.9983
+      },
+      {
+        "title": "BlackRock, Fidelity, other Wall Street giants back the Clarity Act - CoinDesk",
+        "summary": "## BlackRock, Fidelity, Franklin Templeton, Goldman Sachs and SoFi have publicly endorsed the crypto market structure bill as the Senate's timeline tightens. * BlackRock, Fidelity, Franklin Templeton, Goldman Sachs and SoFi have publicly endorsed the Clarity Act in recent days. T",
+        "source": "coindesk.com",
+        "url": "https://www.coindesk.com/policy/2026/07/28/blackrock-fidelity-other-wall-street-giants-back-the-clarity-act",
+        "publishedAt": "2026-07-28T00:00:00Z",
+        "bucket": "commodities",
+        "editorScore": 11.7
+      },
+      {
+        "title": "The traditional 9-to-5 banking day is officially dying, says Morgan Stanley execs",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/07/29/morgan-stanley-execs-admit-the-traditional-9-to-5-banking-day-is-officially-dying",
+        "publishedAt": "2026-07-29T16:09:32Z",
+        "bucket": "general",
+        "editorScore": 11.5695
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 外部冲击与汇率，边际变化 +5.7。",
       "主要拖累来自 风险偏好，边际变化 -21.9。",
-      "BTC 24H -0.49%，7D -3.84%，执行上优先看关键位是否放量确认。",
+      "BTC 24H -0.00%，7D -3.38%，执行上优先看关键位是否放量确认。",
       "板块层面，XLV 近7日 +4.27% 领跑，XLK 近7日 -7.60% 偏弱。",
       "波动与利率环境方面，VIX 现报 20.66，10Y 收益率现报 4.62。"
     ],
@@ -363,7 +363,7 @@
       "边际变化上，外部冲击与汇率 是当前主要支撑项，而 风险偏好 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
       "权益资产方面，标普口径近7日 -2.44%，纳指口径近7日 -4.86%，说明成长资产仍在消化宏观与估值的双重约束。",
       "行业层面，Health Care 近7日表现相对占优，Technology 相对承压，说明市场内部轮动并不均衡。",
-      "加密资产方面，BTC 近7日 -3.84%，ETH 近7日 -2.30%，短线更适合结合关键价位和成交确认判断延续性。"
+      "加密资产方面，BTC 近7日 -3.38%，ETH 近7日 -1.62%，短线更适合结合关键价位和成交确认判断延续性。"
     ],
     "deepStockDives": [
       {
@@ -424,34 +424,40 @@
     ],
     "cryptoProjectUpdates": [
       {
-        "project": "比特币生态",
-        "headline": "Cointelegraph Bitcoin & Ethereum Blockchain News",
-        "source": "cointelegraph.com",
-        "url": "https://cointelegraph.com"
-      },
-      {
         "project": "以太坊生态",
         "headline": "As crypto perpetual futures boom, Ethereum’s role is shifting",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/tech/2026/07/29/as-crypto-perpetual-futures-boom-ethereum-s-role-is-shifting"
       },
       {
-        "project": "比特币生态",
-        "headline": "Citadel bets on a Fed rate hike Wednesday as bitcoin (BTC ...",
-        "source": "coindesk.com",
-        "url": "https://www.coindesk.com/markets/2026/07/29/citadel-bets-on-a-fed-rate-hike-wednesday-as-bitcoin-analysts-call-a-hold-someone-will-be-wrong"
-      },
-      {
         "project": "交易所 / 市场结构",
-        "headline": "Binance launches regulated gold, silver options through ADGM exchange",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/binance-launches-regulated-gold-silver-options-through-adgm-exchange?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+        "headline": "S&P 500, Nasdaq futures inch up before Fed decision; chip stocks wobble - Reuters",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/business/sp-500-nasdaq-futures-inch-up-before-fed-decision-chip-stocks-wobble-2026-07-29/"
       },
       {
         "project": "Solana 生态",
         "headline": "Crypto entering biggest consolidation phase in history, says ARK analyst",
         "source": "Cointelegraph",
         "url": "https://cointelegraph.com/news/crypto-entering-biggest-consolidation-phase-in-history-says-ark-analyst?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      },
+      {
+        "project": "行业观察",
+        "headline": "Robinhood slides 4% despite earnings beat as crypto revenue cools",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/07/29/robinhood-slides-4-despite-earnings-beat-as-crypto-revenue-cools"
+      },
+      {
+        "project": "交易所 / 市场结构",
+        "headline": "Market warning signals flare again as tech, inflation fears intensify - Reuters",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/business/finance/global-markets-stress-graphic-2026-07-28/"
+      },
+      {
+        "project": "行业观察",
+        "headline": "BlackRock, Fidelity, other Wall Street giants back the Clarity Act - CoinDesk",
+        "source": "coindesk.com",
+        "url": "https://www.coindesk.com/policy/2026/07/28/blackrock-fidelity-other-wall-street-giants-back-the-clarity-act"
       }
     ],
     "marketCalendar": [
