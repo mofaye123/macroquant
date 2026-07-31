@@ -1,29 +1,29 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-07-31T21:39:51Z",
+  "reportGeneratedAt": "2026-07-31T22:44:38Z",
   "asOfDate": "2026-08-03",
   "headline": "宏观偏紧，优先风险控制与防守仓位。",
   "markdownSource": "gemini",
-  "markdownCharCount": 6427,
+  "markdownCharCount": 6650,
   "aiRender": {
     "enabled": true,
     "status": "ok",
     "usedFallback": false,
     "requestedModel": "gemini-2.5-pro",
     "usedModelFallback": true,
-    "charCount": 6426,
+    "charCount": 6649,
     "minCharTarget": 1500,
     "finishReason": "STOP",
-    "detail": "Gemini preview generated (6426 chars, finishReason=STOP).",
+    "detail": "Gemini preview generated (6649 chars, finishReason=STOP).",
     "model": "gemini-2.5-flash",
     "reasoningMode": "deep_think",
     "qualified": true,
     "qualifiedReason": "ok"
   },
-  "markdown": "# 市场研究日报（2026-08-03）\n\n## 一、热点要闻\n\n### 美联储政策展望：鹰派立场持续，市场寻求清晰指引\n\n近期市场对美联储货币政策走向的关注度持续升温。路透社报道指出，尽管当前加息门槛较高，但能源价格再度上涨，加剧了通胀压力，使得市场普遍预期美联储将继续保持“鹰派”论调。分析人士认为，美联储可能采取“鹰派暂停”的策略，即维持利率不变但传递出未来仍可能收紧政策的信号。然而，投资者普遍对美联储未能提供明确的未来政策路径感到失望，这种不确定性给股票和债券市场带来了复杂的影响。市场参与者正在努力消化美联储的谨慎态度，并重新评估其对经济前景和资产定价的影响。在当前宏观偏紧的环境下，投资者被建议优先进行风险控制和防守型仓位配置。\n\n### 国际大宗商品\n\n数据不足。\n\n### 宏观经济政策与市场动态\n\n在全球宏观经济政策层面，数字平台监管和加密资产合规性成为关注焦点。澳大利亚政府已对即时通讯平台Telegram提起诉讼，指控其未能有效处理平台上的恐怖主义相关内容。这一事件凸显了全球范围内政府对大型科技公司内容审查和平台责任的日益严格要求，预示着未来数字平台可能面临更严格的监管审查。\n\n与此同时，市场观察人士对当前经济周期中的资本支出趋势、区域经济复苏以及地缘政治风险（如乌克兰与伊朗局势）进行了深入探讨。这些宏观因素共同塑造了全球市场的复杂格局，影响着企业投资决策和供应链稳定性。\n\n在加密资产领域，前FTX交易所的用户报告称，在最新一轮的9亿美元资金分配中，部分资金已开始解冻并返还。这标志着FTX破产案中资产追回工作取得重要进展，对受损投资者而言是积极信号，也反映出监管机构和破产管理人为保护投资者利益所做的努力。此类事件对加密市场的合规性和投资者信心具有深远影响。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\n\n在过去24小时内，大宗商品市场表现分化。COMEX黄金价格报4098.6美元，微跌0.0366%，但近7日累计上涨0.76%，14日波动率为20.58%。COMEX白银价格报57.78美元，24小时下跌1.7683%，近7日下跌1.5%，14日波动率高达35.47%，显示出较高的短期不确定性。原油市场方面，WTI原油价格报86.8美元，24小时内显著上涨3.8402%，但近7日累计下跌2.81%；布伦特原油价格报90.12美元，24小时上涨1.2243%，近7日下跌6.88%。原油价格的短期反弹可能受到地缘政治或供给端消息的影响，但周度表现仍偏弱，14日波动率分别高达72.43%和83.33%，表明市场情绪波动剧烈。\n\n外汇市场中，美元指数（DXY）报99.8，24小时下跌0.207%，近7日累计下跌1.64%，14日波动率为5.6%，美元近期走弱。美国10年期国债收益率（US10Y）报4.74%，24小时上涨1.7585%，近7日上涨1.41%，14日波动率为14.56%，显示出债券市场对利率前景的担忧。CBOE波动率指数（VIX）报15.99，24小时下跌6.4365%，近7日累计下跌13.94%，14日波动率高达145.14%，VIX指数的显著下降通常预示着市场恐慌情绪的缓解，但其自身的高波动率也值得关注。\n\n### 加密货币表现\n\n加密货币市场在过去24小时内普遍承压。比特币（BTC）价格报62948.39美元，24小时下跌2.7453%，近7日累计下跌1.79%，14日波动率为28.75%。以太坊（ETH）价格报1860.65美元，24小时下跌2.9584%，但近7日基本持平，微涨0.03%，14日波动率为39.76%。Solana（SOL）价格报72.96美元，24小时下跌2.025%，近7日累计下跌1.25%，14日波动率为35.17%。整体而言，主流加密货币在短期内面临回调压力，市场情绪较为谨慎，投资者正在观察关键价位是否能获得有效支撑。\n\n### 美股指数表现\n\n美国股市主要指数在过去24小时内普遍上涨，但周度表现有所分化。道琼斯工业平均指数（DJI）报52485.03点，24小时上涨0.5305%，近7日累计上涨1.04%，14日波动率为16.59%。标普500指数（SPX）报7489.72点，24小时上涨0.7004%，近7日累计上涨1.05%，14日波动率为14.87%。纳斯达克综合指数（IXIC）报25373.85点，24小时上涨1.0018%，近7日累计上涨1.59%，14日波动率为23.02%，科技股表现相对强势。罗素2000指数（RUT）报2931.34点，24小时下跌0.501%，近7日微涨0.05%，14日波动率为16.11%，小型股表现相对疲软。SPDR标普500ETF（SPY）和Invesco QQQ（QQQ）分别上涨0.72%和0.6496%，与对应指数走势一致。\n\n### 科技巨头动态\n\n主要科技巨头股价在过去24小时内多数上涨，但中短期趋势信号显示出复杂性。特斯拉（TSLA）24小时上涨0.76%，但近7日和20日分别下跌16.79%和20.9%，14日RSI为18.08，信号为“趋势走弱”，表明其面临显著的下行压力。微软（MSFT）24小时大涨3.02%，近7日和20日分别上涨19.06%和19.01%，但14日RSI高达75.0，信号仍为“趋势走弱”，可能暗示超买后的回调风险。亚马逊（AMZN）24小时飙升15.32%，近7日和20日分别上涨10.92%和11.91%，14日RSI为64.04，信号同样为“趋势走弱”，其短期爆发式上涨可能需要警惕。博通（AVGO）24小时上涨0.37%，近7日下跌1.9%，近20日上涨8.0%，14日RSI为52.43，信号为“趋势走弱”。Meta（META）24小时上涨3.28%，但近7日和20日分别下跌11.23%和4.49%，14日RSI为22.9，信号为“趋势多头”，这可能反映出其在经历前期下跌后技术面出现企稳迹象。\n\n### 板块异动观察\n\n从行业板块表现来看，市场内部轮动仍在进行。科技板块（XLK）24小时下跌0.2162%，近7日下跌0.3%，14日波动率为38.56%。金融板块（XLF）24小时下跌0.1053%，但近7日累计上涨1.12%，14日波动率为13.48%，表现相对占优。能源板块（XLE）24小时上涨1.0007%，但近7日下跌0.12%，14日波动率为19.23%。医疗保健板块（XLV）24小时下跌0.5932%，近7日基本持平，14日波动率为19.26%。工业板块（XLI）24小时上涨0.8128%，但近7日累计下跌1.54%，14日波动率为21.07%，表现相对偏弱。\n\n### 市场复盘总结\n\n当前市场总分处于中低位，整体环境偏紧，技术触发信号需要搭配更严格的仓位与止损规则。本周市场的主要驱动力来自风险偏好，其边际变化录得+34.0，表明投资者情绪有所回暖。然而，主要拖累因素仍是资金价格与摩擦，边际变化为-15.6，高利率环境和融资成本持续对市场构成压力。\n\n权益资产方面，标普500指数近7日上涨1.05%，纳斯达克综合指数近7日上涨1.59%，这说明成长型资产仍在消化宏观经济和估值的双重约束，但短期内风险偏好提升为其提供了支撑。行业层面，金融板块近7日表现相对占优，而工业板块相对承压，显示出市场内部轮动并不均衡，资金可能在寻求相对安全的价值型或受益于利率环境的板块。\n\n波动与利率环境方面，VIX指数现报15.99，较前期有所下降，表明市场恐慌情绪有所缓解。美国10年期国债收益率现报4.74%，维持在较高水平，继续对市场估值形成压力。加密资产方面，比特币近7日下跌1.79%，以太坊近7日微涨0.03%，短期内加密市场走势更适合结合关键价位和成交量确认来判断延续性。\n\n## 三、深度个股解读\n\n### 特斯拉 (TSLA)\n\n**事件概述：** 特斯拉股价在过去24小时内小幅上涨0.76%，但近7日累计下跌16.79%，近20日更是下跌20.90%，14日年化波动率高达80.0%。其RSI14指标为18.08，显示出严重的超卖状态。\n\n**市场解读：** 尽管短期内出现小幅反弹，但特斯拉股价在中短期内呈现明显的趋势走弱信号。其持续的下跌和高波动率反映了市场对其未来增长前景、竞争压力以及宏观经济逆风的担忧。超卖状态可能引发技术性反弹，但缺乏基本面或重大催化剂的支撑，反弹的持续性存疑。\n\n**投资启示：** 鉴于其中短期结构偏弱，投资者应优先采取防守策略，控制仓位，并等待股价出现放量企稳的明确信号。在当前环境下，不宜盲目抄底，应以规避风险为主。\n\n### 微软 (MSFT)\n\n**事件概述：** 微软股价在过去24小时内大幅上涨3.02%，近7日和20日分别录得19.06%和19.01%的显著涨幅，14日年化波动率为85.5%。其RSI14指标高达75.0，处于超买区域。\n\n**市场解读：** 微软近期表现强劲，股价持续走高，反映了市场对其云计算业务增长、人工智能投入以及稳健财务业绩的认可。然而，尽管股价表现亮眼，其技术信号仍为“趋势走弱”，且RSI处于超买区域，这可能意味着股价上涨动能面临透支风险，短期内存在回调压力。\n\n**投资启示：** 尽管微软基本面强劲，但鉴于其技术面超买和“趋势走弱”的信号，投资者应保持警惕。优先防守性持有，并密切关注市场情绪和技术指标变化，等待放量企稳信号或健康回调后的介入机会。\n\n### 亚马逊 (AMZN)\n\n**事件概述：** 亚马逊股价在过去24小时内飙升15.32%，近7日和20日分别上涨10.92%和11.91%，14日年化波动率为89.3%。其RSI14指标为64.04。\n\n**市场解读：** 亚马逊股价的短期爆发式上涨可能与特定利好消息（如财报超预期或业务进展）有关，显示出市场对其增长潜力的强烈信心。然而，与微软类似，其技术信号仍为“趋势走弱”，这可能暗示短期内股价的快速拉升并未完全扭转中长期技术面的压力，或者市场对其估值存在分歧。\n\n**投资启示：** 亚马逊的短期表现令人瞩目，但投资者仍需谨慎。在当前“趋势走弱”的信号下，应优先采取防守策略，避免追高，并等待市场对其股价的进一步确认，或在回调后寻找更稳健的入场点。\n\n### 博通 (AVGO)\n\n**事件概述：** 博通股价在过去24小时内微涨0.37%，近7日下跌1.90%，近20日上涨8.00%，14日年化波动率为48.7%。其RSI14指标为52.43。\n\n**市场解读：** 博通股价近期表现相对平稳，短期内略有波动，但中长期仍保持一定涨幅。其技术信号为“趋势走弱”，RSI处于中性区域，表明市场对其前景存在一定观望情绪。半导体行业面临周期性波动和宏观不确定性，博通作为行业重要参与者，其股价走势受多重因素影响。\n\n**投资启示：** 鉴于其中短期结构偏弱，投资者应优先防守，密切关注行业动态和公司基本面变化。在当前市场环境下，等待股价出现放量企稳的明确信号，以降低投资风险。\n\n### Meta (META)\n\n**事件概述：** Meta股价在过去24小时内上涨3.28%，但近7日累计下跌11.23%，近20日下跌4.49%，14日年化波动率为53.7%。其RSI14指标为22.9，处于超卖区域。\n\n**市场解读：** 尽管Meta股价在过去7日和20日有所下跌，但其24小时内出现反弹，且技术信号为“趋势多头”，RSI处于超卖区域。这可能表明在经历一轮下跌后，市场对其估值或未来业务转型（如元宇宙）的信心有所恢复，或者技术性买盘开始介入。\n\n**投资启示：** Meta的均线结构偏多，且RSI超卖，可能预示着短期内存在反弹机会。投资者可优先顺势持有，并考虑在回调时分批处理，以优化持仓成本。但仍需关注其基本面改善的持续性。\n\n## 四、加密货币项目动态\n\n**比特币生态：** 分析师指出，比特币在经历了一轮“强制抛售”后，成功守住了月度涨幅，但预计八月份市场将呈现“震荡”走势。这表明市场情绪可能在短期内趋于稳定，但缺乏强劲的上涨动力，投资者需警惕波动。\n\n**市场结构与宏观影响：** 华尔街即将迎来关键一周，美国股市面临就业报告和大型企业财报的双重考验。这一宏观背景可能对加密市场产生溢出效应，影响投资者的风险偏好和资金流向。\n\n**Coinbase业绩与战略：** 加密货币交易所Coinbase公布了连续第三个季度的亏损，主要原因是交易活动放缓。尽管如此，分析师普遍支持其多元化战略，认为这有助于公司应对市场波动并实现长期增长。Coinbase股价因此受到冲击，但市场对其长期发展仍抱有期待。\n\n**Tether财务状况：** 稳定币发行商Tether在第二季度实现了15亿美元的运营利润，但其储备缓冲金减少了一半。这引发了市场对其储备金充足性和稳定币挂钩稳定性的关注，尽管Tether强调其财务稳健。\n\n**机构资金与自托管风险：** 加密硬件钱包Coldcard近期遭遇了高达3800万美元的漏洞攻击，这动摇了投资者对自托管安全性的信心，并可能促使更多投资者转向受监管的加密ETF产品，以寻求更高的安全保障。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n\n*   **2026-08-04 10:00 ET (14:00 UTC) | 美国 | 美国 JOLTS 职位空缺**\n    *   重要性：中\n    *   说明：劳工统计局（BLS）官方发布日历。该数据反映劳动力市场需求，对美联储货币政策决策具有参考意义。\n*   **2026-08-05 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存**\n    *   重要性：中\n    *   说明：美国能源信息署（EIA）官方页面；节假日周可能调整发布时间。该数据是衡量美国原油供需关系的关键指标，对全球原油价格有直接影响。\n*   **2026-08-06 08:30 ET (12:30 UTC) | 美国 | 美国生产率与单位劳动力成本**\n    *   重要性：低\n    *   说明：劳工统计局（BLS）官方发布日历。该数据反映经济效率和通胀压力，但市场关注度相对较低。\n*   **2026-08-07 08:30 ET (12:30 UTC) | 美国 | 美国非农就业数据**\n    *   重要性：高\n    *   说明：劳工统计局（BLS）官方发布日历。这是每月最重要的经济数据之一，对美联储政策、美元走势和股市情绪具有决定性影响。\n\n### 重要事件预告\n\n数据不足。\n\n### 机构观点\n\n市场观察显示，当前市场总分已落入偏紧区域，这使得投资组合更适合采取防守和降低杠杆的策略，优先控制回撤而非追求高胜率的进攻机会。从边际变化来看，风险偏好是当前市场的主要支撑项，而资金价格与摩擦仍是主要的拖累项，这意味着跨资产走势更可能围绕这组分化展开。\n\n在权益资产方面，标普500指数口径近7日上涨1.05%，纳斯达克指数口径近7日上涨1.59%，这表明成长型资产仍在消化宏观环境和估值的双重约束，但短期内风险偏好回升为其提供了部分支撑。行业层面，金融板块近7日表现相对占优，而工业板块相对承压，说明市场内部轮动并不均衡，资金可能在寻求相对稳健或受益于当前利率环境的板块。\n\n加密资产方面，比特币近7日下跌1.79%，以太坊近7日微涨0.03%，短线交易者更适合结合关键价位和成交量确认来判断市场走势的延续性，避免盲目追涨杀跌。\n\n## 免责声明\n\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
+  "markdown": "# 市场研究日报（2026-08-03）\n\n## 一、热点要闻\n\n### 美联储维持利率不变，市场预期分歧与未来展望\n上周，美联储联邦公开市场委员会（FOMC）决定维持联邦基金利率不变，此举在市场中引发了复杂的情绪。尽管多数投资者对此表示“松了一口气”，但委员会内部的分歧显而易见，有三名官员投票支持加息，表明对通胀持续高企的担忧依然存在。这一决定与部分市场参与者的预期形成对比，例如Citadel Securities此前曾押注美联储将在周三加息，而加密货币分析师则普遍预计将维持利率不变。这种预期的分歧凸显了当前宏观经济环境的复杂性。\n\n**要点：**\n- 美联储FOMC会议决定维持利率不变，符合多数市场预期。\n- 委员会内部存在分歧，三名官员倾向于加息，反映对通胀压力的持续关注。\n- 市场对此次决议的初步反应是“松了一口气”，但分析师警告称，如果通胀居高不下，9月份的会议可能面临更艰难的抉择。\n- 加密货币市场在决议公布后表现平稳，但围绕美联储政策路径的争论仍在继续。\n\n**市场影响：**\n美联储的按兵不动暂时缓解了市场对紧缩政策进一步收紧的担忧，为风险资产提供了一定的喘息空间。然而，内部的分歧以及对未来通胀走势的警示，预示着货币政策的路径仍充满不确定性。投资者需密切关注即将公布的经济数据，以评估美联储在9月会议上采取行动的可能性。加密货币市场虽然短期内未受显著冲击，但其长期走势仍将受宏观流动性环境的深刻影响。\n\n### 国际大宗商品\n数据不足。\n\n### 宏观经济政策与行业动态\n近期宏观经济政策层面，市场关注点集中在金融服务业的动态以及加密货币领域的监管进展和用户资金安全。华尔街日报的金融服务综述提及，尽管伊朗局势紧张，但氧化铝价格保持稳定，而美国铝业公司（Alcoa）下调了产量指导，这反映出全球供应链和地缘政治风险对工业生产的影响依然存在，但并非所有商品都同步受到冲击。\n\n在加密货币领域，前FTX交易所的用户报告称，在最新一轮的9亿美元资金分配中，部分资金已开始解冻并释放。这标志着FTX破产案在用户赔偿方面取得了实质性进展，对于受影响的投资者而言无疑是积极信号，有助于逐步恢复市场信心。此类事件的进展对加密货币行业的合规性和投资者保护具有重要意义，也可能影响未来监管框架的制定。\n\n**要点：**\n- 金融服务业面临全球供应链和地缘政治风险挑战，但部分商品价格表现出韧性。\n- Alcoa下调产量指导，暗示工业生产可能面临压力。\n- FTX前用户开始收到9亿美元的资金分配，标志着破产重组进程取得进展。\n\n**市场影响：**\n宏观经济政策的复杂性以及地缘政治因素对传统产业的影响，促使投资者对风险资产保持谨慎。同时，FTX用户资金的解冻，虽然对整体市场流动性影响有限，但对于加密货币行业的声誉和投资者信心建设具有积极作用。这可能促使更多机构和个人重新评估加密资产的风险与机遇，并关注行业内合规与透明度的提升。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\n上周市场波动加剧，大宗商品与外汇市场呈现分化走势。COMEX黄金价格报4098.6美元，24小时跌幅0.0366%，近7日累计上涨0.76%，14日波动率为20.58%，显示出在宏观不确定性下，黄金的避险属性仍有体现，但短期内面临小幅回调。COMEX白银价格为57.78美元，24小时下跌1.7683%，近7日累计下跌1.5%，14日波动率高达35.47%，白银表现相对疲软，波动性显著高于黄金。\n\n原油市场方面，WTI原油价格报86.8美元，24小时内大幅上涨3.8402%，但近7日累计下跌2.81%，14日波动率达到72.43%。布伦特原油价格报90.12美元，24小时上涨1.2243%，近7日累计下跌6.88%，14日波动率83.33%。尽管短期内油价有所反弹，但过去一周的整体跌幅较大，显示出对全球经济增长放缓和需求前景的担忧。\n\n外汇市场中，美元指数（DXY）报99.8，24小时下跌0.207%，近7日累计下跌1.64%，14日波动率为5.6%。美元走弱为其他货币提供了支撑。美国10年期国债收益率（US10Y）报4.74%，24小时上涨1.7585%，近7日累计上涨1.41%，14日波动率为14.56%，收益率的回升反映了市场对通胀和未来利率路径的预期。CBOE波动率指数（VIX）报15.99，24小时下跌6.4365%，近7日累计下跌13.94%，14日波动率为145.14%，VIX指数的显著回落表明市场恐慌情绪有所缓解，风险偏好边际改善。\n\n### 加密货币表现\n加密货币市场在过去24小时内普遍承压，但近7日表现有所分化。比特币（BTC）现价62886.07美元，24小时下跌2.8416%，近7日累计下跌1.89%，14日波动率为29.0%。以太坊（ETH）现价1861.71美元，24小时下跌2.9031%，但近7日累计微涨0.08%，14日波动率为39.64%。Solana（SOL）现价72.84美元，24小时下跌2.1862%，近7日累计下跌1.41%，14日波动率为35.42%。整体来看，比特币和Solana在过去一周表现偏弱，而以太坊则相对稳定。市场执行上，BTC需要关注关键价位是否出现放量确认，以判断其延续性。\n\n### 美股指数表现\n美国股市主要指数在过去24小时和近7日均呈现上涨态势。道琼斯工业平均指数（DJI）报52485.03点，24小时上涨0.5305%，近7日累计上涨1.04%，14日波动率为16.59%。标普500指数（SPX）报7489.72点，24小时上涨0.7004%，近7日累计上涨1.05%，14日波动率为14.87%。纳斯达克综合指数（IXIC）报25373.85点，24小时上涨1.0018%，近7日累计上涨1.59%，14日波动率为23.02%。罗素2000指数（RUT）报2931.34点，24小时下跌0.501%，近7日累计上涨0.05%，14日波动率为16.11%。\n\nETF方面，SPDR标普500ETF（SPY）报747.03美元，24小时上涨0.72%，近7日累计上涨1.1%，14日波动率为14.99%。Invesco QQQ ETF（QQQ）报687.99美元，24小时上涨0.6496%，近7日累计上涨0.55%，14日波动率为26.49%。美股整体表现稳健，尤其以科技股为主的纳斯达克指数涨幅居前，但罗素2000指数的微弱表现显示中小盘股仍面临一定压力。\n\n### 科技巨头动态\n主要科技巨头近期表现分化，且多数技术信号显示趋势走弱，需优先防守。\n- **特斯拉（TSLA）**：近1日上涨0.76%，但近7日大幅下跌16.79%，近20日累计下跌20.9%。RSI14为18.08，信号显示“趋势走弱”。\n- **微软（MSFT）**：近1日上涨3.02%，近7日大幅上涨19.06%，近20日累计上涨19.01%。RSI14为75.0，信号显示“趋势走弱”，尽管短期涨幅巨大，但RSI已进入超买区域，需警惕回调风险。\n- **亚马逊（AMZN）**：近1日大幅上涨15.32%，近7日上涨10.92%，近20日累计上涨11.91%。RSI14为64.04，信号显示“趋势走弱”，与微软类似，短期涨幅显著但技术信号提示谨慎。\n- **博通（AVGO）**：近1日上涨0.37%，近7日下跌1.9%，近20日累计上涨8.0%。RSI14为52.43，信号显示“趋势走弱”。\n- **Meta（META）**：近1日上涨3.28%，近7日下跌11.23%，近20日累计下跌4.49%。RSI14为22.9，信号显示“趋势多头”，是少数显示多头趋势的科技巨头，但近7日和20日仍有下跌。\n\n### 板块异动观察\n行业板块方面，市场轮动特征明显。\n- **科技板块（XLK）**：现价175.35美元，24小时下跌0.2162%，近7日累计下跌0.3%，14日波动率为38.56%。科技板块表现平稳，略有回调。\n- **金融板块（XLF）**：现价56.94美元，24小时下跌0.1053%，近7日累计上涨1.12%，14日波动率为13.48%。金融板块在过去7日表现相对占优，领跑市场。\n- **能源板块（XLE）**：现价59.55美元，24小时上涨1.0007%，近7日累计下跌0.12%，14日波动率为19.23%。能源板块短期反弹，但周度表现持平。\n- **医疗保健板块（XLV）**：现价162.55美元，24小时下跌0.5932%，近7日累计下跌0.01%，14日波动率为19.26%。医疗保健板块表现平稳，几乎无变化。\n- **工业板块（XLI）**：现价179.84美元，24小时上涨0.8128%，近7日累计下跌1.54%，14日波动率为21.07%。工业板块在过去7日表现偏弱，相对承压。\n\n综合来看，当前市场总分处于中低位，风险等级为中高，宏观偏紧的背景下，优先风险控制与防守仓位是主要策略。本周市场的主要驱动力来自风险偏好边际改善，贡献了34.0的积极变化。然而，资金价格与摩擦仍是主要拖累项，边际变化为-15.6。这种驱动与拖累的对立，预示着跨资产走势可能围绕分化展开。波动性方面，VIX指数报15.99，显示市场恐慌情绪有所缓解；10年期美债收益率报4.74%，反映出对未来利率的预期。\n\n## 三、深度个股解读\n\n### 特斯拉（TSLA）\n**事件概述：** 特斯拉股票近期表现疲软，近1日小幅上涨0.76%，但近7日累计大幅下跌16.79%，近20日更是累计下跌20.90%，14日年化波动率高达80.0%。其技术信号显示为“趋势走弱”。\n**市场解读：** 特斯拉在过去几周面临显著的下行压力，尽管近期有所反弹，但整体趋势仍偏弱。这可能与宏观经济逆风、电动汽车市场竞争加剧、以及公司自身面临的生产和交付挑战等因素有关。高波动率也反映了市场对其未来业绩和增长前景的不确定性。\n**投资启示：** 鉴于其中短期结构偏弱，投资者应优先采取防守策略，控制仓位风险。建议等待市场出现明确的放量企稳信号，或公司基本面出现积极改善的催化剂后，再考虑重新评估其投资价值。\n\n### 微软（MSFT）\n**事件概述：** 微软股票在近期表现强劲，近1日上涨3.02%，近7日累计上涨19.06%，近20日累计上涨19.01%，14日年化波动率为85.5%。然而，其技术信号仍显示为“趋势走弱”。\n**市场解读：** 尽管微软在过去一周及近20日内实现了显著的股价上涨，这可能得益于其在云计算、人工智能等领域的持续领先地位以及强劲的财报表现。然而，技术信号仍提示“趋势走弱”，这可能意味着短期内股价上涨过快，存在技术性回调的风险，或者市场对其长期增长的持续性仍存疑虑，需要警惕高位震荡。\n**投资启示：** 对于微软这类短期内涨幅巨大的股票，投资者应保持谨慎。虽然基本面强劲，但技术信号的“趋势走弱”提示可能面临调整。建议优先防守，密切关注股价在关键支撑位的表现，并等待更明确的企稳信号，以避免追高风险。\n\n### Meta（META）\n**事件概述：** Meta股票近1日上涨3.28%，但近7日累计下跌11.23%，近20日累计下跌4.49%，14日年化波动率为53.7%。其均线结构偏多，技术信号显示为“趋势多头”。\n**市场解读：** Meta的股价在过去一周和近20日内有所回调，但其均线结构仍保持多头趋势，表明市场对其长期增长前景仍抱有信心。这种短期回调可能与市场对广告收入增长放缓的担忧、元宇宙投入的持续高企以及宏观经济不确定性等因素有关。然而，“趋势多头”信号暗示，在回调后可能仍有上涨潜力。\n**投资启示：** 鉴于Meta的均线结构偏多且技术信号显示为“趋势多头”，投资者可优先考虑顺势持有。对于寻求入场的投资者，可以考虑在回调时分批建仓或加仓，以把握其长期增长潜力。同时，需密切关注公司在元宇宙战略、广告业务恢复以及成本控制方面的进展。\n\n## 四、加密货币项目动态\n\n**比特币生态：** 尽管美联储采取鹰派立场，人工智能市场出现波动，以及Coldcard硬件钱包遭遇安全事件，比特币在7月份仍保持了价格上涨。Citadel Securities曾押注美联储加息，而比特币分析师则普遍预计美联储将维持利率不变，这种分歧凸显了市场对宏观经济走向的不同解读。\n\n**交易所/市场结构：** 德克萨斯证券交易所（Texas Stock Exchange）宣布首次亮相，旨在提供新的交易平台，这可能为美国传统金融市场带来新的竞争格局。同时，前FTX交易所的用户报告称，在最近一轮9亿美元的资金分配中，其被冻结的资金正在逐步解冻和释放，这对于受影响的投资者而言是积极进展，有助于恢复市场信心。\n\n**以太坊生态：** 稳定币发行商Tether在第二季度实现了15亿美元的运营利润，但其储备缓冲金减少了一半，这引发了市场对其储备健康状况的关注。\n\n**ETF/机构资金：** Coldcard硬件钱包遭遇了3800万美元（截至目前）的漏洞攻击，这动摇了市场对自我托管安全性的信心，并可能促使更多投资者转向受监管的加密货币ETF，以寻求更安全的资产管理方式。\n\n**行业观察：** 亚洲股市在美国股市反弹的带动下普遍上涨，日元走强，显示出全球市场情绪的联动性。此外，美联储维持利率不变的决定，尽管有三名官员支持加息，但加密货币市场整体保持平稳。市场对永续合约（perps）的优缺点进行了深入讨论，交易员们对其风险和收益有着不同的看法。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n- **2026-08-04 10:00 ET (14:00 UTC) | 美国 | 美国 JOLTS 职位空缺**\n  重要性：中\n  说明：由美国劳工统计局（BLS）官方发布，衡量劳动力市场需求的重要指标。\n- **2026-08-05 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存**\n  重要性：中\n  说明：由美国能源信息署（EIA）官方发布，反映美国原油供需状况，对全球油价有重要影响。节假日周可能调整发布时间。\n- **2026-08-06 08:30 ET (12:30 UTC) | 美国 | 美国生产率与单位劳动力成本**\n  重要性：低\n  说明：由美国劳工统计局（BLS）官方发布，反映经济效率和通胀压力。\n- **2026-08-07 08:30 ET (12:30 UTC) | 美国 | 美国非农就业数据**\n  重要性：高\n  说明：由美国劳工统计局（BLS）官方发布，是衡量美国劳动力市场健康状况和美联储货币政策决策的关键指标。\n\n### 重要事件预告\n数据不足。\n\n### 市场观察/交易台观察\n当前市场总分已落入偏紧区域，表明宏观环境对风险资产构成压力。在这种背景下，投资组合更适合采取防守策略并降低杠杆，优先控制回撤风险而非积极追求高胜率的进攻性机会。\n\n从边际变化来看，风险偏好是当前市场的主要支撑项，其积极变化为市场提供了一定动力。然而，资金价格与摩擦仍是主要的拖累项，持续对市场流动性和融资成本施加压力。这种驱动与拖累的对立，预示着跨资产走势更可能围绕分化展开，投资者需警惕不同资产类别之间的表现差异。\n\n权益资产方面，标普500指数近7日上涨1.05%，纳斯达克综合指数近7日上涨1.59%，这表明成长型资产仍在努力消化宏观经济逆风和估值双重约束带来的影响。尽管有所上涨，但其持续性仍需观察。\n\n行业层面，金融板块（XLF）在近7日表现相对占优，累计上涨1.12%，显示出市场对该板块的信心。相比之下，工业板块（XLI）表现相对承压，近7日下跌1.54%，说明市场内部的轮动并不均衡，部分传统工业板块可能面临挑战。\n\n加密资产方面，比特币（BTC）近7日下跌1.89%，而以太坊（ETH）近7日微涨0.08%。短期内，加密资产的走势更适合结合关键价位和成交量确认来判断其延续性，尤其是在宏观不确定性增加的背景下，投资者应保持谨慎。\n\n## 免责声明\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
   "daily": {
     "asOfDate": "2026-08-03",
-    "generatedAt": "2026-07-31T21:39:06Z",
+    "generatedAt": "2026-07-31T22:43:58Z",
     "headline": "宏观偏紧，优先风险控制与防守仓位。",
     "quickView": {
       "overallScore": 38.66,
@@ -39,30 +39,30 @@
         "ticker": "BTC",
         "name": "Bitcoin",
         "bucket": "crypto",
-        "spot": 62948.39,
-        "change24hPct": -2.7453,
-        "change7dPct": -1.79,
-        "realizedVol14dPct": 28.75,
+        "spot": 62886.07,
+        "change24hPct": -2.8416,
+        "change7dPct": -1.89,
+        "realizedVol14dPct": 29.0,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "Ethereum",
         "bucket": "crypto",
-        "spot": 1860.65,
-        "change24hPct": -2.9584,
-        "change7dPct": 0.03,
-        "realizedVol14dPct": 39.76,
+        "spot": 1861.71,
+        "change24hPct": -2.9031,
+        "change7dPct": 0.08,
+        "realizedVol14dPct": 39.64,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "Solana",
         "bucket": "crypto",
-        "spot": 72.96,
-        "change24hPct": -2.025,
-        "change7dPct": -1.25,
-        "realizedVol14dPct": 35.17,
+        "spot": 72.84,
+        "change24hPct": -2.1862,
+        "change7dPct": -1.41,
+        "realizedVol14dPct": 35.42,
         "source": "yfinance"
       },
       {
@@ -248,39 +248,22 @@
     ],
     "hotNews": [
       {
-        "title": "Nasdaq 100 leads US futures higher as Amazon surge offsets Apple decline - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. July 31 (Reuters) - Nasdaq futures led gains on Friday, with Amazon's shares (AMZN.O), opens new tab jumping 12% after the Big Tech ​company join",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/nasdaq-100-leads-us-futures-higher-amazon-surge-offsets-apple-decline-2026-07-31/",
-        "publishedAt": "2026-07-31T10:22:56Z",
-        "bucket": "equity",
-        "editorScore": 20.7833
-      },
-      {
-        "title": "Bitcoin holds monthly gain, faces 'choppy' August as 'forced-selling' exhausted, analysts say",
-        "source": "CoinDesk",
+        "title": "Bitcoin (BTC) July price gain survives hawkish Fed, AI meltdown and Coldcard fallout",
+        "summary": "Since then, average daily liquidations have remained well below this year's typical $400 million-$500 million range, suggesting there has been little forced selling despite the macro shock, according to Bitfinex.\n\n\"Crypto fell less than levered equity themes because the forced-se",
+        "source": "coindesk.com",
         "url": "https://www.coindesk.com/markets/2026/07/31/bitcoin-holds-onto-july-gain-as-forced-selling-fuel-was-already-spent-analysts-say",
         "publishedAt": "2026-07-31T20:50:58Z",
         "bucket": "crypto",
-        "editorScore": 18.3002
+        "editorScore": 22.4301
       },
       {
-        "title": "Wall St Week Ahead Teetering US stock market faces jobs report, big earnings week - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. A trader works on the floor at the New York Stock Exchange (NYSE) in New York City, U.S., July 29, 2026. NEW YORK, July 31 (Reuters) - U.S. emplo",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/wall-st-week-ahead-teetering-us-stock-market-faces-jobs-report-big-earnings-week-2026-07-31/",
-        "publishedAt": "2026-07-31T10:02:49Z",
-        "bucket": "equity",
-        "editorScore": 18.0995
-      },
-      {
-        "title": "Coinbase shares take hit on quarterly loss, analysts back diversification strategy - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. Item 1 of 2 A smartphone with displayed Coinbase logo and representation of cryptocurrencies are placed on a keyboard in this ",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/finance/coinbase-shares-take-hit-quarterly-loss-analysts-back-diversification-strategy-2026-07-31/",
-        "publishedAt": "2026-07-31T11:54:23Z",
+        "title": "Texas Stock Exchange Heralds Debut With Sights ...",
+        "summary": "The Dallas-based securities market is now fully up and running after trading began earlier this month with a subgroup of tickers, according to Greg Ferrari, chief operating officer of owner TXSE Group Inc. The company will hold a bell-ringing ceremony Friday afternoon at its temp",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/news/articles/2026-07-31/texas-stock-exchange-heralds-debut-with-sights-on-nyse-nasdaq",
+        "publishedAt": "2026-07-31T12:00:00Z",
         "bucket": "crypto",
-        "editorScore": 17.8644
+        "editorScore": 17.8178
       },
       {
         "title": "Tether posts $1.5 billion operating profit in Q2 as reserve buffer falls by half",
@@ -288,52 +271,43 @@
         "url": "https://www.coindesk.com/business/2026/07/31/tether-posts-usd1-5-billion-operating-profit-in-q2-as-reserve-buffer-falls-by-half",
         "publishedAt": "2026-07-31T18:24:55Z",
         "bucket": "crypto",
-        "editorScore": 17.4916
+        "editorScore": 17.2216
       },
       {
-        "title": "Crypto exchange Coinbase logs third straight quarterly loss on trading slowdown - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. July 30 (Reuters) - Coinbase Global (COIN.O), opens new tab posted a third straight quarterly loss on ​Thursday as a prolonged",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/finance/crypto-exchange-coinbase-reports-third-straight-quarterly-loss-trading-slowdown-2026-07-30/",
-        "publishedAt": "2026-07-30T20:16:01Z",
+        "title": "Financial Services Roundup: Market Talk",
+        "summary": "Copyright ©2026 Dow Jones & Company, Inc. All Rights Reserved. 87990cbe856818d5eddac44c7b1cdeb8\n\n## Videos\n\n### Most Popular News\n\n### Most Popular\n\n### Further Reading\n\n### Alcoa Cuts Production Guidance, Says Alumina Prices Stable Despite Iran War\n\n### Alcoa Receives Internatio",
+        "source": "wsj.com",
+        "url": "https://www.wsj.com/business/financial-services-roundup-market-talk-c712a670",
+        "publishedAt": "2026-07-31T11:35:00Z",
+        "bucket": "geopolitics",
+        "editorScore": 16.8136
+      },
+      {
+        "title": "Asia Stocks to Gain as US Peers Rebound, Yen Gains: Markets Wrap",
+        "summary": "News\n\nMarketsEconomicsTechnologyPoliticsGreenCryptoAI\n\nWork & Life\n\nWealthPursuitsBusinessweekCityLabSportsEqualityManagement & Work\n\nMarket Data\n\nStocksCommoditiesRates & BondsCurrenciesFuturesSectorsEconomic Calendar\n\nExplore\n\nNewslettersExplainersPointed News QuizAlphadots Gam",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/news/articles/2026-07-30/stock-market-today-dow-s-p-live-updates",
+        "publishedAt": "2026-07-30T22:15:33Z",
         "bucket": "equity",
-        "editorScore": 14.6545
+        "editorScore": 14.8826
       },
       {
-        "title": "Market Talk: 'Expect another hawkish tone' from the Fed - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. The bar to a Fed hike today is high, but energy prices are on the rise again. ## Market Talk: '",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/video/watch/idRW170329072026RP1/",
-        "publishedAt": "2026-07-29T10:58:36Z",
+        "title": "Citadel Securities bets on a Fed rate hike Wednesday as bitcoin analysts call a hold. Someone will be wrong.",
+        "summary": "1.   1Quantum computing nears commercial breakthrough, IBM CEO says29 minutes ago  \n2.   2Crypto faces 3 barriers to next bull run, STS Digital CEO says1 hour ago  \n3.   3Circle secures New York trust charter as crypto regulatory push accelerates2 hours ago  \n4.   4Coinbase's wea",
+        "source": "coindesk.com",
+        "url": "https://www.coindesk.com/markets/2026/07/29/citadel-bets-on-a-fed-rate-hike-wednesday-as-bitcoin-analysts-call-a-hold-someone-will-be-wrong",
+        "publishedAt": "2026-07-29T22:00:00Z",
+        "bucket": "macro_policy",
+        "editorScore": 14.6
+      },
+      {
+        "title": "Fed holds rates steady as 3 officials push for hike while crypto market stays flat",
+        "summary": "Stephen Coltman, head of macro at 21Shares, described the decision as a \"sigh of relief\" for investors but warned that it could set up a difficult September meeting if inflation stays elevated.\n\nSygnum Bank Investment Strategist Can-Luca Köymen similarly said the decision shows t",
+        "source": "theblock.co",
+        "url": "https://www.theblock.co/post/410092/fed-holds-rates-steady-three-officials-push-hike-crypto-market-stays-flat",
+        "publishedAt": "2026-07-29T19:38:31Z",
         "bucket": "macro_policy",
         "editorScore": 14.3
-      },
-      {
-        "title": "Fed's 'hawkish hold' muddies path for stocks and bonds - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. NEW YORK, July 30 (Reuters) - Investors searching for clarity from a newly led U.S. Federal Reserve were disappointed on Wedne",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/feds-hawkish-hold-muddies-path-stocks-bonds-2026-07-30/",
-        "publishedAt": "2026-07-30T05:04:06Z",
-        "bucket": "macro_policy",
-        "editorScore": 13.9
-      },
-      {
-        "title": "Australia takes Telegram to court over alleged terror content - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Israel and Hamas at War. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. *   ### Image 3: Australia takes Telegram to court over alleged te",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/video/watch/idRW192330072026RP1/?chan=world-news",
-        "publishedAt": "2026-07-30T05:02:27Z",
-        "bucket": "geopolitics",
-        "editorScore": 13.6
-      },
-      {
-        "title": "Three midweek thoughts — cresting capex, Burnham bounce and Ukraine-Iran - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Ukraine and Russia at War. ## Browse Markets. LONDON, July 29 (Reuters) - This week's headlines have been packed with Big Tech quarterlies, central bank meetings",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/commentary/reuters-open-interest/three-midweek-thoughts-cresting-capex-burnham-bounce-ukraine-iran-2026-07-29/",
-        "publishedAt": "2026-07-29T06:00:42Z",
-        "bucket": "geopolitics",
-        "editorScore": 13.6
       },
       {
         "title": "Ex-FTX users report funds being released in $900M distribution round",
@@ -341,7 +315,16 @@
         "url": "https://cointelegraph.com/news/ftx-users-funds-released-fifth-distribution-round?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-07-31T16:56:31Z",
         "bucket": "general",
-        "editorScore": 11.0233
+        "editorScore": 10.7533
+      },
+      {
+        "title": "Financial Services Roundup: Market Talk - WSJ",
+        "summary": "Copyright ©2026 Dow Jones & Company, Inc. All Rights Reserved. 87990cbe856818d5eddac44c7b1cdeb8\n\n## Videos\n\n### Most Popular News\n\n### Most Popular\n\n### Further Reading\n\n### BNP Paribas Lifts Dividend as Revenue, Profit Beat Estimates\n\n### Bank of Montreal and Rival Lenders Lift ",
+        "source": "wsj.com",
+        "url": "https://www.wsj.com/business/financial-services-roundup-market-talk-20180f16",
+        "publishedAt": "2026-07-29T11:37:00Z",
+        "bucket": "equity",
+        "editorScore": 10.1
       },
       {
         "title": "Coldcard's $38 million (so far) exploit shakes faith in self-custody, may push investors to ETFs",
@@ -349,14 +332,30 @@
         "url": "https://www.coindesk.com/business/2026/07/31/coldcard-s-usd38-million-so-far-exploit-shakes-faith-in-self-custody-may-push-investors-to-etfs",
         "publishedAt": "2026-07-31T17:07:30Z",
         "bucket": "crypto",
-        "editorScore": 17.369
+        "editorScore": 17.099
+      },
+      {
+        "title": "The good and the bad of perps, according to crypto traders",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/07/31/the-good-and-the-bad-of-perps-according-to-crypto-traders",
+        "publishedAt": "2026-07-31T17:53:59Z",
+        "bucket": "crypto",
+        "editorScore": 17.0927
+      },
+      {
+        "title": "Bank of Italy finds no consistent cost advantage for stablecoin remittances",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/bank-of-italy-study-no-stablecoin-remittance-cost-advantages?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-07-31T20:10:21Z",
+        "bucket": "crypto",
+        "editorScore": 16.6609
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 风险偏好，边际变化 +34.0。",
       "主要拖累来自 资金价格与摩擦，边际变化 -15.6。",
-      "BTC 24H -2.75%，7D -1.79%，执行上优先看关键位是否放量确认。",
+      "BTC 24H -2.84%，7D -1.89%，执行上优先看关键位是否放量确认。",
       "板块层面，XLF 近7日 +1.12% 领跑，XLI 近7日 -1.54% 偏弱。",
       "波动与利率环境方面，VIX 现报 15.99，10Y 收益率现报 4.74。"
     ],
@@ -365,7 +364,7 @@
       "边际变化上，风险偏好 是当前主要支撑项，而 资金价格与摩擦 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
       "权益资产方面，标普口径近7日 +1.05%，纳指口径近7日 +1.59%，说明成长资产仍在消化宏观与估值的双重约束。",
       "行业层面，Financials 近7日表现相对占优，Industrials 相对承压，说明市场内部轮动并不均衡。",
-      "加密资产方面，BTC 近7日 -1.79%，ETH 近7日 +0.03%，短线更适合结合关键价位和成交确认判断延续性。"
+      "加密资产方面，BTC 近7日 -1.89%，ETH 近7日 +0.08%，短线更适合结合关键价位和成交确认判断延续性。"
     ],
     "deepStockDives": [
       {
@@ -427,21 +426,15 @@
     "cryptoProjectUpdates": [
       {
         "project": "比特币生态",
-        "headline": "Bitcoin holds monthly gain, faces 'choppy' August as 'forced-selling' exhausted, analysts say",
-        "source": "CoinDesk",
+        "headline": "Bitcoin (BTC) July price gain survives hawkish Fed, AI meltdown and Coldcard fallout",
+        "source": "coindesk.com",
         "url": "https://www.coindesk.com/markets/2026/07/31/bitcoin-holds-onto-july-gain-as-forced-selling-fuel-was-already-spent-analysts-say"
       },
       {
         "project": "交易所 / 市场结构",
-        "headline": "Wall St Week Ahead Teetering US stock market faces jobs report, big earnings week - Reuters",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/wall-st-week-ahead-teetering-us-stock-market-faces-jobs-report-big-earnings-week-2026-07-31/"
-      },
-      {
-        "project": "行业观察",
-        "headline": "Coinbase shares take hit on quarterly loss, analysts back diversification strategy - Reuters",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/finance/coinbase-shares-take-hit-quarterly-loss-analysts-back-diversification-strategy-2026-07-31/"
+        "headline": "Texas Stock Exchange Heralds Debut With Sights ...",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/news/articles/2026-07-31/texas-stock-exchange-heralds-debut-with-sights-on-nyse-nasdaq"
       },
       {
         "project": "以太坊生态",
@@ -450,16 +443,34 @@
         "url": "https://www.coindesk.com/business/2026/07/31/tether-posts-usd1-5-billion-operating-profit-in-q2-as-reserve-buffer-falls-by-half"
       },
       {
-        "project": "交易所 / 市场结构",
-        "headline": "Crypto exchange Coinbase logs third straight quarterly loss on trading slowdown - Reuters",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/finance/crypto-exchange-coinbase-reports-third-straight-quarterly-loss-trading-slowdown-2026-07-30/"
+        "project": "行业观察",
+        "headline": "Asia Stocks to Gain as US Peers Rebound, Yen Gains: Markets Wrap",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/news/articles/2026-07-30/stock-market-today-dow-s-p-live-updates"
+      },
+      {
+        "project": "比特币生态",
+        "headline": "Citadel Securities bets on a Fed rate hike Wednesday as bitcoin analysts call a hold. Someone will be wrong.",
+        "source": "coindesk.com",
+        "url": "https://www.coindesk.com/markets/2026/07/29/citadel-bets-on-a-fed-rate-hike-wednesday-as-bitcoin-analysts-call-a-hold-someone-will-be-wrong"
+      },
+      {
+        "project": "行业观察",
+        "headline": "Fed holds rates steady as 3 officials push for hike while crypto market stays flat",
+        "source": "theblock.co",
+        "url": "https://www.theblock.co/post/410092/fed-holds-rates-steady-three-officials-push-hike-crypto-market-stays-flat"
       },
       {
         "project": "ETF / 机构资金",
         "headline": "Coldcard's $38 million (so far) exploit shakes faith in self-custody, may push investors to ETFs",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/business/2026/07/31/coldcard-s-usd38-million-so-far-exploit-shakes-faith-in-self-custody-may-push-investors-to-etfs"
+      },
+      {
+        "project": "行业观察",
+        "headline": "The good and the bad of perps, according to crypto traders",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/07/31/the-good-and-the-bad-of-perps-according-to-crypto-traders"
       }
     ],
     "marketCalendar": [
