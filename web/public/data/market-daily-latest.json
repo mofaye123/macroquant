@@ -1,32 +1,32 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-08-03T21:37:20Z",
+  "reportGeneratedAt": "2026-08-03T22:43:13Z",
   "asOfDate": "2026-08-04",
   "headline": "宏观偏紧，优先风险控制与防守仓位。",
   "markdownSource": "gemini",
-  "markdownCharCount": 7267,
+  "markdownCharCount": 4903,
   "aiRender": {
     "enabled": true,
     "status": "ok",
     "usedFallback": false,
     "requestedModel": "gemini-2.5-pro",
     "usedModelFallback": true,
-    "charCount": 7266,
+    "charCount": 4902,
     "minCharTarget": 1500,
     "finishReason": "STOP",
-    "detail": "Gemini preview generated (7266 chars, finishReason=STOP).",
+    "detail": "Gemini preview generated (4902 chars, finishReason=STOP).",
     "model": "gemini-2.5-flash",
     "reasoningMode": "deep_think",
     "qualified": true,
     "qualifiedReason": "ok"
   },
-  "markdown": "# 市场研究日报（2026-08-04）\n\n## 一、热点要闻\n\n### 美国财政部加密顾问离职，或预示监管格局微调\n**事件概述：** 据Cointelegraph报道，美国财政部高级加密货币顾问泰勒·威廉姆斯（Tyler Williams）已于2026年8月3日离职。威廉姆斯此前是财政部负责金融稳定、监管和气候风险的助理部长内莉·贝森特（Nellie Liang）的重要顾问，其职责涵盖了加密货币政策和监管框架的制定。\n**要点：** 威廉姆斯的离职，正值美国乃至全球对数字资产的监管审查日益加强之际。作为财政部内部在加密领域的核心专家之一，他的离开可能在短期内对相关政策的连续性产生一定影响。财政部在数字资产领域的立场和策略，尤其是在稳定币、DeFi以及更广泛的加密市场合规性方面的推进，一直备受市场关注。\n**市场影响：** 尽管这并非直接的美联储货币政策变动，但美国财政部在加密货币监管方面扮演着关键角色。高级顾问的离职可能引发市场对未来监管方向不确定性的猜测，尤其是在数字资产行业寻求更清晰的法律框架之际。对于加密市场而言，监管政策的任何风吹草动都可能引发投资者情绪波动，或促使行业参与者重新评估其合规策略。长期来看，财政部可能会引入新的专业人才来填补这一空缺，但在此过渡期间，政策推进的速度和具体方向可能面临调整。\n\n### GLP-1药物普及带动线下零售回暖\n**事件概述：** 路透社报道指出，GLP-1类减肥药物的日益普及和可及性，正在对消费者的购物行为产生显著影响，尤其体现在线下服装零售业的回暖。这类药物帮助使用者减轻体重，提升了他们对自身形象的信心，从而刺激了对新服装的需求，并促使更多消费者重返实体店进行试穿和购买。\n**要点：** GLP-1药物最初用于治疗糖尿病，后因其显著的减肥效果而广受欢迎。其对消费者行为的影响已超越医疗健康领域，开始渗透到零售、时尚等多个行业。消费者信心的提升和对新形象的追求，正在为传统零售业注入新的活力，尤其是在经历疫情和电商冲击后，实体店面临的挑战日益严峻。这一趋势表明，医疗科技的进步能够以意想不到的方式重塑经济格局和消费模式。\n**市场影响：** 这一现象对零售板块，特别是服装和配饰行业，构成了潜在的利好。投资者可能会关注那些能够有效捕捉这一新消费趋势的零售商，以及那些在产品设计和门店体验上有所创新的品牌。同时，这也可能促使零售商重新审视其库存管理、商品组合和营销策略，以适应消费者不断变化的需求。然而，需要注意的是，这种影响的持续性和规模仍需进一步观察，且可能伴随着对食品、餐饮等其他消费领域的潜在影响，形成复杂的连锁反应。\n\n### SpaceX估值高企，投资者押注未来愿景\n**事件概述：** 路透社市场评论指出，SpaceX的投资者正在“购买一个未来的愿景”，而非仅仅基于当前的财务表现。这家由埃隆·马斯克创立的太空探索公司，凭借其在火箭回收、卫星互联网（星链）和载人航天等领域的突破性进展，吸引了大量风险资本，尽管其盈利模式和长期回报仍存在不确定性。\n**要点：** SpaceX代表了高风险、高回报的创新型投资，其估值在很大程度上反映了市场对其颠覆性技术和未来市场潜力的预期。投资者看重的是其在太空经济中的领导地位，以及可能改变人类生活方式的长期愿景，例如火星殖民和全球高速互联网接入。这种投资逻辑超越了传统的估值模型，更侧重于技术创新、市场拓展和愿景实现的可能性。\n**市场影响：** 这一现象反映了当前市场对颠覆性技术和创新型公司的强烈偏好，尤其是在科技巨头和成长股表现强劲的背景下。它表明，在宏观环境偏紧、风险控制优先的整体基调下，部分投资者仍愿意为具备长期增长潜力的“未来愿景”型资产支付高溢价。对于其他创新型公司和风险投资领域而言，SpaceX的案例提供了一个参考，即技术护城河和宏大叙事在吸引资本方面的重要性。然而，此类投资也伴随着较高的不确定性和波动性，投资者需警惕潜在的风险。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\nCOMEX黄金价格报4110.9美元，24小时上涨1.5263%，7日上涨0.89%，14日波动率为22.99%。COMEX白银价格报58.4美元，24小时上涨1.3961%，但7日下跌0.13%，14日波动率为36.03%。贵金属市场呈现分化，黄金表现出较强的避险属性，而白银则相对疲软。\n原油市场则遭遇显著回调。WTI原油价格报80.06美元，24小时大幅下跌5.4447%，7日跌幅达3.09%，14日波动率高达75.8%。布伦特原油价格报83.51美元，24小时跌幅更甚，达到7.3347%，7日下跌5.49%，14日波动率为91.55%。原油价格的急剧下挫可能反映了市场对全球经济增长放缓的担忧，或是在近期上涨后的获利了结，预示着能源需求前景的不确定性。\n外汇市场方面，美元指数（DXY）报99.96，24小时微涨0.1593%，7日下跌1.53%，14日波动率为5.49%。美元指数的短期企稳与长期走弱形成对比。美国10年期国债收益率报4.69%，24小时下跌1.2434%，7日上涨0.97%，14日波动率为15.59%。收益率的短期回落可能与市场对经济数据或美联储未来政策路径的重新评估有关。CBOE VIX恐慌指数报15.86，24小时下跌0.813%，7日下跌15.05%，14日波动率为145.14%。VIX指数的显著下降表明市场恐慌情绪有所缓解，风险偏好有所回升，与权益市场的强势表现相符。\n\n### 加密货币表现\n加密货币市场整体表现平稳，但缺乏明确的方向性。比特币（BTC）现价报63626.37美元，24小时微涨0.2274%，但7日下跌0.15%，14日波动率为28.55%。以太坊（ETH）现价报1865.7美元，24小时下跌0.8936%，7日下跌1.32%，14日波动率为40.34%。Solana（SOL）现价报73.72美元，24小时上涨0.3692%，7日下跌0.57%，14日波动率为35.51%。\n整体来看，主流加密货币在过去一周内呈现小幅震荡下行的态势，市场缺乏强劲的上涨动能。尽管比特币在24小时内略有回升，但周线表现仍为负值，以太坊和Solana也未能摆脱疲软。市场观察指出，加密资产短线更适合结合关键价位和成交量确认判断延续性，在宏观偏紧的背景下，投资者对加密资产的风险偏好仍显谨慎。\n\n### 美股指数表现\n美国股市主要股指在过去24小时和7日内均录得显著上涨，显示出强劲的市场信心。道琼斯工业平均指数（DJI）现报53178.41点，24小时上涨1.3211%，7日上涨1.85%，14日波动率为17.38%。标普500指数（SPX）现报7600.5点，24小时上涨1.4791%，7日上涨2.53%，14日波动率为16.52%。纳斯达克综合指数（IXIC）表现尤为突出，现报25913.9点，24小时上涨2.1284%，7日上涨3.94%，14日波动率为25.53%。罗素2000指数（RUT）现报2981.91点，24小时上涨1.7251%，7日上涨1.15%，14日波动率为18.13%。\n追踪标普500的SPDR S&P 500 ETF（SPY）和追踪纳斯达克100的Invesco QQQ（QQQ）也同步上涨，SPY 24小时上涨1.4243%，7日上涨2.51%；QQQ 24小时上涨1.7558%，7日上涨2.63%。这表明市场风险偏好显著回升，尤其是在科技和成长股领域。本周市场的主要驱动力来自风险偏好的边际改善，尽管宏观环境仍偏紧，但资金价格与摩擦仍是主要拖累项，跨资产走势围绕这种分化展开。\n\n### 科技巨头动态\n科技巨头表现分化，但整体呈现积极态势。微软（MSFT）在过去24小时内上涨4.93%，7日内更是录得27.8%的惊人涨幅，20日涨幅为26.09%，14日RSI为81.26，信号显示为震荡。亚马逊（AMZN）同样表现强劲，24小时上涨4.58%，7日上涨21.55%，20日上涨16.33%，14日RSI为68.51，信号显示为趋势走弱。这两家公司近期的显著上涨，可能受益于市场风险偏好的回升以及各自业务领域的积极进展。\n然而，其他科技巨头则面临挑战。特斯拉（TSLA）24小时上涨3.49%，7日上涨0.75%，但20日下跌23.27%，14日RSI为23.6，信号显示为趋势走弱。英伟达（NVDA）24小时上涨2.93%，7日下跌1.02%，20日上涨5.67%，14日RSI为45.65，信号显示为趋势走弱。博通（AVGO）24小时上涨0.76%，7日下跌0.06%，20日上涨4.9%，14日RSI为51.48，信号显示为趋势走弱。特斯拉、英伟达和博通虽然在24小时内有所反弹，但其短期或中期趋势信号仍偏弱，表明这些公司可能面临特定的业务挑战或市场情绪调整。整体而言，科技巨头内部存在明显分化，部分公司展现出强大的增长韧性，而另一些则需要警惕趋势走弱的风险。\n\n### 板块异动观察\n从行业板块表现来看，科技板块（XLK）继续领跑市场，现价报178.04美元，24小时上涨1.5341%，7日上涨2.15%，14日波动率为39.35%。这与纳斯达克指数的强劲表现相呼应，表明市场对科技创新和成长型资产的追捧仍在持续。\n工业板块（XLI）也表现出较强的韧性，现价报183.16美元，24小时上涨1.8461%，但7日微跌0.02%，14日波动率为22.53%。金融板块（XLF）现价报57.38美元，24小时上涨0.7727%，7日上涨0.88%，14日波动率为13.63%，表现稳健。\n相比之下，能源板块（XLE）和医疗保健板块（XLV）则相对承压。能源板块现价报58.79美元，24小时下跌1.2762%，7日上涨0.74%，14日波动率为20.65%。原油价格的显著下跌对能源板块造成压力。医疗保健板块现价报162.24美元，24小时下跌0.1907%，7日下跌0.71%，14日波动率为18.16%，是本周表现最弱的板块之一。这说明市场内部轮动并不均衡，资金流向偏向高成长和高风险偏好领域，而防御性或受大宗商品影响的板块则相对失色。\n\n## 三、深度个股解读\n\n### 微软 (MSFT)\n**事件概述：** 微软公司股价在过去24小时内上涨4.93%，近7日累计涨幅高达27.80%，近20日涨幅为26.09%，14日年化波动率为85.7%。当前技术信号显示为震荡，表明在经历大幅上涨后，股价可能进入盘整阶段。\n**市场解读：** 微软近期股价的强劲表现，反映了市场对其在云计算、人工智能以及企业级软件服务领域持续领先地位的认可。尤其是在当前市场风险偏好有所回升的背景下，作为科技巨头中的稳健增长代表，微软吸引了大量资金流入。然而，RSI指标可能已进入超买区域，且技术信号显示震荡，暗示短期内股价可能面临一定的回调压力或盘整需求，以消化此前的快速上涨。\n**投资启示：** 鉴于微软的长期增长前景和稳健的基本面，其仍是值得关注的标的。对于已持有仓位的投资者，可考虑在震荡区间内适当调整止盈策略，或关注关键支撑位是否能有效守住。对于尚未建仓的投资者，建议等待股价在震荡后给出明确的突破或企稳信号，避免在短期高位盲目追涨，优先防守，等待放量企稳信号。\n\n### 特斯拉 (TSLA)\n**事件概述：** 特斯拉股价在过去24小时内上涨3.49%，近7日上涨0.75%，但近20日累计下跌23.27%，14日年化波动率为83.7%。当前技术信号明确显示为趋势走弱，14日RSI为23.6，处于超卖区域。\n**市场解读：** 特斯拉在经历了一段时间的显著下跌后，近期虽有小幅反弹，但整体中短期结构仍偏弱。20日的深幅回调表明市场对其增长前景、竞争格局或生产交付等方面存在担忧。尽管其在电动汽车和能源存储领域仍具领先优势，但宏观经济逆风、竞争加剧以及市场对高估值科技股的审慎态度，都对其股价构成压力。RSI处于超卖区域，可能预示短期内存在技术性反弹的可能，但趋势走弱的信号仍需警惕。\n**投资启示：** 鉴于其中短期结构偏弱，投资者应优先采取防守策略，控制仓位风险。在当前阶段，不宜盲目抄底，而应密切关注公司基本面是否有实质性改善，以及股价是否能出现放量企稳的明确信号，以确认趋势反转。在缺乏明确企稳迹象之前，风险控制是首要考量。\n\n### 亚马逊 (AMZN)\n**事件概述：** 亚马逊股价在过去24小时内上涨4.58%，近7日累计上涨21.55%，近20日上涨16.33%，14日年化波动率为91.3%。然而，当前技术信号显示为趋势走弱，14日RSI为68.51。\n**市场解读：** 亚马逊近期股价表现强劲，尤其在过去7日和20日内录得显著涨幅，这可能得益于市场对其云计算业务（AWS）的增长预期以及电商业务的韧性。然而，技术信号显示为趋势走弱，这在短期上涨后显得有些矛盾。这可能意味着尽管近期有资金流入，但市场对其中长期趋势仍存疑虑，或者此前的上涨动能正在减弱，股价可能面临回调风险。RSI接近超买区域，也支持了短期调整的可能性。\n**投资启示：** 尽管亚马逊短期表现亮眼，但趋势走弱的信号提示投资者需保持警惕。对于已持有仓位的投资者，建议关注股价能否有效突破并站稳关键阻力位，或考虑适当止盈。对于计划建仓的投资者，建议优先防守，等待股价在消化近期涨幅后，给出明确的放量企稳信号，以降低追高风险。在宏观偏紧的背景下，对高估值成长股的投资应更加审慎。\n\n## 四、加密货币项目动态\n\n美国财政部高级加密顾问泰勒·威廉姆斯（Tyler Williams）的离职，引发了市场对美国数字资产监管政策未来走向的关注。此举可能预示着财政部在加密货币政策制定方面的内部调整，或将影响未来稳定币、DeFi等领域的监管框架。与此同时，加密行业正经历一段艰难时期。据彭博社和Cointelegraph报道，加密交易平台FalconX因市场长期低迷而裁员10%，凸显了熊市对行业运营和盈利能力的持续冲击。这并非孤立事件，而是行业普遍面临的挑战，许多公司都在努力削减成本以应对市场下行。\n\n在比特币生态方面，与特朗普家族相关的美国比特币公司（American Bitcoin）公布了第二季度亏损，尽管其比特币储备已超过8000枚，且挖矿产量创下新高。这一矛盾现象反映了挖矿行业在市场波动和运营成本压力下的复杂性。此外，美国比特币公司总裁马特·普鲁萨克（Matt Prusak）已离职并加入Giga Energy，这可能对公司的未来战略和运营产生影响。这些事件共同描绘了加密行业在监管不确定性、市场低迷和内部调整等多重压力下的现状。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n-   **2026-08-04 10:00 ET (14:00 UTC) | 美国 | 美国 JOLTS 职位空缺**\n    -   重要性：中\n    -   说明：劳工统计局（BLS）官方发布日历。该数据衡量劳动力市场的职位空缺数量，是评估劳动力需求和市场紧张程度的重要指标，对美联储的货币政策决策具有参考意义。\n-   **2026-08-05 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存**\n    -   重要性：中\n    -   说明：能源信息署（EIA）官方页面。该数据反映美国商业原油库存的变化，对全球原油价格和能源市场情绪产生直接影响。节假日周可能调整发布时间。\n-   **2026-08-06 08:30 ET (12:30 UTC) | 美国 | 美国生产率与单位劳动力成本**\n    -   重要性：低\n    -   说明：劳工统计局（BLS）官方发布日历。这些数据提供了关于经济效率和通胀压力的线索，但通常对市场的影响相对较小。\n-   **2026-08-07 08:30 ET (12:30 UTC) | 美国 | 美国非农就业数据**\n    -   重要性：高\n    -   说明：劳工统计局（BLS）官方发布日历。作为最重要的劳动力市场指标之一，非农就业数据对美联储的货币政策预期、美元走势和股市表现具有决定性影响。\n\n### 重要事件预告\n数据不足：暂无除经济数据发布外的其他重要事件预告。\n\n### 机构观点\n当前市场整体评分处于偏紧区域，这表明宏观环境对风险资产仍构成一定压力。在此背景下，投资组合更适合采取防守和降杠杆的策略，优先控制回撤而非积极追求高胜率的进攻机会。\n从边际变化来看，风险偏好是当前市场的主要支撑项，其边际变化录得+29.0，显示投资者情绪有所改善。然而，资金价格与摩擦仍是主要拖累项，边际变化为-45.3，这可能反映了高利率环境或流动性方面的压力。跨资产走势预计将围绕这种分化展开，即风险偏好驱动下的部分资产表现强劲，而受资金成本制约的资产则可能承压。\n权益资产方面，标普500指数口径近7日上涨2.53%，纳斯达克指数口径近7日上涨3.94%，这说明成长型资产在一定程度上仍在消化宏观环境和估值的双重约束，但市场对其长期增长潜力仍抱有期待。\n在行业层面，科技板块（Technology）近7日表现相对占优，而医疗保健板块（Health Care）则相对承压，这表明市场内部轮动并不均衡，资金倾向于流向具有高成长潜力的科技领域。\n加密资产方面，比特币（BTC）近7日下跌0.15%，以太坊（ETH）近7日下跌1.32%，整体表现疲软。短线而言，加密资产的走势更适合结合关键价位和成交量确认来判断其延续性，投资者应保持谨慎，避免盲目追涨杀跌。\n\n## 免责声明\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
+  "markdown": "# 市场研究日报（2026-08-04）\n\n## 一、热点要闻\n\n**美联储官员变动与市场对通胀的持续关注**\n近期，美国财政部高级加密货币顾问泰勒·威廉姆斯（Tyler Williams）的离职引发市场关注。威廉姆斯此前是财政部负责金融稳定、监管和气候变化事务的副部长内利·贝森特（Nellie Liang）的首席顾问，其离职可能对美国未来加密货币监管政策的制定带来一定影响，尤其是在数字资产领域日益受到关注的背景下。市场普遍认为，监管层的人事变动可能会在一定程度上影响政策的连续性和方向。\n\n与此同时，市场对通胀的担忧情绪持续存在，并对美联储的货币政策路径保持高度敏感。此前，在美联储维持利率不变的决定公布后，由于通胀担忧加剧，长期债券收益率一度攀升至近二十年来的高位，导致股市大幅下挫。尽管美联储的决策已定，但市场对未来通胀走势及其对利率政策的潜在影响仍保持警惕，这在一定程度上抑制了投资者的风险偏好。\n\n**国际大宗商品**\n数据不足：暂无国际大宗商品/地缘供给冲击相关新闻。\n\n**宏观经济政策**\n数据不足：暂无宏观经济政策/政治事件相关新闻。\n\n## 二、市场复盘\n\n本周市场整体表现呈现出复杂的分化格局。尽管风险偏好边际有所提升，成为市场的主要支撑因素，但资金价格与摩擦的持续拖累，使得整体市场环境仍处于偏紧区域。在此背景下，投资者应优先考虑风险控制与防守性仓位配置。\n\n### 大宗商品&外汇表现\n\n大宗商品市场近期表现不一。COMEX黄金（GOLD）和COMEX白银（SILVER）在过去24小时内分别上涨1.46%和1.27%，7日涨幅分别为0.83%和-0.25%，显示出贵金属在不确定性环境中仍具备一定的避险吸引力。然而，原油市场则显著承压，WTI原油（WTI）和布伦特原油（BRENT）在过去24小时内分别下跌5.46%和7.26%，7日跌幅分别为3.10%和5.41%，反映出市场对全球经济增长放缓或供应过剩的担忧。\n\n外汇市场方面，美元指数（DXY）在过去24小时内微涨0.19%，但7日累计下跌1.50%，显示美元短期内有所企稳，但中期仍面临一定下行压力。美国10年期国债收益率（US10Y）在过去24小时内小幅回落1.24%，至4.69%，但7日仍累计上涨0.97%，表明市场对长期利率的预期依然偏高。CBOE波动率指数（VIX）在过去24小时内下跌0.81%，7日更是大幅下挫15.05%，至15.86，预示着市场短期内的恐慌情绪有所缓解，但仍需警惕潜在的波动风险。\n\n### 加密货币表现\n\n加密货币市场整体表现平淡，主要数字资产在过去24小时和7日内均呈现小幅回调。比特币（BTC）在过去24小时内微跌0.05%，7日跌幅为0.43%，当前价格徘徊在63448美元附近。以太坊（ETH）表现相对较弱，24小时下跌1.44%，7日下跌1.86%，当前价格约为1855美元。索拉纳（SOL）也录得小幅下跌，24小时和7日跌幅分别为0.09%和1.03%。整体而言，加密市场缺乏明确的方向性驱动，投资者多持观望态度，短线交易需密切关注关键价位是否出现放量确认信号。\n\n### 美股指数表现\n\n美股市场近期普遍走强，主要股指在过去24小时和7日内均录得显著涨幅。道琼斯工业平均指数（DJI）24小时上涨1.32%，7日上涨1.85%。标普500指数（SPX）24小时上涨1.48%，7日上涨2.53%。纳斯达克综合指数（IXIC）表现最为强劲，24小时上涨2.13%，7日累计上涨3.94%，显示科技股领涨市场。罗素2000指数（RUT）也上涨1.73%，7日上涨1.15%，表明中小盘股亦有所回暖。SPDR标普500ETF（SPY）和Invesco QQQ（QQQ）作为市场代表性ETF，分别上涨1.42%和1.76%，与对应指数表现一致。这表明市场风险偏好有所回升，但成长资产仍在消化宏观与估值的双重约束。\n\n### 科技巨头动态\n\n科技巨头表现出现分化。微软（MSFT）在过去24小时内大涨4.93%，7日涨幅高达27.80%，20日涨幅为26.09%，尽管其14日RSI显示为81.26，处于震荡区间，但短期势头强劲。亚马逊（AMZN）也录得4.58%的24小时涨幅，7日和20日涨幅分别为21.55%和16.33%，但其RSI信号显示为“趋势走弱”，需警惕潜在回调。\n\n相比之下，特斯拉（TSLA）、英伟达（NVDA）和博通（AVGO）的短期走势则相对疲软。特斯拉在过去24小时内上涨3.49%，但7日涨幅仅为0.75%，20日累计下跌23.27%，RSI信号为“趋势走弱”，显示其中短期结构偏弱。英伟达24小时上涨2.93%，但7日下跌1.02%，RSI信号同样为“趋势走弱”。博通24小时上涨0.76%，7日微跌0.06%，RSI信号也指向“趋势走弱”。这表明尽管大盘科技股整体向好，但个股之间存在显著差异，部分科技巨头仍面临结构性压力。\n\n### 板块异动观察\n\n从行业板块来看，科技板块（XLK）表现突出，24小时上涨1.53%，7日累计上涨2.15%，领跑市场，这与纳斯达克指数的强劲表现相呼应。金融板块（XLF）和工业板块（XLI）也录得正向涨幅，24小时分别上涨0.77%和1.85%。然而，能源板块（XLE）受原油价格下跌影响，24小时下跌1.28%。医疗保健板块（XLV）则表现偏弱，24小时下跌0.19%，7日累计下跌0.71%。这反映出市场内部轮动并不均衡，资金主要流向科技等成长性板块，而传统周期性行业和防御性行业则相对承压。\n\n## 三、深度个股解读\n\n### 微软 (MSFT)\n\n*   **事件概述：** 微软股价在过去24小时内大幅上涨4.93%，近7日累计涨幅高达27.80%，近20日涨幅为26.09%，显示出强劲的短期上行势头。其14日年化波动率为85.7%。\n*   **市场解读：** 尽管微软近期表现亮眼，但其RSI指标显示为“震荡”信号，表明股价在快速上涨后可能面临一定的技术性调整压力，或进入盘整阶段。市场对微软的增长前景，尤其是其在人工智能和云计算领域的领先地位，持续抱有较高期望。\n*   **投资启示：** 鉴于当前股价已录得显著涨幅且RSI显示震荡，投资者应密切关注其能否有效突破或跌破关键区间，以确认后续方向。对于已持有仓位的投资者，可考虑适当止盈或设置移动止损以锁定利润；对于计划入场的投资者，建议等待明确的突破信号或回调企稳后再行考虑。\n\n### 特斯拉 (TSLA)\n\n*   **事件概述：** 特斯拉股价在过去24小时内上涨3.49%，但近7日涨幅仅为0.75%，而近20日累计下跌23.27%，显示出中短期内的疲软态势。其14日年化波动率为83.7%。\n*   **市场解读：** 特斯拉的RSI指标显示为“趋势走弱”信号，表明尽管短期内有所反弹，但其中短期结构依然偏弱。市场可能正在消化其近期交付数据、竞争加剧以及宏观经济逆风等多重因素带来的压力。\n*   **投资启示：** 鉴于其中短期结构偏弱，投资者应优先采取防守策略，避免盲目追高。建议等待股价出现放量企稳的明确信号，或基本面出现积极改善的迹象后再考虑介入。当前阶段，风险控制应置于首位。\n\n### 亚马逊 (AMZN)\n\n*   **事件概述：** 亚马逊股价在过去24小时内上涨4.58%，近7日累计上涨21.55%，近20日累计上涨16.33%，短期表现强劲。其14日年化波动率为91.3%。\n*   **市场解读：** 尽管亚马逊近期股价表现出色，但其RSI指标同样显示为“趋势走弱”信号，这可能意味着股价的快速上涨并未伴随足够强的动能支撑，或者市场对其长期增长前景仍存在一定分歧。云计算业务（AWS）的增长和电商业务的盈利能力是市场关注的焦点。\n*   **投资启示：** 类似于特斯拉，亚马逊的“趋势走弱”信号提示投资者需保持谨慎。尽管短期涨幅可观，但中短期结构性风险不容忽视。建议投资者优先采取防守策略，等待股价在关键支撑位获得有效支撑并出现放量企稳信号后，再评估其投资价值。\n\n## 四、加密货币项目动态\n\n*   **行业观察：** 据Cointelegraph报道，美国财政部高级加密货币顾问泰勒·威廉姆斯（Tyler Williams）已离职，此举可能对美国未来加密货币监管方向产生间接影响。\n*   **比特币生态：** 尽管市场对伊朗协议抱有希望，比特币价格仍跌破63,000美元，同时有报道称Coldcard硬件钱包出现损失，引发市场对安全性的担忧。\n*   **行业观察：** CoinDesk报道称，一名美国联邦调查局（FBI）情报人员因涉嫌窃取价值100万美元的加密货币而被捕，凸显了加密资产面临的法律和安全挑战。\n*   **比特币生态：** 与前总统特朗普关系密切的美国比特币总裁马特·普鲁萨克（Matt Prusak）已离职，转投Giga Energy公司，引发市场对其未来动向的猜测。\n*   **交易所 / 市场结构：** 纳斯达克100指数在美联储决策后进入修正区间，标普500指数下跌，反映出宏观风险对传统金融市场的影响。\n*   **交易所 / 市场结构：** 随着宏观风险的上升，交易员们正为标普500指数可能出现的更大波动做好准备。\n*   **行业观察：** FalconX据报道因加密市场长期低迷而裁员10%，显示出熊市对加密行业就业市场的持续冲击。\n*   **行业观察：** Cointelegraph总结了今日加密市场的重要事件，涵盖了广泛的行业动态。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n\n*   **2026-08-04 10:00 ET (14:00 UTC) | 美国 | 美国 JOLTS 职位空缺**\n    *   重要性：中\n    *   说明：由美国劳工统计局（BLS）官方发布，衡量劳动力市场需求的重要指标。\n*   **2026-08-05 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存**\n    *   重要性：中\n    *   说明：由美国能源信息署（EIA）官方发布，反映美国原油供需状况，对国际油价有重要影响。节假日周可能调整发布时间。\n*   **2026-08-06 08:30 ET (12:30 UTC) | 美国 | 美国生产率与单位劳动力成本**\n    *   重要性：低\n    *   说明：由美国劳工统计局（BLS）官方发布，衡量经济效率和通胀压力的指标。\n*   **2026-08-07 08:30 ET (12:30 UTC) | 美国 | 美国非农就业数据**\n    *   重要性：高\n    *   说明：由美国劳工统计局（BLS）官方发布，是衡量美国就业市场健康状况和美联储货币政策走向的关键指标。\n\n### 重要事件预告\n今日市场日历中，除上述经济数据发布外，暂无其他重要事件预告。\n\n### 机构观点\n\n市场观察显示，当前整体市场环境处于偏紧区域，因此在资产配置上更适合采取防守策略并适当降低杠杆，优先控制回撤而非追求高胜率进攻。从边际变化来看，风险偏好是当前市场的主要支撑项，而资金价格与摩擦仍是主要的拖累项，预计跨资产走势将围绕这组分化因素展开。\n\n权益资产方面，标普500指数口径在近7日上涨2.53%，纳斯达克指数口径近7日上涨3.94%，这表明成长型资产仍在努力消化宏观经济环境和估值带来的双重约束。行业层面，科技板块在近7日表现相对占优，而医疗保健板块则相对承压，这反映出市场内部轮动并不均衡，资金流向具有明显的偏好。\n\n加密资产方面，比特币近7日下跌0.43%，以太坊近7日下跌1.86%，短期内更适合结合关键价位和成交量确认来判断其走势的延续性。\n\n## 免责声明\n\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
   "daily": {
     "asOfDate": "2026-08-04",
-    "generatedAt": "2026-08-03T21:36:38Z",
+    "generatedAt": "2026-08-03T22:42:40Z",
     "headline": "宏观偏紧，优先风险控制与防守仓位。",
     "quickView": {
-      "overallScore": 32.29,
+      "overallScore": 32.27,
       "riskLevel": "高",
       "quoteSourceMode": "live",
       "newsSourceMode": "hybrid",
@@ -39,80 +39,80 @@
         "ticker": "BTC",
         "name": "Bitcoin",
         "bucket": "crypto",
-        "spot": 63626.37,
-        "change24hPct": 0.2274,
-        "change7dPct": -0.15,
-        "realizedVol14dPct": 28.55,
+        "spot": 63448.0,
+        "change24hPct": -0.0536,
+        "change7dPct": -0.43,
+        "realizedVol14dPct": 28.48,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "Ethereum",
         "bucket": "crypto",
-        "spot": 1865.7,
-        "change24hPct": -0.8936,
-        "change7dPct": -1.32,
-        "realizedVol14dPct": 40.34,
+        "spot": 1855.38,
+        "change24hPct": -1.4418,
+        "change7dPct": -1.86,
+        "realizedVol14dPct": 40.73,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "Solana",
         "bucket": "crypto",
-        "spot": 73.72,
-        "change24hPct": 0.3692,
-        "change7dPct": -0.57,
-        "realizedVol14dPct": 35.51,
+        "spot": 73.38,
+        "change24hPct": -0.0937,
+        "change7dPct": -1.03,
+        "realizedVol14dPct": 35.32,
         "source": "yfinance"
       },
       {
         "ticker": "GOLD",
         "name": "COMEX Gold",
         "bucket": "commodity",
-        "spot": 4110.9,
-        "change24hPct": 1.5263,
-        "change7dPct": 0.89,
-        "realizedVol14dPct": 22.99,
+        "spot": 4108.4,
+        "change24hPct": 1.4645,
+        "change7dPct": 0.83,
+        "realizedVol14dPct": 22.89,
         "source": "yfinance"
       },
       {
         "ticker": "SILVER",
         "name": "COMEX Silver",
         "bucket": "commodity",
-        "spot": 58.4,
-        "change24hPct": 1.3961,
-        "change7dPct": -0.13,
-        "realizedVol14dPct": 36.03,
+        "spot": 58.33,
+        "change24hPct": 1.2745,
+        "change7dPct": -0.25,
+        "realizedVol14dPct": 35.92,
         "source": "yfinance"
       },
       {
         "ticker": "WTI",
         "name": "WTI Crude",
         "bucket": "commodity",
-        "spot": 80.06,
-        "change24hPct": -5.4447,
-        "change7dPct": -3.09,
-        "realizedVol14dPct": 75.8,
+        "spot": 80.05,
+        "change24hPct": -5.4565,
+        "change7dPct": -3.1,
+        "realizedVol14dPct": 75.82,
         "source": "yfinance"
       },
       {
         "ticker": "BRENT",
         "name": "Brent Crude",
         "bucket": "commodity",
-        "spot": 83.51,
-        "change24hPct": -7.3347,
-        "change7dPct": -5.49,
-        "realizedVol14dPct": 91.55,
+        "spot": 83.58,
+        "change24hPct": -7.257,
+        "change7dPct": -5.41,
+        "realizedVol14dPct": 91.38,
         "source": "yfinance"
       },
       {
         "ticker": "DXY",
         "name": "US Dollar Index",
         "bucket": "fx",
-        "spot": 99.96,
-        "change24hPct": 0.1593,
-        "change7dPct": -1.53,
-        "realizedVol14dPct": 5.49,
+        "spot": 99.99,
+        "change24hPct": 0.1914,
+        "change7dPct": -1.5,
+        "realizedVol14dPct": 5.54,
         "source": "yfinance"
       },
       {
@@ -253,78 +253,33 @@
         "url": "https://cointelegraph.com/news/bessent-top-crypto-adviser-tyler-williams-leaves-us-treasury-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-08-03T20:29:47Z",
         "bucket": "macro_policy",
-        "editorScore": 19.6226
+        "editorScore": 19.3472
       },
       {
-        "title": "Portfolio manager says AI demand still exceeds supply - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. *   ### Image 5: Sectors Up Close: Oil majors 'can leverage pricing power for a long time' 05:58 Market Talk: SpaceX investors",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/video/watch/idRW294903082026RP1/?chan=markets-now",
-        "publishedAt": "2026-08-03T21:00:18Z",
-        "bucket": "equity",
-        "editorScore": 19.1497
-      },
-      {
-        "title": "FalconX Cuts Staff on Extended Downturn in Crypto Markets - Bloomberg.com",
-        "summary": "Bloomberg the Company & Its Products The Company & its ProductsBloomberg Terminal Demo RequestBloomberg Anywhere Remote Login Bloomberg Anywhere LoginBloomberg Customer Support Customer Support. Connecting decision makers to a dynamic network of information, people and ideas, Blo",
+        "title": "Stocks Fall on AI, War Worries Before Fed Decision: Markets Wrap",
+        "summary": "Stocks ended sharply lower as concerns about inflation drove longer-dated bond yields to an almost two-decade high after the Federal Reserve left rates",
         "source": "bloomberg.com",
-        "url": "https://www.bloomberg.com/news/articles/2026-08-03/falconx-cuts-staff-on-extended-downturn-in-crypto-markets",
-        "publishedAt": "2026-08-03T15:27:01Z",
-        "bucket": "crypto",
-        "editorScore": 18.961
+        "url": "https://www.bloomberg.com/news/articles/2026-07-28/stock-market-today-dow-s-p-live-updates",
+        "publishedAt": "2026-07-28T22:00:00Z",
+        "bucket": "macro_policy",
+        "editorScore": 18.8
       },
       {
-        "title": "Trump brothers-backed American Bitcoin swings to second-quarter loss - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. Image 3: American Bitcoin at the Nasdaq Market in New York. Eric Trump, Co-Founder and Chief Strategy Officer of American Bitcoin Corp., speaks d",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/trump-brothers-backed-american-bitcoin-swings-second-quarter-loss-2026-08-03/",
-        "publishedAt": "2026-08-03T11:46:09Z",
+        "title": "Bitcoin slips under $63,000 despite Iran deal hopes as Coldcard losses rattle market",
+        "summary": "6.   6The reverse bridge: Crypto meets Wall Street using perps17 hours ago  \n7.   7Unlike the FTX collapse, the $89 million Coldcard exploit has investors sending bitcoin back to exchanges18 hours ago  \n8.   8Strategy holds STRC dividend at 12%Aug 1, 2026  \n9.   9Bitcoin cold-wal",
+        "source": "coindesk.com",
+        "url": "https://www.coindesk.com/markets/2026/08/03/bitcoin-slips-under-usd63-000-despite-iran-deal-hopes-as-coldcard-losses-rattle-market",
+        "publishedAt": "2026-08-03T06:15:38Z",
         "bucket": "crypto",
-        "editorScore": 18.2408
+        "editorScore": 18.3883
       },
       {
-        "title": "Wall St futures edge up on Mideast deal hopes; healthcare in focus - Reuters",
-        "summary": "## Browse World. ## Browse Business. Image 3: Traders work on the floor of the New York Stock Exchange (NYSE) in New York City. Traders work on the floor of the New York Stock Exchange (NYSE) in New York City, U.S., July 31, 2026. Aug 3 (Reuters) - U.S. stock index futures edged ",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/wall-st-futures-edge-up-mideast-deal-hopes-healthcare-focus-2026-08-03/",
-        "publishedAt": "2026-08-03T10:09:39Z",
-        "bucket": "crypto",
-        "editorScore": 17.6387
-      },
-      {
-        "title": "Circle slides after Morgan Stanley downgrade, cut in price target",
+        "title": "U.S. FBI intelligence agent arrested in connection with theft of $1 million in crypto",
         "source": "CoinDesk",
-        "url": "https://www.coindesk.com/markets/2026/08/03/circle-internet-slides-after-morgan-stanley-downgrade-cut-in-price-target",
-        "publishedAt": "2026-08-03T13:59:50Z",
-        "bucket": "equity",
-        "editorScore": 15.1978
-      },
-      {
-        "title": "GLP-1 users are bringing back in-store clothes shopping - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Israel and Hamas at War. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. The surge in popularity and access to GLP-1 weight loss drugs in t",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/video/watch/idRW248031072026RP1/?chan=health",
-        "publishedAt": "2026-08-02T10:25:33Z",
-        "bucket": "geopolitics",
-        "editorScore": 13.8049
-      },
-      {
-        "title": "Market Talk: SpaceX investors 'buying a vision of the future' - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Markets. *   ### Image 3: Market Talk: SpaceX investors 'buying a vision of the future' Now Playing Market Talk: SpaceX investors 'buying a vision of the f",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/video/watch/idRW282803082026RP1/?chan=markets-now",
-        "publishedAt": "2026-08-03T11:50:22Z",
-        "bucket": "general",
-        "editorScore": 12.7583
-      },
-      {
-        "title": "Eric Trump's American Bitcoin treasury tops 8,000 BTC as Q2 mining production hits record - The Block",
-        "summary": "Aug 03, 2026, 2:48PM EDT  • Regulation. Aug 03, 2026, 2:44PM EDT  • Business. # Eric Trump's American Bitcoin treasury tops 8,000 BTC as Q2 mining production hits record. Image 6: Eric Trump's American Bitcoin treasury tops 8,000 BTC as Q2 mining production hits record. *   Ameri",
-        "source": "theblock.co",
-        "url": "https://www.theblock.co/post/410426/eric-trumps-american-bitcoin-treasury-tops-8000-btc-as-q2-mining-production-hits-record",
-        "publishedAt": "2026-08-03T13:03:00Z",
+        "url": "https://www.coindesk.com/policy/2026/08/03/u-s-fbi-intelligence-agent-arrested-in-connection-with-theft-of-usd1-million-in-crypto",
+        "publishedAt": "2026-08-03T22:17:59Z",
         "bucket": "crypto",
-        "editorScore": 17.061
+        "editorScore": 18.1981
       },
       {
         "title": "Trump-linked American Bitcoin president Matt Prusak departs for Giga Energy",
@@ -332,7 +287,33 @@
         "url": "https://www.coindesk.com/business/2026/08/03/trump-linked-american-bitcoin-president-matt-prusak-departs-for-giga-energy",
         "publishedAt": "2026-08-03T15:24:45Z",
         "bucket": "crypto",
-        "editorScore": 16.9516
+        "editorScore": 16.6763
+      },
+      {
+        "title": "Nasdaq 100 Enters Correction, S&P 500 Falls After Fed Decision",
+        "summary": "US Stocks:\n\nAI Trade Rebounds\n\nTrucking Shares Fall\n\nMacro Risks Rise\n\nMicrosoft’s AI Blueprint\n\nTexas Exchange Debut\n\nStock Movers Podcast\n\nMarkets\n\n# Nasdaq 100 Enters Correction, S&P 500 Falls After Fed Decision\n\nTraders work on the floor of the New York Stock Exchange.\n\nPhoto",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/news/articles/2026-07-29/us-futures-tick-higher-as-semiconductor-stocks-climb-fed-looms",
+        "publishedAt": "2026-07-29T11:52:48Z",
+        "bucket": "equity",
+        "editorScore": 15.0
+      },
+      {
+        "title": "Circle slides after Morgan Stanley downgrade, cut in price target",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/08/03/circle-internet-slides-after-morgan-stanley-downgrade-cut-in-price-target",
+        "publishedAt": "2026-08-03T13:59:50Z",
+        "bucket": "equity",
+        "editorScore": 14.9225
+      },
+      {
+        "title": "Traders Gird for More S&P 500 Volatility as Marco Risks Rise",
+        "summary": "Markets\n\n# Traders Gird for More S&P 500 Volatility as Marco Risks Rise\n\nImage 2: Traders work on the floor of the&nbsp;New York Stock Exchange.\n\nTraders work on the floor of the New York Stock Exchange.\n\nPhotographer: Michael Nagle/Bloomberg\n\nGift this article\n\nAdd us on Google\n",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/news/articles/2026-07-31/traders-gird-for-more-s-p-500-volatility-as-marco-risks-rise",
+        "publishedAt": "2026-07-31T12:09:38Z",
+        "bucket": "equity",
+        "editorScore": 13.3
       },
       {
         "title": "Here’s what happened in crypto today",
@@ -340,7 +321,7 @@
         "url": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-08-03T19:52:11Z",
         "bucket": "crypto",
-        "editorScore": 16.8659
+        "editorScore": 16.5906
       },
       {
         "title": "FalconX cuts 10% of workforce amid prolonged crypto market slump: Report",
@@ -348,14 +329,31 @@
         "url": "https://cointelegraph.com/news/falconx-workforce-reduction-amid-crypto-market-slump-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-08-03T19:44:48Z",
         "bucket": "crypto",
-        "editorScore": 16.8351
+        "editorScore": 16.5598
+      },
+      {
+        "title": "U.S.-Japan intervention revives yen carry trade fears for bitcoin",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/markets/2026/08/03/u-s-japan-intervention-revives-yen-carry-trade-fears-for-bitcoin",
+        "publishedAt": "2026-08-03T14:46:08Z",
+        "bucket": "crypto",
+        "editorScore": 16.3154
+      },
+      {
+        "title": "Financial Services Roundup: Market Talk",
+        "summary": "Gule adds that a much-stronger showing on the ETF side is needed to break bitcoin prices out of its current trading range. Bitcoin is down 3.4% to $62,526, while ethereum falls 3.4% to $1,855. (kirk.maltais@wsj.com) [...] 1149 ET – According to CoinGlass data, bitcoin ETFs saw in",
+        "source": "wsj.com",
+        "url": "https://www.wsj.com/business/financial-services-roundup-market-talk-c712a670",
+        "publishedAt": "2026-07-31T11:35:00Z",
+        "bucket": "crypto",
+        "editorScore": 16.2
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 风险偏好，边际变化 +29.0。",
       "主要拖累来自 资金价格与摩擦，边际变化 -45.3。",
-      "BTC 24H +0.23%，7D -0.15%，执行上优先看关键位是否放量确认。",
+      "BTC 24H -0.05%，7D -0.43%，执行上优先看关键位是否放量确认。",
       "板块层面，XLK 近7日 +2.15% 领跑，XLV 近7日 -0.71% 偏弱。",
       "波动与利率环境方面，VIX 现报 15.86，10Y 收益率现报 4.69。"
     ],
@@ -364,7 +362,7 @@
       "边际变化上，风险偏好 是当前主要支撑项，而 资金价格与摩擦 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
       "权益资产方面，标普口径近7日 +2.53%，纳指口径近7日 +3.94%，说明成长资产仍在消化宏观与估值的双重约束。",
       "行业层面，Technology 近7日表现相对占优，Health Care 相对承压，说明市场内部轮动并不均衡。",
-      "加密资产方面，BTC 近7日 -0.15%，ETH 近7日 -1.32%，短线更适合结合关键价位和成交确认判断延续性。"
+      "加密资产方面，BTC 近7日 -0.43%，ETH 近7日 -1.86%，短线更适合结合关键价位和成交确认判断延续性。"
     ],
     "deepStockDives": [
       {
@@ -431,34 +429,34 @@
         "url": "https://cointelegraph.com/news/bessent-top-crypto-adviser-tyler-williams-leaves-us-treasury-report?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
       },
       {
+        "project": "比特币生态",
+        "headline": "Bitcoin slips under $63,000 despite Iran deal hopes as Coldcard losses rattle market",
+        "source": "coindesk.com",
+        "url": "https://www.coindesk.com/markets/2026/08/03/bitcoin-slips-under-usd63-000-despite-iran-deal-hopes-as-coldcard-losses-rattle-market"
+      },
+      {
         "project": "行业观察",
-        "headline": "FalconX Cuts Staff on Extended Downturn in Crypto Markets - Bloomberg.com",
-        "source": "bloomberg.com",
-        "url": "https://www.bloomberg.com/news/articles/2026-08-03/falconx-cuts-staff-on-extended-downturn-in-crypto-markets"
-      },
-      {
-        "project": "比特币生态",
-        "headline": "Trump brothers-backed American Bitcoin swings to second-quarter loss - Reuters",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/trump-brothers-backed-american-bitcoin-swings-second-quarter-loss-2026-08-03/"
-      },
-      {
-        "project": "交易所 / 市场结构",
-        "headline": "Wall St futures edge up on Mideast deal hopes; healthcare in focus - Reuters",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/wall-st-futures-edge-up-mideast-deal-hopes-healthcare-focus-2026-08-03/"
-      },
-      {
-        "project": "比特币生态",
-        "headline": "Eric Trump's American Bitcoin treasury tops 8,000 BTC as Q2 mining production hits record - The Block",
-        "source": "theblock.co",
-        "url": "https://www.theblock.co/post/410426/eric-trumps-american-bitcoin-treasury-tops-8000-btc-as-q2-mining-production-hits-record"
+        "headline": "U.S. FBI intelligence agent arrested in connection with theft of $1 million in crypto",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/policy/2026/08/03/u-s-fbi-intelligence-agent-arrested-in-connection-with-theft-of-usd1-million-in-crypto"
       },
       {
         "project": "比特币生态",
         "headline": "Trump-linked American Bitcoin president Matt Prusak departs for Giga Energy",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/business/2026/08/03/trump-linked-american-bitcoin-president-matt-prusak-departs-for-giga-energy"
+      },
+      {
+        "project": "交易所 / 市场结构",
+        "headline": "Nasdaq 100 Enters Correction, S&P 500 Falls After Fed Decision",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/news/articles/2026-07-29/us-futures-tick-higher-as-semiconductor-stocks-climb-fed-looms"
+      },
+      {
+        "project": "交易所 / 市场结构",
+        "headline": "Traders Gird for More S&P 500 Volatility as Marco Risks Rise",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/news/articles/2026-07-31/traders-gird-for-more-s-p-500-volatility-as-marco-risks-rise"
       },
       {
         "project": "行业观察",
