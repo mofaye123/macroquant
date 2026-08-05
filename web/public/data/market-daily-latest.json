@@ -1,29 +1,29 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-08-05T21:23:31Z",
+  "reportGeneratedAt": "2026-08-05T22:34:35Z",
   "asOfDate": "2026-08-06",
   "headline": "宏观偏紧，优先风险控制与防守仓位。",
   "markdownSource": "gemini",
-  "markdownCharCount": 4535,
+  "markdownCharCount": 5602,
   "aiRender": {
     "enabled": true,
     "status": "ok",
     "usedFallback": false,
     "requestedModel": "gemini-2.5-pro",
     "usedModelFallback": true,
-    "charCount": 4534,
+    "charCount": 5601,
     "minCharTarget": 1500,
     "finishReason": "STOP",
-    "detail": "Gemini preview generated (4534 chars, finishReason=STOP).",
+    "detail": "Gemini preview generated (5601 chars, finishReason=STOP).",
     "model": "gemini-2.5-flash",
     "reasoningMode": "deep_think",
     "qualified": true,
     "qualifiedReason": "ok"
   },
-  "markdown": "# 市场研究日报（2026-08-06）\n\n## 一、热点要闻\n\n**美联储“鹰派暂停”策略持续影响市场预期**\n美联储近期采取的“鹰派暂停”策略，即在不直接调整利率的情况下，通过市场机制实现金融条件的收紧，正在对股票和债券市场路径产生复杂影响。信贷分析公司CreditSights的宏观及投资级策略主管Zachary Griffiths指出，过去两个月美国国债收益率已自行上行，这在美联储未采取任何行动的情况下，有效地收紧了金融条件，起到了中央银行代为紧缩的作用。\n要点：市场自行调整的收益率上升，减轻了美联储直接加息的压力，但仍达到了紧缩金融条件的目的。\n市场影响：这一动态使得市场对未来货币政策路径的判断更为复杂。一方面，美联储可能无需采取更激进的加息措施；另一方面，市场驱动的紧缩仍可能对风险资产构成压力，尤其是在企业融资成本和估值方面。投资者需密切关注市场对美联储未来政策沟通的解读，以及实际经济数据对收益率曲线的进一步影响。\n\n**美国参议员持续推动加密货币监管法案投票**\n美国参议员Lummis正积极推动在国会八月休会前对《加密资产清晰度法案》（CLARITY Act）进行投票。这一举动凸显了美国立法机构对加密货币监管框架建设的持续关注和紧迫性。\n要点：参议员Lummis致力于在夏季休会前推动加密货币相关法案的立法进程。\n市场影响：若该法案能顺利推进并获得通过，将为加密资产市场提供更明确的法律和监管框架，有助于降低市场不确定性，吸引更多机构投资者参与。然而，立法过程中的不确定性以及法案具体条款可能带来的影响，仍需市场密切关注。加密行业普遍期待更清晰的监管，以促进创新和合规发展。\n\n**国际大宗商品**\n数据不足。\n\n## 二、市场复盘\n\n**大宗商品&外汇表现**\n在过去24小时内，贵金属市场表现强劲。COMEX黄金价格上涨5.19%，报4308.0美元，近7日累计涨幅达6.77%。COMEX白银价格亦上涨3.66%，报62.26美元，近7日涨幅为7.59%，显示出市场对避险资产的偏好有所升温。原油市场则呈现分化，WTI原油价格下跌0.91%，报75.08美元，近7日跌幅达到11.11%；布伦特原油价格微涨0.05%，报79.4美元，但近7日跌幅仍高达12.5%，表明全球能源需求前景或供应担忧仍在影响油价走势。外汇市场方面，美元指数（DXY）下跌0.21%，报99.68，近7日累计下跌1.11%，美元走弱可能为其他资产提供支撑。美国10年期国债收益率（US10Y）小幅回落0.22%，报4.62%，近7日跌幅为0.11%，尽管跌幅不大，但结合美联储“鹰派暂停”的背景，市场对长期利率的预期可能存在微妙变化。市场恐慌指数VIX在过去24小时内下跌4.18%，报15.81，近7日更是大幅下跌23.48%，显示市场短期波动性显著下降，风险偏好有所回升。\n\n**加密货币表现**\n加密货币市场整体呈现小幅上涨态势。比特币（BTC）在过去24小时内上涨0.96%，报64673.04美元，近7日累计涨幅为1.2%。以太坊（ETH）表现更为突出，24小时内上涨2.25%，报1910.44美元，近7日涨幅为0.1%。Solana（SOL）也录得0.61%的24小时涨幅，报74.17美元，近7日涨幅为0.78%。尽管整体涨幅不大，但主要加密资产的稳定上涨表明市场情绪趋于平稳，投资者对关键价位的成交量和持续性信号保持关注。\n\n**美股指数表现**\n美国股市主要指数在过去24小时内涨跌互现，但从近7日表现来看，多数指数录得显著涨幅。道琼斯工业平均指数（DJI）上涨0.49%，报54349.12点，近7日累计上涨5.34%。标普500指数（SPX）微跌0.17%，报7723.55点，但近7日仍实现5.57%的涨幅。纳斯达克综合指数（IXIC）下跌0.83%，报26363.44点，不过其近7日涨幅高达7.86%，显示科技股在过去一周表现强劲。罗素2000指数（RUT）下跌0.59%，报3019.19点，近7日上涨3.88%。SPDR标普500ETF（SPY）和Invesco纳斯达克100ETF（QQQ）也分别下跌0.20%和0.90%，但近7日涨幅分别为5.53%和8.4%，印证了市场在过去一周的积极走势。当前市场总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则，本周主要驱动力来自风险偏好的边际改善。\n\n**科技巨头动态**\n主要科技巨头股价在过去24小时内呈现分化。微软（MSFT）下跌1.09%，但近7日和近20日分别录得25.28%和27.16%的显著涨幅，RSI14为77.22，信号为趋势多头。特斯拉（TSLA）下跌1.77%，近7日上涨3.99%，但近20日下跌18.4%，RSI14为26.24，信号显示趋势走弱。亚马逊（AMZN）下跌1.72%，近7日上涨17.83%，近20日上涨11.92%，RSI14为61.67，信号为震荡。博通（AVGO）微涨0.03%，近7日上涨9.15%，近20日上涨7.61%，RSI14为70.55，信号为趋势走弱。英伟达（NVDA）逆势上涨3.43%，近7日上涨11.56%，近20日上涨7.4%，RSI14为58.94，信号同样显示趋势走弱。尽管部分个股短期内出现回调，但多数科技巨头在过去一周仍保持了强劲的上涨势头，不过部分个股的趋势信号已转弱，需要警惕。\n\n**板块异动观察**\n从板块表现来看，科技板块（XLK）在过去7日领跑市场，涨幅高达11.61%，但在过去24小时内下跌0.53%，报185.91美元。金融板块（XLF）上涨0.21%，报58.0美元，近7日上涨2.33%。能源板块（XLE）表现相对疲弱，下跌2.07%，报57.31美元，近7日累计下跌2.28%，是主要拖累项之一。医疗保健板块（XLV）上涨1.27%，报164.16美元，近7日下跌1.25%。工业板块（XLI）微跌0.03%，报186.35美元，近7日上涨5.49%。整体而言，市场内部轮动并不均衡，科技板块的强势表现与能源板块的疲软形成鲜明对比，反映出市场对不同行业前景的差异化预期。当前资金价格与摩擦仍是主要拖累项，跨资产走势更可能围绕风险偏好与资金成本的分化展开。\n\n## 三、深度个股解读\n\n**微软 (MSFT)**\n事件概述：微软公司近期股价表现强劲，过去7日上涨25.28%，过去20日上涨27.16%，显示出明显的上升趋势。其14日年化波动率为86.8%。\n市场解读：当前微软的均线结构偏多，市场对其在云计算、人工智能等核心业务领域的持续增长抱有乐观预期。尽管过去24小时小幅回调1.09%，但整体趋势依然向上。\n投资启示：鉴于其趋势多头信号和强劲的中短期表现，投资者可考虑顺势持有，并在股价出现回调时分批处理，以把握长期增长机会。但需注意其较高的波动率，做好风险管理。\n\n**特斯拉 (TSLA)**\n事件概述：特斯拉股价在过去24小时下跌1.77%，近7日上涨3.99%，但近20日累计下跌18.40%，显示出中短期趋势走弱的迹象。其14日年化波动率为85.0%。\n市场解读：特斯拉当前的中短期结构偏弱，可能受到宏观经济环境、竞争加剧或特定公司新闻的影响。尽管短期内有所反弹，但未能扭转更长时间维度的下行趋势。\n投资启示：对于特斯拉，投资者应优先采取防守策略，等待股价出现放量企稳的明确信号后再考虑介入。在趋势不明朗或走弱的情况下，控制回撤是首要任务。\n\n**亚马逊 (AMZN)**\n事件概述：亚马逊股价在过去24小时下跌1.72%，但近7日上涨17.83%，近20日上涨11.92%，显示出震荡但带有上行倾向的特点。其14日年化波动率为92.0%。\n市场解读：亚马逊股价目前处于震荡格局，市场对其未来方向尚未形成统一预期。尽管过去一周表现积极，但缺乏明确的趋势性信号，可能受多空因素交织影响。\n投资启示：投资者应关注亚马逊股价对关键区间（支撑位与阻力位）的突破或跌破情况，并等待确认信号。在方向未明朗之前，可采取观望态度或小仓位试探，避免盲目追涨杀跌。\n\n## 四、加密货币项目动态\n\nCoinDesk报道指出，尽管比特币价格较历史高点仍有显著跌幅，但其波动性保持在较低水平，同时也有分析认为，比特币相对于标普500和纳斯达克的长期优势可能正在减弱。此外，CoinDesk还探讨了比特币在投资组合中配置规模的问题，并提及Coldcard漏洞可能刺激对受监管比特币敞口的需求。行业方面，Ondo Finance聘请了前Blockchain.com首席财务官Adam，显示加密金融领域人才流动活跃。Cointelegraph和CoinDesk均关注了加密行业在国会竞选努力中的进展，尽管近期遭遇一次罕见失利，但预计国会中的加密支持者数量仍将增加，表明加密货币的政治影响力正在逐步扩大。\n\n## 五、今日市场日历\n\n**数据发布时刻表**\n- 2026-08-06 08:30 ET (12:30 UTC) | 美国 | 美国生产率与单位劳动力成本 | 重要性=低 | 说明=BLS 官方发布日历\n- 2026-08-07 08:30 ET (12:30 UTC) | 美国 | 美国非农就业数据 | 重要性=高 | 说明=BLS 官方发布日历\n- 2026-08-12 08:30 ET (12:30 UTC) | 美国 | 美国 CPI | 重要性=高 | 说明=BLS 官方发布日历\n- 2026-08-12 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存 | 重要性=中 | 说明=EIA 官方页面；节假日周可能调整发布时间。\n\n**重要事件预告**\n数据不足。\n\n**机构观点**\n当前市场总分落入偏紧区域，宏观环境对风险资产构成一定压力，因此，组合策略更适合采取防守姿态并降低杠杆，优先控制回撤而非追求高胜率的进攻。从边际变化来看，风险偏好是当前市场的主要支撑项，其边际变化为+31.1，显示投资者情绪有所改善。然而，资金价格与摩擦仍是主要拖累项，边际变化为-42.8，这表明融资成本和市场流动性方面的压力依然存在。跨资产走势更可能围绕这组分化展开，即风险偏好驱动的上涨可能受到资金成本的制约。\n\n权益资产方面，标普500指数近7日上涨5.57%，纳斯达克综合指数近7日上涨7.86%，这说明成长型资产仍在努力消化宏观经济和估值的双重约束，但短期内仍有资金流入。行业层面，科技板块（Technology）近7日表现相对占优，而能源板块（Energy）则相对承压，这反映出市场内部轮动并不均衡，投资者对不同行业的未来前景持有差异化看法。\n\n加密资产方面，比特币（BTC）近7日上涨1.20%，以太坊（ETH）近7日上涨0.10%，整体波动性较低。对于加密资产的短线交易，市场观察建议更适合结合关键价位和成交量确认来判断其延续性，避免盲目追高或杀跌。\n\n## 免责声明\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
+  "markdown": "# 市场研究日报（2026-08-06）\n\n## 一、热点要闻\n\n### 美联储“鹰派维稳”立场持续，金融环境已自行收紧\n\n近期市场密切关注美联储的政策动向。尽管美联储在最近的政策会议上可能维持了利率不变，但其传递出的信息被市场解读为“鹰派维稳”。CreditSights宏观及投资级策略主管Zachary Griffiths指出，在美联储未采取任何行动的情况下，过去两个月美国国债收益率已出现显著上行，这实际上代表着金融条件的自行收紧。这种市场驱动的紧缩效应，在一定程度上替代了美联储进一步加息的必要性，但也给股票和债券市场带来了复杂的影响，使得未来的路径变得更加不明朗。投资者需警惕，即便美联储按兵不动，市场利率的自发上行也可能对风险资产构成压力。\n\n### 宏观经济政策聚焦加密与AI芯片监管\n\n美国国会近期在宏观经济政策层面，尤其是在新兴技术领域展现出高度关注。参议员伊丽莎白·沃伦（Elizabeth Warren）对美国人工智能（AI）芯片政策提出了质疑，特别是在前总统特朗普被报道投资加密货币之后，这引发了关于潜在利益冲突和国家安全风险的讨论。这一事件凸显了AI技术在国家战略中的关键地位，以及其与地缘政治、经济竞争的紧密关联。同时，参议员辛西娅·拉米斯（Cynthia Lummis）仍在积极推动《负责任金融创新法案》（CLARITY Act）在国会八月休会前进行投票。该法案旨在为加密货币市场提供更清晰的监管框架，若能通过，将对加密行业的合规性、创新发展以及投资者保护产生深远影响。这些立法努力表明，美国政府正试图在快速发展的技术领域中建立更明确的规则，以平衡创新与风险控制。\n\n### 国际大宗商品动态\n\n数据不足：暂无国际大宗商品/地缘供给冲击相关新闻。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\n\n在过去24小时内，贵金属市场表现强劲。COMEX黄金价格上涨5.1765%，报4307.4美元，近7日累计涨幅达6.76%，14日波动率为33.24%。COMEX白银价格亦上涨3.7948%，报62.33美元，近7日涨幅为7.73%，14日波动率高达40.51%。贵金属的显著上涨可能反映了市场对通胀的担忧或避险情绪的升温。\n\n原油市场则呈现分化。WTI原油价格下跌0.8315%，报75.14美元，近7日累计下跌11.03%，14日波动率为77.31%。布伦特原油价格微涨0.189%，报79.51美元，但近7日累计下跌12.38%，14日波动率为90.55%。原油价格的持续走弱可能与全球经济增长放缓的预期以及供应过剩担忧有关。\n\n外汇市场方面，美元指数（DXY）下跌0.2002%，报99.69，近7日累计下跌1.1%，14日波动率为5.33%。美元走弱通常会提振以美元计价的大宗商品价格。美国10年期国债收益率下跌0.2161%，报4.62%，近7日累计下跌0.11%，14日波动率为16.5%。收益率的微幅下行可能反映了市场对经济前景的谨慎态度。CBOE波动率指数（VIX）下跌4.1818%，报15.81，近7日累计下跌23.48%，14日波动率为141.71%。VIX指数的显著下降表明市场恐慌情绪有所缓解，风险偏好有所回升。\n\n### 加密货币表现\n\n加密货币市场整体呈现小幅上涨态势。比特币（BTC）在过去24小时内上涨1.0029%，报64698.4美元，近7日累计上涨1.24%，14日波动率为27.42%。以太坊（ETH）上涨2.2449%，报1910.33美元，近7日累计上涨0.09%，14日波动率为41.91%。Solana（SOL）上涨0.3693%，报73.99美元，近7日累计上涨0.53%，14日波动率为35.52%。尽管近期加密市场面临宏观经济和监管不确定性，但主要加密资产仍保持相对稳定，波动性处于中等水平，市场正在消化现有信息。\n\n### 美股指数表现\n\n美国股市主要指数在过去24小时内表现不一，但近7日均录得显著涨幅。道琼斯工业平均指数上涨0.4867%，报54349.12点，近7日累计上涨5.34%，14日波动率为18.85%。标普500指数下跌0.1676%，报7723.55点，近7日累计上涨5.57%，14日波动率为18.22%。纳斯达克综合指数下跌0.8334%，报26363.44点，但近7日累计上涨7.86%，14日波动率为28.19%。罗素2000指数下跌0.5858%，报3019.19点，近7日累计上涨3.88%，14日波动率为18.45%。\n\nETF方面，SPDR标普500 ETF（SPY）下跌0.1997%，报769.79美元，近7日累计上涨5.53%，14日波动率为18.33%。Invesco QQQ ETF（QQQ）下跌0.9049%，报717.3美元，近7日累计上涨8.4%，14日波动率为32.03%。尽管昨日美股指数普遍小幅回调，但过去一周的强劲表现，尤其是纳斯达克指数的领涨，表明市场风险偏好有所回升，成长股受到青睐。\n\n### 科技巨头动态\n\n科技巨头表现分化。微软（MSFT）昨日下跌1.09%，但近7日和20日分别录得25.28%和27.16%的显著涨幅，RSI14为77.22，显示为趋势多头。特斯拉（TSLA）昨日下跌1.77%，近7日上涨3.99%，但近20日下跌18.4%，RSI14为26.24，信号显示趋势走弱。亚马逊（AMZN）昨日下跌1.72%，近7日上涨17.83%，近20日上涨11.92%，RSI14为61.67，信号显示震荡。博通（AVGO）昨日微涨0.03%，近7日上涨9.15%，近20日上涨7.61%，RSI14为70.55，信号显示趋势走弱。英伟达（NVDA）昨日上涨3.43%，近7日上涨11.56%，近20日上涨7.4%，RSI14为58.94，信号显示趋势走弱。尽管部分科技巨头在过去一周表现强劲，但短期内市场对其趋势判断存在分歧，部分个股已显露出走弱迹象。\n\n### 板块异动观察\n\n从板块表现来看，科技板块（XLK）在过去7日内领跑市场，累计上涨11.61%，昨日下跌0.5297%，14日波动率为44.68%。金融板块（XLF）上涨0.2073%，近7日累计上涨2.33%，14日波动率为13.97%。能源板块（XLE）下跌2.0677%，近7日累计下跌2.28%，14日波动率为21.69%，表现相对偏弱。医疗保健板块（XLV）上涨1.2708%，近7日累计下跌1.25%，14日波动率为18.62%。工业板块（XLI）微跌0.0268%，近7日累计上涨5.49%，14日波动率为23.98%。\n\n整体而言，市场总分处于中低位，风险等级为高，提示投资者优先风险控制与防守仓位。本周市场的主要驱动力来自风险偏好，其边际变化为+31.1，显示投资者情绪有所改善。然而，主要拖累因素仍是资金价格与摩擦，边际变化为-42.8，表明高利率环境和资金成本压力依然存在。这种驱动与拖累的对立，使得跨资产走势更可能围绕这种分化展开。技术触发信号需要搭配更严格的仓位与止损规则。波动与利率环境方面，VIX指数现报15.81，美国10年期国债收益率现报4.62%。\n\n## 三、深度个股解读\n\n### 微软 (MSFT)\n\n*   **事件概述：** 微软公司股价在过去20日内累计上涨27.16%，近7日上涨25.28%，但昨日小幅回调1.09%。其14日年化波动率为86.8%，RSI14为77.22，市场信号显示为趋势多头。\n*   **市场解读：** 微软近期表现出强劲的上涨势头，反映了市场对其在云计算、人工智能等核心业务领域领先地位的认可，以及其持续创新能力带来的增长预期。尽管昨日有所回调，但整体均线结构仍偏多头，表明市场对该股的长期信心依然稳固。\n*   **投资启示：** 对于投资者而言，微软目前仍处于上升趋势中，优先策略是顺势持有。在出现回调时，可以考虑分批处理，以优化持仓成本并管理风险。\n\n### 特斯拉 (TSLA)\n\n*   **事件概述：** 特斯拉公司股价昨日下跌1.77%，近7日上涨3.99%，但近20日累计下跌18.40%。其14日年化波动率为85.0%，RSI14为26.24，市场信号显示为趋势走弱。\n*   **市场解读：** 特斯拉近期股价表现疲软，尽管短期内有所反弹，但中长期趋势已显现出走弱迹象。这可能与市场对其电动汽车交付量、盈利能力、以及日益激烈的市场竞争等方面的担忧有关。RSI指标处于超卖区域，但趋势走弱的信号仍需警惕。\n*   **投资启示：** 鉴于其中短期结构偏弱，投资者应优先采取防守策略，避免盲目追高。建议等待出现放量企稳的明确信号，以确认股价底部支撑，再考虑介入。\n\n### 亚马逊 (AMZN)\n\n*   **事件概述：** 亚马逊公司股价昨日下跌1.72%，但近7日累计上涨17.83%，近20日累计上涨11.92%。其14日年化波动率为92.0%，RSI14为61.67，市场信号显示为震荡。\n*   **市场解读：** 亚马逊近期股价呈现震荡格局，尽管过去一周和20日内录得显著涨幅，但短期内方向性不明。这可能反映了市场对其云计算业务（AWS）的增长预期与零售业务面临的宏观经济逆风之间的权衡。RSI指标处于中性区域，表明多空力量相对均衡。\n*   **投资启示：** 投资者应关注亚马逊股价在关键区间的突破或跌破信号。在方向未明朗之前，可采取观望策略，或在区间内进行高抛低吸，并等待市场给出明确的确认信号后再进行趋势性操作。\n\n## 四、加密货币项目动态\n\n比特币生态系统近期引发了市场对传统资产表现的比较。有分析指出，比特币相对于标普500指数和纳斯达克指数的“最大优势”可能正在减弱，尽管比特币价格仍比其历史高点低49%，而标普500指数已创下新高。然而，也有观点认为，尽管存在诸多理由引发恐慌，比特币的波动性却保持在较低水平。关于比特币持仓规模的讨论也在继续，探讨如何将比特币纳入更广泛的投资组合。\n\n行业观察方面，加密金融公司Ondo Finance聘请了前Blockchain.com首席财务官Adam Goldberg，此举可能旨在加强其财务管理和合规能力。与此同时，加密支付公司RedotPay表示将“积极”应对币安（Binance）对其提起的诉讼，这表明加密行业内的法律纠纷仍在持续。美国参议员沃伦对美国AI芯片政策的质疑，也因前总统特朗普的加密投资报道而与加密领域产生关联，凸显了加密资产在政治和监管层面的敏感性。此外，尽管加密行业在竞选活动中遭遇了罕见的失利，但国会中支持加密的议员数量预计将继续增长，预示着加密货币的政治影响力正在逐步扩大。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n\n*   **2026-08-06 08:30 ET (12:30 UTC) | 美国 | 美国生产率与单位劳动力成本 | 重要性=低**\n    *   说明：由美国劳工统计局（BLS）官方发布，该数据衡量了经济效率和企业成本压力，对通胀预期有一定影响。\n*   **2026-08-07 08:30 ET (12:30 UTC) | 美国 | 美国非农就业数据 | 重要性=高**\n    *   说明：由美国劳工统计局（BLS）官方发布，这是衡量美国劳动力市场健康状况的关键指标，对美联储的货币政策决策具有重要参考意义。\n*   **2026-08-12 08:30 ET (12:30 UTC) | 美国 | 美国 CPI | 重要性=高**\n    *   说明：由美国劳工统计局（BLS）官方发布，消费者物价指数是衡量通货膨胀水平的核心指标，将直接影响市场对美联储未来利率路径的预期。\n*   **2026-08-12 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存 | 重要性=中**\n    *   说明：由美国能源信息署（EIA）官方页面发布，该数据反映了美国原油供需状况，对全球原油价格走势有显著影响。节假日周可能调整发布时间，请注意官方通知。\n\n### 重要事件预告\n\n本周市场将重点关注美国劳动力市场和通胀数据，特别是明日的非农就业数据和下周的消费者物价指数（CPI）。这些高重要性数据将为美联储的货币政策路径提供关键线索，并可能引发市场大幅波动。投资者应密切关注数据发布后的市场反应，并审慎评估其对各类资产的影响。\n\n### 机构观点\n\n当前市场总分已落入偏紧区域，机构普遍建议投资者在组合配置上更适合采取防守策略并适当降低杠杆，优先控制回撤风险而非追求高胜率的进攻性机会。从边际变化来看，风险偏好是当前市场的主要支撑项，表明投资者情绪有所改善，愿意承担一定风险。然而，资金价格与摩擦仍是主要的拖累项，高利率环境和资金成本压力持续存在，这可能导致跨资产走势围绕这种分化展开。\n\n权益资产方面，标普500指数近7日上涨5.57%，纳斯达克指数近7日上涨7.86%，这表明成长型资产在一定程度上仍在消化宏观环境和估值带来的双重约束，但整体表现出较强的韧性。行业层面，科技板块（Technology）近7日表现相对占优，而能源板块（Energy）则相对承压，这说明市场内部的轮动并不均衡，资金仍在寻找确定性更强的增长领域。\n\n加密资产方面，比特币（BTC）近7日上涨1.24%，以太坊（ETH）近7日上涨0.09%。机构观察认为，加密货币的短线走势更适合结合关键价位和成交量确认来判断其延续性，投资者需警惕潜在的波动风险。\n\n## 免责声明\n\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
   "daily": {
     "asOfDate": "2026-08-06",
-    "generatedAt": "2026-08-05T21:22:55Z",
+    "generatedAt": "2026-08-05T22:34:04Z",
     "headline": "宏观偏紧，优先风险控制与防守仓位。",
     "quickView": {
       "overallScore": 32.85,
@@ -39,59 +39,59 @@
         "ticker": "BTC",
         "name": "Bitcoin",
         "bucket": "crypto",
-        "spot": 64673.04,
-        "change24hPct": 0.9634,
-        "change7dPct": 1.2,
-        "realizedVol14dPct": 27.37,
+        "spot": 64698.4,
+        "change24hPct": 1.0029,
+        "change7dPct": 1.24,
+        "realizedVol14dPct": 27.42,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "Ethereum",
         "bucket": "crypto",
-        "spot": 1910.44,
-        "change24hPct": 2.2508,
-        "change7dPct": 0.1,
-        "realizedVol14dPct": 41.92,
+        "spot": 1910.33,
+        "change24hPct": 2.2449,
+        "change7dPct": 0.09,
+        "realizedVol14dPct": 41.91,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "Solana",
         "bucket": "crypto",
-        "spot": 74.17,
-        "change24hPct": 0.6135,
-        "change7dPct": 0.78,
-        "realizedVol14dPct": 35.68,
+        "spot": 73.99,
+        "change24hPct": 0.3693,
+        "change7dPct": 0.53,
+        "realizedVol14dPct": 35.52,
         "source": "yfinance"
       },
       {
         "ticker": "GOLD",
         "name": "COMEX Gold",
         "bucket": "commodity",
-        "spot": 4308.0,
-        "change24hPct": 5.1912,
-        "change7dPct": 6.77,
-        "realizedVol14dPct": 33.3,
+        "spot": 4307.4,
+        "change24hPct": 5.1765,
+        "change7dPct": 6.76,
+        "realizedVol14dPct": 33.24,
         "source": "yfinance"
       },
       {
         "ticker": "SILVER",
         "name": "COMEX Silver",
         "bucket": "commodity",
-        "spot": 62.26,
-        "change24hPct": 3.6616,
-        "change7dPct": 7.59,
-        "realizedVol14dPct": 40.19,
+        "spot": 62.33,
+        "change24hPct": 3.7948,
+        "change7dPct": 7.73,
+        "realizedVol14dPct": 40.51,
         "source": "yfinance"
       },
       {
         "ticker": "WTI",
         "name": "WTI Crude",
         "bucket": "commodity",
-        "spot": 75.08,
-        "change24hPct": -0.9106,
-        "change7dPct": -11.11,
+        "spot": 75.14,
+        "change24hPct": -0.8315,
+        "change7dPct": -11.03,
         "realizedVol14dPct": 77.31,
         "source": "yfinance"
       },
@@ -99,19 +99,19 @@
         "ticker": "BRENT",
         "name": "Brent Crude",
         "bucket": "commodity",
-        "spot": 79.4,
-        "change24hPct": 0.0504,
-        "change7dPct": -12.5,
-        "realizedVol14dPct": 90.5,
+        "spot": 79.51,
+        "change24hPct": 0.189,
+        "change7dPct": -12.38,
+        "realizedVol14dPct": 90.55,
         "source": "yfinance"
       },
       {
         "ticker": "DXY",
         "name": "US Dollar Index",
         "bucket": "fx",
-        "spot": 99.68,
-        "change24hPct": -0.2112,
-        "change7dPct": -1.11,
+        "spot": 99.69,
+        "change24hPct": -0.2002,
+        "change7dPct": -1.1,
         "realizedVol14dPct": 5.33,
         "source": "yfinance"
       },
@@ -254,7 +254,7 @@
         "url": "https://www.coindesk.com/markets/2026/08/05/the-worst-chart-for-bitcoin-bulls-right-now",
         "publishedAt": "2026-08-05T11:00:00Z",
         "bucket": "equity",
-        "editorScore": 20.4057
+        "editorScore": 20.1091
       },
       {
         "title": "Ondo Finance hires former Blockchain.com CFO Adam ...",
@@ -263,24 +263,24 @@
         "url": "https://www.coindesk.com/business/2026/08/05/ondo-finance-hires-former-blockchain-com-cfo-adam-schlisman",
         "publishedAt": "2026-08-05T14:10:00Z",
         "bucket": "crypto",
-        "editorScore": 19.1973
+        "editorScore": 18.9008
       },
       {
         "title": "The bitcoin (BTC) price has plenty of reasons to freak out, yet volatility remains low: Crypto Daily",
         "summary": "Stocks rise despite Iran tensions, oil up, yen eases (Reuters): European stocks climbed alongside U.S. futures, although a rebound in oil prices underscored ​market skepticism that the U.S.-Iran war would be resolved quickly. The yen eased slightly. [...] In a broader crypto bear",
         "source": "coindesk.com",
         "url": "https://www.coindesk.com/daybook-us/2026/08/04/the-bitcoin-market-has-plenty-of-reasons-to-freak-out-yet-calm-pervades",
-        "publishedAt": "2026-08-04T21:00:00Z",
+        "publishedAt": "2026-08-04T22:00:00Z",
         "bucket": "crypto",
-        "editorScore": 18.7057
+        "editorScore": 18.6591
       },
       {
-        "title": "Crypto Long & Short: Putting the bitcoin sizing question to the test",
+        "title": "Crypto firm RedotPay says it will defend itself ‘vigorously’ against Binance lawsuit",
         "source": "CoinDesk",
-        "url": "https://www.coindesk.com/coindesk-indices/2026/08/05/crypto-long-and-short-putting-the-bitcoin-sizing-question-to-the-test",
-        "publishedAt": "2026-08-05T15:03:19Z",
+        "url": "https://www.coindesk.com/business/2026/08/05/binance-sues-redotpay-for-usd470-million-claiming-it-diverted-users",
+        "publishedAt": "2026-08-05T21:40:33Z",
         "bucket": "crypto",
-        "editorScore": 18.2195
+        "editorScore": 18.2781
       },
       {
         "title": "Fed's 'hawkish hold' muddies path for stocks and bonds",
@@ -290,6 +290,14 @@
         "publishedAt": "2026-07-30T05:04:06Z",
         "bucket": "macro_policy",
         "editorScore": 17.1
+      },
+      {
+        "title": "Senator Warren questions US AI chip policy after Trump crypto investment: Report",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/senator-warren-us-policy-uae-ai-chips-trump-crypto-investment?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-08-05T21:15:37Z",
+        "bucket": "geopolitics",
+        "editorScore": 16.4742
       },
       {
         "title": "America Is Great at Creating Stock Market Bubbles—and ...",
@@ -315,7 +323,15 @@
         "url": "https://cointelegraph.com/news/senator-lummis-clarity-vote-movement-calendar?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-08-05T19:18:24Z",
         "bucket": "general",
-        "editorScore": 11.6823
+        "editorScore": 11.3858
+      },
+      {
+        "title": "Crypto Long & Short: Putting the bitcoin sizing question to the test",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/coindesk-indices/2026/08/05/crypto-long-and-short-putting-the-bitcoin-sizing-question-to-the-test",
+        "publishedAt": "2026-08-05T15:03:19Z",
+        "bucket": "crypto",
+        "editorScore": 17.9229
       },
       {
         "title": "Crypto's campaign efforts see rare loss, but crypto roster in Congress likely to grow",
@@ -323,7 +339,7 @@
         "url": "https://www.coindesk.com/policy/2026/08/05/crypto-s-campaign-efforts-see-rare-loss-but-crypto-roster-in-congress-likely-to-grow",
         "publishedAt": "2026-08-05T18:15:21Z",
         "bucket": "crypto",
-        "editorScore": 17.7196
+        "editorScore": 17.4231
       },
       {
         "title": "Bitcoin is 49% below its record while the S&P 500 hits all- ...",
@@ -332,30 +348,14 @@
         "url": "https://www.coindesk.com/markets/2026/08/05/bitcoin-flat-at-usd64-000-as-stocks-print-records-and-hormuz-deal-nears",
         "publishedAt": "2026-08-05T04:32:16Z",
         "bucket": "crypto",
-        "editorScore": 17.3901
-      },
-      {
-        "title": "Coldcard exploit could boost demand for regulated bitcoin exposure, analysts say",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/tech/2026/08/05/coldcard-exploit-could-boost-demand-for-regulated-bitcoin-exposure-analysts-say",
-        "publishedAt": "2026-08-05T15:44:08Z",
-        "bucket": "crypto",
-        "editorScore": 16.8896
-      },
-      {
-        "title": "Here’s what happened in crypto today",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-08-05T19:11:41Z",
-        "bucket": "crypto",
-        "editorScore": 16.7543
+        "editorScore": 17.0936
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 风险偏好，边际变化 +31.1。",
       "主要拖累来自 资金价格与摩擦，边际变化 -42.8。",
-      "BTC 24H +0.96%，7D +1.20%，执行上优先看关键位是否放量确认。",
+      "BTC 24H +1.00%，7D +1.24%，执行上优先看关键位是否放量确认。",
       "板块层面，XLK 近7日 +11.61% 领跑，XLE 近7日 -2.28% 偏弱。",
       "波动与利率环境方面，VIX 现报 15.81，10Y 收益率现报 4.62。"
     ],
@@ -364,7 +364,7 @@
       "边际变化上，风险偏好 是当前主要支撑项，而 资金价格与摩擦 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
       "权益资产方面，标普口径近7日 +5.57%，纳指口径近7日 +7.86%，说明成长资产仍在消化宏观与估值的双重约束。",
       "行业层面，Technology 近7日表现相对占优，Energy 相对承压，说明市场内部轮动并不均衡。",
-      "加密资产方面，BTC 近7日 +1.20%，ETH 近7日 +0.10%，短线更适合结合关键价位和成交确认判断延续性。"
+      "加密资产方面，BTC 近7日 +1.24%，ETH 近7日 +0.09%，短线更适合结合关键价位和成交确认判断延续性。"
     ],
     "deepStockDives": [
       {
@@ -443,6 +443,18 @@
         "url": "https://www.coindesk.com/daybook-us/2026/08/04/the-bitcoin-market-has-plenty-of-reasons-to-freak-out-yet-calm-pervades"
       },
       {
+        "project": "行业观察",
+        "headline": "Crypto firm RedotPay says it will defend itself ‘vigorously’ against Binance lawsuit",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/08/05/binance-sues-redotpay-for-usd470-million-claiming-it-diverted-users"
+      },
+      {
+        "project": "行业观察",
+        "headline": "Senator Warren questions US AI chip policy after Trump crypto investment: Report",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/senator-warren-us-policy-uae-ai-chips-trump-crypto-investment?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      },
+      {
         "project": "比特币生态",
         "headline": "Crypto Long & Short: Putting the bitcoin sizing question to the test",
         "source": "CoinDesk",
@@ -459,18 +471,6 @@
         "headline": "Bitcoin is 49% below its record while the S&P 500 hits all- ...",
         "source": "coindesk.com",
         "url": "https://www.coindesk.com/markets/2026/08/05/bitcoin-flat-at-usd64-000-as-stocks-print-records-and-hormuz-deal-nears"
-      },
-      {
-        "project": "比特币生态",
-        "headline": "Coldcard exploit could boost demand for regulated bitcoin exposure, analysts say",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/tech/2026/08/05/coldcard-exploit-could-boost-demand-for-regulated-bitcoin-exposure-analysts-say"
-      },
-      {
-        "project": "行业观察",
-        "headline": "Here’s what happened in crypto today",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
       }
     ],
     "marketCalendar": [
