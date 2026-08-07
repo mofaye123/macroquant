@@ -1,29 +1,29 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-08-07T21:08:59Z",
+  "reportGeneratedAt": "2026-08-07T22:04:37Z",
   "asOfDate": "2026-08-10",
   "headline": "宏观偏紧，优先风险控制与防守仓位。",
   "markdownSource": "gemini",
-  "markdownCharCount": 5974,
+  "markdownCharCount": 5955,
   "aiRender": {
     "enabled": true,
     "status": "ok",
     "usedFallback": false,
     "requestedModel": "gemini-2.5-pro",
     "usedModelFallback": true,
-    "charCount": 5973,
+    "charCount": 5954,
     "minCharTarget": 1500,
     "finishReason": "STOP",
-    "detail": "Gemini preview generated (5973 chars, finishReason=STOP).",
+    "detail": "Gemini preview generated (5954 chars, finishReason=STOP).",
     "model": "gemini-2.5-flash",
     "reasoningMode": "deep_think",
     "qualified": true,
     "qualifiedReason": "ok"
   },
-  "markdown": "# 市场研究日报（2026-08-10）\n\n## 一、热点要闻\n\n### 加密货币交易所BitMEX出售计划告吹，创始人所有权与业务萎缩成主要障碍\n\n**事件概述：** 近期，知名加密货币衍生品交易所BitMEX的出售计划最终告吹。据知情人士透露，潜在买家对BitMEX创始人保留大量所有权以及平台业务持续萎缩的现状表示担忧，导致交易未能达成。BitMEX曾是加密货币衍生品市场的领军者，但在经历了一系列法律和监管挑战后，其市场份额和业务规模均有所下降。\n\n**要点：**\n*   出售谈判因创始人所有权结构和业务前景不确定性而破裂。\n*   BitMEX的市场地位和业务量在过去几年中显著下滑。\n*   此事件凸显了加密货币行业内并购交易的复杂性，尤其是在涉及早期创始人控制权和市场环境变化时。\n\n**市场影响：** 此次出售失败可能进一步加剧市场对BitMEX未来发展路径的疑虑，并可能影响其在竞争日益激烈的加密货币衍生品市场中的地位。对于整个加密货币行业而言，这提醒投资者和市场参与者，即使是曾经的行业巨头也面临着业务转型和适应监管环境的挑战，公司治理结构和业务可持续性是评估项目价值的关键因素。\n\n### Bybit对朝鲜及Lazarus Group提起诉讼，成功冻结相关资产\n\n**事件概述：** 另一家大型加密货币交易所Bybit近日采取法律行动，对朝鲜政府及其关联的黑客组织Lazarus Group提起诉讼，指控其涉嫌参与价值15亿美元的黑客攻击。Bybit已成功获得法院命令，冻结了与这些攻击相关的部分资产。此举是加密货币平台首次直接针对国家支持的黑客组织采取大规模法律行动。\n\n**要点：**\n*   Bybit指控Lazarus Group实施了价值15亿美元的加密货币盗窃。\n*   法院已批准资产冻结令，旨在追回被盗资金。\n*   此案例标志着加密货币行业在应对国家级网络犯罪方面的法律维权新进展。\n\n**市场影响：** Bybit的这一法律行动，不仅旨在保护自身及用户资产，也向全球范围内的恶意行为者传递了明确信号，即加密货币平台将积极通过法律途径追究责任。此举有助于提升加密货币市场的整体安全性和投资者信心，并可能促使更多交易所加强与监管机构和执法部门的合作，共同打击网络犯罪。同时，这也反映出数字资产领域在宏观政策和国际关系层面，正面临日益复杂的安全挑战和法律博弈。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\n\n在过去24小时内，贵金属市场表现强劲。COMEX黄金价格上涨3.7577%，达到4401.4美元，近7日累计涨幅达8.7%。COMEX白银表现更为突出，24小时内上涨3.8103%，报63.78美元，近7日涨幅高达10.75%。贵金属的显著上涨可能反映了市场避险情绪的升温，或对未来通胀预期的调整。\n\n原油市场则呈现回调态势。WTI原油价格下跌0.2458%至77.1美元，近7日累计跌幅为8.94%。布伦特原油价格下跌0.3516%至82.2美元，近7日累计跌幅为8.79%。原油价格的持续走弱可能与全球经济增长放缓的担忧以及供给端压力的缓解有关。\n\n外汇市场方面，美元指数（DXY）小幅走弱，24小时下跌0.3721%至99.6，近7日累计下跌0.2%。美元的疲软为其他资产提供了喘息空间。美国10年期国债收益率（US10Y）下降0.2141%至4.66%，近7日累计下降1.79%，显示市场对长期利率的预期有所下调。CBOE波动率指数（VIX）下跌1.6502%至14.9，近7日累计下跌6.82%，表明市场短期恐慌情绪有所缓解。\n\n### 加密货币表现\n\n加密货币市场整体呈现温和上涨。比特币（BTC）在过去24小时内上涨1.0527%，达到64938.58美元，近7日累计涨幅为3.38%。以太坊（ETH）上涨0.5937%至1913.35美元，近7日涨幅为2.85%。Solana（SOL）表现相对强劲，24小时上涨1.6169%至73.75美元，近7日涨幅为1.32%。主要加密货币的上涨，可能受益于整体市场风险偏好的改善，以及对数字资产长期价值的持续关注。\n\n### 美股指数表现\n\n美国股市普遍收涨，科技股表现尤为突出。道琼斯工业平均指数（DJI）上涨0.2818%至54036.93点，近7日累计上涨2.96%。标普500指数（SPX）上涨0.6184%至7757.64点，近7日累计上涨3.58%。纳斯达克综合指数（IXIC）领涨，上涨1.299%至26690.62点，近7日累计上涨5.19%。罗素2000指数（RUT）上涨1.0976%至3034.49点，近7日累计上涨3.52%。\n\nETF方面，SPDR标普500 ETF（SPY）上涨0.6115%至773.26美元，Invesco QQQ（QQQ）上涨1.1726%至723.03美元，反映了宽基指数和科技成长股的积极表现。\n\n### 科技巨头动态\n\n主要科技巨头股价涨跌互现，但整体趋势偏强。微软（MSFT）当日微涨0.03%，近7日累计大涨28.03%，近20日涨幅达29.83%，RSI14为81.43，显示为趋势多头。亚马逊（AMZN）上涨0.82%，近7日上涨21.1%，近20日上涨11.88%，RSI14为62.93，处于震荡区间。特斯拉（TSLA）当日上涨2.83%，近7日上涨10.14%，但近20日累计下跌19.42%，RSI14为34.92，信号显示趋势走弱。Meta（META）上涨0.37%，近7日上涨1.11%，但近20日下跌11.52%，RSI14为33.66，信号显示趋势多头。博通（AVGO）上涨1.71%，近7日上涨15.51%，近20日上涨6.95%，RSI14为73.58，信号显示趋势走弱。\n\n### 板块异动观察\n\n板块层面，科技板块（XLK）表现最为强劲，24小时上涨1.4245%至187.97美元，近7日累计涨幅高达7.2%，领跑市场。医疗保健板块（XLV）上涨0.7479%至165.68美元，近7日上涨1.93%。工业板块（XLI）上涨0.2273%至185.18美元，近7日上涨2.97%。\n\n金融板块（XLF）和能源板块（XLE）则表现相对疲软。金融板块下跌0.3633%至57.6美元，近7日上涨1.16%。能源板块跌幅最大，下跌1.1348%至57.5美元，近7日累计下跌3.44%。这表明市场资金仍在向成长性更强的科技领域集中，而对传统周期性行业的配置有所减少。\n\n### 复盘总结\n\n当前市场总分处于中低位，宏观环境偏紧，提示投资者优先风险控制与防守仓位。技术触发信号需要搭配更严格的仓位与止损规则。本周市场的主要驱动力来自风险偏好的边际改善，其变化贡献了+26.4的积极影响。然而，资金价格与摩擦仍是主要拖累项，边际变化为-7.8。\n\n加密资产方面，比特币（BTC）在过去24小时上涨1.05%，近7日上涨3.38%，投资者应密切关注关键价位是否能放量确认，以判断其延续性。\n\n板块层面，科技板块（XLK）近7日以7.20%的涨幅领跑市场，而能源板块（XLE）近7日下跌3.44%，表现偏弱。这反映出市场内部轮动并不均衡，成长股和防御性板块受到青睐，而对经济周期敏感的板块则承压。\n\n波动与利率环境方面，CBOE波动率指数（VIX）现报14.9，显示市场恐慌情绪有所缓解。美国10年期国债收益率现报4.66%，表明长期利率预期有所下降，这可能为风险资产提供了一定的支撑。\n\n## 三、深度个股解读\n\n### 微软 (MSFT)\n\n**事件概述：** 微软股价在近期表现出强劲的上升势头。在过去20个交易日中，该股累计上涨29.83%，近7日涨幅更是高达28.03%，显示出市场对其业务前景和增长潜力的强烈信心。尽管今日涨幅仅为0.03%，但整体均线结构仍然偏多，表明其长期趋势保持乐观。\n\n**市场解读：** 微软的强势表现可能得益于其在云计算（Azure）、人工智能（AI）领域的持续投入和市场领导地位。市场普遍认为，微软在企业级软件和云服务方面的优势，使其能够有效抵御宏观经济波动，并抓住新兴技术带来的增长机遇。高RSI值（81.43）也反映了当前市场买盘的活跃。\n\n**投资启示：** 鉴于微软目前处于趋势多头信号，投资者可优先考虑顺势持有现有仓位。对于尚未入场的投资者，可关注其回调机会，分批建仓或增持，但需密切关注市场情绪和技术指标，避免追高风险。\n\n### 特斯拉 (TSLA)\n\n**事件概述：** 特斯拉股价在过去20个交易日中累计下跌19.42%，显示出中短期内的结构性疲软。尽管近7日录得10.14%的上涨，今日也上涨2.83%，但这可能更多是超跌反弹或短期技术性修复。其RSI14为34.92，信号显示趋势走弱。\n\n**市场解读：** 特斯拉面临的挑战可能包括电动汽车市场竞争加剧、全球经济放缓对消费需求的影响，以及公司内部生产和交付效率的波动。尽管短期内有所反弹，但其长期增长故事的持续性仍受到市场审视。\n\n**投资启示：** 鉴于特斯拉目前趋势走弱的信号，投资者应优先采取防守策略，控制风险。等待股价出现放量企稳的明确信号，或有实质性利好消息支撑，再考虑重新评估其投资价值。短期内的反弹可能不具备持续性，不宜盲目追涨。\n\n### 亚马逊 (AMZN)\n\n**事件概述：** 亚马逊股价在过去20个交易日中累计上涨11.88%，近7日涨幅高达21.10%，今日也上涨0.82%。然而，其RSI14为62.93，信号显示为震荡，表明股价在近期虽有上涨，但方向性仍不明朗，可能处于一个宽幅整理区间。\n\n**市场解读：** 亚马逊的业绩表现受到其电商业务和云计算服务（AWS）的双重影响。虽然AWS持续贡献稳定利润，但电商业务在全球经济不确定性下的表现仍是市场关注焦点。股价的震荡可能反映了投资者对其未来增长驱动力，以及宏观经济对其消费业务影响的权衡。\n\n**投资启示：** 亚马逊目前处于震荡区间，方向未明。投资者应关注其股价在关键支撑位和阻力位的表现。等待股价明确突破或跌破某一关键区间，并伴随成交量放大确认后，再做出相应的投资决策。在此之前，可采取观望态度或小仓位试探性操作。\n\n### Meta (META)\n\n**事件概述：** Meta股价在过去20个交易日中累计下跌11.52%，但近7日上涨1.11%，今日上涨0.37%。尽管有短期反弹，但其20日表现仍显疲软。然而，其均线结构偏多，信号显示为趋势多头，RSI14为33.66。这可能意味着在经历了一段回调后，股价正在寻求新的支撑，并可能恢复上涨趋势。\n\n**市场解读：** Meta的股价波动可能与市场对其元宇宙投入的长期回报预期，以及核心广告业务在宏观经济逆风下的表现有关。尽管近期有所回调，但其在社交媒体领域的强大用户基础和广告技术优势仍是其核心竞争力。趋势多头信号可能暗示市场对其长期战略的信心并未完全动摇。\n\n**投资启示：** 鉴于Meta的均线结构偏多，且信号显示趋势多头，投资者可优先考虑顺势持有。对于希望入场的投资者，可以关注其回调机会，分批处理，以较低成本建立或增加仓位。但需留意其短期波动性，并结合公司基本面和行业动态进行综合判断。\n\n## 四、加密货币项目动态\n\n**交易所/市场结构：** 美国正在加大对伊朗加密货币活动的打击力度，财政部外国资产控制办公室（OFAC）宣布对两家与伊朗有关联的加密货币交易所实施制裁。此举旨在切断伊朗利用数字资产规避制裁的渠道，并进一步强调了全球监管机构对加密货币领域非法活动的关注。此外，Ondo Finance宣布任命前Blockchain.com首席财务官Adam Schlisman担任其新的财务主管，此举可能旨在加强其财务管理和合规能力，以适应不断变化的监管环境。\n\n**比特币生态：** 近期市场观察显示，比特币的波动性已接近历史低点，但其固有的风险并未因此消失。有分析指出，比特币相对于标普500指数和纳斯达克指数的“最大优势”可能正在减弱，其与传统市场的相关性有所上升。OKX的首席营销官Rafique对《清晰法案》（Clarity Act）能否通过表示怀疑，并警告称市场对该法案的乐观情绪可能已充分反映在比特币价格中。同时，有分析探讨了比特币价格未能与标普500和纳斯达克指数同步上涨的原因，可能与宏观经济环境、资金流向以及加密货币市场自身的结构性问题有关。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n\n*   **2026-08-12 08:30 ET (12:30 UTC) | 美国 | 美国 CPI**\n    *   重要性：高\n    *   说明：美国劳工统计局（BLS）官方发布日历。消费者物价指数（CPI）是衡量通货膨胀的关键指标，对美联储的货币政策决策具有重要影响。\n*   **2026-08-13 08:30 ET (12:30 UTC) | 美国 | 美国 PPI**\n    *   重要性：中\n    *   说明：美国劳工统计局（BLS）官方发布日历。生产者物价指数（PPI）衡量生产商的销售价格变化，是未来消费通胀的先行指标。\n*   **2026-08-12 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存**\n    *   重要性：中\n    *   说明：美国能源信息署（EIA）官方页面。该数据反映美国商业原油库存的变化，对全球原油价格和能源市场情绪有显著影响。节假日周可能调整发布时间。\n\n### 重要事件预告\n\n数据不足。\n\n### 机构观点\n\n市场观察显示，当前宏观环境偏紧，整体市场得分落入偏紧区域，因此，投资组合更适合采取防守与降杠杆策略，优先控制回撤而非追求高胜率进攻。从边际变化来看，风险偏好是当前市场的主要支撑项，而资金价格与摩擦仍是主要的拖累项，预计跨资产走势将围绕这组分化展开。\n\n权益资产方面，标普500指数近7日上涨3.58%，纳斯达克指数近7日上涨5.19%，这表明成长型资产仍在努力消化宏观经济和估值的双重约束。行业层面，科技板块近7日表现相对占优，而能源板块则相对承压，这反映出市场内部轮动并不均衡。\n\n加密资产方面，比特币（BTC）近7日上涨3.38%，以太坊（ETH）近7日上涨2.85%。对于加密资产的短线操作，市场观察建议更适合结合关键价位和成交量确认来判断其延续性，避免盲目追涨。\n\n## 免责声明\n\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
+  "markdown": "# 市场研究日报（2026-08-10）\n\n## 一、热点要闻\n\n**通胀数据临近，美联储政策前景与美股走势受关注**\n**事件概述：** 华尔街正密切关注即将公布的通胀数据，这些数据将对创纪录的美股市场以及市场对美联储未来利率政策的预期构成关键考验。投资者普遍认为，通胀数据的表现将直接影响美联储的货币政策路径，进而对各类资产的估值产生深远影响。\n**要点：** 市场普遍预计，如果通胀数据显示出持续的粘性或意外上行，美联储可能被迫维持其紧缩立场或推迟降息时间表。反之，若通胀压力缓解，则可能为美联储提供更大的政策灵活性。当前市场对美联储政策路径的预期存在分歧，部分投资者仍寄希望于年内降息，而另一些则认为高通胀可能导致利率在高位维持更长时间。\n**市场影响：** 在此背景下，美股市场，尤其是对利率敏感的成长型股票，可能面临较大的波动性。投资者将密切关注消费者物价指数（CPI）和生产者物价指数（PPI）等关键通胀指标，以评估其对企业盈利、消费者支出以及整体经济增长前景的影响。任何超出预期的通胀数据都可能引发市场对经济衰退风险的担忧，或促使资金从风险资产流向避险资产。\n\n**美国食品安全担忧加剧，沙门氏菌污染事件引发关注**\n**事件概述：** 近期，美国市场出现与沙门氏菌相关的墨西哥辣椒污染事件，这进一步加剧了美国消费者对食品安全的担忧。此次事件涉及农产品供应链，引发了公众对食品生产、加工和分销环节安全控制的广泛讨论。\n**要点：** 沙门氏菌污染可能导致严重的健康问题，并对相关农产品行业造成经济损失。此次事件凸显了全球化供应链中食品安全监管的复杂性和挑战。监管机构和行业正面临压力，需加强食品追溯系统和质量控制措施，以恢复消费者信心。\n**市场影响：** 尽管这是一起具体的食品安全事件，但其潜在影响可能超越单一产品。消费者信心的下降可能导致对特定农产品或整个食品行业的消费支出减少。此外，事件可能促使监管部门出台更严格的食品安全标准和检查措施，从而增加食品生产商的运营成本。对于相关上市公司而言，这可能意味着销售额的短期下滑和品牌声誉的受损。\n\n**国际大宗商品：** 暂无国际大宗商品/地缘供给冲击相关新闻。\n\n## 二、市场复盘\n\n**大宗商品&外汇表现**\n在过去24小时内，贵金属市场表现强劲。COMEX黄金价格上涨3.7553%，现报4401.3美元，近7日涨幅达到8.7%，14日波动率为29.28%。COMEX白银表现更为突出，24小时内上涨3.8428%，现报63.8美元，近7日累计上涨10.78%，14日波动率为38.0%。这表明在宏观不确定性增加的背景下，避险资产受到追捧。\n原油市场则呈现小幅回调。WTI原油价格在24小时内下跌0.2717%，现报77.08美元，近7日累计下跌8.96%，14日波动率高达69.41%。布伦特原油同样下跌0.2667%，现报82.27美元，近7日下跌8.71%，14日波动率为82.57%。原油价格的显著下跌可能反映了市场对全球经济增长放缓的担忧，或对未来需求前景的重新评估。\n外汇市场方面，美元指数（DXY）在过去24小时内下跌0.3661%，现报99.6，近7日累计下跌0.2%，14日波动率为5.41%。美元走弱通常对以美元计价的大宗商品构成支撑。美国10年期国债收益率（US10Y）小幅下降0.2141%，现报4.66%，近7日累计下降1.79%，14日波动率为16.64%。收益率的下降可能反映了市场对未来经济增长的预期有所调整，或对美联储政策路径的重新定价。CBOE波动率指数（VIX）在24小时内下跌1.6502%，现报14.9，近7日累计下跌6.82%，14日波动率为124.95%。VIX指数的下降通常预示着市场恐慌情绪的缓解，但其高波动率仍需警惕。\n\n**加密货币表现**\n加密货币市场整体呈现温和上涨态势。比特币（BTC）在过去24小时内上涨0.9769%，现报64889.91美元，近7日累计上涨3.31%，14日波动率为25.52%。以太坊（ETH）表现类似，24小时内上涨0.6405%，现报1914.24美元，近7日累计上涨2.9%，14日波动率为38.28%。Solana（SOL）涨幅略高，24小时内上涨1.3964%，现报73.59美元，近7日累计上涨1.1%，14日波动率为32.83%。尽管整体涨幅不大，但主要加密资产的持续上涨表明市场情绪相对稳定，投资者对数字资产的兴趣仍在持续。短线来看，加密资产的走势更适合结合关键价位和成交量确认来判断延续性。\n\n**美股指数表现**\n美国股市主要指数普遍上涨，科技股表现尤为突出。道琼斯工业平均指数（DJI）在24小时内上涨0.2818%，现报54036.93点，近7日累计上涨2.96%，14日波动率为18.62%。标普500指数（SPX）上涨0.6184%，现报7757.64点，近7日累计上涨3.58%，14日波动率为16.67%。纳斯达克综合指数（IXIC）领涨，24小时内上涨1.299%，现报26690.62点，近7日累计上涨5.19%，14日波动率为24.97%。小盘股指数罗素2000（RUT）也表现不俗，上涨1.0976%，现报3034.49点，近7日累计上涨3.52%，14日波动率为18.73%。\n追踪标普500指数的SPDR S&P 500 ETF（SPY）上涨0.6115%，现报773.26美元，近7日累计上涨3.51%，14日波动率为16.73%。追踪纳斯达克100指数的Invesco QQQ ETF（QQQ）上涨1.1726%，现报723.03美元，近7日累计上涨5.09%，14日波动率为29.56%。整体来看，美股市场风险偏好有所提升，尤其是科技和成长股表现强劲，反映出市场对未来盈利增长的乐观预期。\n\n**科技巨头动态**\n主要科技巨头股价表现分化。微软（MSFT）在24小时内微涨0.03%，近7日累计大涨28.03%，近20日涨幅高达29.83%，14日相对强弱指数（RSI14）为81.43，显示为趋势多头信号。特斯拉（TSLA）在24小时内上涨2.83%，近7日上涨10.14%，但近20日累计下跌19.42%，RSI14为34.92，信号为趋势走弱，显示出中短期结构偏弱的特征。亚马逊（AMZN）24小时内上涨0.82%，近7日大涨21.1%，近20日上涨11.88%，RSI14为62.93，信号为震荡，方向未明。Meta Platforms（META）24小时内上涨0.37%，近7日上涨1.11%，但近20日下跌11.52%，RSI14为33.66，信号为趋势多头，但其20日表现与信号存在一定背离。博通（AVGO）24小时内上涨1.71%，近7日上涨15.51%，近20日上涨6.95%，RSI14为73.58，信号为趋势走弱，同样存在短期强劲但中期趋势走弱的复杂性。\n\n**板块异动观察**\n从行业板块表现来看，科技板块（XLK）在过去24小时内上涨1.4245%，现报187.97美元，近7日累计上涨7.2%，14日波动率为43.53%，领跑市场。这与纳斯达克指数的强劲表现相符，显示出市场对科技股的持续热情。\n金融板块（XLF）在24小时内下跌0.3633%，现报57.6美元，近7日累计上涨1.16%，14日波动率为13.79%，表现相对平稳。能源板块（XLE）在24小时内下跌1.1348%，现报57.5美元，近7日累计下跌3.44%，14日波动率为23.59%，表现偏弱，与原油价格的下跌趋势一致。医疗保健板块（XLV）上涨0.7479%，现报165.68美元，近7日累计上涨1.93%，14日波动率为17.75%。工业板块（XLI）上涨0.2273%，现报185.18美元，近7日累计上涨2.97%，14日波动率为23.23%。\n整体市场复盘显示，当前市场总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。本周市场的主要驱动力来自风险偏好的提升，边际变化贡献26.4。然而，资金价格与摩擦仍是主要拖累项，边际变化为-7.8。跨资产走势更可能围绕这组分化展开。权益资产方面，标普口径近7日上涨3.58%，纳指口径近7日上涨5.19%，说明成长资产仍在消化宏观与估值的双重约束。行业层面，科技板块近7日表现相对占优，能源板块相对承压，说明市场内部轮动并不均衡。波动与利率环境方面，VIX指数现报14.9，10年期国债收益率现报4.66%。\n\n## 三、深度个股解读\n\n**微软 (MSFT)**\n**事件概述：** 微软股价在过去24小时内微涨0.03%，现报，但近7日累计涨幅高达28.03%，近20日更是累计上涨29.83%。其14日年化波动率为85.4%。\n**市场解读：** 微软的股价走势呈现出强劲的趋势多头信号。尽管日内涨幅不大，但其周度和月度表现均异常出色，表明市场对其未来增长前景抱有高度乐观预期。这种强劲的上涨势头可能得益于其在云计算、人工智能等核心业务领域的持续领先地位和创新能力。高RSI值也反映了市场买盘的积极性。\n**投资启示：** 鉴于其均线结构偏多且短期内涨幅显著，投资者可优先考虑顺势持有现有仓位。对于尚未持有的投资者，若考虑介入，建议密切关注回调机会，并采取分批建仓的策略，以控制潜在风险。\n\n**特斯拉 (TSLA)**\n**事件概述：** 特斯拉股价在过去24小时内上涨2.83%，近7日累计上涨10.14%，但近20日累计下跌19.42%。其14日年化波动率为86.4%。\n**市场解读：** 特斯拉的股价表现呈现出复杂的中短期结构。尽管近期有所反弹，但在过去20日内仍有显著跌幅，这表明其整体趋势偏弱。这种走势可能反映了市场对其生产交付、竞争格局或盈利能力等方面的持续担忧，尽管短期内可能受到特定利好消息或技术性反弹的支撑。\n**投资启示：** 鉴于其中短期结构偏弱，投资者应优先采取防守策略，避免盲目追高。建议等待股价出现放量企稳的明确信号，或有实质性利好消息支撑，再考虑重新评估其投资价值。\n\n**亚马逊 (AMZN)**\n**事件概述：** 亚马逊股价在过去24小时内上涨0.82%，近7日累计上涨21.10%，近20日累计上涨11.88%。其14日年化波动率为91.6%。\n**市场解读：** 亚马逊的股价在近期表现强劲，周度和月度均有显著涨幅，但其信号显示为震荡，这可能意味着股价在经历快速上涨后，进入了一个盘整或方向未明的阶段。市场可能正在消化前期的涨幅，并等待新的催化剂出现。其高波动率也提示了潜在的短期价格波动风险。\n**投资启示：** 鉴于其方向未明且处于震荡区间，投资者应密切关注股价对关键支撑位和阻力位的突破或跌破情况。在明确的趋势信号出现之前，可采取区间操作策略，或等待确认信号后再进行方向性交易。\n\n## 四、加密货币项目动态\n\n**BitMEX出售计划告吹，创始人持股与业务萎缩成阻碍**\n加密货币衍生品交易所BitMEX的出售计划最终未能达成，主要原因在于潜在买家对创始人持股比例过高以及BitMEX业务规模持续萎缩表示担忧。这反映出加密货币市场在经历高速增长后，投资者对交易所治理结构和业务可持续性的审慎态度。\n\n**美国扩大对伊朗加密货币制裁，两家交易所受牵连**\n美国财政部海外资产控制办公室（OFAC）宣布扩大对伊朗的加密货币制裁，将两家与伊朗相关的加密货币交易所列入制裁名单。此举旨在进一步打击通过数字资产进行的非法金融活动，并凸显了全球监管机构对加密货币领域合规性的日益重视。\n\n**Circle将USDC稳定币扩展至OKX生态系统X Layer**\n领先的稳定币发行商Circle宣布，其美元稳定币USDC将扩展至OKX的X Layer生态系统。此举旨在提升USDC在更广泛区块链网络中的可用性和流动性，为用户提供更多选择，并促进DeFi生态系统的发展。\n\n**特朗普媒体公司终止与Crypto.com的CRO代币交易协议**\n唐纳德·特朗普旗下的媒体公司决定终止与加密货币平台Crypto.com的CRO代币财库交易协议。这一决定可能反映了该公司对加密货币领域策略的调整，也可能与当前加密市场环境或监管不确定性有关。\n\n**特朗普支持的美国比特币董事会成员增持个人股份**\n据CoinDesk报道，一位由唐纳德·特朗普支持的美国比特币董事会成员增持了价值190万美元的个人股份。此举可能被市场解读为对加密货币，特别是比特币长期价值的信心，并可能引发市场对相关政治人物在加密领域影响力的关注。\n\n## 五、今日市场日历\n\n**数据发布时刻表**\n*   **2026-08-12 08:30 ET (12:30 UTC) | 美国 | 美国 CPI：** 消费者物价指数是衡量通货膨胀水平的关键指标，对美联储的货币政策决策具有高重要性。市场将密切关注其数据表现，以判断通胀压力是否持续或缓解。\n*   **2026-08-13 08:30 ET (12:30 UTC) | 美国 | 美国 PPI：** 生产者物价指数反映了生产环节的通胀情况，通常被视为消费者物价指数的先行指标，对评估未来通胀趋势具有中等重要性。\n*   **2026-08-12 10:30 ET (14:30 UTC) | 美国 | 美国 EIA 原油库存：** 美国能源信息署（EIA）公布的原油库存数据，对全球原油市场供需关系和价格走势具有中等重要性。节假日周可能调整发布时间，需留意官方通知。\n\n**重要事件预告**\n数据不足。\n\n**机构观点**\n当前市场总分已落入偏紧区域，这表明整体风险水平较高，投资者组合更适合采取防守策略并降低杠杆，优先控制回撤而非追求高胜率进攻。从边际变化来看，风险偏好是当前市场的主要支撑项，而资金价格与摩擦仍是主要的拖累项。因此，跨资产的走势更可能围绕这种分化展开。\n\n在权益资产方面，标普500指数近7日上涨3.58%，纳斯达克综合指数近7日上涨5.19%，这反映出成长型资产在当前宏观环境和估值约束下仍在努力消化。行业层面，科技板块近7日表现相对占优，而能源板块则相对承压，这表明市场内部的轮动并不均衡，资金仍在寻找确定性更强的增长领域。\n\n加密资产方面，比特币近7日上涨3.31%，以太坊近7日上涨2.90%。短线来看，加密资产的走势更适合结合关键价位和成交量确认来判断其延续性，而非盲目追涨。\n\n## 免责声明\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
   "daily": {
     "asOfDate": "2026-08-10",
-    "generatedAt": "2026-08-07T21:08:22Z",
+    "generatedAt": "2026-08-07T22:03:57Z",
     "headline": "宏观偏紧，优先风险控制与防守仓位。",
     "quickView": {
       "overallScore": 39.46,
@@ -39,38 +39,38 @@
         "ticker": "BTC",
         "name": "Bitcoin",
         "bucket": "crypto",
-        "spot": 64938.58,
-        "change24hPct": 1.0527,
-        "change7dPct": 3.38,
-        "realizedVol14dPct": 25.6,
+        "spot": 64889.91,
+        "change24hPct": 0.9769,
+        "change7dPct": 3.31,
+        "realizedVol14dPct": 25.52,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "Ethereum",
         "bucket": "crypto",
-        "spot": 1913.35,
-        "change24hPct": 0.5937,
-        "change7dPct": 2.85,
-        "realizedVol14dPct": 38.27,
+        "spot": 1914.24,
+        "change24hPct": 0.6405,
+        "change7dPct": 2.9,
+        "realizedVol14dPct": 38.28,
         "source": "yfinance"
       },
       {
         "ticker": "SOL",
         "name": "Solana",
         "bucket": "crypto",
-        "spot": 73.75,
-        "change24hPct": 1.6169,
-        "change7dPct": 1.32,
-        "realizedVol14dPct": 33.11,
+        "spot": 73.59,
+        "change24hPct": 1.3964,
+        "change7dPct": 1.1,
+        "realizedVol14dPct": 32.83,
         "source": "yfinance"
       },
       {
         "ticker": "GOLD",
         "name": "COMEX Gold",
         "bucket": "commodity",
-        "spot": 4401.4,
-        "change24hPct": 3.7577,
+        "spot": 4401.3,
+        "change24hPct": 3.7553,
         "change7dPct": 8.7,
         "realizedVol14dPct": 29.28,
         "source": "yfinance"
@@ -79,30 +79,30 @@
         "ticker": "SILVER",
         "name": "COMEX Silver",
         "bucket": "commodity",
-        "spot": 63.78,
-        "change24hPct": 3.8103,
-        "change7dPct": 10.75,
-        "realizedVol14dPct": 37.92,
+        "spot": 63.8,
+        "change24hPct": 3.8428,
+        "change7dPct": 10.78,
+        "realizedVol14dPct": 38.0,
         "source": "yfinance"
       },
       {
         "ticker": "WTI",
         "name": "WTI Crude",
         "bucket": "commodity",
-        "spot": 77.1,
-        "change24hPct": -0.2458,
-        "change7dPct": -8.94,
-        "realizedVol14dPct": 69.42,
+        "spot": 77.08,
+        "change24hPct": -0.2717,
+        "change7dPct": -8.96,
+        "realizedVol14dPct": 69.41,
         "source": "yfinance"
       },
       {
         "ticker": "BRENT",
         "name": "Brent Crude",
         "bucket": "commodity",
-        "spot": 82.2,
-        "change24hPct": -0.3516,
-        "change7dPct": -8.79,
-        "realizedVol14dPct": 82.55,
+        "spot": 82.27,
+        "change24hPct": -0.2667,
+        "change7dPct": -8.71,
+        "realizedVol14dPct": 82.57,
         "source": "yfinance"
       },
       {
@@ -110,9 +110,9 @@
         "name": "US Dollar Index",
         "bucket": "fx",
         "spot": 99.6,
-        "change24hPct": -0.3721,
+        "change24hPct": -0.3661,
         "change7dPct": -0.2,
-        "realizedVol14dPct": 5.42,
+        "realizedVol14dPct": 5.41,
         "source": "yfinance"
       },
       {
@@ -248,12 +248,38 @@
     ],
     "hotNews": [
       {
+        "title": "Wall St Week Ahead Inflation data to test record-setting US stocks, Fed rate views - Reuters",
+        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. Image 3: Traders work on the floor of the New York Stock Exchange (NYSE) in New York City. A trader works on the floor of the New York Stock Exch",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/business/wall-st-week-ahead-inflation-data-test-record-setting-us-stocks-fed-rate-views-2026-08-07/",
+        "publishedAt": "2026-08-07T10:02:36Z",
+        "bucket": "macro_policy",
+        "editorScore": 21.5955
+      },
+      {
+        "title": "Trump Media pulls back from crypto, scraps Crypto.com's CRO token treasury deal",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/08/07/trump-media-pulls-back-from-crypto-scraps-crypto-com-cro-treasury-deal",
+        "publishedAt": "2026-08-07T21:13:21Z",
+        "bucket": "crypto",
+        "editorScore": 19.9903
+      },
+      {
+        "title": "Morning Bid: Dealjà vu - Reuters",
+        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Ukraine and Russia at War. ## Browse Markets. Image 4: A screen shows trading of the S&P 500 Index after the opening bell at the New York Stock Exchange (NYSE) i",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/commentary/reuters-open-interest/global-markets-view-usa-2026-08-07/",
+        "publishedAt": "2026-08-07T10:39:25Z",
+        "bucket": "equity",
+        "editorScore": 19.8489
+      },
+      {
         "title": "U.S. widens Iran crypto crackdown with sanctions on two exchanges",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/policy/2026/08/07/u-s-widens-iran-crypto-crackdown-with-sanctions-on-two-exchanges",
         "publishedAt": "2026-08-07T18:42:44Z",
         "bucket": "crypto",
-        "editorScore": 19.7944
+        "editorScore": 19.5627
       },
       {
         "title": "US Treasury’s OFAC sanctions 2 Iran-linked crypto exchanges",
@@ -261,33 +287,25 @@
         "url": "https://cointelegraph.com/news/us-treasury-sanctions-iran-crypto-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-08-07T20:02:20Z",
         "bucket": "crypto",
-        "editorScore": 19.1261
+        "editorScore": 18.8944
       },
       {
-        "title": "Bitcoin's volatility has nearly disappeared. The risk hasn't",
-        "summary": "## Today’s signal\n\nImage 2: TA for aug 7\n   BTC/USD weekly bullish RSI divergence playing out: bearish momentum exhausting, not a reversal yet. Still structurally a downtrend (price under down-sloping EMA50 ~$78–79k, RSI <50) - expect sideways/bottoming until resistance is tested",
-        "source": "coindesk.com",
-        "url": "https://www.coindesk.com/daybook-us/2026/08/07/bitcoin-s-volatility-has-nearly-disappeared-the-risk-hasn-t",
-        "publishedAt": "2026-08-07T12:00:00Z",
-        "bucket": "crypto",
-        "editorScore": 18.7164
+        "title": "Salmonella-linked jalapenos add to US food safety worries - Reuters",
+        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Israel and Hamas at War. *   Ukraine and Russia at War. ## Browse Business. *   ### Image 3: Salmonella-linked jalapenos add to US food safety worries Now Playin",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/video/watch/idRW383307082026RP1/?chan=health",
+        "publishedAt": "2026-08-07T06:13:49Z",
+        "bucket": "geopolitics",
+        "editorScore": 18.6422
       },
       {
-        "title": "Reform UK chair calls for probe into SBF-linked donation: Report",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/reform-uk-probe-ftx-sam-bankman-fried-donation?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-08-07T17:03:50Z",
+        "title": "US stock market could ride earnings strength to more gains after S&P 500 hits record - Reuters",
+        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. Image 1: A Wall St. street sign is seen near the NYSE in New YorkNYSE in New York. Item 1 of 4 A Wall St. street sign is seen near the New York S",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/business/us-stock-market-could-ride-earnings-strength-more-gains-after-sp-500-hits-record-2026-08-05/",
+        "publishedAt": "2026-08-05T16:30:06Z",
         "bucket": "equity",
-        "editorScore": 15.0823
-      },
-      {
-        "title": "This chart says bitcoin's biggest bragging right over S&P 500 and Nasdaq may be over",
-        "summary": "For macro traders, a stocks-to-bitcoin ratio that no longer moves decisively in favor of BTC undercuts the cryptocurrency’s appeal as an asset capable of single-handedly lifting a portfolio higher. It also cuts against the more aggressive forecasts for the next bull cycle, predic",
-        "source": "coindesk.com",
-        "url": "https://www.coindesk.com/markets/2026/08/05/the-worst-chart-for-bitcoin-bulls-right-now",
-        "publishedAt": "2026-08-05T21:00:00Z",
-        "bucket": "equity",
-        "editorScore": 14.0
+        "editorScore": 14.6
       },
       {
         "title": "BitMEX sale collapsed as buyers balked at founder ownership and shrinking business",
@@ -295,32 +313,23 @@
         "url": "https://www.coindesk.com/business/2026/07/31/bitmex-sale-collapsed-as-buyers-balked-at-founder-ownership-and-shrinking-business",
         "publishedAt": "2026-08-07T16:53:56Z",
         "bucket": "general",
-        "editorScore": 12.1411
+        "editorScore": 11.9094
       },
       {
-        "title": "Bybit sues North Korea and Lazarus Group over $1.5 billion hack, secures asset freeze",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/policy/2026/08/07/bybit-sues-north-korea-and-lazarus-group-over-usd1-5-billion-hack-secures-asset-freeze",
-        "publishedAt": "2026-08-07T16:32:41Z",
+        "title": "Circle expands USDC to OKX ecosystem with X Layer launch",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/circle-native-usdc-okx-x-layer-cctp?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-08-07T17:36:45Z",
         "bucket": "general",
-        "editorScore": 12.0526
+        "editorScore": 11.0878
       },
       {
-        "title": "America Is Great at Creating Stock Market Bubbles—and Shrugging Them Off",
-        "summary": "Copyright ©2026 Dow Jones & Company, Inc. All Rights Reserved. 87990cbe856818d5eddac44c7b1cdeb8\n\n## Videos\n\n### Most Popular News\n\n### Most Popular\n\n### Further Reading\n\n### U.S. Stocks Down on Hormuz Deal Doubts\n\n### Retirees Love Dividends, but the Stock Market Surge Is Making ",
-        "source": "wsj.com",
-        "url": "https://www.wsj.com/finance/stocks/stock-market-bubbles-recovery-029d21d0",
-        "publishedAt": "2026-08-02T02:00:00Z",
-        "bucket": "equity",
-        "editorScore": 11.6
-      },
-      {
-        "title": "OKX's Rafique doubts Clarity Act will pass, warns optimism is already priced into bitcoin",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/policy/2026/08/04/okx-s-rafique-doubts-clarity-act-will-pass-warns-optimism-is-already-priced-into-bitcoin",
-        "publishedAt": "2026-08-07T15:22:44Z",
+        "title": "Donald Trump’s media company to terminate Crypto.com deal",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/donald-trump-media-company-crypto-deal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-08-07T21:39:36Z",
         "bucket": "crypto",
-        "editorScore": 17.0611
+        "editorScore": 17.3996
       },
       {
         "title": "Here’s what happened in crypto today",
@@ -328,32 +337,23 @@
         "url": "https://cointelegraph.com/news/what-happened-in-crypto-today?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
         "publishedAt": "2026-08-07T18:36:10Z",
         "bucket": "crypto",
-        "editorScore": 16.6671
+        "editorScore": 16.4353
       },
       {
-        "title": "Bitcoin price analysis: Here's why BTC isn't rallying with S&P 500, Nasdaq.",
-        "summary": "Summary\n\nShow\n\n   The S&P 500 has gained 3.12% this month, adding roughly $2.1 trillion in market cap – close to the entire crypto market's total value.\n   Bitcoin is up just 2% over the same stretch, trading around $64,600, a level it already touched back in July.\n   Analysts po",
+        "title": "Trump-backed American Bitcoin board member adds $1.9 million to personal stake - CoinDesk",
+        "summary": "## Mateen purchased more than 306,000 shares across two days following the company's quarterly earnings, lifting his stake to more than 492,000 shares. * American Bitcoin board member Justin Mateen bought a combined 306,981 shares of the company on Aug. 5-6 for roughly $1.93 mill",
         "source": "coindesk.com",
-        "url": "https://www.coindesk.com/markets/2026/08/06/s-and-p-500-has-added-crypto-s-usd2-trillion-market-cap-this-month-bitcoin-is-not-impressed-here-s-why",
-        "publishedAt": "2026-08-06T21:00:00Z",
+        "url": "https://www.coindesk.com/business/2026/08/07/trump-backed-american-bitcoin-director-justin-mateen-buys-nearly-usd2-million-of-abtc-stock",
+        "publishedAt": "2026-08-07T00:00:00Z",
         "bucket": "crypto",
-        "editorScore": 16.6664
-      },
-      {
-        "title": "Ondo Finance taps former Blockchain.com CFO Adam Schlisman as finance chief",
-        "summary": "1.   1U.S. widens Iran crypto crackdown with sanctions on two exchanges2 hrs ago  \n2.   2BitMEX sale collapsed as buyers balked at founder ownership and shrinking business3 hrs ago  \n3.   3Bybit sues North Korea and Lazarus Group over $1.5 billion hack, secures asset freeze4 hrs ",
-        "source": "coindesk.com",
-        "url": "https://www.coindesk.com/business/2026/08/05/ondo-finance-hires-former-blockchain-com-cfo-adam-schlisman",
-        "publishedAt": "2026-08-05T21:00:00Z",
-        "bucket": "crypto",
-        "editorScore": 14.1
+        "editorScore": 14.1846
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 风险偏好，边际变化 +26.4。",
       "主要拖累来自 资金价格与摩擦，边际变化 -7.8。",
-      "BTC 24H +1.05%，7D +3.38%，执行上优先看关键位是否放量确认。",
+      "BTC 24H +0.98%，7D +3.31%，执行上优先看关键位是否放量确认。",
       "板块层面，XLK 近7日 +7.20% 领跑，XLE 近7日 -3.44% 偏弱。",
       "波动与利率环境方面，VIX 现报 14.9，10Y 收益率现报 4.66。"
     ],
@@ -362,7 +362,7 @@
       "边际变化上，风险偏好 是当前主要支撑项，而 资金价格与摩擦 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
       "权益资产方面，标普口径近7日 +3.58%，纳指口径近7日 +5.19%，说明成长资产仍在消化宏观与估值的双重约束。",
       "行业层面，Technology 近7日表现相对占优，Energy 相对承压，说明市场内部轮动并不均衡。",
-      "加密资产方面，BTC 近7日 +3.38%，ETH 近7日 +2.85%，短线更适合结合关键价位和成交确认判断延续性。"
+      "加密资产方面，BTC 近7日 +3.31%，ETH 近7日 +2.90%，短线更适合结合关键价位和成交确认判断延续性。"
     ],
     "deepStockDives": [
       {
@@ -424,6 +424,24 @@
     "cryptoProjectUpdates": [
       {
         "project": "交易所 / 市场结构",
+        "headline": "Wall St Week Ahead Inflation data to test record-setting US stocks, Fed rate views - Reuters",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/business/wall-st-week-ahead-inflation-data-test-record-setting-us-stocks-fed-rate-views-2026-08-07/"
+      },
+      {
+        "project": "行业观察",
+        "headline": "Trump Media pulls back from crypto, scraps Crypto.com's CRO token treasury deal",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/08/07/trump-media-pulls-back-from-crypto-scraps-crypto-com-cro-treasury-deal"
+      },
+      {
+        "project": "交易所 / 市场结构",
+        "headline": "Morning Bid: Dealjà vu - Reuters",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/commentary/reuters-open-interest/global-markets-view-usa-2026-08-07/"
+      },
+      {
+        "project": "交易所 / 市场结构",
         "headline": "U.S. widens Iran crypto crackdown with sanctions on two exchanges",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/policy/2026/08/07/u-s-widens-iran-crypto-crackdown-with-sanctions-on-two-exchanges"
@@ -435,22 +453,10 @@
         "url": "https://cointelegraph.com/news/us-treasury-sanctions-iran-crypto-exchanges?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
       },
       {
-        "project": "比特币生态",
-        "headline": "Bitcoin's volatility has nearly disappeared. The risk hasn't",
-        "source": "coindesk.com",
-        "url": "https://www.coindesk.com/daybook-us/2026/08/07/bitcoin-s-volatility-has-nearly-disappeared-the-risk-hasn-t"
-      },
-      {
-        "project": "比特币生态",
-        "headline": "This chart says bitcoin's biggest bragging right over S&P 500 and Nasdaq may be over",
-        "source": "coindesk.com",
-        "url": "https://www.coindesk.com/markets/2026/08/05/the-worst-chart-for-bitcoin-bulls-right-now"
-      },
-      {
-        "project": "比特币生态",
-        "headline": "OKX's Rafique doubts Clarity Act will pass, warns optimism is already priced into bitcoin",
-        "source": "CoinDesk",
-        "url": "https://www.coindesk.com/policy/2026/08/04/okx-s-rafique-doubts-clarity-act-will-pass-warns-optimism-is-already-priced-into-bitcoin"
+        "project": "行业观察",
+        "headline": "Donald Trump’s media company to terminate Crypto.com deal",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/donald-trump-media-company-crypto-deal?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
       },
       {
         "project": "行业观察",
@@ -460,15 +466,9 @@
       },
       {
         "project": "比特币生态",
-        "headline": "Bitcoin price analysis: Here's why BTC isn't rallying with S&P 500, Nasdaq.",
+        "headline": "Trump-backed American Bitcoin board member adds $1.9 million to personal stake - CoinDesk",
         "source": "coindesk.com",
-        "url": "https://www.coindesk.com/markets/2026/08/06/s-and-p-500-has-added-crypto-s-usd2-trillion-market-cap-this-month-bitcoin-is-not-impressed-here-s-why"
-      },
-      {
-        "project": "交易所 / 市场结构",
-        "headline": "Ondo Finance taps former Blockchain.com CFO Adam Schlisman as finance chief",
-        "source": "coindesk.com",
-        "url": "https://www.coindesk.com/business/2026/08/05/ondo-finance-hires-former-blockchain-com-cfo-adam-schlisman"
+        "url": "https://www.coindesk.com/business/2026/08/07/trump-backed-american-bitcoin-director-justin-mateen-buys-nearly-usd2-million-of-abtc-stock"
       }
     ],
     "marketCalendar": [
