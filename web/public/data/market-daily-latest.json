@@ -1,29 +1,29 @@
 {
   "reportStatus": "generated",
-  "reportGeneratedAt": "2026-08-10T22:07:30Z",
+  "reportGeneratedAt": "2026-08-10T22:53:31Z",
   "asOfDate": "2026-08-11",
   "headline": "宏观偏紧，优先风险控制与防守仓位。",
   "markdownSource": "gemini",
-  "markdownCharCount": 5586,
+  "markdownCharCount": 6313,
   "aiRender": {
     "enabled": true,
     "status": "ok",
     "usedFallback": false,
     "requestedModel": "gemini-2.5-pro",
     "usedModelFallback": true,
-    "charCount": 5585,
+    "charCount": 6312,
     "minCharTarget": 1500,
     "finishReason": "STOP",
-    "detail": "Gemini preview generated (5585 chars, finishReason=STOP).",
+    "detail": "Gemini preview generated (6312 chars, finishReason=STOP).",
     "model": "gemini-2.5-flash",
     "reasoningMode": "deep_think",
     "qualified": true,
     "qualifiedReason": "ok"
   },
-  "markdown": "# 市场研究日报（2026-08-11）\n\n## 一、热点要闻\n\n**美联储动态与国际大宗商品**\n今日美联储动态及国际大宗商品/地缘供给冲击相关新闻数据不足，暂无具体要闻可供分析。\n\n**宏观经济政策与市场焦点**\n全球宏观经济政策方面，快时尚巨头Shein的越南业务遭遇挫折，凸显了其对中国市场的深度依赖。据路透社报道，Shein在越南的扩张计划未能如预期般顺利，这使得公司在供应链、生产和市场策略上更加聚焦于中国本土的优势。这一事件不仅反映了全球化背景下供应链的复杂性与区域经济差异，也再次强调了中国在全球制造业和消费市场中的核心地位，对于寻求国际扩张的企业而言，本土化策略的挑战依然严峻。\n\n与此同时，乌克兰基辅举办的音乐节为饱受战火困扰的民众带来了短暂的慰藉。路透社报道指出，在持续的冲突背景下，此类文化活动为当地居民提供了情感上的出口和社区凝聚力，展现了民众在逆境中的韧性。尽管这并非直接的宏观经济政策，但它从侧面反映了地缘政治冲突对社会生活和经济活动造成的深远影响，以及社会稳定对于经济复苏的重要性。\n\n在加密货币领域，波场（TRON）网络的USDT稳定币供应量已达到879亿美元，第二季度转账量更是突破2.1万亿美元。Messari的数据显示，这一显著增长表明TRON在稳定币市场中的地位日益巩固，其网络作为价值传输和交易结算平台的使用率持续攀升。稳定币作为连接传统金融与加密世界的桥梁，其规模的扩大和流动性的增强，对整个加密生态系统的稳定性和可扩展性具有重要意义，也反映了市场对高效、低成本跨境支付解决方案的持续需求。\n\n## 二、市场复盘\n\n**大宗商品&外汇表现**\n在过去24小时内，大宗商品市场呈现显著上涨态势。COMEX黄金价格上涨2.4858%至4448.6美元，近7日涨幅达到10.29%，14日波动率为27.49%。COMEX白银表现更为强劲，24小时内大涨4.0232%至65.88美元，近7日涨幅高达14.24%，14日波动率升至39.96%。原油市场同样活跃，WTI原油价格飙升5.2699%至82.3美元，布伦特原油上涨5.1466%至87.85美元，两者近7日分别上涨2.44%和4.87%，14日波动率分别高达66.59%和76.98%。贵金属和原油的普遍上扬，可能反映了市场对通胀压力的担忧加剧，或是对未来经济活动复苏的乐观预期，同时地缘政治风险也可能为油价提供支撑。\n\n外汇市场方面，美元指数（DXY）微幅上涨0.2088%至99.81，但近7日仍录得0.15%的跌幅，14日波动率为5.63%。美国10年期国债收益率（US10Y）小幅上行0.8369%至4.7%，近7日上涨0.28%，14日波动率为16.58%。美元指数的短期反弹与国债收益率的上升，可能与市场对美联储未来政策路径的重新评估有关，尽管整体风险偏好有所提升，但系统流动性仍是主要拖累项。CBOE VIX指数上涨3.7584%至15.46，但近7日下跌2.52%，14日波动率为127.4%，显示市场短期波动性有所回升，但中长期风险情绪有所缓和。\n\n**加密货币表现**\n加密货币市场在过去24小时内呈现小幅回调，但近7日仍保持韧性。比特币（BTC）价格下跌1.4532%至63902.55美元，但近7日仍录得0.7%的涨幅，14日波动率为21.61%。以太坊（ETH）下跌1.9434%至1871.59美元，近7日上涨0.72%，14日波动率为27.81%。Solana（SOL）表现相对平稳，24小时内微跌0.0946%至76.14美元，近7日上涨3.63%，14日波动率为28.41%。整体来看，主流加密资产在经历前期上涨后出现技术性调整，但周度表现依然积极，表明市场对加密资产的长期信心仍在，短线交易者需关注关键价位是否放量确认。\n\n**美股指数表现**\n美国股市主要指数在过去24小时内普遍小幅收跌，但近7日表现依然强劲。道琼斯工业平均指数（DJI）下跌0.1128%至53975.98点，近7日上涨1.5%。标普500指数（SPX）下跌0.0584%至7753.11点，近7日上涨2.01%。纳斯达克综合指数（IXIC）下跌0.3194%至26605.36点，近7日上涨2.67%。罗素2000指数（RUT）下跌0.5633%至3017.4点，近7日上涨1.19%。代表性ETF方面，SPDR标普500 ETF（SPY）下跌0.0297%至773.03美元，Invesco QQQ（QQQ）下跌0.2987%至720.87美元。尽管短期有所回调，但主要股指在过去一周内仍录得可观涨幅，尤其是科技股占比较高的纳斯达克指数和QQQ，显示市场风险偏好在边际上有所提升，但系统流动性仍构成一定拖累，使得成长资产在消化宏观与估值双重约束时面临挑战。\n\n**科技巨头动态**\n在科技巨头中，微软（MSFT）在过去24小时上涨1.21%，近7日大涨12.18%，近20日涨幅高达29.43%，RSI14为84.5，信号显示为趋势多头。亚马逊（AMZN）上涨1.32%，近7日飙升18.08%，近20日上涨12.45%，RSI14为65.93，信号为震荡。Meta（META）上涨0.48%，近7日上涨10.37%，近20日下跌9.41%，RSI14为35.21，信号为趋势多头。这些公司强劲的周度表现支撑了科技板块的整体涨势。然而，特斯拉（TSLA）在过去24小时上涨0.7%，近7日上涨7.13%，但近20日下跌16.18%，RSI14为31.35，信号为趋势走弱。博通（AVGO）下跌1.25%，近7日上涨8.91%，近20日上涨9.99%，RSI14为67.56，信号为趋势走弱。这表明科技巨头内部存在分化，部分个股面临结构性调整或短期压力。\n\n**板块异动观察**\n从行业板块来看，能源板块（XLE）在过去24小时内表现最为突出，大涨4.6609%至60.18美元，近7日上涨2.36%。医疗保健板块（XLV）上涨1.6659%至168.44美元，近7日上涨3.82%。金融板块（XLF）上涨0.3646%至57.81美元，近7日上涨0.75%。工业板块（XLI）下跌0.3132%至184.6美元，近7日上涨0.79%。科技板块（XLK）在过去24小时内下跌0.8778%至186.32美元，但近7日仍以4.65%的涨幅领跑所有板块，显示出其在过去一周的强势表现。这种板块间的轮动和分化，反映了市场在不同宏观环境下对各行业前景的重新评估。当前市场总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。本周主驱动来自风险偏好，边际变化为+24.5，而主要拖累来自系统流动性，边际变化为-3.5。波动与利率环境方面，VIX现报15.46，10年期美债收益率现报4.7%。\n\n## 三、深度个股解读\n\n**微软 (MSFT)**\n*   **事件概述:** 微软股价在过去24小时内上涨1.21%，近7日累计涨幅高达12.18%，近20日更是实现了29.43%的显著增长。其14日年化波动率为84.1%。\n*   **市场解读:** 微软的均线结构目前呈现偏多态势，RSI14指标高达84.5，市场信号明确指向趋势多头。这表明投资者对微软的增长前景，尤其是在云计算和人工智能领域的领先地位，抱有强烈信心。强劲的短期和中期表现反映了公司基本面的稳健以及市场对其创新能力的持续认可。\n*   **投资启示:** 鉴于其明确的多头趋势，投资者可优先考虑顺势持有现有仓位。对于寻求入场的投资者，可关注股价在回调时的分批买入机会，以控制风险并捕捉长期增长潜力。\n\n**特斯拉 (TSLA)**\n*   **事件概述:** 特斯拉股价在过去24小时内上涨0.70%，近7日上涨7.13%，但近20日却录得16.18%的跌幅。其14日年化波动率为85.0%。\n*   **市场解读:** 尽管特斯拉在过去7日有所反弹，但近20日的显著下跌以及RSI14指标31.35的低位，使得其信号显示为趋势走弱。这表明市场对特斯拉的短期前景存在担忧，可能与宏观经济环境、竞争加剧或特定公司新闻有关。中短期技术结构偏弱，需要警惕进一步下行风险。\n*   **投资启示:** 投资者应优先采取防守策略，避免盲目追涨。建议密切关注股价是否能在关键支撑位获得放量企稳信号，作为重新评估入场或增加仓位的依据。\n\n**亚马逊 (AMZN)**\n*   **事件概述:** 亚马逊股价在过去24小时内上涨1.32%，近7日大涨18.08%，近20日上涨12.45%。其14日年化波动率为91.1%。\n*   **市场解读:** 亚马逊在过去一周表现强劲，但其RSI14指标为65.93，市场信号显示为震荡。这表明尽管有显著涨幅，但股价可能处于一个方向未明的区间内波动，多空双方力量相对均衡。市场在消化近期涨幅后，可能正在等待新的催化剂以确定下一步方向。\n*   **投资启示:** 投资者应密切关注亚马逊股价能否有效突破或跌破关键区间。一旦出现放量突破或跌破的确认信号，将为后续的交易策略提供明确指引。在方向未明朗之前，可采取观望或区间操作策略。\n\n**Meta (META)**\n*   **事件概述:** Meta股价在过去24小时内上涨0.48%，近7日上涨10.37%，但近20日下跌9.41%。其14日年化波动率为60.4%。\n*   **市场解读:** 尽管Meta在近20日有所回调，但其近7日的强劲反弹以及RSI14指标35.21，市场信号显示为趋势多头。这可能表明股价在经历前期调整后，已重新获得买方支撑，投资者对其在元宇宙、广告业务等领域的长期发展仍抱有积极预期。均线结构偏多，预示着股价可能延续上涨趋势。\n*   **投资启示:** 投资者可优先考虑顺势持有现有仓位。对于希望建立新仓位的投资者，可以关注股价在回调时的分批买入机会，以把握其潜在的上涨空间。\n\n## 四、加密货币项目动态\n\n**比特币生态**\n特朗普媒体公司（Trump Media）的比特币持仓有所缩减，加密货币投资损失已达3.61亿美元，这反映出企业在加密资产配置上面临的波动性风险。与此同时，CoinDesk报道称，比特币价格稳定在65,100美元上方，而Strategy公司报告出售了1,690枚比特币。另一则消息指出，Strategy公司建立了47.5亿美元的现金储备，认为仅持有比特币不足以满足投资者的需求，这可能暗示了机构投资者在资产配置策略上的多元化倾向，以及对市场流动性和风险管理的需求。\n\n**交易所 / 市场结构**\n路透社报道，标普500指数和纳斯达克期货小幅上涨，市场正密切关注霍尔木兹海峡局势，这表明地缘政治风险仍是影响全球金融市场的重要因素。此外，交易平台Plus500公布了更高的核心利润，其美国业务表现强劲，显示出在线交易平台在全球范围内的扩张和盈利能力。\n\n**行业观察**\n一项重要的加密货币法案在参议院投票被推迟至9月，这使得该法案通过的几率变得渺茫。路透社指出，立法进程的缓慢和不确定性，可能会对加密行业未来的监管环境和创新发展带来挑战。\n\n**稳定币**\nBitwise的Rasmussen表示，Circle的估值被低估，因为稳定币市场正朝着数万亿美元的规模迈进。这一观点强调了稳定币在未来金融体系中的巨大潜力，以及其作为加密经济核心基础设施的重要性。\n\n## 五、今日市场日历\n\n**数据发布时刻表**\n*   **2026-08-12 08:30 ET (12:30 UTC) | 美国 | 美国消费者物价指数 (CPI)**\n    *   重要性：高\n    *   说明：由劳工统计局 (BLS) 官方发布，是衡量通货膨胀的关键指标，对美联储货币政策决策具有重大影响。\n*   **2026-08-13 08:30 ET (12:30 UTC) | 美国 | 美国生产者物价指数 (PPI)**\n    *   重要性：中\n    *   说明：由劳工统计局 (BLS) 官方发布，反映生产者层面价格变化，是预测未来消费者通胀的重要先行指标。\n*   **2026-08-12 10:30 ET (14:30 UTC) | 美国 | 美国能源信息署 (EIA) 原油库存**\n    *   重要性：中\n    *   说明：由能源信息署 (EIA) 官方页面发布，衡量美国商业原油库存变化，对全球原油价格有直接影响。节假日周可能调整发布时间。\n\n**重要事件预告**\n数据不足，暂无除上述数据发布外的其他重要事件预告。\n\n**市场观察/交易台观点**\n当前市场总分已落入偏紧区域，这提示投资者在资产组合管理上更适合采取防守和降低杠杆的策略，优先控制回撤而非积极追求高胜率的进攻机会。从边际变化来看，风险偏好是当前市场的主要支撑项，其边际变化为+24.5，显示出市场情绪有所改善。然而，系统流动性仍是主要拖累项，其边际变化为-3.5，这意味着跨资产走势更可能围绕这种风险偏好与流动性分化的格局展开。在权益资产方面，标普500指数近7日上涨2.01%，纳斯达克指数近7日上涨2.67%，这表明成长型资产仍在努力消化宏观经济环境和估值带来的双重约束。行业层面，科技板块近7日表现相对占优，而金融板块则相对承压，这反映出市场内部的轮动并不均衡。加密资产方面，比特币近7日上涨0.70%，以太坊近7日上涨0.72%，短线交易者更适合结合关键价位和成交量确认来判断其走势的延续性。\n\n## 免责声明\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
+  "markdown": "# 市场研究日报（2026-08-11）\n\n## 一、热点要闻\n\n### 美联储动态\n今日暂无美联储相关政策声明或官员讲话的最新消息。市场参与者将继续密切关注未来美联储的任何动向，以研判货币政策走向对全球经济及资产价格的影响。\n\n### 国际大宗商品\n国际大宗商品市场今日暂无重大地缘政治冲击或供给侧变动的相关新闻。全球供应链的稳定性及主要产区的生产状况仍是市场关注的焦点。\n\n### 宏观经济政策\n**标题：货币干预效果参差不齐，政策制定面临挑战**\n**事件概述：** 英国《金融时报》近期刊文指出，历史数据显示，各国央行或财政部门实施的货币干预措施，其效果往往呈现出“喜忧参半”的局面。文章可能探讨了不同时期、不同经济背景下，货币干预对汇率稳定、通胀控制及经济增长的影响。\n**要点：** 货币干预通常指一国央行通过买卖外汇市场上的本币或外币，以影响本币汇率的行为。其目的可能包括抑制本币过度升值或贬值、维护金融稳定、支持出口或进口等。然而，干预的有效性受多种因素制约，例如干预规模、市场预期、宏观经济基本面以及国际合作程度。在资本自由流动、全球金融市场高度联动的背景下，单边干预的长期效果往往难以持续，甚至可能引发市场反噬。\n**市场影响：** 这一观察提醒市场，即便在汇率波动加剧时期，政策制定者在考虑采取货币干预时也需审慎权衡。对于投资者而言，这意味着不应过度依赖短期干预效果，而应更多关注各国经济基本面、利率政策差异以及长期资本流动趋势。汇率的长期走势仍将由经济增长、通胀水平和利率预期等核心宏观因素决定，任何短期干预都可能只是提供暂时的喘息空间。\n\n## 二、市场复盘\n\n### 大宗商品&外汇表现\nCOMEX黄金价格今日录得显著上涨，报4454.5美元，24小时涨幅达2.62%，近7日累计涨幅更是高达10.43%，14日波动率维持在27.75%的高位。COMEX白银表现更为强劲，现价65.96美元，24小时上涨4.15%，近7日涨幅达14.38%，14日波动率高达40.25%。贵金属市场的强势表现，可能反映了市场避险情绪的升温，或是对全球通胀预期的重新评估。\n\n原油市场同样呈现上行态势。WTI原油现价82.12美元，24小时上涨5.04%，近7日涨幅2.22%，14日波动率高达66.09%。布伦特原油现价87.69美元，24小时上涨4.96%，近7日涨幅4.68%，14日波动率76.63%。原油价格的同步上扬，或与全球经济活动预期改善以及潜在的供给侧担忧有关。\n\n外汇方面，美元指数（DXY）现报99.81，24小时微涨0.21%，但近7日累计下跌0.15%，14日波动率相对较低，为5.63%。美元的相对稳定，可能表明市场对主要货币的短期方向缺乏明确共识。\n\n债券市场方面，美国10年期国债收益率现报4.7%，24小时上涨0.84%，近7日累计上涨0.28%，14日波动率为16.58%。收益率的温和上行，可能反映了市场对未来通胀或经济增长的预期有所调整。\n\n市场波动性指标CBOE VIX指数现报15.46，24小时上涨3.76%，但近7日累计下跌2.52%，14日波动率高达127.4%。VIX指数的短期波动，结合其近7日的下降，可能暗示市场在经历短期震荡后，整体恐慌情绪有所缓解，但高波动率仍需警惕。\n\n### 加密货币表现\n加密货币市场今日多数主流币种呈现小幅回调。比特币（BTC）现价63939.0美元，24小时下跌1.40%，但近7日仍保持0.75%的涨幅，14日波动率为21.5%。以太坊（ETH）现价1874.22美元，24小时下跌1.81%，近7日上涨0.86%，14日波动率为27.56%。Solana（SOL）现价76.14美元，24小时微跌0.09%，近7日上涨3.63%，14日波动率为28.41%。整体而言，加密市场在经历前期的上涨后，短期内出现技术性调整，但周线级别仍维持温和涨势。市场观察显示，比特币在执行层面，优先关注关键价位是否放量确认，以判断趋势的延续性。\n\n### 美股指数表现\n美国主要股指今日普遍小幅收跌，但周线级别仍录得上涨。道琼斯工业平均指数（DJI）现报53975.98点，24小时下跌0.11%，近7日上涨1.50%，14日波动率为18.68%。标普500指数（SPX）现报7753.11点，24小时下跌0.06%，近7日上涨2.01%，14日波动率为16.72%。纳斯达克综合指数（IXIC）现报26605.36点，24小时下跌0.32%，近7日上涨2.67%，14日波动率为25.08%。罗素2000指数（RUT）现报3017.4点，24小时下跌0.56%，近7日上涨1.19%，14日波动率为19.06%。\n\n追踪标普500的SPDR S&P 500 ETF（SPY）现价773.03美元，24小时下跌0.03%，近7日上涨2.03%。追踪纳斯达克100的Invesco QQQ（QQQ）现价720.87美元，24小时下跌0.30%，近7日上涨2.97%。尽管今日市场略有回调，但从近7日表现看，科技股占比较高的纳斯达克指数和QQQ表现相对领先，显示市场对成长型资产的偏好仍在，但同时也可能面临宏观环境和估值的双重约束。\n\n### 科技巨头动态\n科技巨头表现分化。微软（MSFT）近1日上涨1.21%，近7日大涨12.18%，近20日累计上涨29.43%，RSI14为84.5，信号显示为趋势多头。亚马逊（AMZN）近1日上涨1.32%，近7日飙升18.08%，近20日上涨12.45%，RSI14为65.93，信号显示为震荡。Meta（META）近1日上涨0.48%，近7日上涨10.37%，尽管近20日下跌9.41%，但RSI14为35.21，信号显示为趋势多头。\n\n特斯拉（TSLA）近1日上涨0.70%，近7日上涨7.13%，但近20日累计下跌16.18%，RSI14为31.35，信号显示为趋势走弱。博通（AVGO）近1日下跌1.25%，近7日上涨8.91%，近20日上涨9.99%，RSI14为67.56，信号显示为趋势走弱。部分科技巨头如微软、亚马逊和Meta展现出较强的短期或中期动能，而特斯拉和博通则面临一定的回调压力或趋势走弱信号。\n\n### 板块异动观察\n从行业板块表现来看，市场内部轮动特征明显。科技板块（XLK）现价186.32美元，24小时下跌0.88%，但近7日累计上涨4.65%，显示其仍是近期市场的主要驱动力。金融板块（XLF）现价57.81美元，24小时上涨0.36%，近7日仅上涨0.75%，表现相对偏弱。能源板块（XLE）现价60.18美元，24小时大涨4.66%，近7日上涨2.36%，受益于原油价格的强劲表现。医疗保健板块（XLV）现价168.44美元，24小时上涨1.67%，近7日上涨3.82%，表现稳健。工业板块（XLI）现价184.6美元，24小时下跌0.31%，近7日上涨0.79%，表现平平。\n\n综合市场复盘线索，当前市场总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。本周市场主驱动来自风险偏好，边际变化录得+24.5，表明投资者情绪有所回暖。然而，主要拖累因素仍是系统流动性，边际变化为-3.5，这预示着跨资产走势可能围绕风险偏好与流动性分化展开。波动与利率环境方面，VIX指数现报15.46，美国10年期国债收益率现报4.7%，显示市场波动性仍存，且利率环境保持相对高位。\n\n## 三、深度个股解读\n\n### 微软 (MSFT)\n**事件概述：** 微软公司股价近期表现强劲，近1日上涨1.21%，近7日累计上涨12.18%，近20日更是录得29.43%的显著涨幅。其14日年化波动率为84.1%。技术指标显示，微软的均线结构偏多，RSI14高达84.5，市场信号为趋势多头。\n**市场解读：** 微软的持续强势表现，可能得益于其在云计算、人工智能等核心业务领域的领先地位和强劲增长势头。市场对其未来业绩增长的信心，以及可能的技术创新突破，共同推动了股价的上行。多头趋势的确认，表明当前买盘力量占据主导，市场对该股的积极情绪浓厚。\n**投资启示：** 对于投资者而言，鉴于微软目前处于明确的趋势多头状态，优先策略是顺势持有。在股价出现回调时，可考虑分批处理或逢低吸纳，以把握其长期增长潜力。然而，高RSI值也提示短期可能存在超买风险，需关注回调力度。\n\n### 特斯拉 (TSLA)\n**事件概述：** 特斯拉公司股价近期表现复杂，近1日上涨0.70%，近7日上涨7.13%，但近20日累计下跌16.18%。其14日年化波动率为85.0%。RSI14为31.35，市场信号为趋势走弱。\n**市场解读：** 特斯拉股价在短期内有所反弹，但从更长的20日周期来看，仍处于下跌趋势中。这可能反映了市场对其生产交付、竞争格局以及宏观经济对其电动汽车需求影响的担忧。虽然短期有技术性反弹，但整体趋势偏弱，表明卖盘压力仍存。\n**投资启示：** 鉴于特斯拉目前的中短期结构偏弱，投资者应优先采取防守策略，控制风险。在考虑介入之前，建议等待出现放量企稳的明确信号，例如股价有效突破关键阻力位，并伴随成交量的显著放大，以确认趋势反转。\n\n### 亚马逊 (AMZN)\n**事件概述：** 亚马逊公司股价近期波动较大，近1日上涨1.32%，近7日录得18.08%的强劲涨幅，近20日累计上涨12.45%。其14日年化波动率为91.1%。RSI14为65.93，市场信号为震荡。\n**市场解读：** 亚马逊股价在过去一周表现出色，但整体市场信号仍显示为震荡，表明其方向性尚未完全明确。这可能与市场对其电商业务增长放缓、云计算业务竞争加剧以及宏观经济不确定性等因素的权衡有关。虽然短期内有资金流入推动上涨，但缺乏持续的单边趋势。\n**投资启示：** 对于亚马逊，当前市场方向未明，投资者应密切关注股价在关键区间内的表现。等待股价有效突破或跌破重要支撑/阻力位，并伴随确认信号（如成交量放大），再决定后续的投资策略，无论是追涨还是逢高减持。\n\n### Meta (META)\n**事件概述：** Meta公司股价近1日上涨0.48%，近7日上涨10.37%，但近20日累计下跌9.41%。其14日年化波动率为60.4%。RSI14为35.21，市场信号为趋势多头。\n**市场解读：** 尽管Meta在过去20日内有所回调，但其近7日的强劲反弹以及技术信号显示为趋势多头，表明市场对其核心广告业务的韧性以及元宇宙战略的长期潜力仍抱有期待。RSI值相对较低，也为未来的上涨提供了空间。\n**投资启示：** 鉴于Meta的均线结构偏多，投资者可优先考虑顺势持有。在股价出现回调时，可以考虑分批处理或逢低布局，以捕捉其潜在的上涨机会。同时，需关注公司基本面变化及市场情绪对股价的影响。\n\n## 四、加密货币项目动态\n\n*   **比特币生态：** 特朗普媒体的比特币持仓量缩水，加密货币相关损失已达3.61亿美元，引发市场对其数字资产策略的关注。\n*   **比特币生态：** 比特币价格一度突破65,000美元，市场正密切关注本周即将公布的美国通胀数据，以研判其对加密市场的影响。\n*   **稳定币市场：** Bitwise分析师Rasmussen指出，Circle的估值可能被低估，预计稳定币市场规模将迈向数万亿美元级别。\n*   **比特币生态：** 策略公司正在建立47.5亿美元的现金储备，表明仅持有比特币可能不足以满足投资者多元化的需求。\n*   **Solana生态：** 针对美国士兵因预测市场押注而遭CFTC起诉的案件，法官已决定暂缓审理。\n*   **行业观察：** 一名英国洗钱嫌疑人被曝通过特朗普的加密货币业务购买了价值1亿美元的资产，引发了对加密领域合规性的讨论。\n*   **ETF / 机构资金：** 灰度（Grayscale）已悄然放弃了Cardano、Polkadot和Hedera的ETF发行计划，这可能影响相关代币的机构资金流入预期。\n*   **加密交易所安全：** 加密货币交易平台Coinsbuy在周日遭遇安全漏洞后，已悬赏10万美元寻求线索，凸显了数字资产安全面临的持续挑战。\n*   **TRON生态：** Messari报告显示，TRON网络上的USDT供应量已达到879亿美元，第二季度转账总额高达2.1万亿美元，显示其在稳定币领域的重要地位和活跃度。\n\n## 五、今日市场日历\n\n### 数据发布时刻表\n*   **2026-08-12 08:30 ET (12:30 UTC) | 美国 | 美国消费者物价指数 (CPI)**\n    *   **重要性：** 高\n    *   **说明：** 由美国劳工统计局 (BLS) 官方发布。CPI是衡量通货膨胀的关键指标，其数据表现将直接影响美联储的货币政策预期，进而对美元汇率、美股及大宗商品市场产生显著影响。市场将密切关注核心CPI数据，以剔除食品和能源价格的短期波动。\n*   **2026-08-13 08:30 ET (12:30 UTC) | 美国 | 美国生产者物价指数 (PPI)**\n    *   **重要性：** 中\n    *   **说明：** 由美国劳工统计局 (BLS) 官方发布。PPI衡量生产商在生产过程中所获得的商品和服务价格变化，是衡量批发层面通胀的指标，通常被视为CPI的先行指标。其数据有助于市场预测未来的消费者通胀趋势。\n*   **2026-08-12 10:30 ET (14:30 UTC) | 美国 | 美国能源信息署 (EIA) 原油库存**\n    *   **重要性：** 中\n    *   **说明：** 由美国能源信息署 (EIA) 官方页面发布。此数据衡量美国商业原油库存量的变化，对全球原油价格具有重要影响。库存增加通常预示需求疲软或供应过剩，可能导致油价下跌；反之则可能推升油价。节假日周可能调整发布时间。\n\n### 重要事件预告\n今日暂无除经济数据发布外的其他重要事件预告。\n\n### 机构观点\n市场观察显示，当前整体市场总分已落入偏紧区域，这表明在资产配置上，组合更适合采取防守策略并适当降低杠杆，优先目标应是控制回撤，而非盲目追求高胜率的进攻机会。从边际变化来看，风险偏好是当前市场的主要支撑项，其边际变化录得+24.5，反映出投资者情绪有所改善。然而，系统流动性仍是主要的拖累项，边际变化为-3.5，这预示着跨资产走势更可能围绕风险偏好与流动性之间的分化展开。\n\n在权益资产方面，标普500指数近7日上涨2.01%，纳斯达克指数近7日上涨2.67%，这说明成长型资产在当前宏观环境和估值双重约束下，仍在努力消化和寻找新的增长动力。行业层面，科技板块（Technology）近7日表现相对占优，而金融板块（Financials）则相对承压，这清晰地揭示了市场内部轮动并不均衡，资金倾向于流向具有确定性增长前景的领域。\n\n加密资产方面，比特币（BTC）近7日上涨0.75%，以太坊（ETH）近7日上涨0.86%，整体呈现温和上涨态势。对于加密资产的短线操作，市场观察建议更适合结合关键价位和成交量确认来判断趋势的延续性，避免盲目追涨杀跌。\n\n## 免责声明\n以上内容由 AI 搜索与研究整理，不构成任何投资建议。\n",
   "daily": {
     "asOfDate": "2026-08-11",
-    "generatedAt": "2026-08-10T22:06:55Z",
+    "generatedAt": "2026-08-10T22:52:49Z",
     "headline": "宏观偏紧，优先风险控制与防守仓位。",
     "quickView": {
       "overallScore": 40.07,
@@ -39,20 +39,20 @@
         "ticker": "BTC",
         "name": "Bitcoin",
         "bucket": "crypto",
-        "spot": 63902.55,
-        "change24hPct": -1.4532,
-        "change7dPct": 0.7,
-        "realizedVol14dPct": 21.61,
+        "spot": 63939.0,
+        "change24hPct": -1.397,
+        "change7dPct": 0.75,
+        "realizedVol14dPct": 21.5,
         "source": "yfinance"
       },
       {
         "ticker": "ETH",
         "name": "Ethereum",
         "bucket": "crypto",
-        "spot": 1871.59,
-        "change24hPct": -1.9434,
-        "change7dPct": 0.72,
-        "realizedVol14dPct": 27.81,
+        "spot": 1874.22,
+        "change24hPct": -1.8056,
+        "change7dPct": 0.86,
+        "realizedVol14dPct": 27.56,
         "source": "yfinance"
       },
       {
@@ -69,40 +69,40 @@
         "ticker": "GOLD",
         "name": "COMEX Gold",
         "bucket": "commodity",
-        "spot": 4448.6,
-        "change24hPct": 2.4858,
-        "change7dPct": 10.29,
-        "realizedVol14dPct": 27.49,
+        "spot": 4454.5,
+        "change24hPct": 2.6217,
+        "change7dPct": 10.43,
+        "realizedVol14dPct": 27.75,
         "source": "yfinance"
       },
       {
         "ticker": "SILVER",
         "name": "COMEX Silver",
         "bucket": "commodity",
-        "spot": 65.88,
-        "change24hPct": 4.0232,
-        "change7dPct": 14.24,
-        "realizedVol14dPct": 39.96,
+        "spot": 65.96,
+        "change24hPct": 4.1496,
+        "change7dPct": 14.38,
+        "realizedVol14dPct": 40.25,
         "source": "yfinance"
       },
       {
         "ticker": "WTI",
         "name": "WTI Crude",
         "bucket": "commodity",
-        "spot": 82.3,
-        "change24hPct": 5.2699,
-        "change7dPct": 2.44,
-        "realizedVol14dPct": 66.59,
+        "spot": 82.12,
+        "change24hPct": 5.0397,
+        "change7dPct": 2.22,
+        "realizedVol14dPct": 66.09,
         "source": "yfinance"
       },
       {
         "ticker": "BRENT",
         "name": "Brent Crude",
         "bucket": "commodity",
-        "spot": 87.85,
-        "change24hPct": 5.1466,
-        "change7dPct": 4.87,
-        "realizedVol14dPct": 76.98,
+        "spot": 87.69,
+        "change24hPct": 4.9551,
+        "change7dPct": 4.68,
+        "realizedVol14dPct": 76.63,
         "source": "yfinance"
       },
       {
@@ -110,7 +110,7 @@
         "name": "US Dollar Index",
         "bucket": "fx",
         "spot": 99.81,
-        "change24hPct": 0.2088,
+        "change24hPct": 0.2078,
         "change7dPct": -0.15,
         "realizedVol14dPct": 5.63,
         "source": "yfinance"
@@ -248,83 +248,21 @@
     ],
     "hotNews": [
       {
-        "title": "Market expert 'cautious' on AI trade, likes healthcare, energy stocks - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Israel and Hamas at War. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. Our portfolio has moved around quite a bit in the last month and a",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/video/watch/idRW445110082026RP1",
-        "publishedAt": "2026-08-10T21:23:58Z",
-        "bucket": "equity",
-        "editorScore": 20.822
-      },
-      {
         "title": "Trump Media’s bitcoin holdings shrink as crypto losses hit $361 million",
         "source": "CoinDesk",
         "url": "https://www.coindesk.com/business/2026/08/10/trump-media-s-bitcoin-holdings-shrink-as-crypto-losses-hit-usd361-million",
         "publishedAt": "2026-08-10T21:12:07Z",
         "bucket": "crypto",
-        "editorScore": 19.7726
+        "editorScore": 19.5815
       },
       {
-        "title": "S&P 500, Nasdaq futures inch up as markets monitor Hormuz situation - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. Image 3: Traders work on the floor of the New York Stock Exchange (NYSE) in New York City. Traders work on the floor of the New York Stock Exchan",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/sp-500-nasdaq-futures-tick-higher-with-hormuz-outlook-focus-2026-08-10/",
-        "publishedAt": "2026-08-10T10:20:06Z",
-        "bucket": "equity",
-        "editorScore": 19.3559
-      },
-      {
-        "title": "For Shein, there's no place like China as Vietnam venture stumbles - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Israel and Hamas at War. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. *   ### Image 3: For Shein, there's no place like China as Vietnam",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/video/watch/idRW428210082026RP1/?chan=business",
-        "publishedAt": "2026-08-10T07:51:57Z",
-        "bucket": "geopolitics",
-        "editorScore": 19.0386
-      },
-      {
-        "title": "Ukrainians find relief at Kyiv music festival amid war - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. *   Israel and Hamas at War. *   Ukraine and Russia at War. ## Browse Business. ## Browse Markets. *   ### Image 2: Ukrainians find relief at Kyiv music festival ami",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/video/watch/idRW428010082026RP1/?chan=world-news",
-        "publishedAt": "2026-08-10T06:08:27Z",
-        "bucket": "geopolitics",
-        "editorScore": 18.6073
-      },
-      {
-        "title": "Crypto bill faces long odds after Senate punts vote to September - reuters.com",
-        "summary": "## Browse World. Aug 10 (Reuters) - The chances that the U.S. crypto industry will win once-in-a-generation digital asset legislation are dimming, despite Senate Republicans promising to advance the bill when lawmakers return to Capitol Hill next month. In a blow for ​the crypto ",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/legal/litigation/crypto-bill-faces-long-odds-after-senate-punts-vote-september-2026-08-10/",
-        "publishedAt": "2026-08-10T14:55:48Z",
-        "bucket": "crypto",
-        "editorScore": 18.5046
-      },
-      {
-        "title": "Live updates: Bitcoin steady above $65,100 as Strategy reports 1,690 BTC sale - CoinDesk",
-        "summary": "# Live updates: Bitcoin steady above $65,100 as Strategy reports 1,690 BTC sale. The market rose even as the Senate left the crypto bill unpassed before its recess, with steady ETF inflows and a softer dollar doing more for prices than Washington. Bitcoin’s trading range on Satur",
+        "title": "BTC, ETH price news: Bitcoin tops $65,000 with US inflation data due this week",
+        "summary": "XRP was the only major in the red on both views, slipping 0.4% to $1.03 and down 4% on the week. Hyperliquid's HYPE fell over 1% to $54 but remains up over 3% on the week, and dogecoin eased to under 7 cents.\n\nEquities set the tone. The MSCI All Country World Index rose 0.1%, its",
         "source": "coindesk.com",
-        "url": "https://www.coindesk.com/markets/2026/08/10/live-updates-btc-above-usd65-000-even-as-the-senate-punts-the-clarity-act-to-the-fall",
-        "publishedAt": "2026-08-10T00:00:00Z",
+        "url": "https://www.coindesk.com/markets/2026/08/10/bitcoin-tops-usd65-000-with-us-inflation-data-due-this-week",
+        "publishedAt": "2026-08-10T04:39:37Z",
         "bucket": "crypto",
-        "editorScore": 18.2721
-      },
-      {
-        "title": "J.P. Morgan lifts 2026-end target for S&P 500 to 8,000 on AI, earnings strength - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. Aug 10 (Reuters) - J.P. Morgan raised its year-end target for the S&P 500 index (.SPX), opens new tab to 8,000 from 7,800 on Monday, ​citing pros",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/jp-morgan-lifts-2026-end-target-sp-500-8000-ai-earnings-strength-2026-08-10/",
-        "publishedAt": "2026-08-10T06:20:17Z",
-        "bucket": "equity",
-        "editorScore": 18.1566
-      },
-      {
-        "title": "TRON USDT supply hits $87.9B as transfers reach $2.1T in Q2: Messari",
-        "source": "Cointelegraph",
-        "url": "https://cointelegraph.com/news/tron-usdt-supply-hits-879b-as-transfers-reach-21t-in-q2-messari?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
-        "publishedAt": "2026-08-10T19:47:01Z",
-        "bucket": "general",
-        "editorScore": 11.618
+        "editorScore": 18.3461
       },
       {
         "title": "Bitwise's Rasmussen: Circle is mispriced as stablecoins head toward trillions",
@@ -332,7 +270,50 @@
         "url": "https://www.coindesk.com/coindesk-news/2026/08/10/bitwise-s-rasmussen-circle-is-mispriced-as-stablecoins-head-toward-trillions",
         "publishedAt": "2026-08-10T20:20:06Z",
         "bucket": "crypto",
-        "editorScore": 18.0559
+        "editorScore": 17.8648
+      },
+      {
+        "title": "Stocks close lower as investors eye Mideast talks, earnings",
+        "summary": "At 05:07 a.m. ET, Dow E-minis were ​up 159 points, or 0.29%, and S&P 500 E-minis were up 8.25 points, or 0.11%. Nasdaq 100 E-minis were down 155.25 points, ‌or ⁠0.52%.\n\nBrent crude prices traded in a tight range near $80 a barrel as markets were keen on any signs of a deal betwee",
+        "source": "reuters.com",
+        "url": "https://www.reuters.com/business/retail-consumer/sp-500-dow-futures-steady-mideast-deal-focus-chips-stumble-2026-08-06",
+        "publishedAt": "2026-08-06T09:45:27Z",
+        "bucket": "equity",
+        "editorScore": 14.8
+      },
+      {
+        "title": "Coinsbuy offers $100K reward after Sunday security breach",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/coinsbuy-confirms-security-breach-after-wallets-reportedly-drained-of-79m?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-08-10T18:43:26Z",
+        "bucket": "geopolitics",
+        "editorScore": 13.862
+      },
+      {
+        "title": "TRON USDT supply hits $87.9B as transfers reach $2.1T in Q2: Messari",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/tron-usdt-supply-hits-879b-as-transfers-reach-21t-in-q2-messari?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-08-10T19:47:01Z",
+        "bucket": "general",
+        "editorScore": 11.427
+      },
+      {
+        "title": "Stocks",
+        "summary": "Updated world stock indexes. Get an overview of major world indexes, current values and stock market data.",
+        "source": "bloomberg.com",
+        "url": "https://www.bloomberg.com/markets/stocks",
+        "publishedAt": "2026-08-07T22:00:00Z",
+        "bucket": "equity",
+        "editorScore": 10.1
+      },
+      {
+        "title": "Chart of the Week: Currency interventions have a mixed record",
+        "summary": "Over one million readers pay to read the Financial Times\n\n## Useful links\n\n### Support\n\n### Legal & Privacy\n\n### Services\n\n### Tools\n\n### Community & Events\n\n### More from the FT Group\n\n## Top sections\n\n## FT recommends [...] Complete digital access to quality FT journalism with ",
+        "source": "ft.com",
+        "url": "https://www.ft.com/content/d2248ee9-edb5-445c-b89b-425e033a19fa?syn-25a6b1a6=1",
+        "publishedAt": "2026-08-08T09:30:03Z",
+        "bucket": "general",
+        "editorScore": 6.2
       },
       {
         "title": "Strategy builds $4.75 billion cash cushion as only bitcoin isn’t enough for investors",
@@ -340,23 +321,38 @@
         "url": "https://www.coindesk.com/coindesk-news/2026/08/10/strategy-builds-usd4-75-billion-cash-cushion-as-only-bitcoin-isn-t-enough-for-investors",
         "publishedAt": "2026-08-10T20:03:24Z",
         "bucket": "crypto",
-        "editorScore": 17.7863
+        "editorScore": 17.5952
       },
       {
-        "title": "Trading platform Plus500 reports higher core profit as US business gains traction - Reuters",
-        "summary": "Exclusive news, data and analytics for financial market professionals Learn more about Refinitiv. ## Browse World. ## Browse Business. ## Browse Markets. Image 3: A screen displays stock market information after the opening bell at the New York Stock Exchange (NYSE) in New York C",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/finance/trading-platform-plus500-reports-higher-core-profit-us-business-gains-traction-2026-08-10/",
-        "publishedAt": "2026-08-10T07:40:08Z",
-        "bucket": "equity",
-        "editorScore": 17.1894
+        "title": "Judge stays CFTC’s case against US soldier over prediction market bets",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/cftc-us-solider-insider-trading-polymarket-nicolas-maduro?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-08-10T20:50:59Z",
+        "bucket": "crypto",
+        "editorScore": 16.9935
+      },
+      {
+        "title": "UK money laundering suspect bought $100M in Trump crypto business: NYT",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/world-liberty-financial-uk-money-laundering-donald-trump?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound",
+        "publishedAt": "2026-08-10T19:35:19Z",
+        "bucket": "crypto",
+        "editorScore": 16.6782
+      },
+      {
+        "title": "Grayscale quietly drops Cardano, Polkadot and Hedera ETF plans",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/08/10/grayscale-quietly-drops-cardano-polkadot-and-hedera-etf-plans",
+        "publishedAt": "2026-08-10T15:02:14Z",
+        "bucket": "crypto",
+        "editorScore": 16.3404
       }
     ],
     "marketReplay": [
       "总分处于中低位，技术触发信号需要搭配更严格的仓位与止损规则。",
       "本周主驱动来自 风险偏好，边际变化 +24.5。",
       "主要拖累来自 系统流动性，边际变化 -3.5。",
-      "BTC 24H -1.45%，7D +0.70%，执行上优先看关键位是否放量确认。",
+      "BTC 24H -1.40%，7D +0.75%，执行上优先看关键位是否放量确认。",
       "板块层面，XLK 近7日 +4.65% 领跑，XLF 近7日 +0.75% 偏弱。",
       "波动与利率环境方面，VIX 现报 15.46，10Y 收益率现报 4.7。"
     ],
@@ -365,7 +361,7 @@
       "边际变化上，风险偏好 是当前主要支撑项，而 系统流动性 仍是主要拖累项，跨资产走势更可能围绕这组分化展开。",
       "权益资产方面，标普口径近7日 +2.01%，纳指口径近7日 +2.67%，说明成长资产仍在消化宏观与估值的双重约束。",
       "行业层面，Technology 近7日表现相对占优，Financials 相对承压，说明市场内部轮动并不均衡。",
-      "加密资产方面，BTC 近7日 +0.70%，ETH 近7日 +0.72%，短线更适合结合关键价位和成交确认判断延续性。"
+      "加密资产方面，BTC 近7日 +0.75%，ETH 近7日 +0.86%，短线更适合结合关键价位和成交确认判断延续性。"
     ],
     "deepStockDives": [
       {
@@ -432,22 +428,10 @@
         "url": "https://www.coindesk.com/business/2026/08/10/trump-media-s-bitcoin-holdings-shrink-as-crypto-losses-hit-usd361-million"
       },
       {
-        "project": "交易所 / 市场结构",
-        "headline": "S&P 500, Nasdaq futures inch up as markets monitor Hormuz situation - Reuters",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/sp-500-nasdaq-futures-tick-higher-with-hormuz-outlook-focus-2026-08-10/"
-      },
-      {
-        "project": "行业观察",
-        "headline": "Crypto bill faces long odds after Senate punts vote to September - reuters.com",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/legal/litigation/crypto-bill-faces-long-odds-after-senate-punts-vote-september-2026-08-10/"
-      },
-      {
         "project": "比特币生态",
-        "headline": "Live updates: Bitcoin steady above $65,100 as Strategy reports 1,690 BTC sale - CoinDesk",
+        "headline": "BTC, ETH price news: Bitcoin tops $65,000 with US inflation data due this week",
         "source": "coindesk.com",
-        "url": "https://www.coindesk.com/markets/2026/08/10/live-updates-btc-above-usd65-000-even-as-the-senate-punts-the-clarity-act-to-the-fall"
+        "url": "https://www.coindesk.com/markets/2026/08/10/bitcoin-tops-usd65-000-with-us-inflation-data-due-this-week"
       },
       {
         "project": "稳定币",
@@ -462,10 +446,22 @@
         "url": "https://www.coindesk.com/coindesk-news/2026/08/10/strategy-builds-usd4-75-billion-cash-cushion-as-only-bitcoin-isn-t-enough-for-investors"
       },
       {
-        "project": "交易所 / 市场结构",
-        "headline": "Trading platform Plus500 reports higher core profit as US business gains traction - Reuters",
-        "source": "reuters.com",
-        "url": "https://www.reuters.com/business/finance/trading-platform-plus500-reports-higher-core-profit-us-business-gains-traction-2026-08-10/"
+        "project": "Solana 生态",
+        "headline": "Judge stays CFTC’s case against US soldier over prediction market bets",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/cftc-us-solider-insider-trading-polymarket-nicolas-maduro?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      },
+      {
+        "project": "行业观察",
+        "headline": "UK money laundering suspect bought $100M in Trump crypto business: NYT",
+        "source": "Cointelegraph",
+        "url": "https://cointelegraph.com/news/world-liberty-financial-uk-money-laundering-donald-trump?utm_source=rss_feed&utm_medium=rss&utm_campaign=rss_partner_inbound"
+      },
+      {
+        "project": "ETF / 机构资金",
+        "headline": "Grayscale quietly drops Cardano, Polkadot and Hedera ETF plans",
+        "source": "CoinDesk",
+        "url": "https://www.coindesk.com/business/2026/08/10/grayscale-quietly-drops-cardano-polkadot-and-hedera-etf-plans"
       }
     ],
     "marketCalendar": [
